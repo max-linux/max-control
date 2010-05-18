@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - getParentDir()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>getParentDir()</h2>
+<ul>
+	<i>string</i> getParentDir(<i>[string dn]</i>)
+</ul>
+If a DN is not passed, this function will return the DN/path of the parent
+directory of the current working directory.  If a DN is passed, it returns
+the parent directory of the DN specified.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->cd("cn=Eric, ou=people, dc=ypass, dc=net");
+if ($ldap->getParentDir() == "ou=people, dc=ypass, dc=net")
+	echo "It worked.";
+else
+	echo "It didn't work.";
+	
+/* The following two function calls have the same effect */
+$ldap->cd("..");
+$ldap->cd($ldap->getParentDir());
+</pre>
+	</body>
+</html>

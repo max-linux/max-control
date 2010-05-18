@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - modify()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>modify()</h2>
+<ul>
+	<i>boolean</i> modify(<i>array attributes</i>)
+</ul>
+modify() will change and/or add the values specified in the attributes
+array.  The format of the array passed to modify is identical to the
+array passed to the PHP ldap_modify()/ldap_add() function.
+<p>
+<hr>
+<b>From the <a href="http://www.php.net">PHP</a> ldap_add() documentation:</b>
+<p>
+The ldap_add() function is used to add entries in the LDAP directory. The DN of the entry to be added is specified by dn. Array entry specifies
+the information about the entry. The values in the entries are indexed by individual attributes. In case of multiple values for an attribute, they are
+indexed using integers starting with 0. 
+<ul>
+	entry["attribute1"] = value<br>
+	entry["attribute2"][0] = value1<br>
+	entry["attribute2"][1] = value2<br>
+</ul>
+<hr>
+If you "modify" an attribute that does not exist, then the attribute is
+created with the specified value.  I couldn't think of an easy way to tie
+this function in to the filesystem style, but if anyone has any ideas, I'd
+be more than happy to consider them.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->cd("ou=people, dc=ypass, dc=net");
+$ldap->mkdir("cn", "Bob Vila");
+$ldap->cd("cn=Bob Vila, ou=people, dc=ypass, dc=net");
+
+$attrs["objectClass"] = "person";
+$attrs["cn"] = "Bob Vila";
+$attrs["streetAddress"][0] = "c/o Public Broadcasting Service";
+$attrs["streetAddress"][1] = "123 This Old House Way";
+$attrs["city"] = "Normville";
+$attrs["state"] = "CA";
+$attrs["postalCode"] = "90210";
+
+$ldap->modify($attrs);
+
+</pre>
+<i>Note that if you have schema checking on, this example probably won't work</i>
+	</body>
+</html>

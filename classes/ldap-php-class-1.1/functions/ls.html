@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - ls()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>ls()</h2>
+<ul>
+	<i>boolean</i> ls([<i>string filter</i>] <i>[, string dn]</i>)
+</ul>
+The ls() function will get a listing of the directories (DNs) under
+the current working directory.  If filter is supplied, then the specified
+filter will be applied to the listing.  If dn is supplied, the specified
+directory (DN) will be used instead of the current working directory.
+It will return TRUE if the search was successful, otherwise it will return
+FALSE.  Keep in mind that a successful search does not neccessarily return
+any entries.  
+<p>
+The ls() function only <i>performs</i> the search.  You will need to use
+the <a href="fetch.html">fetch()</a> function to retrieve the data.
+<p>
+For information on LDAP search filters, look at the ldap_search man page, or
+visit <a href="http://www.faqs.org/rfcs/rfc1558.html">RFC 1558</a>.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->cd("ou=people, dc=ypass, dc=net");
+$ldap->ls();
+...
+$attrs[$ldap->getDN()] = $ldap->fetch();
+...
+$ldap->ls("(objectclass=person)");
+...
+$attrs[$ldap->getDN()] = $ldap->fetch();
+...
+</pre>
+	</body>
+</html>

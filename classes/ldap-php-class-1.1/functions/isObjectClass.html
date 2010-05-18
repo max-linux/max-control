@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - getObjectClasses</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>isObjectClass()</h2>
+<ul>
+	<i>boolean</i> isObjectClass(<i>string objectClassName</i>)
+</ul>
+This function will return whether or not <i>objectClassName</i> is
+a valid objectClass defined in the slapd.oc.conf file.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+if ($ldap->isObjectClass("top"))
+	echo "objectClass 'top' is defined";
+else
+	echo "objectClass 'top' is not defined";
+</pre>
+	</body>
+</html>

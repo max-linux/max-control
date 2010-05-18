@@ -1,0 +1,280 @@
+<?php
+
+
+
+class Encuesta
+{
+    var $id;
+    var $data;
+    
+    function Encuesta ()
+    {
+        global $gui;
+        if ( isset($gui) )
+            $gui->debug("Encuesta::init()");
+        return;
+    }
+
+    function get_pregunta_from_encuesta($encid, $pregid, $parse=True){
+        $mysql = new MYSQL();
+        /* FIXME no id*/
+        $line=$mysql->get_array("SELECT * from encuestas where id='".$encid."'");
+        $questions=__unserialize(base64_decode($line[0]['questions']));
+        $newquestions=array();
+        for($i=0; $i<sizeof($questions); $i++) {
+            if ($questions[$i]['id'] != $pregid)
+                continue;
+            if ($parse && $questions[$i]['type'] == "select_mysql") {
+                /* FIXME esto debería hacerse con una consulta compleja del tipo:
+                SELECT Cod as id, Asignatura as txt from CodigosAsignaturas 
+                WHERE Cod in (SELECT Asignaturas FROM Matriculados WHERE dni='$_SESSION['dni']')
+                
+                */
+                $adata=array();
+                $tmp=$mysql->get_array($questions[$i]['options']);
+                $tmp2=$mysql->get_array("SELECT Asignaturas FROM Matriculados WHERE dni='".$_SESSION['dni']."'");
+                $asig=explode(',', $tmp2[0]['Asignaturas'] );
+                //$gui->debug("<pre>".print_r($asig,true)."</pre>");
+                for ($j=0; $j<sizeof($tmp); $j++) {
+                    if( in_array($tmp[$j]['id'] , $asig) ) {
+                        $adata[]=$tmp[$j];
+                    }
+                }
+                
+                $questions[$i]['mysqldata']=$adata;
+            }
+            $newquestions[]=$questions[$i];
+        }
+        $data=array(
+                "line" => $line[0],
+                "id" => $encid,
+                "pregid" => $pregid,
+                "questions" => $newquestions,
+                    );
+        return $data;
+    }
+
+
+    function check_hecha($id, $hechas, $asig) {
+        /* devolvemos True si encontramos enc en $hechas */
+        global $gui;
+        $gui->debug("id=$id asig=$asig");
+        foreach ($hechas as $key => $enc) {
+            $gui->debug("check_hechas() id=$id enc=<pre>". print_r($enc,true) . "</pre>");
+            if ( $asig!='' ){
+                if ( $enc['id'] == $id && $enc['asig'] == $asig ) {
+                    $gui->debug("coincide id y asig, devolviendo True");
+                    return True;
+                }
+            }
+            if ( $enc['id'] == $id ){
+                $gui->debug("coincide solo id, devolviendo True");
+                return True;
+            }
+        }
+        return False;
+    }
+
+    function get_hechas() {
+        if ( ! isset($_SESSION["dni"]) ) {
+                return array();
+            }
+        global $gui;
+        //$gui->debug("Encuesta::get_hechas(".$_SESSION["dni"].")");
+        $mysql=new MYSQL();
+        $sql="SELECT encuestas from users WHERE dni='".$_SESSION["dni"]."'";
+        $data=$mysql->get_array($sql);
+        if (sizeof($data) != 1) {
+            $gui->alert("Error leyendo encuestas pendientes");
+            return array();
+        }
+        //$gui->debug("data[0]=<pre>" . print_r($data[0], true) . "</pre>");
+        if ( $data[0]['encuestas'] == "" ) {
+            $gui->debug("encuestas vacio devolviendo array()");
+            $yahechas=array();
+        }
+        else {
+            $yahechas=__unserialize(base64_decode($data[0]['encuestas']));
+            //$gui->debug("yahechas=<pre>".print_r($yahechas, true)."</pre>");
+        }
+        return $yahechas;
+    }
+
+    function get_pendientes(){
+        if ( ! isset($_SESSION["dni"]) ) {
+            return array();
+        }
+        global $gui;
+        $yahechas=$this->get_hechas();
+        $mysql=new MYSQL();
+        $sql="SELECT id, name, description, plan from encuestas WHERE enabled=1 and plan='".$_SESSION['ldap']['plan']."'";
+        $data=$mysql->get_array($sql);
+        $porhacer=array();
+        for ($i=0; $i<sizeof($data); $i++) {
+            //$gui->debug("get_pendientes() id=" . $data[$i]['id']);
+            //$gui->debug("get_pendientes() check_hecha=" . $this->check_hecha($data[$i]['id'], $yahechas, '') );
+            //if ( ! $this->check_hecha($data[$i]['id'], $yahechas, '') ) {
+                $porhacer[]=$data[$i];
+            //}
+            /*
+            if ( ! array_key_exists($data[$i]['id'], $yahechas) ) {
+                $porhacer[]=$data[$i];
+            }*/
+        }
+        return $porhacer;
+    }
+
+    function set_no_pendiente($id, $asig) {
+        if ( ! isset($_SESSION["dni"]) ) {
+            return;
+        }
+        global $gui;
+        $yahechas=$this->get_hechas();
+        $yahechas[]=array('id' => $id, 'date' => date("j F Y, g:i a"), 'asig' => $asig);
+        $gui->debug("set_no_pendiente() yahechas=<pre>".print_r($yahechas, true)."</pre>");
+        $mysql = new MYSQL();
+        $data=base64_encode(serialize($yahechas));
+        $sql="UPDATE users set encuestas='$data' WHERE dni='".$_SESSION["dni"]."'";
+        $gui->debug($sql);
+        $mysql->query($sql);
+    }
+
+
+    function get_value($item) {
+        if ( ! isset($this->data[$item]) )
+            return "";
+        return mysql_escape_string($this->data[$item]);
+    }
+
+    function save($data) {
+        global $gui;
+        global $site;
+        $q=array();
+        $mysql = new MYSQL();
+        $gui->debug("Encuesta::save()");
+        
+        if( ! isset($data['id']) ) {
+            $gui->alert("<h2>Ocurrió un error, no se pudo leer el identificador de la encuesta.</h2>");
+            return;
+        }
+        
+        if ( array_key_exists ('asig', $data) ){
+            $asig=$data['asig'];
+            $gui->debug("encontrado asig=$asig");
+        }
+        else {
+            $asig='';
+            $gui->debug("no encontrado ASIG");
+        }
+        
+        $yahechas=$this->get_hechas();
+        for ($i=0; $i<sizeof($yahechas); $i++) {
+            if ( $this->check_hecha($data['id'], $yahechas, $asig) ) {
+                $gui->alert("<h2>Ya ha contestado a esta encuesta de la asignatura $asig</h2>");
+                return;
+            }
+        }
+        
+        $this->id=$data['id'];
+        $this->data=$data;
+        
+        /*
+        if (pruebas) {
+            $gui->add("<pre>".print_r($this->data, true)."</pre>");
+        }
+        */
+        
+        $tmp=$mysql->get_array("SELECT id, questions from encuestas WHERE id=" . $this->id);
+        $campos=__unserialize(base64_decode($tmp[0]['questions']));
+        
+        foreach ( $campos as $key => $item  ) {
+            //$gui->add("<hr>$key => <pre>" . print_r($item,true) . "</pre>");
+            if($item['type'] == "uno_u_otro" || $item['type'] == "respuesta_simple" || $item['type'] == "respuesta_larga") {
+                $q["q".$item['id']]=$this->get_value( "q". $item['id']);
+            }
+            else if($item['type'] == "respuesta_multiple") {
+                foreach( $item['options'] as $k => $v) {
+                    //$gui->add("<hr>respuesta multiple $k => $v valor=". $this->get_value( "q" . $item['id'] . "-" . $k ));
+                    $q["q".$item['id']."-".$k]=$this->get_value( $k );
+                }
+            }
+            else if($item['type'] == "seleccionar") {
+                if ($item['format'] == "multiple") {
+                    foreach( $item['options'] as $k => $v) {
+                        //$gui->add("<hr>FIXME seleccionar $k => $v valor=". $this->get_value( "q" . $item['id'] . "-" . $k ));
+                        $q["q".$item['id']."-".$k]=$this->get_value( "q" . $item['id'] . "-" . $k );
+                    }
+                }
+                else {
+                    $q["q".$item['id']]=$this->get_value( "q" . $item['id']);
+                    if ( array_key_exists("otros", $item['options']) ) {
+                        $q["q".$item['id'] ."-otros"]=$this->get_value( "q" . $item['id']."-otros");
+                    }
+                    if ( array_key_exists("otros2", $item['options']) ) {
+                        $q["q".$item['id'] ."-otros2"]=$this->get_value( "q" . $item['id']."-otros2");
+                    }
+                    if ( array_key_exists("otros3", $item['options']) ) {
+                        $q["q".$item['id'] ."-otros3"]=$this->get_value( "q" . $item['id']."-otros3");
+                    }
+                }
+            }
+            else if ($item['type'] == "valorar") {
+                /***********************/
+                    if ( array_key_exists("asig1", $item['options']) ) {
+                        $q["q".$item['id'] ."-asig1txt"]=$this->get_value( "q" . $item['id']."-asig1txt");
+                    }
+                    if ( array_key_exists("asig2", $item['options']) ) {
+                        $q["q".$item['id'] ."-asig2txt"]=$this->get_value( "q" . $item['id']."-asig2txt");
+                    }
+                    if ( array_key_exists("asig3", $item['options']) ) {
+                        $q["q".$item['id'] ."-asig3txt"]=$this->get_value( "q" . $item['id']."-asig3txt");
+                    }
+                    if ( array_key_exists("asig4", $item['options']) ) {
+                        $q["q".$item['id'] ."-asig4txt"]=$this->get_value( "q" . $item['id']."-asig4txt");
+                    }
+                    /***********************/
+                foreach( $item['options'] as $k => $v) {
+                    //$gui->add("<hr>valorar $k => $v valor=". $this->get_value( "q" . $item['id'] . "-" . $k ));
+                    $q["q".$item['id']."-".$k]=$this->get_value( "q" . $item['id'] . "-" . $k );
+                }
+            }
+            else if ($item['type'] == "select_mysql") {
+                $q["q".$item['id']]=$this->get_value( "q". $item['id']);
+            }
+            else {
+                $q["q".$item['id']]="error-not-saved";
+            }
+        }
+        
+        // serialize and encode in base64
+        $enc=base64_encode(serialize($q));
+        
+        $date=date("j F Y, g:i a");
+        $ip=$_SERVER['REMOTE_ADDR'];
+        
+        
+        if (pruebas) {
+            $gui->add("<pre>".print_r($q, true)."</pre>");
+            /*return;*/
+        }
+                
+        
+        $mysql=new MYSQL();
+        $sql="INSERT INTO resultados (encuestaid, date, IP, data) VALUES ('".$this->id."','$date', '$ip', '$enc')";
+        if (! $mysql->query($sql) ) {
+            $gui->add("<h2>Error guardando datos...</h2><pre>" . mysql_error() . "</pre>");
+            return;
+        }
+        else {
+            $gui->add("<h2>Datos guardados correctamente, gracias por participar, sus opiniones nos sirven para mejorar.</h2>");
+            $gui->add("<p><a href='".$site['basedir']."/usuarios'>Volver a encuestas pendientes</a></p>");
+        }
+        
+        /* guardar encuesta */
+        $this->set_no_pendiente($this->id, $asig);
+        
+        return;
+        
+    }
+}
+?>

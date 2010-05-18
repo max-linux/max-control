@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+	<h2>The LDAP Class for PHP</h2>
+	The idea behind this class, is that you can navigate through your
+	LDAP directory server using the same methods you would use to navigate
+	a UNIX filesystem.
+	<p>
+	This works pretty will for navigation, but adding and retrieving data
+	are somewhat different.  I used a pretty standard method of retrieving
+	data, similar to most methods of database access.  (ie. search, then fetch).
+	For adding data, it's much different than you may expect.  There is no
+	add() function in the class.  There really isn't a need for one.  When you
+	make a directory (LDAP translation: add an entry) into your directory
+	server, to add attributes, you would just need to modify the existing
+	entry.
+	<p>
+	If you're new to LDAP, this probably won't be too hard for you.  If you've
+	already been exposed to LDAP, it may take some getting used to.
+	<p>
+	Think of all of your entries as directories.  Each directory can have files
+	(attributes), and subdirectories (entries) in them.  When you think about it
+	this way, you can rm() attributes, and rmdir() entries.  This is the
+	basis for this class.
+	</body>
+</html>

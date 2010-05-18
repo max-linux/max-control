@@ -1,0 +1,18 @@
+
+
+
+    1.- Instalar EBox
+    
+    2.- Activar módulos de usuarios y grupos y compartir ficheros (guardar cambios)
+    
+    3.- En Office -> Usuarios y grupos crear el menos un usuario con permisos de administrador
+    
+    4.- Crear el grupo "Teachers"
+    
+    5.- Instalar el paquete max-control
+    
+    6.- Ir a http://xxx.xxx.xxx.xxx/control
+    
+    7.- Editar /etc/max-control/config.inc.php (defines de LDAP)
+    
+    8.- Hacer login con el usuario y la contraseña de un administrador

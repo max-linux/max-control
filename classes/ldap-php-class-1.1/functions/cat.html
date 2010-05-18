@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - cat()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>cat()</h2>
+<ul>
+	<i>boolean</i> cat(<i>string dn</i>)
+</ul>
+The cat() function will "get data" for a specific DN.  cat actually performs
+a ldap_search with a scope of LDAP_SCOPE_BASE.
+<p>
+It will return TRUE if the search was successful, otherwise it will return
+FALSE.  Keep in mind that a successful search does not neccessarily return
+any entries.  
+<p>
+The cat() function only <i>performs</i> the search.  You will need to use
+the <a href="fetch.html">fetch()</a> function to retrieve the data.
+<p>
+For information on LDAP search filters, look at the ldap_search man page, or
+visit <a href="http://www.faqs.org/rfcs/rfc1558.html">RFC 1558</a>.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->cat("cn=Bob Vila, ou=people, dc=ypass, dc=net");
+$attrs = $ldap->fetch();
+</pre>
+	</body>
+</html>

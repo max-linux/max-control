@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - fetch()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>fetch()</h2>
+<ul>
+	<i>boolean</i> fetch(<i>string dn</i>)
+</ul>
+The fetch() function is used to get an array of the returned attributes from
+a previous search.  After using, <a href="search.html">search()</a>,
+<a href="ls.html">ls()</a>, or <a href="cat.html">cat()</a>, you can then
+use fetch() to retrieve the attributes and values from the returned DN.  If
+your search returned multiple results, the first call to fetch will return
+the attributes and values for the first returned entry.  Successive calls
+to fetch will iterate through the returned values.  FALSE is returned if
+there are no more entries.
+<p>
+To reset the result index back to the first returned entry, use the
+<a href="resetResult.html">resetResult()</a> function.
+<p>
+To get the DN of the last entry returned, use the <a href="getDN.html">getDN()</a>
+function.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->search("(objectClass=person)");
+while($attrs = $ldap->fetch())
+{
+	echo $attrs["cn"] . "&lt;br&gt;";
+}
+</pre>
+	</body>
+</html>

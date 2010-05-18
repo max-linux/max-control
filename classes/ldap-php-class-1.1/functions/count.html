@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - count()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>count()</h2>
+<ul>
+	<i>boolean</i> count()
+</ul>
+The count() function returns the number of entries returned by a search
+operation.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->search("(objectClass=person)");
+
+echo $ldap->count() . " entries returned.&lt;br&gt;";
+while($attrs = $ldap->fetch()) // Get all the returned attributes
+{
+	echo "DN is: " . $ldap->getDN();
+	echo $attrs["cn"] . "&lt;br&gt;";
+}
+</pre>
+	</body>
+</html>

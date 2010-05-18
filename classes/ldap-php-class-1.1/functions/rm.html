@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - rm()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>rm()</h2>
+<ul>
+	<i>boolean</i> rm(<i>string dn</i>)
+</ul>
+The rm() function removes attributes from the current working directory (DN)
+or from the optional specified DN.  The attributes array is formed as an
+array of attribute names <b>and</b> values to be deleted.
+<p>
+An example attributes array follows:
+<ul>
+	$entry["emailAddress"] = "bvila@thisoldhouse.com";<br>
+	$entry["garbage"][0] = "Delete Me";<br>
+	$entry["garbage"][1] = "Delete Me Too?";<br>
+</ul>
+Given the entry:
+<pre>
+dn: cn=Bob Vila, ou=people, dc=ypass, dc=net
+emailAddress: bvila@thisoldhouse.com
+emailAddress: bob.vila@thisoldhouse.com
+garbage: Delete Me
+garbage: Don't Delete me
+garbage: Delete Me Too?
+</pre>
+If we pass the $entry array to rm(), the following attributes will be
+deleted:
+<pre>
+emailAddress: bvila@thisoldhouse.com
+garbage: Delete Me
+garbage: Delete Me Too?
+</pre>
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->cd("cn=Bob Vila, ou=people, dc=ypass, dc=net");
+
+$entry["emailAddress"] = "bvila@thisoldhouse.com";
+$entry["garbage"][0] = "Delete Me";
+$entry["garbage"][1] = "Delete Me Too?";
+
+$ldap->rm($entry);
+</pre>
+	</body>
+</html>

@@ -1,0 +1,47 @@
+AddDefaultCharset UTF-8
+
+Order allow,deny
+allow from all
+
+DirectoryIndex index.php
+
+#<Directory files>
+#  Order deny,allow
+#  deny from all
+#</Directory>
+
+<IfModule mod_rewrite.c>
+
+RewriteEngine on
+RewriteBase /control/www/
+
+#
+#  variables querystring
+#
+#  * module - nombre del módulo a cargar (corresponde al archivo modules/XXXXXX.mod.php
+#  * action - acción de cada módulo (array definido en el módulo)
+#  * id     - identificador de una serie de varios elementos
+#
+
+
+# regla para /facturas
+RewriteRule ^([A-Za-z0-9_]+)$ index.php?module=$1 [L]
+RewriteRule ^([A-Za-z0-9_]+)/$ index.php?module=$1 [L]
+
+# regla para /descargar/foo
+RewriteRule ^descargar/([A-Za-z0-9_]+)/(.*$) index.php?module=descargar&action=$1&subaction=$2 [L]
+RewriteRule ^descargar/(.*$) index.php?module=descargar&action=$1 [L]
+RewriteRule ^borrar/(.*$) index.php?module=borrar&action=$1 [L]
+
+
+# regla para /facturas/view
+RewriteRule ^([A-Za-z0-9_]+)/([A-Za-z0-9_]+)/?$ index.php?module=$1&action=$2 [L]
+
+# regla para /facturas/edit/1
+RewriteRule ^([A-Za-z0-9_]+)/([A-Za-z0-9_]+)/([A-Za-z0-9_]+)?$ index.php?module=$1&action=$2&subaction=$3 [L]
+
+
+
+
+
+</IfModule>

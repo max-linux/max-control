@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - getAllows()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>getAllows()</h2>
+<ul>
+	<i>array</i> getAllows(<i>string objectClassName</i>)
+</ul>
+This function will return an array of the attributes which the specified
+objectClass allows based on what you have defined in your slapd.oc.conf file.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$oc = "organizationalUnit";
+$allowed = $ldap->getAllows($oc);
+echo "ObjectClass '$oc' allows the following attributes:&lt;br&gt;";
+for ($ctr = 0; $ctr < count($allowed); $ctr++)
+{
+	echo $allowed[$ctr] . "&lt;br&gt;\n";
+}
+</pre>
+	</body>
+</html>

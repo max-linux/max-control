@@ -1,0 +1,88 @@
+
+#login {
+    width: 500px;
+    margin: 60px auto 20px auto;
+    min-width: inherit;
+}
+
+#reason {
+    text-align: left;
+    font-weight: normal;
+    border-bottom: 1px solid #fa601d;
+    border-top: 1px solid #fa601d;
+    padding: 5px;
+    font-size: 11px;
+    margin: 0 0 4px 90px;
+    background: #fdddd9;
+    color: #484554;
+}
+
+#capsWarning, #ieWarning, #ffWarning {
+    text-align: left;
+    font-weight: normal;
+    border-bottom: 1px solid #fa601d;
+    border-top: 1px solid #fa601d;
+    padding: 5px;
+    font-size: 11px;
+    margin: 0 0 4px 90px;
+    background: #dfef7a;
+    color: #484554;
+}
+
+#logo {
+    float: left;
+}
+
+body {
+    background-color: #a4b1f0;
+    color: #000000;
+    font-family: Verdana, sans-serif;
+    behavior: url(/control/js/csshover.htc);
+    margin-top: 90px;
+}
+
+dl { margin: 20px 0 0 90px; }
+
+dt {
+    float: left;
+    width: 88px;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+dd {
+    margin: 0 0 5px 90px;
+    font-size: 11px;
+    line-height: 24px;
+    color: #666;
+    margin-left: 88px;
+}
+
+#loginin {
+    border: 10px solid #3352c7;
+    padding: 15px 20px 10px 20px;
+    background: #dae4ec;
+    text-align: left;
+}
+
+#footer {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+}
+
+#footer a {
+    text-decoration: underline;
+    color: #888;
+}
+
+#footer a:active {
+    text-decoration: underline;
+    color: #888;
+}
+
+#footer a:hover {
+    text-decoration: none;
+    background: #888;
+    color: #fff;
+}

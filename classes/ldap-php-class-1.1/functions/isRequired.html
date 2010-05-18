@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP isRequired</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>isRequired()</h2>
+<ul>
+	<i>boolean</i> isRequired(<i>string objectClassName</i>, <i>string attributename</i>)
+</ul>
+This function returns TRUE if the attribute is listed as a required attribute
+based on the information in your slapd.oc.conf file.  Otherwise, it will
+return FALSE.  Note that this function will return false if the attrbibute
+is listed as allowed.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$oc = "organizationalUnit";
+$attribute = "businessCategory";
+if ($ldap->isRequired($oc, $attribute))
+	echo "$attribute is required by the objectClass $oc&lt;br&gt;\n";
+else
+	echo "$attribute is not required by the objectClass $oc&lt;br&gt;\n";
+</pre>
+	</body>
+</html>

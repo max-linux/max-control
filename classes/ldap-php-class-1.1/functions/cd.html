@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - cd()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>cd()</h2>
+<ul>
+	<i>void</i> cd(<i>string dn</i>)
+</ul>
+cd() changes the current working directory in the LDAP server.  It is
+important to remember that the class emulates the view of a filesystem.
+This function doesn't actually make any calls to an LDAP server.  It
+merely sets the basedn for subsequent searches.  You can pass ".." as
+the dn to cd, and it will change to the parent DN.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->cd("cn=Eric, ou=people, dc=ypass, dc=net");
+/* Any searching or listing done now will use:
+       cn=Eric, ou=people, dc=ypass, dc=net
+   as a BASE DN, so we call this our Current Working Directory */
+$ldap->cd("..");
+/* Now our CWD is ou=people, dc=ypass, dc=net */
+</pre>
+	</body>
+</html>

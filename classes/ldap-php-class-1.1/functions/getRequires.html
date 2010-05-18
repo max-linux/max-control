@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - getRequires</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>getRequires()</h2>
+<ul>
+	<i>array</i> getRequires(<i>string objectClassName</i>)
+</ul>
+This function will return an array of the attributes which the specified
+objectClass requires based on what you have defined in your slapd.oc.conf file.
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$oc = "organizationalUnit";
+$required = $ldap->getRequires($oc);
+echo "ObjectClass '$oc' requires the following attributes:&lt;br&gt;";
+for ($ctr = 0; $ctr < count($required); $ctr++)
+{
+	echo $required[$ctr] . "&lt;br&gt;\n";
+}
+</pre>
+	</body>
+</html>

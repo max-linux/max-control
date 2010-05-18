@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<title>LDAP Class for PHP - getDN()</title>
+	</head>
+	<body bgcolor=#FFFFFF>
+<h2>getDN()</h2>
+<ul>
+	<i>boolean</i> getDN()
+</ul>
+The getDN() function returns the DN of the last entry returned by fetch()
+<p>
+Example:
+<p>
+<pre>
+$ldap = new LDAP();
+$ldap->search("(objectClass=person)");
+
+while($attrs = $ldap->fetch()) // Get all the returned attributes
+{
+	echo "DN is: " . $ldap->getDN();
+	echo $attrs["cn"] . "&lt;br&gt;";
+}
+</pre>
+	</body>
+</html>
