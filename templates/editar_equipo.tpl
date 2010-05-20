@@ -6,17 +6,17 @@
     <table class='formTable'> 
     <tr> 
         <td class='tright'><span class="ftitle">Dirección MAC:</span></td>
-        <td><input type='text' class='inputText' name='macAddress' value="{$u->attr('macAddress')}"></td>
+        <td><input type='text' class='inputText' name='macAddress' value="{$u->attr('macAddress')}"> (ejemplo 00:00:00:00:00:00)</td>
     </tr>
     
     <tr> 
         <td class='tright'><span class="ftitle">Dirección IP:</span></td>
-        <td><input type='text' class='inputText' name='ipHostNumber' value="{$u->attr('ipHostNumber')}"></td>
+        <td><input type='text' class='inputText' name='ipHostNumber' value="{$u->attr('ipHostNumber')}"> (ejemplo 192.168.1.23)</td>
     </tr> 
     
     <tr> 
         <td class='tright'><span class="ftitle">Archivo de arranque:</span></td>
-        <td><input type='text' class='inputText' name='bootFile' value="{$u->attr('bootFile')}"> (ej: /pxelinux.0)</td>
+        <td><input type='text' class='inputText' name='bootFile' value="{$u->attr('bootFile')}"> (ej: default)</td>
     </tr> 
     
     <!--<tr> 
