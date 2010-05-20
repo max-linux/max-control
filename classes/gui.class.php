@@ -25,13 +25,12 @@ class Gui
         
         $this->main_template="index.tpl";
         
-        $this->smarty->template_dir = $path . $site["smarty_templates"];
-        $this->smarty->compile_dir =  $path . $site["smarty_templates_c"];
-        $this->smarty->cache_dir =    $path . '/cache';
-        $this->smarty->config_dir =   $path . '/cache';
+        $this->smarty->template_dir = $path . SMARTY_TEMPLATES;
+        $this->smarty->compile_dir =  $path . SMARTY_CACHE;
+        $this->smarty->cache_dir =    $path . SMARTY_CACHE;
+        $this->smarty->config_dir =   $path . SMARTY_CACHE;
         //$this->smarty->caching = true;
-        $this->smarty->plugins_dir = array( '/usr/share/php/smarty/plugins/',
-                                             $path . '/plugins');
+        $this->smarty->plugins_dir = array( SMARTY_PLUGINS, $path . '/plugins');
         
         if (pruebas) {
             $this->smarty->assign('pruebas', "1");
@@ -42,13 +41,6 @@ class Gui
         }
         $this->smarty->assign('baseurl', $site["basedir"] );
         $this->smarty->assign('basedir', $site["basedir"] );
-        
-        /*
-        $this->smarty->assign('title', $site["title"] );
-        $this->smarty->assign('sort_name', $site["sort_name"] );
-        $this->smarty->assign('sort_desc', $site["sort_desc"] );
-        $this->smarty->assign('template_dir', $site["smarty_templates"] );
-        */
     }
 
     function change_main_template($tpl) {
@@ -80,7 +72,7 @@ class Gui
         global $module_actions_submenu;
         
         
-        $this->smarty->assign('mod_rewrite', $site["enable_mod_rewrite"]);
+        $this->smarty->assign('mod_rewrite', APACHE_MOD_REWRITE);
         
         $this->smarty->assign('module', $nav->get_module() );
         $this->smarty->assign('menuaction', $nav->get_action() );
@@ -140,12 +132,11 @@ class Gui
         global $path;
         global $site;
         $n=new Smarty();
-        $n->template_dir = $path . $site["smarty_templates"];
-        $n->compile_dir =  $path . $site["smarty_templates_c"];
-        $n->cache_dir =    $path . '/cache';
-        $n->config_dir =   $path . '/cache';
-        $this->smarty->plugins_dir = array( '/usr/share/php/smarty/plugins/',
-                                             $path . '/plugins');
+        $n->template_dir = $path . SMARTY_TEMPLATES;
+        $n->compile_dir =  $path . SMARTY_CACHE;
+        $n->cache_dir =    $path . SMARTY_CACHE;
+        $n->config_dir =   $path . SMARTY_CACHE;
+        $this->smarty->plugins_dir = array( SMARTY_PLUGINS, $path . '/plugins');
         
         $n->assign('baseurl', $site["basedir"] );
         /*

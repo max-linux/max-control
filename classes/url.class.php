@@ -69,7 +69,7 @@ class URLHandler {
 
     function get_url(){
         global $site;
-        if( $site["enable_mod_rewrite"] ){
+        if( APACHE_MOD_REWRITE ){
             return $site["basedir"] . "/" . $this->get("module") . "/" . $this->get("action");
         }
         else{
@@ -79,7 +79,7 @@ class URLHandler {
     
     function create_url($module, $action, $subaction="") {
         global $site;
-        if( $site["enable_mod_rewrite"] ){
+        if( APACHE_MOD_REWRITE ){
             $txt=$site["basedir"] . "/$module/$action" ;
             if($subaction != "")
                 $txt.="/$subaction";
