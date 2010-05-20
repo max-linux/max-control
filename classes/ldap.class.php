@@ -118,6 +118,7 @@ class BASE {
     
     function save($attrs=array()) {
         global $gui;
+        $saveok=true;
         $this->pre_save();
         
         $gui->debug("ldap::BASE::save() dn=".$this->get_save_dn());
@@ -134,6 +135,7 @@ class BASE {
         $new_objects=array_diff($this->objectClass, $this->ldapdata['objectClass']);
         //add new objectclass
         if ( $new_objects ) {
+            $gui->debug("BASE:save() NEW OBJECTS <pre>".print_r($new_objects, true)."</pre>");
             foreach( $new_objects as $k => $v) {
                 if ($k == "count")
                     continue;
@@ -160,19 +162,28 @@ class BASE {
                 $r = ldap_modify($ldap->cid, $this->get_save_dn(), $obj );
                 if ($r)
                     $this->ldapdata['objectClass'][]=$v;
+                else
+                    $saveok=false;
             }
         }
         
         // save new values
         foreach($attrs as $k) {
+            //$gui->debug("BASE:save() try to save $k");
             if ( $this->$k == '')
                 continue;
-            if ( $this->is_restricted($k) )
+            if ( $this->is_restricted($k) && ! isset($this->$k) ) {
+                $gui->debug("BASE:save() $k is restricted");
                 continue;
+            }
             $tmp=array();
             $tmp[$k]=$this->ldapdata[$k];
+            //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."</pre>");
             $r = ldap_modify($ldap->cid, $this->get_save_dn(), $tmp );
+            if ( !$r)
+                $saveok=false;
         }
+        return $saveok;
     }
 }
 
@@ -268,6 +279,11 @@ class COMPUTER extends BASE {
     #var $bootParameter=''; # disable, complex syntax, see: http://tools.ietf.org/html/rfc2307
     
     
+    function init(){
+        $this->exe=new WINEXE($this->hostname());
+        return;
+    }
+    
     function hostname() {
         return str_replace('$', '', $this->uid);
     }
@@ -319,7 +335,23 @@ class AULA extends BASE {
     var $sambaSID='';
     var $displayName='';
     var $memberUid='';
-    var $sambaGroupType='';
+    var $sambaGroupType=''; 
+    /*
+        sambaGroupType
+        > #ifndef USE_UINT_ENUMS
+              {
+             SID_NAME_USE_NONE=0,
+             SID_NAME_USER=1,
+             SID_NAME_DOM_GRP=2,   <=== grupos del dominio
+             SID_NAME_DOMAIN=3,
+             SID_NAME_ALIAS=4,
+             SID_NAME_WKN_GRP=5,   <=== privilegios admin (replicator, backup operator...)
+             SID_NAME_DELETED=6,
+             SID_NAME_INVALID=7,
+             SID_NAME_UNKNOWN=8,
+             SID_NAME_COMPUTER=9  <= usaremos este para ser aula
+             }
+        */
 }
 
 
