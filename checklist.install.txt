@@ -10,6 +10,9 @@
     4.- Crear el grupo "Teachers"
     
     5.- Instalar el paquete max-control
+
+           mkdir cache
+           chmod 777 cache/
     
     6.- Ir a http://xxx.xxx.xxx.xxx/control
     
