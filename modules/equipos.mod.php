@@ -94,16 +94,18 @@ if ($active_action == "guardar") {
     $equipo=$equipos[0];
     //$gui->add( "<pre>". print_r($_POST, true) . "</pre>" );
     $equipo->set($_POST);
-    $equipo->save( array('sambaProfilePath', 
+    $res=$equipo->save( array('sambaProfilePath', 
                          'ipHostNumber', 
                          'ipNetmaskNumber', 
                          'ipNetmaskNumber', 
                          'macAddress', 
                          'bootFile') );
     
-    //$gui->add( "<pre>". print_r($equipo, true) . "</pre>" );
-    //FIXME show info about save
-    $gui->add("Guardado");
+    //$gui->add( "<pre>guardado=$res". print_r($equipo, true) . "</pre>" );
+    if ($res)
+        $gui->add("<h2>Guardado correctamente</h2>");
+    else
+        $gui->add("<h2>Error guardando datos, por favor inténtelo de nuevo.</h2>");
 }
 
 /*****************   aulas   ************************/
