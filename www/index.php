@@ -64,10 +64,11 @@ time_start();
 include($path . '/classes/navigator.class.php');
 include($path . '/classes/url.class.php');
 include($path . '/classes/module.class.php');
-require($site["smarty_require"]);
+require(SMARTY_REQUIRE);
 include($path . '/classes/gui.class.php');
 include($path . '/classes/permisos.class.php');
 include($path . '/classes/ldap.class.php');
+include($path . '/classes/winexe.class.php');
 
 
 global $module_actions;
