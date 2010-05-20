@@ -37,9 +37,9 @@ $module_actions=array(
 
 
 // si tiene permisos de administrador mostrar submenus
-if ($permisos->is_admin() ) {
-    $module_actions['admin']="Administrar";
-}
+#if ($permisos->is_admin() ) {
+#    $module_actions['admin']="Administrar";
+#}
 
 
 if ($active_action == "") {
