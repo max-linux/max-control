@@ -1,0 +1,25 @@
+#!/bin/sh
+
+
+if [ "$1" = "configure" ]; then
+
+   if [ ! -f /etc/max-control/conf.inc.php ]; then
+     cp /usr/share/max-control/conf.inc.php /etc/max-control/conf.inc.php
+     chmod 640 /etc/max-control/conf.inc.php
+     chown root:www-data /etc/max-control/conf.inc.php
+     echo ""
+     echo "WARNING: Edit /etc/max-control/conf.inc.php"
+     echo ""
+   fi
+
+   chmod 777 /var/lib/max-control/cache
+
+   if [ -x "/etc/init.d/apache2" ]; then
+    if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+        invoke-rc.d apache2 reload || true
+    else
+        /etc/init.d/apache2 reload || true
+    fi
+  fi
+
+fi

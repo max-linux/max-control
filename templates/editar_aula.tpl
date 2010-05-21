@@ -16,7 +16,8 @@
 <tr> 
     <td rowspan="2"> 
     <form action='{$urlform}' method='post'> 
-        <select name='deluser' size='15' multiple> 
+        <!-- FIXME soportar añadir y borrado multiple -->
+        <select name='deluser' size='15'> 
             {foreach from=$miembros.ingroup item=o}
                 <option value="{$o}">{$o}</option> 
             {/foreach}
@@ -50,7 +51,7 @@
     </td> 
  
 	<td> 
-        <select name='adduser' size='15' multiple> 
+        <select name='adduser' size='15'> 
             {foreach from=$miembros.outgroup item=o}
                 <option value="{$o}">{$o}</option> 
             {/foreach}

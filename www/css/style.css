@@ -1051,3 +1051,10 @@ a.minBox, a.minBox:hover, a.maxBox, a.maxBox:hover {
     margin-bottom: 10px;
 }
 
+.confirm {
+    font-size: 2em;
+    padding-left:310px;
+}
+.confirm a {
+    text-decoration:none;
+}

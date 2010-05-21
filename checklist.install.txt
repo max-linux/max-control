@@ -16,6 +16,6 @@
     
     6.- Ir a http://xxx.xxx.xxx.xxx/control
     
-    7.- Editar /etc/max-control/config.inc.php (defines de LDAP)
+    7.- Editar /etc/max-control/conf.inc.php (defines de LDAP)
     
     8.- Hacer login con el usuario y la contraseña de un administrador

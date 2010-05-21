@@ -19,7 +19,7 @@
     <thead> 
       <th class=''>Nombre</th> 
       <th class=''>IP / MAC</th> 
-      <th class=''>Grupo</th> 
+      <th class=''>Aula</th> 
       <th class=''>Editar</th> 
     </thead>
  

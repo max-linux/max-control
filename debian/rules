@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+
+binary-install/max-control::
+	# clean svn dirs
+	find $(CURDIR)/debian/max-control -type d -name .svn | xargs rm -rf --
+
+	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ldap.php
+	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ssh-test.php
+	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/test*php

@@ -32,7 +32,7 @@ include("../classes/ldap.class.php");
 
 echo "<h2>LDAP</h2><br/>\n";
 
-$ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
+//$ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 //$ldap=new LDAP();
 
 //$gui->debug($ldap->error);
@@ -53,23 +53,23 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 
 
 /* editar mario-desktop computer */
-$host=$ldap->get_computers('mario-desktop$');
+//$host=$ldap->get_computers('mario-desktop$');
 
 //$gui->debug($host[0]);
 //$gui->debug("PURE: ". $host[0]->_pure);
 
-$host[0]->macAddress='FF:FF:FF:FF:29:86';
-$host[0]->ipHostNumber='192.168.1.2';
-$host[0]->bootFile='/pxelinux.0';
-$host[0]->sambaProfilePath='aula Primaria A';
+#$host[0]->macAddress='FF:FF:FF:FF:29:86';
+#$host[0]->ipHostNumber='192.168.1.2';
+#$host[0]->bootFile='/pxelinux.0';
+#$host[0]->sambaProfilePath='aula Primaria A';
 
-$res=$host[0]->save( array('sambaProfilePath', 
-                         'ipHostNumber', 
-                         'ipNetmaskNumber', 
-                         'ipNetmaskNumber', 
-                         'macAddress', 
-                         'bootFile') );
-$gui->debug("save result '$res'");
+#$res=$host[0]->save( array('sambaProfilePath', 
+#                         'ipHostNumber', 
+#                         'ipNetmaskNumber', 
+#                         'ipNetmaskNumber', 
+#                         'macAddress', 
+#                         'bootFile') );
+#$gui->debug("save result '$res'");
 
 
 //$gui->debug($host[0]);
@@ -82,4 +82,12 @@ $gui->debug($ldap->error);
 $gui->debug("\n\n\n");
 
 */
+
+
+include("../classes/winexe.class.php");
+
+$exe=new WINEXE('192.168.0.244');
+echo $exe->isLinux();
+
+
 ?>

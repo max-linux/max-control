@@ -65,6 +65,20 @@ if ($active_action == "ver") {
     $gui->add( $gui->load_from_template("ver_usuarios.tpl", $data) );
 }
 
+if ($active_action == "editar") {
+    $username=$url->get("subaction");
+    $ldap=new LDAP();
+    $user=$ldap->get_user($username);
+    
+    $urlform=$url->create_url($active_module, 'guardar');
+    
+    $data=array("username"=>$username, 
+                "u"=>$user,
+                "urlform"=>$urlform,
+                "action" => "Editar");
+    
+    $gui->add( $gui->load_from_template("editar_usuario.tpl", $data ) );
+}
 
 
 if ($active_action == "grupos") {

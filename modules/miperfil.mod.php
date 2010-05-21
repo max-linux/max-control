@@ -3,7 +3,7 @@
 
 /*
 *
-*  Modulo portada
+*  Modulo miperfil
 *
 */
 global $gui;
@@ -20,7 +20,7 @@ $module_actions=array(
 );
 */
 
-$gui->add( $gui->load_from_template("portada.tpl") );
+$gui->add( $gui->load_from_template("miperfil.tpl") );
 
 //FIXME borrar esto que no hace falta
 global $permisos;

@@ -93,10 +93,10 @@ class URLHandler {
         }
     }
     
-    function ir($module, $action){
+    function ir($module, $action, $subaction=''){
         global $site;
         global $gui;
-        $a = $this->create_url($module, $action);
+        $a = $this->create_url($module, $action, $subaction);
         $schema = $_SERVER['SERVER_PORT'] == '443' ? 'https' : 'http';
         $host = strlen($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:$_SERVER['SERVER_NAME'];
         if (headers_sent()){

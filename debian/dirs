@@ -1,0 +1,5 @@
+usr/share/max-control
+var/lib/max-control/cache
+usr/bin
+etc/apache2/conf.d
+etc/max-control

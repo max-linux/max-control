@@ -143,8 +143,44 @@ if ($active_action == "aulas" && $active_subaction == 'miembros') {
 }
 
 if ($active_action == "miembros" && $active_subaction == 'guardar') {
-
     $gui->add( "<pre>".print_r($_POST, true)."</pre>" );
+    /*
+    Array
+        (
+            [addtogroup_x] => 4
+            [addtogroup_y] => 5
+            [addtogroup] => Añadir usuarios al grupo
+            [adduser] => profe3
+            [aula] => grupoprueba
+        )
+    */
+    $editaaula=leer_datos('aula');
+    $adduser=leer_datos('adduser');
+    /*
+    Array
+    (
+        [deluser] => profe2
+        [delfromgroup_x] => 6
+        [delfromgroup_y] => 6
+        [delfromgroup] => Quitar
+        [aula] => grupoprueba
+    )
+    */
+    $deluser=leer_datos('deluser');
+    $ldap= new LDAP();
+    
+    if ( $adduser != '') {
+        // añadir profesor al aula $editaaula
+        $aula=$ldap->get_aula($editaaula);
+        $aula->newMember($adduser);
+        $url->ir($active_module, "aulas", "miembros/$editaaula");
+    }
+    elseif ( $deluser != '') {
+        // quitar profesor al aula $editaaula
+        $aula=$ldap->get_aula($editaaula);
+        $aula->delMember($deluser);
+        $url->ir($active_module, "aulas", "miembros/$editaaula");
+    }
 }
 
 
