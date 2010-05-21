@@ -65,6 +65,7 @@ include($path . '/classes/navigator.class.php');
 include($path . '/classes/url.class.php');
 include($path . '/classes/module.class.php');
 require(SMARTY_REQUIRE);
+
 include($path . '/classes/gui.class.php');
 include($path . '/classes/permisos.class.php');
 include($path . '/classes/ldap.class.php');
@@ -82,10 +83,10 @@ $site["basedir"]=dirname($_SERVER["PHP_SELF"]);
 global $permisos;
 $permisos = new Permisos();
 
-/*
-if ( $permisos->get_rol("admin") ){
-    $site['private_modules']['admin']="Administrador";
-}*/
+
+// cargar interfaz
+global $gui;
+$gui= new Gui();
 
 // ver si es peticion ajax
 $ajaxurl=new URLHandler();
@@ -98,9 +99,7 @@ if ( $ajaxurl->get("ajax") == "1" ) {
 }
 
 
-// cargar interfaz
-global $gui;
-$gui= new Gui();
+
 
 
 //cargamos la clase navegador

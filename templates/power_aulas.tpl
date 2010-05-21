@@ -1,5 +1,5 @@
 
-<h2>Listado de aulas</h2>
+<h2>Apagado o reinicio de aulas</h2>
 
 
 
@@ -18,9 +18,8 @@
 <table class='dataTable'> 
     <thead> 
       <th class=''>Nombre</th> 
-      <th class=''>Profesores en este aula</th>
       <th class=''>Equipos en este aula</th>
-      <th class=''>Miembros</th> 
+      <th class=''>actiones</th> 
     </thead>
  
  
@@ -28,10 +27,12 @@
       {foreach from=$aulas item=u}
       <tr class='border' id="{$u->cn}"> 
         <td class='tcenter'><span>{$u->cn}</span></td> 
-        <td class='tcenter'><span>{$u->get_num_users()}</span></td> 
         <td class='tcenter'><span>{$u->get_num_computers()}</span></td>
         <td class='tcenter'> 
-            <a href="{$urleditar}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif"></a>
+            {if $u->get_num_computers() > 0 }
+            <a href="{$urlpoweroff}/{$u->cn}" title="Apagar aula {$u->cn}"><img src="{$baseurl}/img/poweroff.png" alt="apagar"></a>
+            <a href="{$urlreboot}/{$u->cn}" title="Reiniciar aula {$u->cn}"><img src="{$baseurl}/img/reboot.png" alt="reiniciar"></a>
+            {/if}
         </td>
       </tr>
       {/foreach}
@@ -39,7 +40,8 @@
     </tbody> 
 </table> 
 
+{*
 {if $pruebas}
 {debug}
 {/if}
-
+*}

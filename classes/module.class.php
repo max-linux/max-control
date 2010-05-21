@@ -35,8 +35,12 @@ class ModuleLoader
         global $permisos;
         global $gui;
         if( $permisos->is_connected() ){
-            /*$gui->debug(print_r($site["private_modules"], true));*/
-            return $site["private_modules"];
+            if( $_SESSION['role'] == 'admin')
+                return $site["private_modules_admin"];
+            elseif( $_SESSION['role'] == 'teacher')
+                return $site["private_modules_teacher"];
+            else
+                return $site["private_modules_none"];
         }
         else {
             /*$gui->debug(print_r($site["public_modules"], true));*/

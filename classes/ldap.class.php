@@ -127,7 +127,7 @@ class BASE {
         
         //$gui->debug("======================================================");
 
-
+        // connect with privileges
         $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         
@@ -178,11 +178,12 @@ class BASE {
             }
             $tmp=array();
             $tmp[$k]=$this->ldapdata[$k];
-            //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."</pre>");
+            $gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."</pre>");
             $r = ldap_modify($ldap->cid, $this->get_save_dn(), $tmp );
             if ( !$r)
                 $saveok=false;
         }
+        $ldap->disconnect();
         return $saveok;
     }
 }
@@ -233,6 +234,18 @@ class USER extends BASE {
     function get_save_dn(){
         return 'uid='.$this->uid.','.LDAP_OU_USERS;
     }
+    
+    function get_role() {
+        $ldap=new LDAP();
+        if ( $ldap->is_admin($this->uid)) {
+            return "admin";
+        }
+        elseif ( $ldap->is_teacher($this->uid) ) {
+            return "teacher";
+        }
+        return "";
+    }
+    
 }
 
 
@@ -262,7 +275,7 @@ class COMPUTER extends BASE {
     var $sambaPwdLastSet='';
     
     // save here the group (AULA) to boot
-    var $sambaProfilePath='';
+    var $sambaProfilePath='';  # <=====================
     
     // objectClass=ipHost        (ipHostNumber)
     var $ipHostNumber='';     # IP address
@@ -324,6 +337,15 @@ class COMPUTER extends BASE {
             $this->objectClass[]="bootableDevice";
         }
     }
+    
+    function action($actionname, $params=array()){
+        global $gui;
+        $gui->debug("COMPUTER:action($actionname) ".$this->uid);
+        if ( method_exists($this->exe, $actionname) ) {
+            $gui->debug("   COMPUTER:action($actionname) method exists");
+            $this->exe->$actionname($params);
+        }
+    }
 }
 
 
@@ -352,6 +374,65 @@ class AULA extends BASE {
              SID_NAME_COMPUTER=9  <= usaremos este para ser aula
              }
         */
+    
+    function init(){
+        return;
+    }
+    
+    function get_num_users() {
+        if ( isset($this->ldapdata['memberUid']) )
+            return $this->ldapdata['memberUid']['count'];
+        return 0;
+    }
+    
+    function get_num_computers() {
+        if ( isset($this->cachednumcomputers) )
+            return $this->cachednumcomputers;
+        $ldap = new LDAP();
+        $this->cachednumcomputers=count($ldap->get_macs_from_aula($this->cn));
+        return $this->cachednumcomputers;
+    }
+    
+    function get_save_dn(){
+        //cn=aula primaria 1,ou=Groups,dc=max-server
+        return 'cn='.$this->cn.','.LDAP_OU_GROUPS;
+    }
+    
+    function newMember($username) {
+        global $gui;
+        $gui->debug("AULA:newMember($username)");
+        //$gui->debuga($this);
+        if ( ! isset($this->ldapdata['memberUid']) ){
+            $this->ldapdata['memberUid']=array();
+        }
+        $members=$this->ldapdata['memberUid'];
+        $members[]=$username;
+        unset($members['count']);
+        $gui->debuga($members);
+        $this->ldapdata['memberUid']=$members;
+        $this->memberUid=$members;
+        return $this->save(array('memberUid'));
+    }
+    
+    function delMember($username) {
+        global $gui;
+        $gui->debug("AULA:delMember($username)");
+        
+        if ( ! isset($this->ldapdata['memberUid']) ){
+            $this->ldapdata['memberUid']=array();
+        }
+        $members=$this->ldapdata['memberUid'];
+        unset($members['count']);
+        $newmembers=array();
+        foreach($members as $member) {
+            if ( $member != $username )
+                $newmembers[]=$member;
+        }
+        
+        $gui->debuga($newmembers);
+        $this->ldapdata['memberUid']=$newmembers;
+        return $this->save(array('memberUid'));
+    }
 }
 
 
@@ -470,6 +551,16 @@ class LDAP {
         return $teachers;
     }
 
+
+    function is_teacher($uid='') {
+        $teachers=$this->get_teachers_uids();
+        foreach ($teachers as $teacher) {
+            if ( $uid == $teacher )
+                return true;
+        }
+        return false;
+    }
+
     function is_admin($uid='') {
         global $gui;
         
@@ -551,12 +642,14 @@ class LDAP {
             //$gui->debug("<pre>".print_r($attrs, true)."</pre>");
             if ( isset($attrs['sambaGroupType']) && ($attrs['sambaGroupType'][0] == 9) ) {
                 if ($aula == '') {
-                    $aulas[]=$attrs['cn'][0];
+                    //$aulas[]=$attrs['cn'][0];
+                    $aulas[]=new AULA($attrs);
                     $gui->debug("ldap::get_aulas() ADD aula='".$attrs['cn'][0]."'");
                 }
                 else {
                     if (preg_match("/$aula/i", $attrs['cn'][0])) {
-                        $aulas[]=$attrs['cn'][0];
+                        //$aulas[]=$attrs['cn'][0];
+                        $aulas[]=new AULA($attrs);
                         $gui->debug("ldap::get_aulas() ADD '$aula' match '".$attrs['cn'][0]."'");
                     }
                     else {
@@ -627,7 +720,7 @@ class LDAP {
             return false;
         
         $macs=array();
-        $gui->debug("ldap::get_macs_from_aula() (uid='*')".LDAP_OU_COMPUTERS);
+        $gui->debug("ldap::get_macs_from_aula($aula) (uid='*')".LDAP_OU_COMPUTERS);
         $this->search("(uid=*)", $basedn=LDAP_OU_COMPUTERS);
         while($attrs = $this->fetch())
         {
@@ -642,6 +735,24 @@ class LDAP {
         }
         
         return $macs;
+    }
+    
+    function get_computers_from_aula($aula) {
+        global $gui;
+        if ( ! $this->connect() )
+            return false;
+        
+        $computers=array();
+        $gui->debug("ldap::get_computers_from_aula($aula) (uid='*')".LDAP_OU_COMPUTERS);
+        $this->search("(uid=*)", $basedn=LDAP_OU_COMPUTERS);
+        while($attrs = $this->fetch()) {
+            if ( isset($attrs['sambaProfilePath']) && ($aula == $attrs['sambaProfilePath'][0]) ) {
+                if ( $attrs['uid'][0] != '')
+                    $computers[]=new COMPUTER($attrs);
+            }
+        }
+        
+        return $computers;
     }
 
 #    function desconectar() {

@@ -40,6 +40,9 @@ class Permisos {
         $result=false;
         global $gui;
         
+        if ( ! isset($_SESSION["username"]) )
+            return false;
+        
         if ( isset($_SESSION['is_admin']) ) {
             $gui->debug("permisos::is_admin() return session var='".$_SESSION['is_admin']."'");
             return $_SESSION['is_admin'];
@@ -65,6 +68,9 @@ class Permisos {
     
     function is_teacher() {
         global $gui;
+        
+        if ( ! isset($_SESSION["username"]) )
+            return false;
         
         if ( isset($_SESSION['is_teacher']) ) {
             $gui->debug("permisos::is_teacher() return session var='".$_SESSION['is_teacher']."'");
@@ -101,6 +107,13 @@ class Permisos {
         $_SESSION['is_admin']=$this->is_admin();
         unset($_SESSION['is_teacher']);
         $_SESSION['is_teacher']=$this->is_teacher();
+        
+        if ($_SESSION['is_admin'])
+            $_SESSION['role']='admin';
+        elseif($_SESSION['is_teacher'])
+            $_SESSION['role']='teacher';
+        else
+            $_SESSION['role']='';
         
         $ldap->disconnect();
         
@@ -178,6 +191,7 @@ class Permisos {
         //unset($_SESSION['bindn']);
         unset($_SESSION['is_admin']);
         unset($_SESSION['is_teacher']);
+        unset($_SESSION['role']);
         session_unset();
         session_destroy();
     }

@@ -116,6 +116,12 @@ class Gui
         $this->debug_txt.="\n$txt<br/>";
     }   
     
+    function debuga($a){
+        if ( ! pruebas )
+            return;
+        $this->debug_txt.="<pre>".print_r($a, true)."</pre>";
+    } 
+    
     function assign($key, $value){
         $this->smarty->assign($key, $value);
     }
