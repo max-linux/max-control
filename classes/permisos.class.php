@@ -28,12 +28,11 @@ class Permisos {
     }
     
     function get_rol($rol) {
-        if ( ! $this->is_connected() ) return False;
+        if ( ! $this->is_connected() ) return '';
         
-        if ( ! isset($_SESSION['ldap']) ) return False;
+        if ( ! isset($_SESSION['role']) ) return '';
         
-        //FIXME
-        return True;
+        return $_SESSION['role'];
     }
     
     function is_admin(){
@@ -123,67 +122,6 @@ class Permisos {
         $gui->debug("<pre>".print_r($_SESSION["ldap"], true)."</pre>");
         return true;
     }
-    /*
-        if (! @($search=ldap_search($connect, $base_dn, $filter))) {
-            $this->errortxt="Error: No se encontró la rama LDAP de su usuario.";
-            return false;
-        }
-
-        $number_returned = ldap_count_entries($connect,$search);
-        $info = ldap_get_entries($connect, $search);
-        
-        if ($number_returned != 1) {
-            $this->errortxt="Error: la consulta no ha devuelto un individuo";
-            return false;
-        }
-        
-
-        $_SESSION["user"]="si";
-        $_SESSION["dni"]=$dni;
-        
-        $plan="";
-        if (isset($info[0]['uvaplan'])) {
-          $plan=$info[0]['uvaplan'][0];
-        }
-        else {
-            $plan="215";
-        }
-        
-        $asig=array();
-        
-        if($plan == '215') {
-            $mysql = new MYSQL();
-            $sql="SELECT Asignaturas FROM Matriculados WHERE dni='$dni'";
-            $tmp=$mysql->get_array($sql);
-            if( sizeof($tmp) > 0 ) {
-                $asig=explode(',',$tmp[0]['Asignaturas']);
-                //echo "<pre>".print_r($asig, true)."</pre>";
-            }
-        }
-        
-        $_SESSION["ldap"]=array(
-                            "uvanif" => $info[0]['uvanif'][0],
-                            "uid"    => $info[0]['uid'][0],
-                            "sn1"    => $info[0]['sn1'][0],
-                            "sn2"    => $info[0]['sn2'][0],
-                            "name"   => $info[0]['givenname'][0],
-                            "colectivo" => $this->colectivos[$info[0]['uvacolectivos'][0]],
-                            "plan"   => $plan,
-                            "asig"   => $asig,
-                                );
-        $this->usuarioLocal($dni, $this->colectivos[$info[0]['uvacolectivos'][0]]);
-        return true;
-    */
-    
-    function usuarioLocal($dni, $rol) {
-        $mysql = new MYSQL();
-        $sql="SELECT * FROM users WHERE dni='$dni'";
-        $res=$mysql->query($sql);
-        if ( mysql_num_rows ($res) < 1) {
-            $mysql->query("INSERT INTO users (dni, rol) VALUES ('$dni', '$rol')");
-        }
-    }
-    
     
     function desconectar() {
         global $gui;
