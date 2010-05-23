@@ -1,0 +1,18 @@
+
+
+
+     python-ldap
+     
+     
+http://www.python-ldap.org/doc/html/ldap.html#example
+
+
+import ldap
+>>> l = ldap.initialize('ldap://localhost:389')
+>>> l.search_s('ou=Computers,dc=max-server',ldap.SCOPE_SUBTREE,'(uid=*)',['uid'])
+[('uid=wxp$,ou=Computers,dc=max-server', {'uid': ['wxp$']}), ('uid=mario-desktop$,ou=Computers,dc=max-server', {'uid': ['mario-desktop$']})]
+
+r=l.search_s('ou=Computers,dc=max-server',ldap.SCOPE_SUBTREE,'(uid=*)',['uid'])
+for dn,entry in r:
+>>>   print 'Processing',repr(dn)
+>>>   handle_ldap_entry(entry)
