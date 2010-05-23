@@ -20,6 +20,7 @@
 
 class WINEXE {
     var $ip='';
+    var $mac='';
     var $hostname='';
     var $alive=false;
     
@@ -80,7 +81,7 @@ class WINEXE {
         //$gui->debug("WINEXE:linuxexe() connected, now auth".print_r($con, true));
         
         // try to authenticate with username root, password secretpassword
-        if( ! ssh2_auth_password($con, "test", "test") ) {
+        if( ! ssh2_auth_password($con, LDAP_ADMIN, LDAP_PASS) ) {
             $gui->debug("WINEXE:linuxexe() fail: unable to authenticate");
             return false;
         }
@@ -140,8 +141,22 @@ class WINEXE {
         while (!feof($file_handle) ) {
             $line_of_text = fgets($file_handle);
             $parts = preg_split ("/\s+/", $line_of_text);
-            if ( $parts[0] == $ip ) {
+            $gui->debuga($parts);
+            /*
+            Array
+            (
+                [0] => 192.168.1.132
+                [1] => 0x1
+                [2] => 0x2
+                [3] => 08:00:27:2e:50:ff
+                [4] => *
+                [5] => eth1
+                [6] => 
+            )
+            */
+            if ( (count($parts) == 7) && ($parts[0] == $ip) ) {
                 $mac=$parts[3];
+                break;
             }
         }
         fclose($file_handle);
@@ -194,7 +209,8 @@ class WINEXE {
         return $this->alive;
     }
     
-    function poweroff() {
+    function poweroff( $mac ) {
+        $gui->session_info("Equipo '".$this->hostname."' apagado.");
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -s -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Apagado remoto desde max-control"');
         else {
@@ -202,7 +218,8 @@ class WINEXE {
         }
     }
     
-    function reboot() {
+    function reboot( $mac ) {
+        $gui->session_info("Equipo '".$this->hostname."' reiniciado.");
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -r -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Reinicio remoto desde max-control"');
         else {
@@ -210,7 +227,24 @@ class WINEXE {
         }
     }
     
-
+    function wakeonlan( $mac ) {
+        global $gui;
+        // need MAC address to pass to pywakeonlan
+        if ($mac == '')
+            $mac=$this->mac;
+        
+        $cmd="/home/madrid/max-control/bin/pywakeonlan $mac";
+        //$cmd="pywakeonlan $mac";
+        exec($cmd, &$output);
+        // $output[0] can be OK or ERROR
+        $gui->debug("WINEXE:wakeonlan($mac)<pre>".print_r($output, true)."</pre>");
+        if ( isset($output[0]) && ($output[0] == 'OK') ) {
+            $gui->session_info("Equipo '".$this->hostname."' enviado paquete WOL.");
+            return true;
+        }
+        $gui->session_error("Error al enviar paquete WOL al equipo '".$this->hostname);
+        return false;
+    }
 
 
 
