@@ -57,12 +57,14 @@ if ($active_action == "aulas" && $active_subaction == '') {
     $urlform=$url->create_url($active_module, $active_action);
     $urlpoweroff=$url->create_url($active_module, 'aula_preguntar', 'poweroff');
     $urlreboot=$url->create_url($active_module, 'aula_preguntar', 'reboot');
+    $urlwakeonlan=$url->create_url($active_module, 'aula_preguntar', 'wakeonlan');
     
     $data=array("aulas" => $aulas, 
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "urlpoweroff"=>$urlpoweroff,
-                "urlreboot"=>$urlreboot);
+                "urlreboot"=>$urlreboot,
+                "urlwakeonlan" => $urlwakeonlan);
     $gui->add( $gui->load_from_template("power_aulas.tpl", $data) );
 }
 
@@ -93,15 +95,20 @@ if ($active_action == "do" && $active_subaction != '') {
     $computers=$ldap->get_computers_from_aula($aula);
     foreach( $computers as $computer) {
         //$res[]=$computer->action($action);
-        if ( $computer->exe->is_alive() ) {
-            $gui->add('apagando equipo'.$computer->hostname()."\n<br/>");
-            $computer->action($action);
+        if ($action == 'wakeonlan') {
+            $computer->action($action, $computer->macAddress);
+        }
+        elseif ( $computer->exe->is_alive() ) {
+            $computer->action($action, $computer->macAddress);
+        }
+        else {
+            $gui->session_error("No se puede realizar la acción solicitada en '".$computer->hostname()."', el equipo está apagado");
         }
     }
 
-    $data=array("aula" => $aula, 
+    /*$data=array("aula" => $aula, 
                 "action" => $action);
-    $gui->debuga($data);
+    $gui->debuga($data);*/
 }
 
 ?>
