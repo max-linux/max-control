@@ -49,7 +49,7 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 //$gui->debug( $ldap->addUserToGroup('aaaa', LDAP_OU_DUSERS) );
 //$gui->debug( $ldap->delUserFromGroup('aaaa', LDAP_OU_DUSERS) );
 
-$gui->debug( $ldap->getDefaultQuota() );
+#$gui->debug( $ldap->getDefaultQuota() );
 
 
 //$gui->debug($ldap->error);
@@ -93,18 +93,31 @@ $gui->debug( $ldap->getDefaultQuota() );
 
 
 
-$ldap->disconnect();
-$gui->debug($ldap->error);
+#$ldap->disconnect();
+#$gui->debug($ldap->error);
 
-$gui->debug("\n\n\n");
-
-
+#$gui->debug("\n\n\n");
 
 
-#include("../classes/winexe.class.php");
 
-#$exe=new WINEXE('192.168.0.244');
+
+include("../classes/winexe.class.php");
+
+#$exe=new WINEXE('wxp');
 #echo $exe->isLinux();
+
+$hosts=$ldap->get_computers('mario-desktop$');
+$host=$hosts[0];
+//$gui->debug($host);
+$host->action('wakeonlan', $host->macAddress);
+
+
+
+
+
+
+
+
 
 
 ?>
