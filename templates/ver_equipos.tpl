@@ -6,9 +6,11 @@
 <table class="bDataTable"> 
     <tr> 
         <td> 
-        <form action="{$urlform}" method="post"> 
+        <form id="hosts" action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
+          <input type='submit' name='button' value="Actualizar MAC e IP de todos" title="Actualizar todos" onclick="javascript:update();" />
+          <input type='hidden' id="action" name='action' value='search' />
         </form>
         </td> 
     </tr> 
@@ -38,6 +40,15 @@
 
     </tbody> 
 </table> 
+
+{literal}
+<script type="text/javascript">
+function update() {
+    $('#action')[0].value='update';
+    $('#hosts')[0].submit();
+}
+</script>
+{/literal}
 
 {*
 {if $pruebas}
