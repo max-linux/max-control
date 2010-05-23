@@ -339,10 +339,10 @@ class USER extends BASE {
         
         $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
-#        if ( $ldap->get_user($this->uid) ) {
-#            $gui->session_error("El usuario '".$this->uid."' ya existe.");
-#            return false;
-#        }
+        if ( $ldap->get_user($this->uid) ) {
+            $gui->session_error("El usuario '".$this->uid."' ya existe.");
+            return false;
+        }
         
         $this->cn=$this->uid. " ".$this->sn;
         
@@ -383,10 +383,10 @@ class USER extends BASE {
         $gui->debug(ldap_error($ldap->cid));
         
         
-#        if ( ! $r ) {
-#            $gui->session_error("No se ha podido añadir el usuario, compruebe todos los campos.");
-#            return false;
-#        }
+        if ( ! $r ) {
+            $gui->session_error("No se ha podido añadir el usuario, compruebe todos los campos.");
+            return false;
+        }
         
         $gui->debug("INIT DONE save rest");
         $this->ldapdata=$data;
@@ -400,8 +400,8 @@ class USER extends BASE {
         $r=ldap_modify($ldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
         
         $gui->debug(ldap_error($ldap->cid));
-#        if ( ! $r )
-#            return false;
+        if ( ! $r )
+            return false;
         $gui->debug("PASSWORDS DONE save rest");
         
         
@@ -444,26 +444,6 @@ class USER extends BASE {
         //$gui->debuga($this);
         
         // añadir a domain users
-        /*
-        # Add user to Domain Users group
-        unless ($self->_domainUser($user)) {
-            $users->addUserToGroup($user, 'Domain Users');
-        }
-
-        
-        luego hay que crear el home y el profile
-        
-        $self->_createDir(USERSPATH . "/$user", $unixuid, USERGROUP, '0701');
-        $self->_createDir(PROFILESPATH . "/$user", $unixuid, USERGROUP, '0700');
-        $self->_createDir(PROFILESPATH . "/$user.V2", $unixuid, USERGROUP, '0700');
-        $self->{samba}->setUserQuota($unixuid, $samba->defaultUserQuota());
-
-        
-        my $quota = $userQuota * 1024;
-        use constant QUOTA_PROGRAM => '/usr/share/ebox-samba/ebox-samba-quota';
-        root(QUOTA_PROGRAM . " -s $user $quota");
-        
-        */
         
         $ldap->addUserToGroup($this->uid, LDAP_OU_DUSERS);
         
@@ -577,13 +557,44 @@ class COMPUTER extends BASE {
         }
     }
     
-    function action($actionname, $params=array()){
+    function action($actionname, $mac){
         global $gui;
         $gui->debug("COMPUTER:action($actionname) ".$this->uid);
         if ( method_exists($this->exe, $actionname) ) {
+            $this->exe->hostname=$this->hostname();
             $gui->debug("   COMPUTER:action($actionname) method exists");
-            $this->exe->$actionname($params);
+            $this->exe->$actionname($mac);
         }
+        else {
+            $gui->debug("method '$actionname' don't exists");
+        }
+    }
+    
+    function getMACIP() {
+        global $gui;
+        $ip=$this->exe->getIpAddress($this->hostname());
+        $gui->debug("ip=$ip");
+        $mac=$this->exe->getMacAddress($this->hostname());
+        $gui->debug("mac=$mac");
+        
+        if ($ip != '' && $mac != '') {
+            $this->ipHostNumber=$ip;
+            $this->macAddress=$mac;
+            $this->ldapdata['ipHostNumber']=$ip;
+            $this->ldapdata['macAddress']=$mac;
+            
+            $res=$this->save( array('ipHostNumber', 'macAddress') );
+            
+            if ($res) {
+                $gui->session_info("Equipo '".$this->hostname()."' guardado correctamente.");
+                return true;
+            }
+            else {
+                $gui->session_error("Error guardando datos del equipo '".$this->hostname()."', por favor inténtelo de nuevo.");
+                return false;
+            }
+        }
+        $gui->session_error("El equipo '".$this->hostname()."' no está encendido o no se pudo resolver su IP.");
     }
 }
 
