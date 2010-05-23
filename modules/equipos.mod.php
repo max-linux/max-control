@@ -50,6 +50,12 @@ if ($active_action == "") {
 }
 
 if ($active_action == "ver") {
+    $action=leer_datos('action');
+    $gui->debug("action='$action'");
+    if($action == "update"){
+        $url->ir($active_module, "update");
+    }
+
     // mostrar lista de equipos
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -82,6 +88,20 @@ if ($active_action == "editar") {
     $gui->add( $gui->load_from_template("editar_equipo.tpl", $data ) );
 }
 
+
+if ($active_action == "update") {
+    $data=array("urlaction"=>$url->create_url($active_module, 'updatedo'));
+    $gui->add( $gui->load_from_template("update_equipos.tpl", $data) );
+}
+
+if ($active_action == "updatedo") {
+    $ldap=new LDAP();
+    $equipos=$ldap->get_computers();
+    //$gui->debuga($equipos);
+    foreach($equipos as $equipo) {
+        $equipo->getMACIP();
+    }
+}
 
 
 if ($active_action == "guardar") {
@@ -116,6 +136,10 @@ if ($active_action == "guardar") {
 
 
 if ($active_action == "aulas" && $active_subaction == '') {
+    $action=leer_datos('faction');
+    if($action == "nueva"){
+        $url->ir($active_module, "aulas", "nueva");
+    }
     // mostrar lista de aulas
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -187,6 +211,9 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
     }
 }
 
-
+if ($active_action == "aulas" && $active_subaction == 'nueva') {
+    //FIXME
+    $gui->add( "<h1>Nueva aula</h1>" );
+}
 
 ?>
