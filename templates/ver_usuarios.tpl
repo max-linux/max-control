@@ -9,7 +9,7 @@
         <form id="user" action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
-          <input type='submit' name='button' value="Añadir" title="Añadir" onclick="javascript:add();" />
+          <input type='submit' name='button' value="Añadir usuario" title="Añadir usuario" onclick="javascript:add();" />
           <input type='hidden' id="action" name='action' value='search' />
         </form>
         
