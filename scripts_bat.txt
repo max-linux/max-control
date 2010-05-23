@@ -1,0 +1,60 @@
+Apagarequipos.bat
+
+@echo off
+echo Enviando apagado a todos los equipos...
+shutdown /s /m \\192.168.0.11 /c "El equipo se apagará en pocos segundos..." /t 20
+shutdown /s /m \\192.168.0.12 /c "El equipo se apagará en pocos segundos..." /t 20
+shutdown /s /m \\192.168.0.13 /c "El equipo se apagará en pocos segundos..." /t 20
+shutdown /s /m \\192.168.0.14 /c "El equipo se apagará en pocos segundos..." /t 20
+shutdown /s /m \\192.168.0.15 /c "El equipo se apagará en pocos segundos..." /t 20
+
+ecenderequipos.bat
+
+@echo off
+echo Enviando Wake-on-lan a todos los equipos...
+wolcmd 000FFEF0FED1 192.168.0.11 255.255.255.0 7
+wolcmd 000FFEF0FEFD 192.168.0.12 255.255.255.0 7
+wolcmd 0024811B7E31 192.168.0.13 255.255.255.0 7
+wolcmd 0024811B7E17 192.168.0.14 255.255.255.0 7
+wolcmd 0024811B7E62 192.168.0.15 255.255.255.0 7
+;wolcmd [mac address] [ip address] [subnet mask] [port number]
+===>http://www.depicus.com/wake-on-lan/wake-on-lan-cmd.aspx
+
+Montar_descartes_2009.bat
+
+@echo off
+echo Montando la ISO de DESCARTES 2009 en todos los equipos...
+psexec \\192.168.0.11 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "C:\isos\Descartes 2009.iso"
+psexec \\192.168.0.12 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "C:\isos\Descartes 2009.iso"
+psexec \\192.168.0.13 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "C:\isos\Descartes 2009.iso"
+psexec \\192.168.0.14 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "C:\isos\Descartes 2009.iso"
+psexec \\192.168.0.15 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "C:\isos\Descartes 2009.iso"
+
+Desmontar.bat
+
+@echo off
+echo Montando la ISO de DESCARTES 2009 en todos los equipos...
+psexec \\192.168.0.11 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "/u"
+psexec \\192.168.0.12 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "/u"
+psexec \\192.168.0.13 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "/u"
+psexec \\192.168.0.14 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "/u"
+psexec \\192.168.0.15 "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount" "/u"
+
+
+
+http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/percent.mspx?mfr=true
+
+####################################################
+@echo off
+
+if exists "C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive"
+set VCDMOUNT="C:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive\VCDMount"
+else
+set VCDMOUNT="C:\Archivos de Programa\Elaborate Bytes\VirtualCloneDrive\VCDMount"
+
+if "%1"=="mount" %VCDMOUNT% "%2"
+
+if "%1"=="umount" %VCDMOUNT% "/u"
+
+if "%1"=="shutdown" shutdown /s  /c "El equipo se apagará en pocos segundos..." /t 20
+####################################################
