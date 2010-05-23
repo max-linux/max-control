@@ -70,6 +70,11 @@
 {literal}
 <script type="text/javascript">
 function useduid(uid) {
+    if ( uid == '' ) {
+        $('#usernotvalid')[0].style.display='';
+        $('#uservalid')[0].style.display='none';
+        return false;
+    }
     // ver si el usuario está ocupado
     $.ajax({
       type: "POST",
