@@ -1,8 +1,8 @@
 <?php
 
 // aparecerán cajas con información útil para errores.
-//define("pruebas", True);
-define("pruebas", False);
+define("pruebas", True);
+//define("pruebas", False);
 
 // poner en True cuando se hayan editado todos los valores
 define("CONFIGURED", True);
