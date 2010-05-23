@@ -6,9 +6,11 @@
 <table class="bDataTable"> 
     <tr> 
         <td> 
-        <form action="{$urlform}" method="post"> 
+        <form id="aulas" action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
+          <input type='submit' name='button' value="Nueva aula" title="Nueva aula" onclick="javascript:newaula();" />
+          <input type='hidden' id="faction" name='faction' value='search' />
         </form>
         </td> 
     </tr> 
@@ -38,6 +40,16 @@
 
     </tbody> 
 </table> 
+
+{literal}
+<script type="text/javascript">
+function newaula() {
+    $('#faction')[0].value='nueva';
+    $('#aulas')[0].submit();
+}
+</script>
+{/literal}
+
 
 {*
 {if $pruebas}
