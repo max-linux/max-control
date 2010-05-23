@@ -1,6 +1,7 @@
 apache-control.conf   etc/apache2/conf.d/
 bin/winexe            usr/bin/
 bin/max-control       usr/bin/
+bin/pywakeonlan       usr/bin/
 classes               usr/share/max-control/
 modules               usr/share/max-control/
 plugins               usr/share/max-control/
