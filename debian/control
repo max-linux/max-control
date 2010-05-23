@@ -7,7 +7,7 @@ Standards-Version: 3.8.4
 
 Package: max-control
 Architecture: all
-Depends:  libapache2-mod-php5, php5, php5-ldap, libssh2-php,
+Depends:  libapache2-mod-php5, php5, php5-ldap, libssh2-php, php5-mcrypt, php5-mhash,
           apache2, smarty, libjs-jquery,
           samba-common-bin,
           ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}

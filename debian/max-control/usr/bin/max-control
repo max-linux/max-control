@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+#
+#
+#
+
+HOMES=/home/samba/users/
+PROFILES=/home/samba/profiles/
+
+if [ "$1" = "createhome" ]; then
+  # username
+  NEWUSER=$2
+  # quota in MB
+  QUOTA=$3
+  mkdir $HOMES/${NEWUSER}
+  chown ${NEWUSER}:Domain\ Users ${HOMES}/${NEWUSER}
+  chmod 701 ${HOMES}/${NEWUSER}
+
+  # profile
+  mkdir ${PROFILES}/${NEWUSER}
+  chown ${NEWUSER}:Domain\ Users ${HOMES}/${NEWUSER}
+  chmod 701 ${HOMES}/${NEWUSER}
+
+  mkdir ${PROFILES}/${NEWUSER}.V2
+  chown ${NEWUSER}:Domain\ Users ${HOMES}/${NEWUSER}.V2
+  chmod 701 ${HOMES}/${NEWUSER}.V2
+  
+
+  # set quota
+  /usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
+  exit 0
+fi
+
+
+############################################################################
+if [ "getdefaultquota" = "$1" ]; then
+  DEF=$(grep '"userquota_size"' /var/lib/ebox/gconf/ebox/modules/samba/GeneralSettings/%gconf.xml 2>/dev/null | awk -F '"' '{print $8}')
+
+  if [ "DEF" = "" ]; then
+    echo 500
+  else
+   echo $DEF
+  fi
+  exit 0
+fi
+
+
+############################################################################
+
+if [ "$1" = "getdomainsid" ]; then
+  net getdomainsid
+  exit 0
+fi
