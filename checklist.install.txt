@@ -19,3 +19,9 @@
     7.- Editar /etc/max-control/conf.inc.php (defines de LDAP)
     
     8.- Hacer login con el usuario y la contraseña de un administrador
+    
+    9.- Para que el administrador pudea hacer login SSH y apagar 
+        equipos linux hay que cambiarle el shell a /bin/bash
+        
+        
+        

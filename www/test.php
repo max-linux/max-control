@@ -12,6 +12,10 @@ class GUI {
         if($txt == '') return;
         echo "D: ".print_r($txt, true)." <br>\n";
     }
+    function debuga($txt) {
+        if($txt == '') return;
+        echo "D: ".print_r($txt, true)." <br>\n";
+    }
 }
 
 $gui = new GUI();
@@ -32,8 +36,21 @@ include("../classes/ldap.class.php");
 
 echo "<h2>LDAP</h2><br/>\n";
 
-//$ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
+$ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 //$ldap=new LDAP();
+
+//$gui->debug( $ldap->lastUID() );
+//$gui->debug( $ldap->lastGID() );
+
+//$gui->debug( $ldap->getGID('__USERS__') );
+
+//$gui->debug( $ldap->getSID() );
+
+//$gui->debug( $ldap->addUserToGroup('aaaa', LDAP_OU_DUSERS) );
+//$gui->debug( $ldap->delUserFromGroup('aaaa', LDAP_OU_DUSERS) );
+
+$gui->debug( $ldap->getDefaultQuota() );
+
 
 //$gui->debug($ldap->error);
 //$gui->debug($ldap->is_connected());
@@ -74,20 +91,20 @@ echo "<h2>LDAP</h2><br/>\n";
 
 //$gui->debug($host[0]);
 
-/*
+
 
 $ldap->disconnect();
 $gui->debug($ldap->error);
 
 $gui->debug("\n\n\n");
 
-*/
 
 
-include("../classes/winexe.class.php");
 
-$exe=new WINEXE('192.168.0.244');
-echo $exe->isLinux();
+#include("../classes/winexe.class.php");
+
+#$exe=new WINEXE('192.168.0.244');
+#echo $exe->isLinux();
 
 
 ?>
