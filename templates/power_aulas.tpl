@@ -32,6 +32,7 @@
             {if $u->get_num_computers() > 0 }
             <a href="{$urlpoweroff}/{$u->cn}" title="Apagar aula {$u->cn}"><img src="{$baseurl}/img/poweroff.png" alt="apagar"></a>
             <a href="{$urlreboot}/{$u->cn}" title="Reiniciar aula {$u->cn}"><img src="{$baseurl}/img/reboot.png" alt="reiniciar"></a>
+            <a href="{$urlwakeonlan}/{$u->cn}" title="WakeonLan {$u->cn}"><img src="{$baseurl}/img/reboot.png" alt="wakeonlan"></a>
             {/if}
         </td>
       </tr>
