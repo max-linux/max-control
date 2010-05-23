@@ -1,7 +1,10 @@
 <h2>Apagado o reinicio de aulas</h2>
 
 <div class="warning">
- <h2>Se va a {if $action == 'poweroff'}apagar{/if}{if $action == 'reboot'}reiniciar{/if} el aula: {$aula}</h2>
+ <h2>Se va a {if $action == 'poweroff'}apagar{/if}
+             {if $action == 'reboot'}reiniciar{/if}
+             {if $action == 'wakeonlan'}encender (WakeOnLAN){/if}
+ el aula: {$aula}</h2>
  <br/><br/>
 
  <table class='dataTable'> 
