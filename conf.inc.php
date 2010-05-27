@@ -39,8 +39,14 @@ define("LDAP_PASS", 'test');
 
 
 // ruta al comando winexe
-define("WINEXE", "/home/madrid/max-control/bin/winexe");
-//define("WINEXE", "/usr/bin/winexe");
+define("WINEXE", "/usr/bin/winexe");
+
+// ruta al comando max-control
+define("MAXCONTROL", "/usr/bin/max-control");
+
+// ruta al comando pywakeonlan
+define("PYWAKEONLAN", "/usr/bin/pywakeonlan");
+
 
 
 define("HOMES", "/home/samba/users/");

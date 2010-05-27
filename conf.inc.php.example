@@ -46,6 +46,13 @@ define("LDAP_BINDPW", LDAP_PASS);
 // ruta al comando winexe
 define("WINEXE", "/usr/bin/winexe");
 
+// ruta al comando max-control
+define("MAXCONTROL", "/usr/bin/max-control");
+
+// ruta al comando pywakeonlan
+define("PYWAKEONLAN", "/usr/bin/pywakeonlan");
+
+
 // rutas a los perfiles
 define("HOMES", "/home/samba/users/");
 define("SAMBA_HOMES", '\\\\max-server\homes\\');

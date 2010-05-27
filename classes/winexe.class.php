@@ -233,8 +233,7 @@ class WINEXE {
         if ($mac == '')
             $mac=$this->mac;
         
-        $cmd="/home/madrid/max-control/bin/pywakeonlan $mac";
-        //$cmd="pywakeonlan $mac";
+        $cmd=PYWAKEONLAN . " $mac";
         exec($cmd, &$output);
         // $output[0] can be OK or ERROR
         $gui->debug("WINEXE:wakeonlan($mac)<pre>".print_r($output, true)."</pre>");
