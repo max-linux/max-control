@@ -459,7 +459,7 @@ class USER extends BASE {
         
         
         // crear home, profiles y aplicar quota
-        exec('sudo max-control createhome '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1', &$output);
+        exec('sudo '.MAXCONTROL.' createhome '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1', &$output);
         $gui->debuga($output);
         
         $gui->session_info("Usuario añadido correctamente.");
@@ -1092,7 +1092,7 @@ class LDAP {
     function getSID() {
         global $gui;
         $sid='S-1-5-21-3818554400-921237426-3143208535';
-        exec('sudo max-control getdomainsid', &$output);
+        exec('sudo '.MAXCONTROL.' getdomainsid', &$output);
         //$gui->debug("<pre>".print_r($output, true)."</pre>");
         foreach($output as $line) {
             if (preg_match("/SID for domain/i", $line)) {
@@ -1169,7 +1169,7 @@ class LDAP {
     }
 
     function getDefaultQuota() {
-        exec('sudo max-control getdefaultquota', &$output);
+        exec('sudo '.MAXCONTROL.' getdefaultquota', &$output);
         //$gui->debug("<pre>".print_r($output, true)."</pre>");
         return $output[0];
     }
