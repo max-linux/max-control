@@ -18,11 +18,19 @@ if [ "$1" = "configure" ]; then
      cat << EOF >> /etc/sudoers
 
 # max-control www-data need to exec /usr/bin/max-control
-www-data	ALL=NOPASSWD: /usr/bin/net
+www-data	ALL=NOPASSWD: /usr/bin/max-control
 
 
 EOF
    fi
+
+   # copy netlogon files
+   if [ -d /home/samba/netlogon ] && [ ! -e /home/samba/netlogon/logon.bat ]; then
+       cp /usr/share/max-control/netlogon/* /home/samba/netlogon/
+       chown root:root /home/samba/netlogon/*
+       chmod 644 /home/samba/netlogon/*
+   fi
+
 
 
    if [ -x "/etc/init.d/apache2" ]; then
