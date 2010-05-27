@@ -1,0 +1,9 @@
+
+@echo off
+
+;%LOGONSERVER%\netlogon\kixtart\kix32.exe %LOGONSERVER%\netlogon\logon.kix
+;kixtart\kix32.exe logon.kix
+START /WAIT %LOGONSERVER%\netlogon\kixtart\kix32.exe %LOGONSERVER%\netlogon\logon.kix
+
+
+;sleep 10
