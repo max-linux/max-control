@@ -9,23 +9,31 @@
                 <input type='text' class='inputText' name='uid' autocomplete="off" onblur='javascript:useduid(this.value);' />
                 <span class="error" style="display:none;" id='usernotvalid'>El identificador está ocupado</span>
                 <span class="note" style="display:none;" id='uservalid'>El identificador está libre</span>
+                <span class="error" style="display:none;" id='userempty'>El identificador no puede estar vacío</span>
             </td> 
         </tr> 
+
         <tr> 
             <td class='tright'><span class='ftitle'>Nombre:</span></td> 
             <td><input type='text' class='inputText' name='givenName' autocomplete="off" /></td> 
-        </tr> 
-            <tr><td class='tright'><span class='ftitle'>Apellido:</span></td> 
+        </tr>
+
+        <tr>
+            <td class='tright'><span class='ftitle'>Apellido:</span></td> 
             <td><input type='text' class='inputText' name='sn' autocomplete="off" /></td> 
-        </tr> 
+        </tr>
+
         <tr> 
             <td class='tright'><span class='ftitle'>Comentario:</span></td> 
             <td><input type='text' class='inputText' name='description' autocomplete="off" /></td> 
-        </tr> 
+        </tr>
+
         <tr> 
             <td class='tright'><span class='ftitle'>Contraseña:</span></td> 
             <td><input type='password' class='inputText' name='password' id='password' autocomplete="off"/></td> 
-        <tr> 
+        </tr>
+
+        <tr>
             <td class='tright'><span class='ftitle'>Confirme contraseña:</span></td> 
             <td>
                 <input type='password' class='inputText' name='repassword' id='repassword' autocomplete="off" onblur='javascript:checkpass();' />
@@ -42,7 +50,7 @@
                     <option value='admin'>Administrador</option> 
                 </select> 
             </td> 
-        <tr>
+        </tr>
 
         <tr>
             <td class='tright'><span class='ftitle'>Acceso a consola:</span></td> 
@@ -52,7 +60,7 @@
                     <option value='/bin/bash'>Con acceso a shell (bash)</option> 
                 </select> 
             </td> 
-        <tr>
+        </tr>
 
         <tr> 
             <td></td> 
@@ -69,12 +77,13 @@
 
 {literal}
 <script type="text/javascript">
+<!--
 function useduid(uid) {
     if ( uid == '' ) {
-        $('#usernotvalid')[0].style.display='';
-        $('#uservalid')[0].style.display='none';
+        $('#userempty')[0].style.display='';
         return false;
     }
+    $('#userempty')[0].style.display='none';
     // ver si el usuario está ocupado
     $.ajax({
       type: "POST",
@@ -104,5 +113,6 @@ function checkpass() {
         return true;
     }
 }
+-->
 </script>
 {/literal}

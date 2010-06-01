@@ -19,21 +19,28 @@
 
 <table class='dataTable'> 
     <thead> 
+     <tr>
       <th class=''>Nombre</th> 
       <th class=''>Profesores en este aula</th>
       <th class=''>Equipos en este aula</th>
-      <th class=''>Miembros</th> 
+     </tr>
     </thead>
  
  
     <tbody> 
       {foreach from=$aulas item=u}
-      <tr class='border' id="{$u->cn}"> 
+      <tr class='border' id="{$u->safecn()}"> 
         <td class='tcenter'><span>{$u->cn}</span></td> 
-        <td class='tcenter'><span>{$u->get_num_users()}</span></td> 
-        <td class='tcenter'><span>{$u->get_num_computers()}</span></td>
-        <td class='tcenter'> 
-            <a href="{$urleditar}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif"></a>
+        <td class='tcenter'><span>
+                        {$u->get_num_users()} 
+                        <a href="{$urlprofesores}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
+                        </span>
+        </td> 
+        <td class='tcenter'><span>
+                        {$u->get_num_computers()} 
+                        <a href="{$urlequipos}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
+                        </span>
+        
         </td>
       </tr>
       {/foreach}

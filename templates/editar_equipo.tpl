@@ -6,7 +6,7 @@
     <table class='formTable'> 
     <tr> 
         <td class='tright'><span class="ftitle">Dirección MAC:</span></td>
-        <td><input type='text' class='inputText' name='macAddress' id='macAddress' value="{$u->attr('macAddress')}"> 
+        <td><input type='text' class='inputText' name='macAddress' id='macAddress' value="{$u->attr('macAddress')}" /> 
         <input class='inputButton' type='button' name='getmacbtn' value="Averiguar MAC" alt="Averiguar MAC" onclick="javascript:getmac();"/>
         (ejemplo 00:00:00:00:00:00)
         </td>
@@ -15,7 +15,7 @@
     <tr> 
         <td class='tright'><span class="ftitle">Dirección IP:</span></td>
         <td>
-        <input type='text' class='inputText' name='ipHostNumber' id='ipHostNumber' value="{$u->attr('ipHostNumber')}"> 
+        <input type='text' class='inputText' name='ipHostNumber' id='ipHostNumber' value="{$u->attr('ipHostNumber')}" /> 
         <input class='inputButton' type='button' name='getipbtn' value="Averiguar IP" alt="Averiguar IP" onclick="javascript:getip();"/>
         (ejemplo 192.168.1.23) 
         </td>
@@ -23,22 +23,22 @@
     
     <tr> 
         <td class='tright'><span class="ftitle">Archivo de arranque:</span></td>
-        <td><input type='text' class='inputText' name='bootFile' id='bootFile' value="{$u->attr('bootFile')}"> (ej: default)</td>
+        <td><input type='text' class='inputText' name='bootFile' id='bootFile' value="{$u->attr('bootFile')}" /> (por defecto vacío)</td>
     </tr> 
     
     <!--<tr> 
         <td class='tright'><span class="ftitle">Parámetros de arranque:</span></td>
-        <td><input type='text' class='inputText' name='bootParameter' value="{$u->attr('bootParameter')}"> (variable=valor)</td>
+        <td><input type='text' class='inputText' name='bootParameter' value="{$u->attr('bootParameter')}" /> (variable=valor)</td>
     </tr> -->
 
 
     <tr>
-        <td class='tright'><span class='ftitle'>Grupo de arranque:</span></td> 
+        <td class='tright'><span class='ftitle'>Aula:</span></td> 
         <td> 
             <select name='sambaProfilePath' id='sambaProfilePath' > 
                 <option value=''></option> 
                 {foreach from=$aulas key=k item=o}
-                <option value='{$o->attr('cn')}' {if $o->attr('cn') == $u->attr('sambaProfilePath')}selected{/if}>{$o->attr('cn')}</option>
+                <option value='{$o->attr('cn')}' {if $o->attr('cn') == $u->attr('sambaProfilePath')}selected="selected"{/if}>{$o->attr('cn')}</option>
                 {/foreach}
             </select> 
             
@@ -47,16 +47,16 @@
             <input class='inputButton' type='button' name='añadir' value="Añadir Grupo" alt="Añadir" onclick="javascript:append_sambaProfilePath(this.value);"/> 
             -->
         </td> 
-    <tr>
- 
-    </tr> 
+    </tr>
+
     <tr> 
         <td></td> 
         <td> 
         <input class='inputButton' type='submit' name='{$action}' value="Guardar" alt="Guardar" /> 
         <input type='hidden' name='hostname' value='{$hostname}' />
         </td> 
-    </tr> 
+    </tr>
+
     </table> 
     </form> 
 
@@ -67,6 +67,7 @@
 
 {literal}
 <script type="text/javascript">
+<!--
 function getip() {
     // intentar cargar IP con AJAX
     $.ajax({
@@ -102,6 +103,7 @@ function getmac() {
       }
     });
 }
+-->
 </script>
 {/literal}
 

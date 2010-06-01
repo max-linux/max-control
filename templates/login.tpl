@@ -26,9 +26,9 @@
             <h3>Panel de control para el servidor de centro</h3>
             <dl> 
                 <dt>Usuario:</dt> 
-                <dd><input  class='inputTextLogin' type='text' name='username' id='username' size='25' /></dd>
+                <dd><input  class='inputTextLogin' type='text' name='username' id='username' size='25' autocomplete="off"/></dd>
                 <dt>Contraseña:</dt> 
-                <dd><input  class='inputTextLogin' type='password' name='password' id='password' size='25' /></dd> 
+                <dd><input  class='inputTextLogin' type='password' name='password' id='password' size='25' autocomplete="off"/></dd> 
                 <dd><input class='inputButton' type='submit' id='loginButton' value="Entrar"/></dd> 
             </dl> 
         </form>

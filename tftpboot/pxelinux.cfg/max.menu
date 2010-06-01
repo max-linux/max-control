@@ -1,0 +1,9 @@
+default max
+prompt 0
+timeout 1
+
+label max
+  menu label Arranque MaX (linux)
+  kernel sys/chain.c32
+  # arranque desde el MBR
+  append hd0 0

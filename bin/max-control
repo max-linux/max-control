@@ -4,26 +4,27 @@
 #
 #
 
-HOMES=/home/samba/users/
-PROFILES=/home/samba/profiles/
+HOMES_DIR=/home/samba/users/
+PROFILES_DIR=/home/samba/profiles/
+GROUPS_DIR=/home/samba/groups/
 
 if [ "$1" = "createhome" ]; then
   # username
   NEWUSER=$2
   # quota in MB
   QUOTA=$3
-  mkdir $HOMES/${NEWUSER}
-  chown ${NEWUSER}:Domain\ Users ${HOMES}/${NEWUSER}
-  chmod 701 ${HOMES}/${NEWUSER}
+  mkdir $HOMES_DIR/${NEWUSER}
+  chown ${NEWUSER}:Domain\ Users ${HOMES_DIR}/${NEWUSER}
+  chmod 701 ${HOMES_DIR}/${NEWUSER}
 
   # profile
-  mkdir ${PROFILES}/${NEWUSER}
-  chown ${NEWUSER}:Domain\ Users ${HOMES}/${NEWUSER}
-  chmod 701 ${HOMES}/${NEWUSER}
+  mkdir ${PROFILES_DIR}/${NEWUSER}
+  chown ${NEWUSER}:Domain\ Users ${PROFILES_DIR}/${NEWUSER}
+  chmod 701 ${PROFILES_DIR}/${NEWUSER}
 
-  mkdir ${PROFILES}/${NEWUSER}.V2
-  chown ${NEWUSER}:Domain\ Users ${HOMES}/${NEWUSER}.V2
-  chmod 701 ${HOMES}/${NEWUSER}.V2
+  mkdir ${PROFILES_DIR}/${NEWUSER}.V2
+  chown ${NEWUSER}:Domain\ Users ${PROFILES_DIR}/${NEWUSER}.V2
+  chmod 701 ${PROFILES_DIR}/${NEWUSER}.V2
   
 
   # set quota
@@ -31,6 +32,37 @@ if [ "$1" = "createhome" ]; then
   exit 0
 fi
 
+if [ "$1" = "deleteprofile" ]; then
+  DELUSER=$2
+  [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
+  rm -rf $HOMES_DIR/${DELUSER}
+  rm -rf $PROFILES_DIR/${DELUSER}
+  rm -rf $PROFILES_DIR/${DELUSER}.V2
+  echo "ok"
+  exit 0
+fi
+
+
+############################################################################
+
+if [ "$1" = "addgroup" ]; then
+  ADDGROUP=$2
+  [ "${ADDGROUP}" = "" ] && ( echo "nonexists"; exit 1)
+  mkdir -p ${GROUPS_DIR}/${ADDGROUP}
+  chown root:${ADDGROUP} ${GROUPS_DIR}/${ADDGROUP}
+  chmod +t ${GROUPS_DIR}/${ADDGROUP}
+  chmod g+w ${GROUPS_DIR}/${ADDGROUP}
+  echo "ok"
+  exit 0
+fi
+
+if [ "$1" = "deletegroup" ]; then
+  DELGROUP=$2
+  [ "${DELGROUP}" = "" ] && ( echo "nonexists"; exit 1)
+  rm -rf $GROUPS_DIR/${DELGROUP}
+  echo "ok"
+  exit 0
+fi
 
 ############################################################################
 if [ "getdefaultquota" = "$1" ]; then
@@ -49,5 +81,24 @@ fi
 
 if [ "$1" = "getdomainsid" ]; then
   net getdomainsid
+  exit 0
+fi
+
+
+############################################################################
+
+
+if [ "$1" = "genlogonshares" ]; then
+  #pygenlogonshares 'ou=Groups,dc=max-server'
+  pygenlogonshares "$2" > /home/samba/netlogon/shares.kix
+  exit 0
+fi
+
+
+############################################################################
+if [ "$1" = "pxe" ]; then
+  args=$@
+  ARGS=${args##pxe}
+  pyboot ${ARGS}
   exit 0
 fi

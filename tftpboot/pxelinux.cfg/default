@@ -1,0 +1,29 @@
+## Don't edit this file, default file is loaded by unconfigured PXE boots
+
+DEFAULT sys/menu.c32
+PROMPT 0
+TIMEOUT 50
+ONTIMEOUT LOCAL
+
+
+MENU TITLE Menu de arranque por red...
+
+LABEL LOCAL
+  MENU LABEL ^Arranque desde el disco local
+  LOCALBOOT 0x80
+
+LABEL WINDOWS
+  MENU LABEL ^Windows
+  KERNEL sys/menu.c32
+  APPEND pxelinux.cfg/windows.menu
+
+LABEL MAX
+  MENU LABEL ^MAX (linux)
+  KERNEL sys/menu.c32
+  APPEND pxelinux.cfg/max.menu
+
+
+LABEL BACKHARDDI
+  MENU LABEL ^BackHarddi-NG
+  KERNEL sys/menu.c32
+  APPEND pxelinux.cfg/backharddi-ng.menu

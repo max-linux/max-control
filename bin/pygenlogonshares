@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+import ldap
+import os
+import sys
+
+
+
+SHARED_DIR="/home/samba/groups/"
+
+
+if len(sys.argv) != 2:
+    sys.exit(1)
+
+GROUPS=sys.argv[1]
+
+l = ldap.initialize('ldap://localhost:389')
+results = l.search_s(GROUPS,ldap.SCOPE_SUBTREE,'(cn=*)',['cn', 'memberUid', 'sambaGroupType', 'gidNumber'])
+
+sharedgroups=[]
+
+for group in results:
+    if "Teachers" in group[0]:
+        continue
+    
+    if int(group[1]['gidNumber'][0]) < 2000:
+        continue
+    
+    if int(group[1]['sambaGroupType'][0]) != 2:
+        continue
+    
+    if not group[1].has_key('memberUid'):
+        # si no tiene miembros no crear parte de logon
+        continue
+    
+    
+    groupname=group[1]['cn'][0]
+    
+    if not os.path.isdir( os.path.join(SHARED_DIR, groupname) ):
+        continue
+    
+    sharedgroups.append(groupname)
+
+
+LAST=25 # y
+
+print """;
+;  generated file with pygenlogonshares '%s'
+;
+;
+"""%GROUPS
+
+
+for group in sharedgroups:
+    if LAST <= 10:
+        # no usar letras de unidad <= 10 (i)
+        continue
+    print """
+IF INGROUP("%s\%s")
+  use %s: "@lserver\%s"
+ENDIF
+"""%("EBOX",group,chr(LAST+96),group)
+    LAST=LAST-1

@@ -1,8 +1,8 @@
 <?php
 
 // aparecerán cajas con información útil para errores.
-define("pruebas", True);
 //define("pruebas", False);
+define("pruebas", True);
 
 // poner en True cuando se hayan editado todos los valores
 define("CONFIGURED", True);
@@ -23,7 +23,8 @@ define("LDAP_OU_USERS", "ou=Users,dc=max-server");
 define("LDAP_OU_GROUPS", "ou=Groups,dc=max-server");
 
 // si no existe crearlo con EBOX
-define("LDAP_OU_TEACHERS", "cn=Teachers,ou=Groups,dc=max-server");
+define("TEACHERS", "Teachers");
+define("LDAP_OU_TEACHERS", "cn=".TEACHERS.",ou=Groups,dc=max-server");
 
 define("LDAP_OU_DUSERS", "cn=Domain Users,ou=Groups,dc=max-server");
 
@@ -70,8 +71,13 @@ define("APACHE_MOD_REWRITE", true);
 
 // puerto usado para conectar por ssh y detectar LINUX
 define("LINUX_PORT", 22);
+define("PROBE_TIMEOUT", 2); /* esperar 2 segundo para ver si el puerto 22 está abierto*/
 
-define("POWEROFF_REBOOT_TIMEOUT", 30);
+define("POWEROFF_REBOOT_TIMEOUT", 20);
+
+
+define("TFTPBOOT", "/var/lib/tftpboot/");
+define("PXELINUXCFG", "/var/lib/tftpboot/pxelinux.cfg/");
 
 
 $site["public_modules"]=array();
@@ -83,7 +89,8 @@ $site["private_modules_admin"]=array(
         #"isos" => "Distribuir ISOS",
         #"compartir" => "Compartir carpetas",
         "power" => "Apagado y reinicio",
-        #"boot" => "Programar arranque equipos",
+        "boot" => "Programar arranque equipos",
+        #"backhardding" => "Backharddi-NG",
         );
 
 $site["private_modules_teacher"]=array(
