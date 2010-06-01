@@ -1,0 +1,212 @@
+#!/usr/bin/env python
+
+import ldap
+import os
+import sys
+import glob
+import getopt
+
+from pprint import pprint
+
+def read_conf(varname):
+    f=open(CONF, 'r')
+    data=f.readlines()
+    f.close()
+    
+    for line in data:
+        if line.startswith('define') and varname in line:
+            return line.split('"')[3]
+    return ''
+
+CONF="/etc/max-control/conf.inc.php"
+PXELINUXCFG=read_conf('PXELINUXCFG')
+DEFAULT=os.path.join( PXELINUXCFG, 'default')
+DONTDELETE=['default']
+
+
+def safe_aula(aula):
+    return( aula.replace(' ', '_') )
+
+def convertMAC(mac):
+    #print "convertMAC(%s)"%mac
+    return( "01-" + mac.lower().replace(':', '-') )
+
+def getAulas():
+    l = ldap.initialize('ldap://localhost:389')
+    allaulas = l.search_s(read_conf("LDAP_OU_GROUPS"),ldap.SCOPE_SUBTREE,'(cn=*)',['cn', 'memberUid', 'sambaGroupType', 'gidNumber'])
+    
+    aulas = {}
+
+    for a in allaulas:
+        if not a[1].has_key('sambaGroupType'):
+            continue
+        
+        if int(a[1]['sambaGroupType'][0]) != 9:
+            continue
+        aulas[ a[1]['cn'][0] ] = []
+
+    aulas['default']=[]
+    
+    return aulas
+
+def addComputersToAulas(aulas):
+    l = ldap.initialize('ldap://localhost:389')
+    allcomputers = l.search_s(read_conf("LDAP_OU_COMPUTERS"),ldap.SCOPE_SUBTREE,'(uid=*)',['cn', 'sambaProfilePath', 'macAddress'])
+    for c in allcomputers:
+        if not c[1].has_key('sambaProfilePath'):
+            aulas['default'].append( c[1]['macAddress'][0] ) 
+            continue
+        
+        aula=c[1]['sambaProfilePath'][0]
+        if aula.strip() == '':
+            continue
+        
+        aulas[aula].append( c[1]['macAddress'][0] )
+    #pprint (aulas)
+    return (aulas)
+
+
+
+
+
+
+def genPXELINUX(aulas):
+    for aula in aulas:
+        aulafile=os.path.join( PXELINUXCFG , safe_aula(aula) )
+        if not os.path.exists(aulafile):
+            if os.path.exists( aulafile + ".menu"):
+                aulafile=aulafile+".menu"
+        
+        
+        for mac in aulas[aula]:
+            macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
+            
+            #print "ln -s %s %s"%( aulafile , macfile )
+            
+            if os.path.exists( macfile ):
+                #print "rm %s"%( macfile )
+                os.unlink(macfile)
+            
+            if not os.path.exists( aulafile ):
+                #print "ln -s %s %s"%( DEFAULT , aulafile )
+                os.symlink( DEFAULT, aulafile )
+            
+            if os.path.islink( macfile ):
+                os.unlink(macfile)
+            
+            os.symlink( aulafile, macfile )
+
+
+def bootMAC(boot, mac):
+    aulas={}
+    aulas[boot]=[ mac ]
+    #pprint (aulas)
+    genPXELINUX(aulas)
+
+def cleanPXE():
+    for f in glob.glob( PXELINUXCFG + "*"):
+        if os.path.basename(f) in DONTDELETE:
+            continue
+        if ".menu" in os.path.basename(f):
+            continue
+        os.unlink(f)
+
+def getBoot(mac):
+    macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
+    if os.path.exists(macfile):
+        boot=os.path.basename(os.readlink(macfile))
+        return boot.replace('.menu', '')
+    else:
+        return 'default'
+
+
+def getBootAula(aula):
+    aulafile=os.path.join( PXELINUXCFG , safe_aula(aula) )
+    if not os.path.exists(aulafile):
+        if os.path.exists( aulafile + ".menu"):
+            aulafile=aulafile+".menu"
+    if not os.path.exists(aulafile):
+        return 'default'
+    return os.path.basename(os.readlink(aulafile)).replace('.menu', '')
+
+def bootAula(boot, aula):
+    bootfile=os.path.join( PXELINUXCFG , boot )
+    aulafile=os.path.join( PXELINUXCFG , safe_aula(aula) )
+    
+    # search bootfile or append .menu
+    if not os.path.exists(bootfile):
+        if os.path.exists( bootfile + ".menu"):
+            bootfile=bootfile+".menu"
+    
+    if not os.path.exists(bootfile):
+        bootfile=os.path.join( PXELINUXCFG , 'default' )
+    
+    #print "ln -s %s %s"%(bootfile, aulafile)
+    if os.path.islink( aulafile ):
+        os.unlink(aulafile)
+    
+    os.symlink( bootfile, aulafile )
+
+
+try:
+    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help", "clean", "genpxelinux", "boot=", "mac=", "getboot=", "getbootaula=", "aula="])
+except getopt.error, msg:
+    print (msg)
+    print ("for command line options use pyboot --help")
+    sys.exit(2)
+
+
+if len(OPTS) == 0:
+    print "no options"
+    sys.exit(0)
+
+boot=None
+mac=None
+aula=None
+
+for o, a in OPTS:
+    if o in ("-h", "--help"):
+        sys.exit()
+    
+    elif o in ("-g", "--genpxelinux"):
+        aulas=addComputersToAulas( getAulas() )
+        genPXELINUX(aulas)
+        sys.exit(0)
+    
+    elif o == "--boot":
+        boot=a
+    
+    elif o == "--mac":
+        mac=a
+    
+    elif o == "--clean":
+        cleanPXE()
+        sys.exit(0)
+    
+    elif o == "--getboot":
+        print getBoot(a)
+        sys.exit(0)
+    
+    elif o == "--getbootaula":
+        print getBootAula(a)
+        sys.exit(0)
+        
+    elif o == "--aula":
+        aula=a
+    
+    else:
+        print "unknow option"
+        sys.exit(0)
+
+
+if boot and mac:
+    bootMAC(boot, mac)
+    sys.exit(0)
+
+elif boot and aula:
+    bootAula(boot, aula)
+    sys.exit(0)
+
+else:
+    print "unknow option"
+

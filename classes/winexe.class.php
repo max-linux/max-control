@@ -178,11 +178,11 @@ class WINEXE {
             return false;
         
         //$gui->debug("isLinux(): try to open ".LINUX_PORT." port in".$this->ip);
-        $fp = @fsockopen($this->ip, LINUX_PORT, $errno, $errstr);
+        $fp = @fsockopen($this->ip, LINUX_PORT, $errno, $errstr, $timeout=PROBE_TIMEOUT);
         if (!$fp) {
-            $gui->debug("isLinux(".$this->ip."):ERROR: $errno - $errstr");
+            $gui->debug("isLinux(".$this->ip."):ERROR: $errno - $errstr, time: ". time_end());
         } else {
-            $gui->debug("isLinux(".$this->ip."):port open");
+            $gui->debug("isLinux(".$this->ip."):port open, time: ". time_end());
             $open=true;
             fclose($fp);
         }
@@ -200,16 +200,17 @@ class WINEXE {
         //$gui->debug("is_alive()".$this->ip);
         $str = exec("ping -c 1 -w 1 ".$this->ip, $input, $result);
         if ($result == 0) {
-            $gui->debug("is_live(".$this->ip.") host is alive");
+            $gui->debug("is_live(".$this->ip.") host is alive, time: ". time_end() );
             $this->alive=true;
         }
         else {
-            $gui->debug("is_live(".$this->ip.") host unreachable");
+            $gui->debug("is_live(".$this->ip.") host unreachable, time: ". time_end() );
         }
         return $this->alive;
     }
     
     function poweroff( $mac ) {
+        global $gui;
         $gui->session_info("Equipo '".$this->hostname."' apagado.");
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -s -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Apagado remoto desde max-control"');
@@ -219,6 +220,7 @@ class WINEXE {
     }
     
     function reboot( $mac ) {
+        global $gui;
         $gui->session_info("Equipo '".$this->hostname."' reiniciado.");
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -r -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Reinicio remoto desde max-control"');

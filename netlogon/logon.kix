@@ -7,9 +7,6 @@ setconsole('hide')
 $VOL = "H:"
 $DOMAIN="EBOX"
 
-; delete all mapped drives
-;USE * /delete
-
 ; sync time
 $timeserver = "@lserver"
 Settime $timeserver
@@ -19,155 +16,173 @@ IF INGROUP("$DOMAIN\Domain Admins")
   use n: "@lserver\netlogon"
 ENDIF
 
-; add more drive mappings here
-; map homedirectory
-; use u: @HOMEDIR
-
 ; mount ISOS in I:
 IF InGroup( "$DOMAIN\Teachers" )
     use i: /d
     use i: "@lserver\isos"
 ENDIF
 
-
-; Check to See if Workstation is Running Windows Vista, if so apply settings and Policies
-;$ntversion = READVALUE("HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\", "CurrentVersion")
-;IF $ntversion = "6.0"
-
-;$FolderRedirect = "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-$FolderRedirect = "Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-AddKey($FolderRedirect)
-
-IF NOT EXIST ("$VOL\Documentos")
-    Shell "cmd /c mkdir $VOL\Documentos"
+IF NOT EXIST ("$VOL")
+    use $VOL /d
+    use $VOL "@lserver\@userid"
 ENDIF
-WriteValue($FolderRedirect, "Personal", "$VOL\Documentos", "REG_SZ")
 
-;esto va en el perfil no es necesario meterlo en H:
-;$ = WriteValue($FolderRedirect, "AppData", "$VOL\.winsettings\appdata", "REG_SZ")
+; Check to See if Workstation is Running >=Windows Vista, if so apply settings and Policies
+$ntversion = READVALUE("HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\", "CurrentVersion")
+IF $ntversion = "6.0"
 
+    ;$FolderRedirect = "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+    $FolderRedirect = "Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+    AddKey($FolderRedirect)
 
-IF NOT EXIST ("$VOL\Escritorio")
-    Shell "cmd /c mkdir $VOL\Escritorio"
-ENDIF
-WriteValue($FolderRedirect, "Desktop", "$VOL\Escritorio", "REG_SZ")
+    IF NOT EXIST ("$VOL\Documentos")
+        Shell "cmd /c mkdir $VOL\Documentos"
+    ENDIF
+    WriteValue($FolderRedirect, "Personal", "$VOL\Documentos", "REG_SZ")
 
-IF NOT EXIST ("$VOL\Musica")
-    Shell "cmd /c mkdir $VOL\Musica"
-ENDIF
-WriteValue($FolderRedirect, "My Music", "$VOL\Musica", "REG_SZ")
-
-IF NOT EXIST ("$VOL\Imagenes")
-    Shell "cmd /c mkdir $VOL\Imagenes"
-ENDIF
-WriteValue($FolderRedirect, "My Pictures", "$VOL\Imagenes", "REG_SZ")
-
-IF NOT EXIST ("$VOL\Videos")
-    Shell "cmd /c mkdir $VOL\Videos"
-ENDIF
-WriteValue($FolderRedirect, "My Video", "$VOL\Videos", "REG_SZ")
-
-IF NOT EXIST ("$VOL\Descargas")
-    Shell "cmd /c mkdir $VOL\Descargas"
-ENDIF
-WriteValue($FolderRedirect, "{374DE290-123F-4565-9164-39C4925E467B}", "$VOL\Descargas", "REG_SZ")
+    ;esto va en el perfil no es necesario meterlo en H:
+    ;$ = WriteValue($FolderRedirect, "AppData", "$VOL\.winsettings\appdata", "REG_SZ")
 
 
-IF INGROUP("$DOMAIN\Domain Admins")
-    ; hide A, B and C
-    ;$hidevols = "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-    $hidevols = "Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-    ;    A=1
-    ;    B=2
-    ;    C=4
-    ;    D=8
-    ;    E=16
-    ;    F=32
-    ;    ....
-    ;    TODAS=67108863
-    ;    A+B+C = 1+2+4 = 7
-    AddKey($hidevols)
-    WriteValue($hidevols, "NoDrives", "0", "REG_DWORD")
-    WriteValue($hidevols, "NoViewOnDrive", "0", "REG_DWORD")
-    
-    ; configurar los valores por defecto para todos los usuarios
-    $hidevols = "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
-    AddKey($hidevols)
-    WriteValue($hidevols, "NoDrives", "4", "REG_DWORD")
-    WriteValue($hidevols, "NoViewOnDrive", "4", "REG_DWORD")
+    IF NOT EXIST ("$VOL\Escritorio")
+        Shell "cmd /c mkdir $VOL\Escritorio"
+    ENDIF
+    WriteValue($FolderRedirect, "Desktop", "$VOL\Escritorio", "REG_SZ")
 
+    IF NOT EXIST ("$VOL\Musica")
+        Shell "cmd /c mkdir $VOL\Musica"
+    ENDIF
+    WriteValue($FolderRedirect, "My Music", "$VOL\Musica", "REG_SZ")
 
-    ; fondo de pantalla (se monta por netlogon, ¿copiar al disco?)
-    ;$bg="HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System"
-    ; = "Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
-    $bg="Software\Microsoft\Windows\CurrentVersion\Policies\System"
+    IF NOT EXIST ("$VOL\Imagenes")
+        Shell "cmd /c mkdir $VOL\Imagenes"
+    ENDIF
+    WriteValue($FolderRedirect, "My Pictures", "$VOL\Imagenes", "REG_SZ")
+
+    IF NOT EXIST ("$VOL\Videos")
+        Shell "cmd /c mkdir $VOL\Videos"
+    ENDIF
+    WriteValue($FolderRedirect, "My Video", "$VOL\Videos", "REG_SZ")
+
+    IF NOT EXIST ("$VOL\Descargas")
+        Shell "cmd /c mkdir $VOL\Descargas"
+    ENDIF
+    WriteValue($FolderRedirect, "{374DE290-123F-4565-9164-39C4925E467B}", "$VOL\Descargas", "REG_SZ")
+
+    IF NOT EXIST ("$VOL\Plantillas")
+        Shell "cmd /c mkdir $VOL\Plantillas"
+    ENDIF
+    WriteValue($FolderRedirect, "Templates", "$VOL\Plantillas", "REG_SZ")
+
+        
+    ; no copiar de momento, ya veremos como hacerlo
+    ;IF NOT EXIST ("C:\fondo.jpg")
+    ;    Shell "cmd /c xcopy @lserver\netlogon\fondo.jpg C:\fondo.jpg /y"
+    ;ENDIF
+    ;HKEY_CURRENT_USER\Control Panel\Desktop
+    $bg="HKEY_CURRENT_USER\Control Panel\Desktop"
     AddKey($bg)
-    WriteValue($bg, "Wallpaper", "C:\fondo.jpg", "REG_SZ")
+    WriteValue($bg, "Wallpaper", "@lserver\netlogon\fondo.jpg", "REG_SZ")
     ;0 - Centered
     ;1 - Tiled
     ;2 - Stretched
     WriteValue($bg, "WallpaperStyle", "2", "REG_SZ")
-    
-    ; configurar los valores por defecto para todos los usuarios
-    ;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System - Wallpaper - None (REG_SZ)
-    $bg="HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System"
-    AddKey($bg)
-    WriteValue($bg, "Wallpaper", "C:\fondo.jpg", "REG_SZ")
-    WriteValue($bg, "WallpaperStyle", "2", "REG_SZ")
-    
-    
-    IF NOT EXIST ("C:\fondo.jpg")
-        Shell "cmd /c xcopy @lserver\netlogon\max.jpg C:\fondo.jpg /y"
+
+
+    ; pagina de inicio
+    ;[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main]“Start Page”=”http://www.google.com/”
+    WriteValue("Software\Microsoft\Internet Explorer\Main", "Start Page", "http://educa.madrid.org/", "REG_SZ")
+    ;SOFTWARE\Policies\Microsoft\Internet Explorer\Main\Start Page
+    WriteValue("Software\Policies\Microsoft\Internet Explorer\Main", "Start Page", "http://educa.madrid.org/", "REG_SZ")
+
+
+    IF INGROUP("$DOMAIN\Domain Admins")
+        ; hide A, B and C
+        ;$hidevols = "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+        $hidevols = "Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+        ;    A=1
+        ;    B=2
+        ;    C=4
+        ;    D=8
+        ;    E=16
+        ;    F=32
+        ;    ....
+        ;    TODAS=67108863
+        ;    A+B+C = 1+2+4 = 7
+        AddKey($hidevols)
+        WriteValue($hidevols, "NoDrives", "0", "REG_DWORD")
+        WriteValue($hidevols, "NoViewOnDrive", "0", "REG_DWORD")
+        
+        ; configurar los valores por defecto para todos los usuarios
+        $hidevols = "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+        AddKey($hidevols)
+        WriteValue($hidevols, "NoDrives", "4", "REG_DWORD")
+        WriteValue($hidevols, "NoViewOnDrive", "4", "REG_DWORD")
+        
+        ; no permitir cambiar fondo
+        ;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop - NoChangingWallPaper - 1 (REG_SZ)
+        ;AddKey("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop")
+        ;WriteValue("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop", "NoChangingWallPaper", "1", "REG_SZ")
+        ;WriteValue("SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop", "NoChangingWallPaper", "0", "REG_SZ")
+        
+        ; que explorer espere a que termine logon.bat
+        ;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System - RunLogonScriptSync - 1 (DWORD)
+        WriteValue("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "RunLogonScriptSync", "1", "REG_DWORD")
+        
+        ;deshabilitar archivos offline
+        ;HKLM\Software\Policies\Microsoft\Windows\NetCache - NoConfigCache - 1
+        AddKey("HKLM\Software\Policies\Microsoft\Windows\NetCache")
+        WriteValue("HKLM\Software\Policies\Microsoft\Windows\NetCache", "NoConfigCache", "1", "REG_DWORD")
+        
+        ;no mostrar el ultimo nombre de usuario
+        ;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System - dontdisplaylastusername - 1 (DWORD)
+        WriteValue("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "dontdisplaylastusername", "1", "REG_DWORD")
+        
+        
+        ; no permitir escribir en dispositivos extraibles
+        ;HKCU\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f5630d-b6bf-11d0-94f2-00a0c91efb8b} - Deny_Write - 1 (DWORD)
+        
+        ; no mostrar Run en el menu
+        ;HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer - NoRun - 1 (DWORD)
+        ;WriteValue("HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoRun", "1", "REG_DWORD")
+        ;WriteValue("Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoRun", "0", "REG_DWORD")
+        
+        ; deshabilitar el panel de control
+        ;HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer
+        ;Value Name: NoControlPanel
+        ;Data Type: REG_DWORD (DWORD Value)
+        ;Value Data: (0 = disable restriction, 1 = enable restriction)
+        ;WriteValue("HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoControlPanel", "1", "REG_DWORD")
+        ;WriteValue("Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoControlPanel", "0", "REG_DWORD")
+
+
+        ;User Key: [HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Applets\Tour]
+        ;System Key: [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Applets\Tour]
+        ;Value Name: RunCount
+        ;Data Type: REG_DWORD (DWORD Value)
+        ;Value Data: Remaining times to prompt (0 = disabled)
+        ;WriteValue("HKLM\Software\Microsoft\Windows\CurrentVersion\Applets\Tour", "RunCount", "0", "REG_DWORD")
     ENDIF
-    
-    ; no permitir cambiar fondo
-    ;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop - NoChangingWallPaper - 1 (REG_SZ)
-    AddKey("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop")
-    WriteValue("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop", "NoChangingWallPaper", "1", "REG_SZ")
-    WriteValue("SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\ActiveDesktop", "NoChangingWallPaper", "0", "REG_SZ")
-    
-    ; que explorer espere a que termine logon.bat
-    ;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System - RunLogonScriptSync - 1 (DWORD)
-    WriteValue("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "RunLogonScriptSync", "1", "REG_DWORD")
-    
-    ;deshabilitar archivos offline
-    ;HKLM\Software\Policies\Microsoft\Windows\NetCache - NoConfigCache - 1
-    AddKey("HKLM\Software\Policies\Microsoft\Windows\NetCache")
-    WriteValue("HKLM\Software\Policies\Microsoft\Windows\NetCache", "NoConfigCache", "1", "REG_DWORD")
-    
-    ;no mostrar el ultimo nombre de usuario
-    ;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System - dontdisplaylastusername - 1 (DWORD)
-    WriteValue("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "dontdisplaylastusername", "1", "REG_DWORD")
-    
-    
-    ; no permitir escribir en dispositivos extraibles
-    ;HKCU\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f5630d-b6bf-11d0-94f2-00a0c91efb8b} - Deny_Write - 1 (DWORD)
-    
-    ; no mostrar Run en el menu
-    ;HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer - NoRun - 1 (DWORD)
-    WriteValue("HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoRun", "1", "REG_DWORD")
-    WriteValue("Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoRun", "1", "REG_DWORD")
-    
-    ; deshabilitar el panel de control
-    ;HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer
-    ;Value Name: NoControlPanel
-    ;Data Type: REG_DWORD (DWORD Value)
-    ;Value Data: (0 = disable restriction, 1 = enable restriction)
-    WriteValue("HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoControlPanel", "1", "REG_DWORD")
-    WriteValue("Software\Microsoft\Windows\CurrentVersion\Policies\Explorer", "NoControlPanel", "0", "REG_DWORD")
 
 
-    ;User Key: [HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Applets\Tour]
-    ;System Key: [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Applets\Tour]
-    ;Value Name: RunCount
-    ;Data Type: REG_DWORD (DWORD Value)
-    ;Value Data: Remaining times to prompt (0 = disabled)
-    WriteValue("HKLM\Software\Microsoft\Windows\CurrentVersion\Applets\Tour", "RunCount", "0", "REG_DWORD")
+
+; fin de if ntversion == 6.0
 ENDIF
 
 
+; descomprimir zip con enlaces del escritorio
+IF NOT EXIST ("$VOL\Escritorio\Programas")
+  use z: /d
+  use z: "@lserver\netlogon"
+  $UnzipCMD = '%comSpec% /c z:\unzip -o z:\AulaVirtual.zip -d $VOL\Escritorio'
+  Shell $UnzipCMD
+  use z: /d
+ENDIF
 
 
-;ENDIF
-
-
+; cargar group shares desde Z: a J:
+IF EXIST ("@lserver\netlogon\shares.kix")
+     $SharesCMD = '%comSpec% /c @lserver\netlogon\kix32 @lserver\netlogon\shares.kix'
+     Shell $SharesCMD
+;    INCLUDE "@lserver\netlogon\shares.kix"
+ENDIF

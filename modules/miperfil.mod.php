@@ -46,4 +46,37 @@ if ($active_action == "editar") {
     $gui->add( $gui->load_from_template("miperfil.tpl", $data ) );
 }
 
+
+if ($active_action == "guardar") {
+    $username=$_SESSION['username'];
+    $ldap=new LDAP();
+    $usuario=$ldap->get_user($username);
+    
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+    
+    
+    $new=leer_datos('newpwd');
+    if ( $new != '') {
+        $new2=leer_datos('newpwd2');
+        if ($new != $new2) {
+            $gui->session_error("Las contraseñas no coinciden");
+            $url->ir($module, "editar");
+        }
+        else {
+            $usuario->update_password($new, $usuario->uid);
+        }
+    }
+    
+    $usuario->set($_POST);
+    $res=$usuario->save( array('cn') );
+    
+    if ($res)
+        $gui->session_info("Datos guardados correctamente");
+    else
+        $gui->session_error("Error guardando datos, por favor inténtelo de nuevo.");
+    
+    $url->ir($module, "");
+}
+
+
 ?>

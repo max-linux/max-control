@@ -37,10 +37,10 @@ $module_actions=array(
 
 
 // si tiene permisos de administrador mostrar submenus
-/*
-if ($permisos->is_admin() ) {
-    $module_actions['register']="Registrar equipo";
-}*/
+
+#if ($permisos->is_admin() ) {
+#    $module_actions['backhardding']="Backharddi";
+#}
 
 
 /*************************************************/
@@ -50,9 +50,9 @@ if ($active_action == "") {
 }
 
 if ($active_action == "ver") {
-    $action=leer_datos('action');
-    $gui->debug("action='$action'");
-    if($action == "update"){
+    $faction=leer_datos('faction');
+    $gui->debug("faction='$faction'");
+    if($faction == "update"){
         $url->ir($active_module, "update");
     }
 
@@ -145,12 +145,14 @@ if ($active_action == "aulas" && $active_subaction == '') {
     $filter=leer_datos('Filter');
     $aulas=$ldap->get_aulas($filter);
     $urlform=$url->create_url($active_module, $active_action);
-    $urleditar=$url->create_url($active_module,'aulas', 'miembros');
+    $urlprofesores=$url->create_url($active_module,'aulas', 'miembros');
+    $urlequipos=$url->create_url($active_module,'aulas', 'equipos');
     
     $data=array("aulas" => $aulas, 
                 "filter" => $filter,
                 "urlform" => $urlform,
-                "urleditar"=>$urleditar);
+                "urlprofesores"=>$urlprofesores,
+                "urlequipos"=>$urlequipos);
     $gui->add( $gui->load_from_template("ver_aulas.tpl", $data) );
 }
 
@@ -171,12 +173,10 @@ if ($active_action == "aulas" && $active_subaction == 'miembros') {
 }
 
 if ($active_action == "miembros" && $active_subaction == 'guardar') {
-    $gui->add( "<pre>".print_r($_POST, true)."</pre>" );
+    //$gui->add( "<pre>".print_r($_POST, true)."</pre>" );
     /*
     Array
         (
-            [addtogroup_x] => 4
-            [addtogroup_y] => 5
             [addtogroup] => Añadir usuarios al grupo
             [adduser] => profe3
             [aula] => grupoprueba
@@ -188,8 +188,6 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
     Array
     (
         [deluser] => profe2
-        [delfromgroup_x] => 6
-        [delfromgroup_y] => 6
         [delfromgroup] => Quitar
         [aula] => grupoprueba
     )
@@ -209,11 +207,104 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
         $aula->delMember($deluser);
         $url->ir($active_module, "aulas", "miembros/$editaaula");
     }
+    else {
+        $gui->session_error("No se ha seleccionado ningún profesor.");
+        $url->ir($active_module, "aulas", "miembros/$editaaula");
+    }
 }
+
+
+/****************************************************/
+if ($active_action == "aulas" && $active_subaction == 'equipos') {
+    $aula=leer_datos('args');
+    $ldap=new LDAP();
+    $all=$ldap->get_computers_in_and_not_aula($aula);
+    
+    //$gui->add( "<pre>". print_r($all, true) . "</pre>" );
+    
+    $urlform=$url->create_url($active_module, $active_subaction, 'guardar');
+    
+    $data=array("aula"=>$aula, 
+                "equipos"=>$all, 
+                "urlform" => $urlform);
+    
+    $gui->add( $gui->load_from_template("editar_aula_equipos.tpl", $data) );
+}
+
+if ($active_action == "equipos" && $active_subaction == 'guardar') {
+    //$gui->add( "<pre>".print_r($_POST, true)."</pre>" );
+    $aula=leer_datos('aula');
+    //FIXME
+    /* Add computer
+    Array
+    (
+        [addtogroup] => Añadir usuarios al grupo
+        [addcomputer] => wxp64
+        [aula] => grupoprueba
+    )
+    */
+    $addcomputer=leer_datos('addcomputer');
+    /* del computer
+    Array
+    (
+        [delcomputer] => mario-desktop
+        [delfromgroup] => Quitar
+        [aula] => aula primaria 1
+    )
+    */
+    $delcomputer=leer_datos('delcomputer');
+    $ldap=new LDAP();
+    
+    if ( $addcomputer != '') {
+        // equitar el sambaProfilePath del equipo con el aula
+        $equipo=$ldap->get_computers($addcomputer .'$');
+        if ( isset($equipo[0]) ) {
+            $equipo[0]->sambaProfilePath=$aula;
+            $equipo[0]->ldapdata['sambaProfilePath']=$aula;
+            $res=$equipo[0]->save( array('sambaProfilePath') );
+            if ($res) {
+                $gui->session_info("Equipo $addcomputer añadido al aula $aula correctamente.");
+                $equipo[0]->boot($aula);
+            }
+            else
+                $gui->session_error("No se puedo añadir el equipo $addcomputer al aula $aula.");
+            //$gui->add( "<pre>". print_r($equipo[0]->show(), true) . "</pre>" );
+        }
+        else {
+            $gui->session_error("No se pudo encontrar el equipo '$addcomputer'");
+        }
+        
+        //$url->ir($active_module, "aulas", "equipos/$aula");
+    }
+    elseif ( $delcomputer != '') {
+        // borrar el sambaProfilePath
+        $equipo=$ldap->get_computers($delcomputer .'$');
+        if ( isset($equipo[0]) ) {
+            $res = $equipo[0]->empty_attr( 'sambaProfilePath' );
+            if ($res) {
+                $gui->session_info("Equipo $addcomputer quitado del aula $aula correctamente.");
+                $equipo[0]->boot('default');
+            }
+            else
+                $gui->session_error("No se puedo quitar el equipo $addcomputer del aula $aula.");
+            //$gui->add( "<pre>". print_r($equipo[0]->show(), true) . "</pre>" );
+        }
+        else {
+            $gui->session_error("No se pudo encontrar el equipo '$addcomputer'");
+        }
+        //$url->ir($active_module, "aulas", "equipos/$aula");
+    }
+    else {
+        $gui->session_error("No se ha seleccionado ningún equipo.");
+        $url->ir($active_module, "aulas", "equipos/$aula");
+    }
+}
+
+
 
 if ($active_action == "aulas" && $active_subaction == 'nueva') {
     //FIXME
-    $gui->add( "<h1>Nueva aula</h1>" );
+    $gui->add( "<h1>FIXME Nueva aula</h1>" );
 }
 
 ?>

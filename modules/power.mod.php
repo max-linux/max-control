@@ -94,6 +94,7 @@ if ($active_action == "do" && $active_subaction != '') {
     $ldap = new LDAP();
     $computers=$ldap->get_computers_from_aula($aula);
     foreach( $computers as $computer) {
+        $gui->debug("Acción $action en equipo '".$computer->hostname()."' tiempo: " . time_end() );
         //$res[]=$computer->action($action);
         if ($action == 'wakeonlan') {
             $computer->action($action, $computer->macAddress);
@@ -105,6 +106,7 @@ if ($active_action == "do" && $active_subaction != '') {
             $gui->session_error("No se puede realizar la acción solicitada en '".$computer->hostname()."', el equipo está apagado");
         }
     }
+    $gui->debug("Finalizadas acciones tiempo: " . time_end() );
 
     /*$data=array("aula" => $aula, 
                 "action" => $action);

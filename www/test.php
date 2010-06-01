@@ -10,11 +10,11 @@ include("../conf.inc.php");
 class GUI {
     function debug($txt) {
         if($txt == '') return;
-        echo "D: ".print_r($txt, true)." <br>\n";
+        echo "D: ".print_r($txt, true)." \n";
     }
     function debuga($txt) {
         if($txt == '') return;
-        echo "D: ".print_r($txt, true)." <br>\n";
+        echo "D: ".print_r($txt, true)." \n";
     }
 }
 
@@ -106,14 +106,14 @@ include("../classes/winexe.class.php");
 #$exe=new WINEXE('wxp');
 #echo $exe->isLinux();
 
-$hosts=$ldap->get_computers('mario-desktop$');
-$host=$hosts[0];
-//$gui->debug($host);
-$host->action('wakeonlan', $host->macAddress);
+#$hosts=$ldap->get_computers('win2008$');
+#$host=$hosts[0];
+#//$gui->debug($host);
+#//$host->action('wakeonlan', $host->macAddress);
+#$host->boot('max');
 
 
-
-
+$gui->debug($ldap->getBootMenus());
 
 
 

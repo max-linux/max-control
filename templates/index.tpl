@@ -27,13 +27,13 @@
   <a id="m" href="{$logout_url}">Salir de sesión</a> 
 </div> 
 
-<span><h3>Panel de control de Servidor de Centro</h3></span>
+<h3>Panel de control de Servidor de Centro</h3>
 
 <!-- div menu -->
 <div id='menu'> 
     <ul id='nav'> 
         
-        <li id=''> 
+        <li id='mainmenu'> 
             <div class='separator'>Menú</div> 
         </li> 
         
@@ -44,7 +44,7 @@
 <!-- FIN div menu -->
 
 <div id="limewrap">
-    <div id="content"><div> 
+    <div id="content"><div>
 </div> 
 
 {if isset($have_alerts) }
@@ -82,14 +82,15 @@
 <!-- fin debug -->
 {/if}
 
+</div></div>
 <div id="footer"> 
   <div id='site-bottom'>
     <div class='main-projects'>
         <a rel='external' title='Comunidad de Madrid (ventana nueva)' href='http://www.madrid.org/' class='external-link'>
-            <img width='132' height='43' alt='Comunidad de Madrid, Consejeria de Educacion' src='{$baseurl}/img/consejeria.png'>
+            <img width='132' height='43' alt='Comunidad de Madrid, Consejeria de Educacion' src='{$baseurl}/img/consejeria.png' />
         </a>
         <a rel='external' title='EducaMadrid (ventana nueva)' href='http://www.educa.madrid.org' class='external-link'>
-            <img width='132' height='43' alt='EducaMadrid' src='{$baseurl}/img/educamadrid.png'>
+            <img width='132' height='43' alt='EducaMadrid' src='{$baseurl}/img/educamadrid.png' />
         </a>
     </div>
     <p class='copyright-notice'><strong>EducaMadrid</strong> - 2010  - Consejeria de Educacion, Comunidad de Madrid</p>

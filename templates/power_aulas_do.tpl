@@ -9,15 +9,17 @@
 
  <table class='dataTable'> 
     <thead> 
+     <tr>
       <th class=''>Nombre</th> 
       <th class=''>IP</th>
       <th class=''>MAC</th>
+     </tr>
     </thead>
  
  
     <tbody> 
       {foreach from=$computers item=c}
-      <tr class='border' id="{$u->cn}"> 
+      <tr class='border' id="{$c->hostname()}"> 
         <td class='tcenter'><span>{$c->hostname()}</span></td> 
         <td class='tcenter'><span>{$c->ipHostNumber}</span></td> 
         <td class='tcenter'><span>{$c->macAddress}</span></td>
@@ -26,12 +28,13 @@
 
     </tbody> 
 </table> 
- <span class="confirm"> <a href="{$urlaction}">SEGUIR <img src="{$baseurl}/img/apply.gif"></a></span>
+ <span class="confirm"> <a href="{$urlaction}">CONTINUAR <img src="{$baseurl}/img/apply.gif" alt="continuar" /></a></span>
 </div>
 
 
 
-
+{*
 {if $pruebas}
 {debug}
 {/if}
+*}

@@ -2,6 +2,8 @@ apache-control.conf   etc/apache2/conf.d/
 bin/winexe            usr/bin/
 bin/max-control       usr/bin/
 bin/pywakeonlan       usr/bin/
+bin/pygenlogonshares  usr/bin/
+bin/pyboot            usr/bin/
 classes               usr/share/max-control/
 modules               usr/share/max-control/
 plugins               usr/share/max-control/
@@ -9,3 +11,5 @@ templates             usr/share/max-control/
 www                   usr/share/max-control/
 netlogon              usr/share/max-control/
 conf.inc.php.example  usr/share/max-control/
+
+tftpboot              var/lib/

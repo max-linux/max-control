@@ -46,6 +46,9 @@ $permisos = new Permisos();
 global $gui;
 $gui= new Gui();
 
+global $url;
+$url= new URLHandler();
+
 // ver si es peticion ajax
 $ajaxurl=new URLHandler();
 if ( $ajaxurl->get("ajax") == "1" ) {

@@ -4,7 +4,7 @@
  
 
  
-<table> 
+<table class='dashboardTable'> 
 <thead> 
 	<tr> 
 		<th class="tleft">Profesores del aula</th> 
@@ -15,7 +15,7 @@
 <tbody> 
 <tr> 
     <td rowspan="2"> 
-    <form action='{$urlform}' method='post'> 
+    <form action='{$urlform}' method='post'>
         <!-- FIXME soportar añadir y borrado multiple -->
         <select name='deluser' size='15'> 
             {foreach from=$miembros.ingroup item=o}
