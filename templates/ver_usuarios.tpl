@@ -9,8 +9,7 @@
         <form id="user" action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
-          <input type='submit' name='button' value="Añadir usuario" title="Añadir usuario" onclick="javascript:add();" />
-          <input type='hidden' id="faction" name='faction' value='search' />
+          <input type='submit' name='button' value="Añadir usuario" title="Añadir usuario" />
         </form>
         
         </td> 
@@ -52,14 +51,6 @@
     </tbody> 
 </table> 
 
-{literal}
-<script type="text/javascript">
-function add() {
-    $('#faction')[0].value='add';
-    $('#user')[0].submit();
-}
-</script>
-{/literal}
 
 {*
 {if $pruebas}

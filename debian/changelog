@@ -1,3 +1,24 @@
+max-control (0.4) max; urgency=low
+
+  * Add and delete aulas
+  * Fix mod_rewrite rules use (.*) instead of letter+numbers
+  * bin/pyboot: don't delete macfile if computer is configured (not in aula)
+  * Use button name to form actions (not use javascript)
+
+ -- root <root@max-server>  Fri, 04 Jun 2010 16:38:16 +0200
+
+max-control (0.3.1) max; urgency=low
+
+  * Fix mod_rewrite => rewrite
+
+ -- root <root@max-server>  Fri, 04 Jun 2010 13:49:06 +0200
+
+max-control (0.3) max; urgency=low
+
+  * Fix postinst, cache paths and mod_rewrite.
+
+ -- root <root@max-server>  Fri, 04 Jun 2010 13:31:34 +0200
+
 max-control (0.2) max; urgency=low
 
   * New version, support pxelinux.cfg and advanced netlogon

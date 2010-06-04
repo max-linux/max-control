@@ -44,6 +44,16 @@ class Ajax {
             $this->output="used";
     }
 
+    function usedaula($cn) {
+        $ldap=new LDAP();
+        $aula=$ldap->get_aula($cn);
+        
+        if ( $cn != $aula->cn )
+            $this->output="free";
+        else
+            $this->output="used";
+    }
+
     function process( $data ) {
         global $permisos;
         if( ! $permisos->is_admin() )
@@ -58,6 +68,7 @@ class Ajax {
             case "getmac": $this->getmac($data['hostname']); break;
             case "useduid": $this->useduid($data['uid']); break;
             case "usedcn": $this->usedcn($data['cn']); break;
+            case "usedaula": $this->usedaula($data['cn']); break;
             default: $this->invalid();
         }
     }

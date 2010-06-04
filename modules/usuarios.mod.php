@@ -50,11 +50,13 @@ if ($url->get("action") == "") {
 function ver($module, $action, $subaction) {
     global $gui, $url;
     // mostrar lista de usuarios
-    $faction=leer_datos('faction');
-    $gui->debug("faction='$faction'");
-    if($faction == "add"){
+    
+    $button=leer_datos('button');
+    $gui->debug("button='$button'");
+    if( $button !='' && $button != "Buscar"){
         $url->ir($module, "add");
     }
+    
     $ldap=new LDAP();
     /* /control/usuarios/usuarios?Filter=test&button=Buscar */
     $filter=leer_datos('Filter');
@@ -78,6 +80,11 @@ function editar($module, $action, $subaction){
     $username=$url->get("subaction");
     $ldap=new LDAP();
     $user=$ldap->get_user($username);
+    
+    if( ! $user ){
+        $gui->session_error("Usuario '$username' no encontrado");
+        $url->ir($module, "ver");
+    }
     
     $urlform=$url->create_url($module, 'guardar');
     
@@ -227,8 +234,10 @@ function guardarnuevo($module, $action, $subaction) {
 
 function groups($module, $action, $subaction) {
     global $gui, $url;
-    $action=leer_datos('faction');
-    if($action == "add"){
+    
+    $button=leer_datos('button');
+    $gui->debug("button='$button'");
+    if( $button !='' && $button != "Buscar"){
         $url->ir($module, "groupadd");
     }
     

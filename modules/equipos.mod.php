@@ -50,9 +50,9 @@ if ($active_action == "") {
 }
 
 if ($active_action == "ver") {
-    $faction=leer_datos('faction');
-    $gui->debug("faction='$faction'");
-    if($faction == "update"){
+    $button=leer_datos('button');
+    $gui->debug("button='$button'");
+    if( $button !='' && $button != "Buscar"){
         $url->ir($active_module, "update");
     }
 
@@ -76,6 +76,12 @@ if ($active_action == "editar") {
     $hostname=$url->get("subaction");
     $ldap=new LDAP();
     $equipo=$ldap->get_computers($hostname.'$');
+    
+    if( ! $equipo ){
+        $gui->session_error("Equipo '$hostname' no encontrado");
+        $url->ir($active_module, "ver");
+    }
+    
     $aulas=$ldap->get_aulas();
     $urlform=$url->create_url($active_module, 'guardar');
     
@@ -136,10 +142,12 @@ if ($active_action == "guardar") {
 
 
 if ($active_action == "aulas" && $active_subaction == '') {
-    $action=leer_datos('faction');
-    if($action == "nueva"){
+    $button=leer_datos('button');
+    $gui->debug("button='$button'");
+    if( $button !='' && $button != "Buscar"){
         $url->ir($active_module, "aulas", "nueva");
     }
+    
     // mostrar lista de aulas
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -147,12 +155,14 @@ if ($active_action == "aulas" && $active_subaction == '') {
     $urlform=$url->create_url($active_module, $active_action);
     $urlprofesores=$url->create_url($active_module,'aulas', 'miembros');
     $urlequipos=$url->create_url($active_module,'aulas', 'equipos');
+    $urlborrar=$url->create_url($active_module,'aulas', 'borrar');
     
     $data=array("aulas" => $aulas, 
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "urlprofesores"=>$urlprofesores,
-                "urlequipos"=>$urlequipos);
+                "urlequipos"=>$urlequipos,
+                "urlborrar" =>$urlborrar);
     $gui->add( $gui->load_from_template("ver_aulas.tpl", $data) );
 }
 
@@ -274,7 +284,7 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
             $gui->session_error("No se pudo encontrar el equipo '$addcomputer'");
         }
         
-        //$url->ir($active_module, "aulas", "equipos/$aula");
+        $url->ir($active_module, "aulas", "equipos/$aula");
     }
     elseif ( $delcomputer != '') {
         // borrar el sambaProfilePath
@@ -292,7 +302,7 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
         else {
             $gui->session_error("No se pudo encontrar el equipo '$addcomputer'");
         }
-        //$url->ir($active_module, "aulas", "equipos/$aula");
+        $url->ir($active_module, "aulas", "equipos/$aula");
     }
     else {
         $gui->session_error("No se ha seleccionado ningún equipo.");
@@ -303,8 +313,82 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
 
 
 if ($active_action == "aulas" && $active_subaction == 'nueva') {
-    //FIXME
-    $gui->add( "<h1>FIXME Nueva aula</h1>" );
+    $group=new GROUP();
+    $url=new URLHandler();
+    $urlform=$url->create_url($active_module, $active_action, 'aulaguardar');
+    
+    $data=array("u"=>$group,
+                "urlform"=>$urlform,
+                "action" => "Editar");
+    
+    $gui->add( $gui->load_from_template("add_aula.tpl", $data ) );
+}
+
+if ($active_action == "aulas" && $active_subaction == 'aulaguardar') {
+    //$gui->add( "<pre>".print_r($_POST, true)."</pre>" );
+    /*
+    Array
+    (
+        [cn] => aaaaa
+        [description] => 
+        [add] => Añadir
+    )
+    */
+    
+    if ( leer_datos('cn') == '' ) {
+        $gui->session_error("Error, identificador de aula vacío.");
+        $url->ir($module, "nueva");
+    }
+    
+    $group=new AULA($_POST);
+    if ( $group->newAula() )
+        $gui->session_info("Aula '".$group->cn."' añadida correctamente.");
+    
+    $url->ir($active_module, "aulas");
+}
+
+
+if ($active_action == "aulas" && $active_subaction == 'borrar') {
+    $aula=leer_datos('args');
+    $gui->add("borrar aula: $aula");
+    $urlform=$url->create_url($active_module, $active_action, 'aulaborrar');
+    $data=array("aula" => $aula,
+                "urlform"=>$urlform);
+    
+    $gui->add( $gui->load_from_template("del_aula.tpl", $data) );
+}
+
+if ($active_action == "aulas" && $active_subaction == 'aulaborrar') {
+    $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
+    /*
+    Array
+    (
+        [aula] => aula primaria 4
+        [confirm] => Confirmar
+    )
+    */
+    $aula=leer_datos('aula');
+
+    if ($aula == '') {
+        $gui->session_error("No se pudo encontrar el aula '$aula'");
+        $url->ir($active_module, "aulas");
+    }
+
+    $ldap=new LDAP();
+    $aulas=$ldap->get_aula($aula);
+    
+    $gui->debug( "<pre>". print_r($aulas, true) . "</pre>" );
+    
+    if ($aulas->cn != $aula) {
+        $gui->session_error(" El aula '$aula' no existe.");
+        $url->ir($active_module, "aulas");
+    }
+    
+    if ( $aulas->delAula() )
+        $gui->session_info("Aula '$aula' borrada.");
+    
+    $url->ir($module, "aulas");
+
 }
 
 ?>

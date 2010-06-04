@@ -847,6 +847,13 @@ class AULA extends BASE {
     }
     
     
+    function genPXELinux() {
+        global $gui;
+        //bin/max-control pxe --genpxelinux
+        exec("sudo ".MAXCONTROL." pxe --genpxelinux", &$output);
+        return;
+    }
+    
     function boot($conffile) {
         /*
         $conffile must be windows, max, backhardding or aula name
@@ -862,6 +869,87 @@ class AULA extends BASE {
             $gui->session_info("Arranque de '".$this->cn."' actualizado.");
         }
         return true;
+    }
+    
+    function newAula() {
+        global $gui;
+        
+        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        
+        $this->displayName=$this->cn;
+        $this->sambaGroupType=9;
+        $this->objectClass=array('posixGroup', 'sambaGroupMapping', 'eboxGroup');
+        
+        
+        $this->gidNumber=$ldap->lastGID() + 1 ;
+        $rid= 2 * $this->gidNumber + 1001;
+        $this->sambaSID=$ldap->getSID(). "-" . $rid;
+        
+        $this->memberUid=array();
+        
+        $gui->debuga($this->show());
+        
+        $init=array(
+            "cn" => $this->cn,
+            "gidNumber" => $this->gidNumber,
+            "objectClass" => array('posixGroup'),
+                    );
+        $gui->debuga($init);
+        $r=ldap_add($ldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
+        
+        $gui->debug("AULA:newAula() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+        if ( ! $r ) {
+            $gui->session_error("No se pudo añadir el aula '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
+            $ldap->disconnect();
+            return false;
+        }
+        
+        $init=array(
+            "displayName" => $this->displayName,
+            "gidNumber" => $this->gidNumber,
+            "sambaSID" => $this->sambaSID,
+            "sambaGroupType" => $this->sambaGroupType,
+            #"memberUID" => $this->memberUid,
+            "objectClass" => array('posixGroup', 'sambaGroupMapping', 'eboxGroup'),
+                    );
+        $gui->debuga($init);
+        $r=ldap_modify($ldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
+        
+        $gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+        if ( ! $r ) {
+            $gui->session_error("No se pudieron modificar los atributos del grupo '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
+            $ldap->disconnect();
+            return false;
+        }
+        
+        $this->genPXELinux();
+        $this->boot('default');
+        
+        $ldap->disconnect();
+        
+        return true;
+    }
+    
+    
+    
+    function delAula() {
+        global $gui;
+        $res=false;
+        
+        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        
+        
+        // borrarlo de LDAP_OU_GROUPS
+        $gui->debug("ldap_delete ( $ldap->cid , 'cn=".$this->cn.",".LDAP_OU_GROUPS ."')");
+        $r=ldap_delete ( $ldap->cid , "cn=".$this->cn.",".LDAP_OU_GROUPS );
+        if ( ! $r)
+            $res=false;
+        $res=true;
+        
+        $this->genPXELinux();
+        
+        
+        return $res;
     }
 }
 
@@ -1282,6 +1370,8 @@ class LDAP {
                     $gui->debug("ldap::get_aulas() ADD aula='".$attrs['cn'][0]."'");
                 }
                 else {
+                    // remove '*' from $aula
+                    $aula=str_replace('*', '', $aula);
                     if (preg_match("/$aula/i", $attrs['cn'][0])) {
                         //$aulas[]=$attrs['cn'][0];
                         $aulas[]=new AULA($attrs);
