@@ -64,7 +64,7 @@ class BASE {
             }
             
             /*else {
-                echo "var '\$$k' not in USER<br>\n";
+                echo "var '\$$k' not in BASE<br>\n";
             }*/
         }
     }
@@ -1055,6 +1055,22 @@ class GROUP extends BASE {
     }
 }
 
+class ISO extends BASE{
+    var $filename;
+    var $size;
+    var $volumeid;
+    
+    function save() {
+        return;
+    }
+    
+    function init(){
+        return;
+    }
+
+}
+
+
 class LDAP {
         var $hostname = LDAP_HOSTNAME;
         var $basedn = LDAP_BASEDN;
@@ -1744,6 +1760,23 @@ class LDAP {
         return $menus;
     }
 
+    function getISOS() {
+        global $gui;
+        $isos=array();
+        exec("sudo ".MAXCONTROL." isos --getisos", &$output);
+        $gui->debug("LDAP:getISOS()<pre>".print_r($output, true)."</pre>");
+        foreach($output as $iso) {
+            /* super_grub_disk_0.9783.iso|4.00 MB|CDROM */
+            //$gui->debuga($iso);
+            list ($filename, $size, $volumeid)=split('\|', $iso);
+            $data=array("filename"=>$filename, 
+                        "size"=>$size, 
+                        "volumeid"=> $volumeid);
+            //$gui->debuga($data);
+            $isos[]= new ISO( $data );
+        }
+        return $isos;
+    }
 
     function search($filter, $basedn='')
     {

@@ -2,6 +2,12 @@
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 
+clean::
+	bin/pyboot --clean || true
+
+build/max-control::
+	rm -f cache/*
+
 
 binary-install/max-control::
 	# clean svn dirs
