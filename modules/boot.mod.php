@@ -16,7 +16,7 @@ $url=new URLHandler();
 
 
 if ( ! $permisos->is_admin() ) {
-    $gui->session_error("No es administrador para acceder al módulo BackHarddi-NG");
+    $gui->session_error("No es administrador para acceder al módulo de arranque");
     $url->ir("", "");
 }
 

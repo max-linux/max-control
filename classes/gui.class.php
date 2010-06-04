@@ -26,9 +26,9 @@ class Gui
         $this->main_template="index.tpl";
         
         $this->smarty->template_dir = $path . SMARTY_TEMPLATES;
-        $this->smarty->compile_dir =  $path . SMARTY_CACHE;
-        $this->smarty->cache_dir =    $path . SMARTY_CACHE;
-        $this->smarty->config_dir =   $path . SMARTY_CACHE;
+        $this->smarty->compile_dir =  SMARTY_CACHE;
+        $this->smarty->cache_dir =    SMARTY_CACHE;
+        $this->smarty->config_dir =   SMARTY_CACHE;
         //$this->smarty->caching = true;
         $this->smarty->plugins_dir = array( SMARTY_PLUGINS, $path . '/plugins');
         
@@ -156,9 +156,9 @@ class Gui
         global $site;
         $n=new Smarty();
         $n->template_dir = $path . SMARTY_TEMPLATES;
-        $n->compile_dir =  $path . SMARTY_CACHE;
-        $n->cache_dir =    $path . SMARTY_CACHE;
-        $n->config_dir =   $path . SMARTY_CACHE;
+        $n->compile_dir =  SMARTY_CACHE;
+        $n->cache_dir =    SMARTY_CACHE;
+        $n->config_dir =   SMARTY_CACHE;
         $this->smarty->plugins_dir = array( SMARTY_PLUGINS, $path . '/plugins');
         
         $n->assign('baseurl', $site["basedir"] );

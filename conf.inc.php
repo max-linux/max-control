@@ -24,7 +24,7 @@ define("LDAP_OU_GROUPS", "ou=Groups,dc=max-server");
 
 // si no existe crearlo con EBOX
 define("TEACHERS", "Teachers");
-define("LDAP_OU_TEACHERS", "cn=".TEACHERS.",ou=Groups,dc=max-server");
+define("LDAP_OU_TEACHERS", "cn=Teachers,ou=Groups,dc=max-server");
 
 define("LDAP_OU_DUSERS", "cn=Domain Users,ou=Groups,dc=max-server");
 
@@ -58,8 +58,7 @@ define("SAMBA_PROFILES", '\\\\max-server\profiles\\');
 // RUTA a la clase smarty
 define("SMARTY_REQUIRE","/usr/share/php/smarty/Smarty.class.php");
 // cache de smart
-define("SMARTY_CACHE", "/cache");
-//define("SMARTY_CACHE", "/var/lib/max-control/cache");
+define("SMARTY_CACHE", "/var/lib/max-control/cache");
 
 // ruta a las plantillas mejor no editar
 define("SMARTY_TEMPLATES", "/templates");
@@ -80,6 +79,9 @@ define("TFTPBOOT", "/var/lib/tftpboot/");
 define("PXELINUXCFG", "/var/lib/tftpboot/pxelinux.cfg/");
 
 
+// compartir ISOS
+define("ISOS_PATH", "/home/samba/shares/isos/");
+
 $site["public_modules"]=array();
         
 $site["private_modules_admin"]=array(
@@ -90,12 +92,11 @@ $site["private_modules_admin"]=array(
         #"compartir" => "Compartir carpetas",
         "power" => "Apagado y reinicio",
         "boot" => "Programar arranque equipos",
-        #"backhardding" => "Backharddi-NG",
         );
 
 $site["private_modules_teacher"]=array(
         "miperfil" => "Mi perfil",
-        #"isos" => "Distribuir ISOS",
+        "isos" => "Distribuir ISOS",
         #"compartir" => "Compartir carpetas",
         "power" => "Apagado y reinicio",
         );

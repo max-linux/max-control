@@ -30,7 +30,7 @@ define("LDAP_OU_ADMINS", "cn=Administrators,ou=Groups,dc=max-server");
 
 // si no existe crearlo con EBOX
 define("TEACHERS", "Teachers");
-define("LDAP_OU_TEACHERS", "cn=".TEACHERS.",ou=Groups,dc=max-server");
+define("LDAP_OU_TEACHERS", "cn=Teachers,ou=Groups,dc=max-server");
 
 
 
@@ -82,6 +82,11 @@ define("POWEROFF_REBOOT_TIMEOUT", 20);
 define("TFTPBOOT", "/var/lib/tftpboot/");
 define("PXELINUXCFG", "/var/lib/tftpboot/pxelinux.cfg/");
 
+
+// compartir ISOS
+define("ISOS_PATH", "/home/samba/shares/isos/");
+
+
 $site["public_modules"]=array();
         
 $site["private_modules_admin"]=array(
@@ -91,12 +96,12 @@ $site["private_modules_admin"]=array(
         #"isos" => "Distribuir ISOS",
         #"compartir" => "Compartir carpetas",
         "power" => "Apagado y reinicio",
-        #"boot" => "Programar arranque equipos",
+        "boot" => "Programar arranque equipos",
         );
 
 $site["private_modules_teacher"]=array(
         "miperfil" => "Mi perfil",
-        #"isos" => "Distribuir ISOS",
+        "isos" => "Distribuir ISOS",
         #"compartir" => "Compartir carpetas",
         "power" => "Apagado y reinicio",
         );

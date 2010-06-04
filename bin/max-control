@@ -102,3 +102,12 @@ if [ "$1" = "pxe" ]; then
   pyboot ${ARGS}
   exit 0
 fi
+
+
+############################################################################
+if [ "$1" = "isos" ]; then
+  args=$@
+  ARGS=${args##isos}
+  pyisos ${ARGS}
+  exit 0
+fi
