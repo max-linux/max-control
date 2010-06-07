@@ -24,6 +24,10 @@ $active_module=$url->get("module");
 $active_action=$url->get("action");
 $active_subaction=$url->get("subaction");
 
+if ( ! $permisos->is_connected() ) {
+    $url->ir("","");
+}
+
 $module_actions=array(
         "editar" => "Cambiar contraseña",
 );

@@ -6,6 +6,7 @@
 #error_reporting(1);
 
 include("../conf.inc.php");
+include('../modules/common.inc.php');
 
 class GUI {
     function debug($txt) {
@@ -15,6 +16,12 @@ class GUI {
     function debuga($txt) {
         if($txt == '') return;
         echo "D: ".print_r($txt, true)." \n";
+    }
+    function session_info($txt) {
+        $this->debug("SESSION INFO: ".$txt);
+    }
+    function session_error($txt) {
+        $this->debug("SESSION ERROR:".$txt);
     }
 }
 
@@ -113,11 +120,14 @@ include("../classes/winexe.class.php");
 #$host->boot('max');
 
 
-$gui->debug($ldap->getBootMenus());
+#$gui->debug($ldap->getBootMenus());
 
+#$gui->debug($ldap->lastUID());
+#$gui->debug($ldap->lastGID());
 
-
-
-
-
+$exe=new WINEXE('mario-desktop');
+echo $exe->isLinux();
+echo $exe->mount('test.iso');
+//echo $exe->umount();
+//echo $exe->reboot($exe->mac);
 ?>

@@ -9,6 +9,7 @@
         <form id="aulas" action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
+          <input type='submit' name='button' value="Actualizar archivos PXE" title="Actualizar archivos PXE" /> 
         </form>
         </td> 
     </tr> 

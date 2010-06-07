@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+		      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title>Panel de control</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/style.css" rel="stylesheet" type="text/css" /> 
+<script type="text/javascript" src="js/jquery.js"></script>
+</head>
+<body>
+
+<div id="top">
+</div> 
+<div id="header"> 
+    <a href=""> 
+    <img src="img/title.png" alt="title"/> 
+    </a>
+</div> 
+
+<div id="hmenu">
+</div> 
+
+<h3>Panel de control de Servidor de Centro</h3>
+
+<div id='menu'> 
+</div>
+
+
+<div id="limewrap">
+    <div id="content"><div>
+</div> 
+
+
+<div id="main"> 
+<h2>MAX Control no está configurado.</h2>
+<ol>
+    <li>Dentro de EBOX crea un usuario con permisos de <b>administrador</b>. <br/>
+        <b>(ser&iacute;a recomendable que no uses este usuario para nada más)</b><br/><br/><br/></li>
+
+    <li>Desde EBOX crea el grupo 'Teachers'.<br/>
+    Desde 'MAX Control' se podrán añadir usuarios a este grupo (o desde EBOX).<br/><br/><br/></li>
+    
+    <li>Desde EBOX crea un nuevo Directorio compartido de nombre 'isos'<br/>
+    Edita el control de acceso y añade el grupo profesores 'Teachers' como lectura y escritura.<br/><br/><br/></li>
+    
+    <li>Desde EBOX ver la contraseña de <b>superadministración</b> Menú -&gt;Office -&gt Datos LDAP<br/><br/><br/></li>
+    
+    <li>Editar el archivo /etc/max-control/conf.inc.php:<br/><br/><br/></li>
+        <ul>
+            <li>Cambiar define("CONFIGURED", False); =&gt; por define("CONFIGURED", True);<br/><br/><br/></li>
+            <li>Editar define("LDAP_ADMIN", 'admin') y define("LDAP_PASS", 'EDITAME') con los datos del punto (1)<br/><br/><br/></li>
+            <li>Editar define("LDAP_BINDPW", 'EDITAME') con la contraseña del punto (4)<br/><br/><br/></li>
+        </ul>
+    <li>Vuelve a esta página y podrás entrar con cualquier usuario del dominio<br/><br/><br/></li>
+</ol>
+
+
+</div>
+
+
+
+</div></div>
+<div id="footer"> 
+  <div id='site-bottom'>
+    <div class='main-projects'>
+        <a rel='external' title='Comunidad de Madrid (ventana nueva)' href='http://www.madrid.org/' class='external-link'>
+            <img width='132' height='43' alt='Comunidad de Madrid, Consejeria de Educacion' src='img/consejeria.png' />
+        </a>
+        <a rel='external' title='EducaMadrid (ventana nueva)' href='http://www.educa.madrid.org' class='external-link'>
+            <img width='132' height='43' alt='EducaMadrid' src='img/educamadrid.png' />
+        </a>
+    </div>
+    <p class='copyright-notice'><strong>EducaMadrid</strong> - 2010  - Consejeria de Educacion, Comunidad de Madrid</p>
+  </div> 
+</div>
+</body> 
+</html>

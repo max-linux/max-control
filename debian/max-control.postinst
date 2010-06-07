@@ -1,0 +1,60 @@
+#!/bin/sh
+
+
+if [ "$1" = "configure" ]; then
+
+   # create conf.inc.php from LDAP data (create max-control user or update-password)
+
+   rm -f /etc/max-control/conf.inc.php
+   (cd /usr/share/max-control && php init.php )
+   chmod 640 /etc/max-control/conf.inc.php
+   chown root:www-data /etc/max-control/conf.inc.php
+
+
+   chmod 775 /var/lib/max-control/cache
+   chown -R www-data:www-data /var/lib/max-control/cache
+
+   if ! grep -q ^www-data /etc/sudoers; then
+     cat << EOF >> /etc/sudoers
+
+# max-control www-data need to exec /usr/bin/max-control
+www-data	ALL=NOPASSWD: /usr/bin/max-control
+
+
+EOF
+   fi
+
+   # copy netlogon files
+   if [ -d /home/samba/netlogon ] && [ ! -e /home/samba/netlogon/.lock ]; then
+       for fname in $(find /usr/share/max-control/netlogon/ -type f);do
+           cp "$fname" /home/samba/netlogon/
+       done
+       chown root:root /home/samba/netlogon/*
+       chmod 644 /home/samba/netlogon/*
+       unix2dos /home/samba/netlogon/logon.bat
+       unix2dos /home/samba/netlogon/mount.bat
+       unix2dos /home/samba/netlogon/logon.kix
+       unix2dos /home/samba/netlogon/winvista.win7.win2008.registry.fix.bat
+       unix2dos /home/samba/netlogon/README.txt
+   fi
+
+
+   # TFTPBOOT menus
+   # only copy first time
+   for fname in $(find /usr/share/max-control/tftp.menus/ -type f); do
+       filename=$(basename $fname)
+       [ ! -e /var/lib/tftpboot/pxelinux.cfg/$filename ] && cp $fname /var/lib/tftpboot/pxelinux.cfg/
+   done
+
+   # enable mod_rewrite
+   [ -x /usr/sbin/a2enmod ] && a2enmod rewrite
+
+   if [ -x "/etc/init.d/apache2" ]; then
+    if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+        invoke-rc.d apache2 reload || true
+    else
+        /etc/init.d/apache2 reload || true
+    fi
+  fi
+
+fi

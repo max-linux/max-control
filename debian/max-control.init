@@ -1,0 +1,20 @@
+#!/bin/sh
+
+PYBOOT=/usr/bin/pyboot
+
+
+
+case "$1" in
+    start)
+        echo -n "Generating PXE files: max-control"
+        $PYBOOT --genpxelinux
+        echo "."	
+    ;;
+
+    *)
+        exit 0
+    ;;
+esac
+
+exit 0
+

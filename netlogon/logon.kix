@@ -11,16 +11,14 @@ $DOMAIN="EBOX"
 $timeserver = "@lserver"
 Settime $timeserver
 
-use n: /d
-IF INGROUP("$DOMAIN\Domain Admins")
-  use n: "@lserver\netlogon"
-ENDIF
+;use n: /d
+;IF INGROUP("$DOMAIN\Domain Admins")
+;  use n: "@lserver\netlogon"
+;ENDIF
 
-; mount ISOS in I:
-IF InGroup( "$DOMAIN\Teachers" )
-    use i: /d
-    use i: "@lserver\isos"
-ENDIF
+; montar ISOS
+use i: /d
+use i: "@lserver\isos"
 
 IF NOT EXIST ("$VOL")
     use $VOL /d
@@ -180,7 +178,7 @@ IF NOT EXIST ("$VOL\Escritorio\Programas")
 ENDIF
 
 
-; cargar group shares desde Z: a J:
+; cargar group shares desde Y: a J:
 IF EXIST ("@lserver\netlogon\shares.kix")
      $SharesCMD = '%comSpec% /c @lserver\netlogon\kix32 @lserver\netlogon\shares.kix'
      Shell $SharesCMD

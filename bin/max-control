@@ -91,6 +91,7 @@ fi
 if [ "$1" = "genlogonshares" ]; then
   #pygenlogonshares 'ou=Groups,dc=max-server'
   pygenlogonshares "$2" > /home/samba/netlogon/shares.kix
+  unix2dos /home/samba/netlogon/shares.kix
   exit 0
 fi
 
