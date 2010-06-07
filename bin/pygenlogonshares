@@ -9,10 +9,24 @@ import sys
 SHARED_DIR="/home/samba/groups/"
 
 
-if len(sys.argv) != 2:
-    sys.exit(1)
 
-GROUPS=sys.argv[1]
+
+def read_conf(varname):
+    f=open(CONF, 'r')
+    data=f.readlines()
+    f.close()
+    
+    for line in data:
+        if line.startswith('define') and varname in line:
+            if len(line.split('"')) >= 3:
+                return line.split('"')[3]
+            if len(line.split("'")) >= 3:
+                return line.split("'")[3]
+    return ''
+
+CONF="/etc/max-control/conf.inc.php"
+GROUPS=read_conf('LDAP_OU_GROUPS')
+DOMAIN=read_conf('LDAP_DOMAIN')
 
 l = ldap.initialize('ldap://localhost:389')
 results = l.search_s(GROUPS,ldap.SCOPE_SUBTREE,'(cn=*)',['cn', 'memberUid', 'sambaGroupType', 'gidNumber'])
@@ -59,5 +73,5 @@ for group in sharedgroups:
 IF INGROUP("%s\%s")
   use %s: "@lserver\%s"
 ENDIF
-"""%("EBOX",group,chr(LAST+96),group)
+"""%(DOMAIN,group,chr(LAST+96),group)
     LAST=LAST-1

@@ -35,7 +35,7 @@ require("../classes/winexe.class.php");
 require("../classes/ldap.class.php");
 
 /* check IP address */
-//$gui->debug("<pre>".print_r($_SERVER, true) . "</pre>");
+$gui->debug("<pre>".print_r($_SERVER, true) . "</pre>");
 
 if ( ! isset($_SERVER['REMOTE_ADDR']) ) {
     die("error: bad origin");
@@ -48,27 +48,29 @@ if ( ! pruebas) {
 }
 
 
-$mac="08:00:27:96:0d:e6";
+$mac=leer_datos('mac');
 
-$ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
+$ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
 
 $changed=false;
 
 $computers=$ldap->get_computers();
+//$gui->debuga($computers);
 foreach($computers as $c) {
-    if ( isset($c->macAddress ) && $c->macAddress == $mac) {
+    if ( isset($c->macAddress ) && strtolower($c->macAddress) == strtolower($mac) ) {
         $gui->debug("found computer ". $c->hostname());
-        if ( $c->resetBoot() )
+        if ( $c->resetBoot() ) {
             $changed=true;
             break;
+        }
     }
 }
 $ldap->disconnect();
 
 if ($changed)
-    echo "ok";
+    echo "ok\n";
 else
-    echo "error: not found";
+    echo "error: not found\n";
 
 
 

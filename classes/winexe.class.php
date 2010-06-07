@@ -64,7 +64,7 @@ class WINEXE {
         if ( ! $this->initialized )
             $this->init();
         
-        $targetcmd="sudo $targetcmd";
+        $targetcmd="sudo max-control $targetcmd";
         $gui->debug("WINEXE:linuxexe() cmd='$targetcmd'");
         
         // test for libssh2-php
@@ -215,7 +215,7 @@ class WINEXE {
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -s -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Apagado remoto desde max-control"');
         else {
-            return $this->linuxexe('shutdown -h now');
+            return $this->linuxexe('poweroff '.POWEROFF_REBOOT_TIMEOUT);
         }
     }
     
@@ -225,7 +225,7 @@ class WINEXE {
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -r -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Reinicio remoto desde max-control"');
         else {
-            return $this->linuxexe('shutdown -r now');
+            return $this->linuxexe('reboot '.POWEROFF_REBOOT_TIMEOUT);
         }
     }
     
@@ -240,11 +240,35 @@ class WINEXE {
         // $output[0] can be OK or ERROR
         $gui->debug("WINEXE:wakeonlan($mac)<pre>".print_r($output, true)."</pre>");
         if ( isset($output[0]) && ($output[0] == 'OK') ) {
-            $gui->session_info("Equipo '".$this->hostname."' enviado paquete WOL.");
+            $gui->session_info("Equipo '".$this->hostname."' enviado paquete WAKEONLAN.");
             return true;
         }
         $gui->session_error("Error al enviar paquete WOL al equipo '".$this->hostname);
         return false;
+    }
+    
+    function mount( $iso ) {
+        global $gui;
+        if (! $this->isLinux() ) {
+            // FIXME
+            $gui->session_error("El montaje de isos en Windows aun no está soportado");
+            return; //$this->windowsexe("\\max-server\netlogon\mount.bat mount $iso");
+        }
+        else {
+            return $this->linuxexe("mount '$iso'");
+        }
+    }
+    
+    function umount() {
+        global $gui;
+        if (! $this->isLinux() ){
+            // FIXME
+            $gui->session_error("El montaje de isos en Windows aun no está soportado");
+            return; //$this->windowsexe("\\max-server\netlogon\mount.bat umount");
+        }
+        else {
+            return $this->linuxexe("umount");
+        }
     }
 
 

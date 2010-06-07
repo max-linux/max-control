@@ -80,6 +80,31 @@ function time_end() {
     return ($mtime - $starttime);
 }
 
+function createPassword() {
+    $chars = "234567890abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
+    $i = 0;
+    $password = "";
+    while ($i <= 10) {
+        $password .= $chars{mt_rand(0,strlen($chars))};
+        $i++;
+    }
+    return $password;
+}
+
+function readLDAPFile($fname, $varname) {
+    $value='';
+    $file_handle = fopen($fname, 'r');
+    while (!feof($file_handle) ) {
+        $line_of_text = fgets($file_handle);
+        $parts = preg_split ("/\s+/", $line_of_text);
+        if ( $parts[0] == $varname ) {
+            $value=$parts[1];
+        }
+    }
+    fclose($file_handle);
+    return $value;
+}
+
 
 /*
 

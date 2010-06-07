@@ -10,7 +10,8 @@ include($path . '/conf.inc.php');
 include($path . '/modules/common.inc.php');
 
 if ( ! CONFIGURED ) {
-    die("Editar el archivo /etc/max-control/conf.inc.php y poner CONFIGURED como True");
+    include($path . '/templates/no-configurado.html');
+    die();
 }
 
 

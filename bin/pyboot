@@ -16,7 +16,10 @@ def read_conf(varname):
     
     for line in data:
         if line.startswith('define') and varname in line:
-            return line.split('"')[3]
+            if len(line.split('"')) >= 3:
+                return line.split('"')[3]
+            if len(line.split("'")) >= 3:
+                return line.split("'")[3]
     return ''
 
 CONF="/etc/max-control/conf.inc.php"
@@ -84,10 +87,13 @@ def genPXELINUX(aulas):
             
             #
             # no borrar la MAC si el equipo apunta a *.menu o a default
-            # 
-            boot=os.readlink(macfile)
-            if ".menu" in boot or "default" in boot:
-                continue
+            #
+            try:
+                boot=os.readlink(macfile)
+                if ".menu" in boot or "default" in boot:
+                    continue
+            except:
+                pass
             
             
             if os.path.exists( macfile ):
@@ -154,9 +160,14 @@ def bootAula(boot, aula):
     
     os.symlink( bootfile, aulafile )
 
+def deleteMAC(mac):
+    macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
+    if os.path.exists( macfile ):
+        os.unlink(macfile)
+
 
 try:
-    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help", "clean", "genpxelinux", "boot=", "mac=", "getboot=", "getbootaula=", "aula="])
+    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help", "clean", "genpxelinux", "boot=", "mac=", "getboot=", "getbootaula=", "aula=", "delete="])
 except getopt.error, msg:
     print (msg)
     print ("for command line options use pyboot --help")
@@ -200,6 +211,10 @@ for o, a in OPTS:
         
     elif o == "--aula":
         aula=a
+    
+    elif o == "--delete":
+        deleteMAC(a)
+        sys.exit(0)
     
     else:
         print "unknow option"

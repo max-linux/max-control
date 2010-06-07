@@ -22,9 +22,12 @@ $action=$url->get("action");
 $subaction=$url->get("subaction");
 
 
-
+if ( ! $permisos->is_connected() ) {
+    $url->ir("","");
+}
 
 if ( ! $permisos->is_admin() ) {
+    $gui->session_error("Sólo pueden acceder al módulo de usuarios los administradores.");
     $url->ir("","");
 }
 
@@ -225,11 +228,10 @@ function guardarnuevo($module, $action, $subaction) {
     }
     
     $user = new USER($_POST);
-    $user->newUser();
-    //if ( ! $user->newUser() ) 
-    //    $url->ir($module, "add");
+    if ( ! $user->newUser() ) 
+        $url->ir($module, "add");
     
-    //$url->ir($module, "ver");
+    $url->ir($module, "ver");
 }
 
 function groups($module, $action, $subaction) {
@@ -436,14 +438,6 @@ switch($action) {
     
     
     default: $gui->session_error("Accion desconocida '$action' en modulo usuarios");
-}
-
-
-
-/**************** end groupmembers ******/
-
-if ($action == "admin") {
-    $gui->add( "<h1>FIXME PENDIENTE</h1>" );
 }
 
 

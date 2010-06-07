@@ -1,3 +1,43 @@
+max-control (0.6.1) max; urgency=low
+
+  * Add CONFIGURED to init.php
+  * Enable isos menu in admin
+
+ -- root <root@max-server>  Mon, 07 Jun 2010 16:01:30 +0200
+
+max-control (0.6) max; urgency=low
+
+  * Add support to mount ISOS on linux
+  * Allow to reboot simple computers
+  * Add init.php script to create /etc/max-control/conf.inc.php in every update
+  * Create max-control admin user in init.php
+  * Fix user changePassword method (now works)
+  * Move pxelinux.cfg menus to /usr and install if not exists
+  * Python fix read_conf (works with simple and doble colon)
+
+ -- root <root@max-server>  Mon, 07 Jun 2010 15:57:28 +0200
+
+max-control (0.5.1) max; urgency=low
+
+  * Fix api.php to read MAC from $_GET
+  * Delete MAC link and set computer in classroom or default.
+
+ -- root <root@max-server>  Sat, 05 Jun 2010 12:13:02 +0200
+
+max-control (0.5) max; urgency=low
+
+  * Add no-configured HTML with info to configure max-control
+  * Fix ebox-max-control modulename
+  * Add netlogon/README.txt with policies and domain info.
+
+ -- root <root@max-server>  Fri, 04 Jun 2010 19:01:48 +0200
+
+max-control (0.4.1) max; urgency=low
+
+  * Add ebox-max-control package based on ebox-backharddi-ng package
+
+ -- root <root@max-server>  Fri, 04 Jun 2010 17:17:27 +0200
+
 max-control (0.4) max; urgency=low
 
   * Add and delete aulas

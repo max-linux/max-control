@@ -350,14 +350,21 @@ class USER extends BASE {
     function update_password($new) {
         global $gui;
         $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
-        $newpassword=$ldap->additionalPasswords($new, $this->uid);
+        $newpassword=$ldap->additionalPasswords($new, $this->uid, $samba=true);
+        $newpassword['userPassword']="{SHA}".base64_encode(sha1($new, TRUE));
         $gui->debuga($newpassword);
         $r = ldap_modify($ldap->cid, $this->get_save_dn() , $newpassword );
-        $ldap->disconnect();
-        if ($r)
+        
+        if ($r) {
+            $gui->session_error("Contraseñas actualizadas: ".ldap_error($ldap->cid));
+            $ldap->disconnect();
             return true;
-        else
+        }
+        else {
+            $gui->session_error("Error cambiando contraseñas: ".ldap_error($ldap->cid));
+            $ldap->disconnect();
             return false;
+        }
     }
     
     function newUser() {
@@ -489,6 +496,7 @@ class USER extends BASE {
         $gui->debuga($output);
         
         $gui->session_info("Usuario añadido correctamente.");
+        return true;
     }
     
     function delUser($delprofile='') {
@@ -665,14 +673,28 @@ class COMPUTER extends BASE {
         $gui->session_error("El equipo '".$this->hostname()."' no está encendido o no se pudo resolver su IP.");
     }
     
+    function genPXELinux() {
+        global $gui;
+        //bin/max-control pxe --genpxelinux
+        exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", &$output);
+        return;
+    }
+    
     function resetBoot() {
         global $gui;
         $gui->debug("COMPUTER:resetBoot() bootFile=".$this->bootFile);
         // reset boot file in this computer (empty)
         $this->ldapdata["bootFile"] = array();
         $this->bootFile = array();
-        //FIXME add/radd synlinks in TFTPBOOT
-        return $this->save( array('bootFile') );
+        
+        $res = $this->save( array('bootFile') );
+        
+        exec("sudo ".MAXCONTROL." pxe --delete='".$this->macAddress."' 2>&1", &$output);
+        $gui->debuga($output);
+        
+        $this->genPXELinux();
+        $this->boot('aula');
+        return $res;
     }
     
     function boot($conffile) {
@@ -694,14 +716,21 @@ class COMPUTER extends BASE {
             return false;
         }
         
+        if ($conffile == '') {
+            $conffile="default";
+        }
+        
         /****************************/
         if ( $conffile == 'aula') {
             if ( isset($this->sambaProfilePath) && $this->sambaProfilePath != '' ) {
                 $conffile = preg_replace('/\s+/', '_', $this->sambaProfilePath);
             }
+            else {
+                $conffile='default';
+            }
         }
         
-        //quitar espacios del aula po '_'
+        //quitar espacios del aula por '_'
         $conffile=preg_replace('/\s+/', '_', $conffile);
         
         $mac=$this->macAddress;
@@ -850,7 +879,7 @@ class AULA extends BASE {
     function genPXELinux() {
         global $gui;
         //bin/max-control pxe --genpxelinux
-        exec("sudo ".MAXCONTROL." pxe --genpxelinux", &$output);
+        exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", &$output);
         return;
     }
     
@@ -1144,9 +1173,9 @@ class GROUP extends BASE {
 }
 
 class ISO extends BASE{
-    var $filename;
-    var $size;
-    var $volumeid;
+    var $filename='';
+    var $size='';
+    var $volumeid='';
     
     function save() {
         return;
@@ -1559,8 +1588,9 @@ class LDAP {
     function lastUID() {
         global $gui;
         $uidNumbers=array();
-        $this->search("(objectclass=posixAccount)", $basedn=LDAP_OU_USERS);
+        $this->search("(objectclass=posixAccount)", $basedn=LDAP_BASEDN);
         while($attrs = $this->fetch()) {
+            //$gui->debug("uid=".$attrs['uid'][0]." uidNumber=".$attrs['uidNumber'][0]);
             $uidNumbers[]=$attrs['uidNumber'][0];
         }
         //$gui->debuga($uidNumbers);
@@ -1581,9 +1611,9 @@ class LDAP {
         */
         global $gui;
         $gidNumbers=array();
-        $this->search("(objectclass=posixGroup)", $basedn=LDAP_OU_GROUPS);
+        $this->search("(objectclass=posixGroup)", $basedn=LDAP_BASEDN);
         while($attrs = $this->fetch()) {
-            //$gui->debuga($attrs);
+            //$gui->debug("uid=".$attrs['cn'][0]." uidNumber=".$attrs['gidNumber'][0]);
             $gidNumbers[]=$attrs['gidNumber'][0];
         }
         //$gui->debuga($gidNumbers);
@@ -1850,15 +1880,20 @@ class LDAP {
         return $menus;
     }
 
-    function getISOS() {
+    function getISOS($filter='') {
         global $gui;
         $isos=array();
         exec("sudo ".MAXCONTROL." isos --getisos", &$output);
         $gui->debug("LDAP:getISOS()<pre>".print_r($output, true)."</pre>");
         foreach($output as $iso) {
-            /* super_grub_disk_0.9783.iso|4.00 MB|CDROM */
+            /* test.iso|4.00 MB|CDROM */
             //$gui->debuga($iso);
             list ($filename, $size, $volumeid)=split('\|', $iso);
+            if ($filter != '') {
+                if (! preg_match("/$filter/i", $filename)) {
+                    continue;
+                }
+            }
             $data=array("filename"=>$filename, 
                         "size"=>$size, 
                         "volumeid"=> $volumeid);

@@ -1,0 +1,144 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+"""
+
+gconf ebox wrapper
+
+
+"""
+import pwd
+import sys
+import os
+import commands
+from pprint import pprint
+
+PID=0
+
+def kill(pid):
+    if pid != 0:
+        print "killing PID=%s"%pid
+        os.kill(pid, 15)
+
+def convertList(txt):
+    return txt.replace('[','').replace(']','').split(',')
+
+def ChangeUid():
+    try:
+        a=pwd.getpwnam('ebox')
+        uid=a.pw_uid
+        path=a.pw_dir
+    except:
+        print "Error getting info of ebox user"
+        sys.exit(1)
+    
+    #print "change to uid %s"%uid
+    os.setuid(uid)
+
+
+def launch_dbus():
+    global PID
+    #dbus-launch --sh-syntax
+    result=commands.getoutput('dbus-launch --sh-syntax 2>&1').split('\n')
+    for line in result:
+        if "DBUS_SESSION_BUS_PID" in line:
+            PID=int(line.split('=')[1].replace(';',''))
+            #print "PID=%s"%PID
+        if not "export" in line and "DBUS_SESSION_BUS_ADDRESS" in line:
+            os.environ["DBUS_SESSION_BUS_ADDRESS"]=line.split('=', 1)[1].replace(';','').replace("'", "")
+            #print os.environ["DBUS_SESSION_BUS_ADDRESS"]
+
+# converto to EBOX user
+ChangeUid()
+# launch dbus-launch get PID and DBUS_SESSION to kill latter
+launch_dbus()
+
+
+"""
+/var/lib/ebox/gconf/ebox/modules/samba/SambaShares/keys/samb5204/%gconf.xml
+<?xml version="1.0"?>
+<gconf>
+        <entry name="readOnly" mtime="1274629096" type="bool" value="false"/>
+        <entry name="enabled" mtime="1274629096" type="bool" value="true"/>
+        <entry name="path_selected" mtime="1274629096" type="string">
+                <stringvalue>ebox</stringvalue>
+        </entry>
+        <entry name="ebox" mtime="1274629096" type="string">
+                <stringvalue>isos</stringvalue>
+        </entry>
+        <entry name="share" mtime="1274629096" type="string">
+                <stringvalue>isos</stringvalue>
+        </entry>
+        <entry name="comment" mtime="1274629096" type="string">
+                <stringvalue>Archivos ISO</stringvalue>
+        </entry>
+</gconf>
+
+/var/lib/ebox/gconf/ebox/modules/samba/SambaShares/keys/samb5204/access/%gconf.xml
+<?xml version="1.0"?>
+<gconf>
+        <entry name="order" mtime="1274629114" type="list" ltype="string">
+                <li type="string">
+                        <stringvalue>samb9979</stringvalue>
+                </li>
+        </entry>
+</gconf>
+
+/var/lib/ebox/gconf/ebox/modules/samba/SambaShares/keys/samb5204/access/keys/samb9979/%gconf.xml
+<?xml version="1.0"?>
+<gconf>
+        <entry name="readOnly" mtime="1274629114" type="bool" value="false"/>
+        <entry name="user_group_selected" mtime="1274629114" type="string">
+                <stringvalue>group</stringvalue>
+        </entry>
+        <entry name="group" mtime="1274629114" type="string">
+                <stringvalue>2005</stringvalue>
+        </entry>
+        <entry name="permissions" mtime="1274629114" type="string">
+                <stringvalue>readWrite</stringvalue>
+        </entry>
+</gconf>
+
+"""
+_shares=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/order")
+
+shares=convertList(_shares)
+
+for share in shares:
+    print "[%s]"%share
+    name=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/keys/%s/share"%share)
+    enabled=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/keys/%s/enabled"%share)
+    path=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/keys/%s/path_selected"%share)
+    
+    # permisos
+    groups=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/keys/%s/access/order"%share)
+    groups=convertList(groups)
+    groupslist={}
+    print "groups=", groups
+    for group in groups:
+        userid=''
+        groupid=''
+        user_or_group=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/keys/%s/access/keys/%s/user_group_selected"%(share, group))
+        if user_or_group == "user":
+            userid=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/keys/%s/access/keys/%s/user"%(share, group))
+        
+        elif user_or_group == "group":
+            groupid=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/keys/%s/access/keys/%s/group"%(share, group))
+        
+        permissions=commands.getoutput("gconftool-2 --get /ebox/modules/samba/SambaShares/keys/%s/access/keys/%s/permissions"%(share, group))
+        groupslist[group]={'uid':userid, 'guid':groupid, 'permissions':permissions, "user_or_group":user_or_group}
+    
+    pprint(groupslist)
+    
+    print " name=%s"%name
+    print " enabled=%s"%enabled
+    print " path=%s"%path
+    print " groups="%groupslist
+    print "\n"
+
+
+# kill dbus
+if PID != 0:
+    print "killing PID=%s"%PID
+    os.kill(PID, 15)
+

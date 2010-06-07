@@ -8,10 +8,22 @@ Standards-Version: 3.8.4
 Package: max-control
 Architecture: all
 Depends:  libapache2-mod-php5, php5, php5-ldap, libssh2-php, php5-mcrypt, php5-mhash,
-          apache2, smarty, libjs-jquery,
+          apache2, smarty, libjs-jquery, python-gconf,
           samba-common-bin, tofrodos, python-configobj, atftpd | dnsmasq, syslinux, genisoimage,
           ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
 Description: Small PHP web based app to admin LDAP data from EBox
- max-control is a small PHP LDAp frontend to configure, users, groups, 
+ max-control is a small PHP LDAP frontend to configure, users, groups, 
  computers and make some actions like reboot, poweroff or mount ISO files
 
+
+
+Package: ebox-max-control
+Architecture: all
+Depends: ebox (>= 1.5), ebox-dhcp (>= 1.5), max-control
+Description: eBox - MAX Conttrol
+ eBox Platform is an open source small business server that can act as
+ a Gateway, a Unified Threat Manager, an Office Server, an Infrastructure
+ Manager, a Unified Communications Server or a combination of them. One
+ single, easy-to-use platform to manage all your network services.
+ .
+ This module adds a MAX Control interface to your eBox installation.

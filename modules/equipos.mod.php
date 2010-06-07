@@ -27,6 +27,10 @@ if ( ! $permisos->is_connected() ) {
     $url->ir("","");
 }
 
+if ( ! $permisos->is_admin() ) {
+    $gui->session_error("Sólo pueden acceder al módulo de equipos los administradores.");
+    $url->ir("","");
+}
 /*************************************************/
 
 
@@ -244,7 +248,6 @@ if ($active_action == "aulas" && $active_subaction == 'equipos') {
 if ($active_action == "equipos" && $active_subaction == 'guardar') {
     //$gui->add( "<pre>".print_r($_POST, true)."</pre>" );
     $aula=leer_datos('aula');
-    //FIXME
     /* Add computer
     Array
     (

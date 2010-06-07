@@ -13,7 +13,9 @@ global $module_actions;
 
 $url=new URLHandler();
 
-
+if ( ! $permisos->is_connected() ) {
+    $url->ir("","");
+}
 
 if ( ! $permisos->is_admin() ) {
     $gui->session_error("No es administrador para acceder al módulo de arranque");
@@ -33,9 +35,25 @@ $module_actions=array(
         #"config" => "Configurar tipos de arranque",
 );
 
+function refresh($module, $action, $subaction) {
+    global $gui, $url;
+    exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", &$output);
+    if ( ! isset($output[0]) )
+        $gui->session_info("Actualizados aulas y equipos para arranque PXE.");
+    else
+        $gui->session_error("Error actualiando aulas y equipos para arranque PXE:<br/><pre>". implode("\n<br/>", $output). "</pre>");
+    $url->ir($module, "");
+}
+
 
 function equipo($module, $action, $subaction) {
     global $gui, $url;
+    
+    $button=leer_datos('button');
+    $gui->debug("button='$button'");
+    if( $button !='' && $button != "Buscar"){
+        $url->ir($module, "refresh");
+    }
     
     // mostrar lista de equipos con macAddress
     $ldap=new LDAP();
@@ -102,6 +120,14 @@ function editarequipodo($module, $action, $subaction) {
 
 function aula($module, $action, $subaction) {
     global $gui, $url;
+    
+    $button=leer_datos('button');
+    $gui->debug("button='$button'");
+    if( $button !='' && $button != "Buscar"){
+        $url->ir($module, "refresh");
+    }
+    
+    
     // mostrar lista de aulas
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -170,6 +196,9 @@ function editaaulado($module, $action, $subaction) {
 //$gui->session_info("Accion '$action' en modulo '$module'");
 switch($action) {
     case "": $url->ir($module, "equipo"); break;
+    
+    case "refresh": refresh($module, $action, $subaction); break;
+    
     case "equipo": equipo($module, $action, $subaction); break;
     case "editarequipo": editarequipo($module, $action, $subaction); break;
     case "editarequipodo": editarequipodo($module, $action, $subaction); break;

@@ -13,4 +13,8 @@ www                   usr/share/max-control/
 netlogon              usr/share/max-control/
 conf.inc.php.example  usr/share/max-control/
 
+conf.inc.php.init     usr/share/max-control/
+init.php              usr/share/max-control/
+
 tftpboot              var/lib/
+tftp.menus            usr/share/max-control/
