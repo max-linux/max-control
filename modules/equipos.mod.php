@@ -68,11 +68,13 @@ if ($active_action == "ver") {
     $equipos=$ldap->get_computers( $filter );
     $urlform=$url->create_url($active_module, $active_action);
     $urleditar=$url->create_url($active_module,'editar');
+    $urlborrar=$url->create_url($active_module,'borrar');
     
     $data=array("equipos" => $equipos, 
                 "filter" => $filter, 
                 "urlform" => $urlform, 
-                "urleditar"=>$urleditar);
+                "urleditar"=>$urleditar,
+                "urlborrar"=>$urlborrar);
     $gui->add( $gui->load_from_template("ver_equipos.tpl", $data) );
 }
 
@@ -111,6 +113,30 @@ if ($active_action == "updatedo") {
     foreach($equipos as $equipo) {
         $equipo->getMACIP();
     }
+}
+
+if ($active_action == "borrar") {
+    $data=array(
+            "urlaction"=>$url->create_url($active_module, 'borrardo'),
+            "equipo" =>leer_datos('subaction')
+                );
+    $gui->add( $gui->load_from_template("borrar_equipo.tpl", $data) );
+}
+
+if ($active_action == "borrardo") {
+    $equipo=leer_datos('equipo');
+    $ldap=new LDAP();
+    $equipos=$ldap->get_computers($equipo . '$');
+    $gui->debuga($equipos);
+    if ( isset($equipos[0]) ) {
+        $gui->debuga($equipos[0]);
+        //$equipos[0]->delComputer();
+        $gui->session_info("Equipo '$equipo' borrado del dominio.");
+    }
+    else {
+        $gui->session_error("El equipo '$equipo' no se ha encontrado");
+    }
+    $url->ir($active_module, "ver");
 }
 
 

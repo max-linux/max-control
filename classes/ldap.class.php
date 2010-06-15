@@ -285,20 +285,6 @@ class USER extends BASE {
         $gui->debug("USER:set_role('$role')");
         $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
-        /*
-        $ldap->addUserToGroup($this->uid, LDAP_OU_DUSERS);
-        
-        // si el rol es profesor añadir a profesores
-        if ($this->role == 'teacher') {
-            $ldap->addUserToGroup($this->uid, LDAP_OU_TEACHERS);
-        }
-        // si el rol es administrador añadir a administradores
-        if ($this->role == 'admin') {
-            $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
-            $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
-        }
-        */
-        
         // add to Domain Users
         $ldap->addUserToGroup($this->uid, LDAP_OU_DUSERS);
         
@@ -755,6 +741,44 @@ class COMPUTER extends BASE {
         }
         return $output[0];
     }
+    
+    function teacher_in_computer() {
+        if ( $_SESSION['role']=='teacher' ) {
+            $teacher=$_SESSION['username'];
+            // if computer in aula and teacher in aula
+            
+            if ( isset($this->sambaProfilePath) && $this->sambaProfilePath != '' ) {
+                $ldap=new LDAP();
+                $members=$ldap->get_teacher_from_aula($this->sambaProfilePath);
+                if ( in_array($teacher, $members['ingroup']) ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+    
+    function delComputer() {
+        /*
+        *  smbpasswd -x 'wxp64$'
+        */
+        $result=false;
+        
+        //borrar del LDAP
+        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $r=ldap_delete ( $ldap->cid , "uid=".$this->uid.",".LDAP_OU_COMPUTERS );
+        if ( ! $r)
+            $result=false;
+        
+        $result=true;
+        
+        // borrar de samba
+        exec("sudo ".MAXCONTROL." delcomputer'".$this->uid."' ", &$output);
+        $gui->debuga($output);
+        
+        return $result;
+    }
 }
 
 
@@ -807,6 +831,20 @@ class AULA extends BASE {
             unset ($users['count']);
         }
         return $users;
+    }
+    
+    function teacher_in_aula() {
+        global $gui;
+        if ( $_SESSION['role']=='teacher' ) {
+            $teacher=$_SESSION['username'];
+            if ( in_array($teacher, $this->get_users() ) ) {
+                $gui->debug("Teacher '$teacher' in aula '".$this->cn."'");
+                return true;
+            }
+            $gui->debug("Teacher '$teacher' not in aula '".$this->cn."'");
+            return false;
+        }
+        return true;
     }
     
     function get_num_computers() {
@@ -1109,13 +1147,13 @@ class GROUP extends BASE {
     */
     }
     
-    function newGroup($createshared) {
+    function newGroup($createshared, $grouptype=2) {
         global $gui;
         
         $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         $this->displayName=$this->cn;
-        $this->sambaGroupType=2;
+        $this->sambaGroupType=$grouptype;
         $this->objectClass=array('posixGroup', 'sambaGroupMapping', 'eboxGroup');
         
         
@@ -1292,7 +1330,12 @@ class LDAP {
             $filter='*';
         $teachers=array();
         $gui->debug("ldap::get_teachers_uids() ".LDAP_OU_TEACHERS);
-        $this->search("(cn=*)", $basedn=LDAP_OU_TEACHERS);
+        @$this->search("(cn=*)", $basedn=LDAP_OU_TEACHERS);
+        
+        if (! $this->sr ) {
+            return $teachers;
+        }
+        //$gui->debug("res=".$this->sr." ".ldap_error($this->cid));
         
         while($attrs = $this->fetch()) {
             if ( isset($attrs['memberUid']) ) {
@@ -1442,7 +1485,10 @@ class LDAP {
         
         if( $aula->cn=='' ) {
             $gui->debug("aula not found");
-            return array();
+            return array(
+                    "ingroup" => $ingroup,
+                    "outgroup" => $uids
+                    );
         }
         
         if ( ! isset($aula->ldapdata['memberUid']) ) {
@@ -1541,7 +1587,7 @@ class LDAP {
         return false;
     }
 
-    function get_groups($groupfilter='*') {
+    function get_groups($groupfilter='*', $include_teachers=false) {
         global $gui;
         if ( ! $this->connect() )
             return false;
@@ -1555,8 +1601,11 @@ class LDAP {
             //$gui->debug("<pre>".print_r($attrs, true)."</pre>");
             if ( isset($attrs['sambaGroupType']) && 
                  ($attrs['sambaGroupType'][0] == 2) &&
-                 ($attrs['gidNumber'][0] >= 2000) &&
-                 ($attrs['cn'][0] != TEACHERS)) {
+                 ($attrs['gidNumber'][0] >= 2000) ) {
+                 
+                    if (! $include_teachers && $attrs['cn'][0] != TEACHERS) {
+                        continue;
+                    }
                 $groups[]=new GROUP($attrs);
             }
         }

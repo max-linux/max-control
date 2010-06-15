@@ -5,6 +5,7 @@
 <title>Panel de control</title> 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="{$baseurl}/css/style.css" rel="stylesheet" type="text/css" /> 
+<link rel="shortcut icon" href="{$baseurl}/img/favicon.ico" type="image/x-icon" />
 <script type="text/javascript" src="{$baseurl}/js/jquery.js"></script>
 {if isset($pruebas)}
     <link href="{$baseurl}/css/debug.css" type="text/css" rel="stylesheet" /> 

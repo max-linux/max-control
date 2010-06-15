@@ -1,3 +1,20 @@
+max-control (0.7.1) max; urgency=low
+
+  * Don't show aula if equipo is not in any aulas
+
+ -- root <root@max-server>  Tue, 15 Jun 2010 13:36:26 +0200
+
+max-control (0.7) max; urgency=low
+
+  * Go to change pass in miperfil module by default
+  * Create Teachers group if not exists.
+  * Add button to delete/unregister computers
+  * Add to Depends php5-cli and tree
+  * Add favicon
+  * Enable ISOs mount in windows (need to copy mount.bat to WINDOWS PATH)
+
+ -- root <root@max-server>  Tue, 15 Jun 2010 13:03:15 +0200
+
 max-control (0.6.1) max; urgency=low
 
   * Add CONFIGURED to init.php

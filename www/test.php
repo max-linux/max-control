@@ -33,7 +33,7 @@ $gui = new GUI();
 #die();
 
 include("../classes/ldap.class.php");
-
+include("../classes/winexe.class.php");
 
 
 //echo conectar('ebox','GzxovzAANdxoPux9');
@@ -106,9 +106,16 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 #$gui->debug("\n\n\n");
 
 
+$teachers=$ldap->get_groups('Teachers', $include_teachers=true);
+if ( count($teachers) < 1 ) {
+    $group = new GROUP( array('cn' => 'Teachers' ) );
+    $group->newGroup('');
+}
+else {
+    $gui->debug("El grupo Teachers existe");
+}
 
 
-include("../classes/winexe.class.php");
 
 #$exe=new WINEXE('wxp');
 #echo $exe->isLinux();
@@ -125,9 +132,9 @@ include("../classes/winexe.class.php");
 #$gui->debug($ldap->lastUID());
 #$gui->debug($ldap->lastGID());
 
-$exe=new WINEXE('mario-desktop');
-echo $exe->isLinux();
-echo $exe->mount('test.iso');
+#$exe=new WINEXE('mario-desktop');
+#echo $exe->isLinux();
+#echo $exe->mount('test.iso');
 //echo $exe->umount();
 //echo $exe->reboot($exe->mac);
 ?>

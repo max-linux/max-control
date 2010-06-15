@@ -112,3 +112,10 @@ if [ "$1" = "isos" ]; then
   pyisos ${ARGS}
   exit 0
 fi
+
+############################################################################
+
+if [ "$1" = "delcomputer" ]; then
+  smbpasswd -x "$2"
+  exit 0
+fi

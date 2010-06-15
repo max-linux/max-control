@@ -67,10 +67,6 @@ if ( ! $user ) {
     $user = new USER( $new );
     $user->newUser();
     echo " * Usuario 'max-control' creado.\n";
-#    if ( ! $user->newUser() ) 
-#        echo "No se pudo crear el usuario\n";
-#    else
-#        echo "Usuario creado\n";
 }
 else {
     //change password
@@ -79,7 +75,16 @@ else {
     $user->update_password($LDAP_PASS, $LDAP_ADMIN);
 }
 
-
+// crear grupo de profesores
+$teachers=$ldap->get_groups(TEACHERS, $include_teachers=true);
+if ( ! isset($teachers[0]) ) {
+    $group = new GROUP( array('cn' => TEACHERS ) );
+    $group->newGroup('');
+    echo " * Creado grupo Teachers (profesores).\n";
+}
+else {
+    echo " * El grupo Teachers (profesores) ya existe.\n";
+}
 
 $extra=file_get_contents('conf.inc.php.init');
 $extra = str_replace ( "<?php" , "" , $extra );
