@@ -111,6 +111,9 @@ if ($active_action == "do" && $active_subaction != '') {
     /*$data=array("aula" => $aula, 
                 "action" => $action);
     $gui->debuga($data);*/
+    
+    if ( ! pruebas)
+        $url->ir($active_module, "aulas");
 }
 
 
@@ -175,6 +178,7 @@ if ($active_action == "docomputer" && $active_subaction != '') {
         }
     }
     $gui->debug("Finalizadas acciones tiempo: " . time_end() );
-    $url->ir($active_module, "equipos");
+    if (! pruebas)
+        $url->ir($active_module, "equipos");
 }
 ?>

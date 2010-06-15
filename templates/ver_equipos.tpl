@@ -23,6 +23,7 @@
       <th class=''>IP / MAC</th> 
       <th class=''>Aula</th> 
       <th class=''>Editar</th> 
+      <th class=''>Borrar</th> 
     </tr>
     </thead>
  
@@ -35,6 +36,9 @@
         <td class='tcenter'><span>{$u->attr('sambaProfilePath')}</span></td>
         <td class='tcenter'> 
             <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
+        </td>
+        <td class='tcenter'> 
+            <a href="{$urlborrar}/{$u->hostname()}"><img src="{$baseurl}/img/delete.gif" alt="borrar" /></a>
         </td>
       </tr>
       {/foreach}

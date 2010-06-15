@@ -32,6 +32,10 @@ $module_actions=array(
         "editar" => "Cambiar contraseña",
 );
 
+// si no se pasa acción ir a editar
+if ($url->get("action") == "") {
+    $url->ir($active_module, "editar");
+}
 
 if ($active_action == "editar") {
     $username=$_SESSION['username'];

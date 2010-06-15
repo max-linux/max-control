@@ -12,7 +12,11 @@
             <select name='boot' id='boot' > 
                 <option value=''></option> 
                 {foreach from=$tipos key=k item=o}
+                {if $k == 'aula' && $u->attr('sambaProfilePath') == ''}
+                <!-- empty aula -->
+                {else}
                 <option value='{$k}' {if $k == 'aula'}selected{/if}>{$o} {if $k == 'aula'}({$u->attr('sambaProfilePath')}){/if}</option>
+                {/if}
                 {/foreach}
             </select> 
             

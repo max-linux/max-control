@@ -52,9 +52,9 @@ class WINEXE {
         if ( ! $this->initialized )
             $this->init();
         $cmd=$this->basecmd . "'". $targetcmd ."'";
-        $gui->debug($cmd);
+        $gui->debug("WINEXE:windowsexe cmd=".$cmd);
         exec($cmd, &$output);
-        $gui->debug("<pre>".print_r($output, true)."</pre>");
+        $gui->debug("<pre>OUTPUT:".print_r($output, true)."</pre>");
         return $output;
     }
     
@@ -250,9 +250,7 @@ class WINEXE {
     function mount( $iso ) {
         global $gui;
         if (! $this->isLinux() ) {
-            // FIXME
-            $gui->session_error("El montaje de isos en Windows aun no está soportado");
-            return; //$this->windowsexe("\\max-server\netlogon\mount.bat mount $iso");
+            return $this->windowsexe("mount.bat mount $iso");
         }
         else {
             return $this->linuxexe("mount '$iso'");
@@ -262,9 +260,7 @@ class WINEXE {
     function umount() {
         global $gui;
         if (! $this->isLinux() ){
-            // FIXME
-            $gui->session_error("El montaje de isos en Windows aun no está soportado");
-            return; //$this->windowsexe("\\max-server\netlogon\mount.bat umount");
+            return $this->windowsexe("mount.bat umount");
         }
         else {
             return $this->linuxexe("umount");

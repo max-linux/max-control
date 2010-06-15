@@ -4,7 +4,7 @@
     <title>Panel de control</title> 
     <meta http-equiv=Content-Type content="text/html; charset=utf-8"> 
     <link href="{$baseurl}/css/login.css" type="text/css" rel="stylesheet" /> 
-
+    <link rel="shortcut icon" href="{$baseurl}/img/favicon.ico" type="image/x-icon" />
 {if isset($pruebas)}
     <link href="{$baseurl}/css/debug.css" type="text/css" rel="stylesheet" /> 
     <script type="text/javascript">
