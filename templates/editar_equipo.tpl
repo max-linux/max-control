@@ -108,7 +108,7 @@ function getmac() {
 {/literal}
 
 {*
-{if $pruebas}
+{if $DEBUG}
 {debug}
 {/if}
 *}

@@ -12,7 +12,7 @@ global $site;
 global $module_actions;
 global $url;
 
-if(pruebas) {
+if(DEBUG) {
     error_reporting(E_ALL);
 }
 
@@ -283,35 +283,57 @@ function groupmembersguardar($module, $action, $subaction) {
     Array
     (
         [addtogroup] => Añadir usuarios al grupo
-        [adduser] => profe3
-        [group] => grupoprueba
+        [adduser] => Array
+            (
+                [0] => mario
+                [1] => alumno
+                [2] => max-control
+                [3] => profe4
+            )
+
+        [deluser] => Array
+            (
+                [0] => mario
+                [1] => alumno
+                [2] => max-control
+                [3] => profe4
+            )
+        [group] => Teachers
     )
     */
+    
     $group=leer_datos('group');
-    $adduser=leer_datos('adduser');
-    /*
-    Array
-    (
-        [deluser] => profe2
-        [delfromgroup] => Quitar
-        [group] => grupoprueba
-    )
-    */
-    $deluser=leer_datos('deluser');
+    
+    $addusers=clean_array($_POST, 'adduser');
+    $delusers=clean_array($_POST, 'deluser');
+    
+    $gui->debug("addusers");
+    $gui->debuga($addusers);
+    $gui->debug("<hr><br>delusers ");
+    $gui->debuga($delusers);
+    
     $ldap= new LDAP();
     
-    if ( $adduser != '') {
-        // añadir usuario al grupo $grupo
+    if ( count($addusers) > 0 ) {
         $groups=$ldap->get_groups($group);
-        $groups[0]->newMember($adduser);
-        $gui->session_info("Usuario '$adduser' añadido al grupo $group.");
+        foreach($addusers as $adduser) {
+            // añadir usuario al grupo $grupo
+            $groups[0]->newMember($adduser);
+            $gui->session_info("Usuario '$adduser' añadido al grupo $group.");
+        }
         $url->ir($module, "groupmembers", $group);
     }
-    elseif ( $deluser != '') {
-        // borrar usuario del grupo $grupo
+    elseif ( count($delusers) > 0 ) {
         $groups=$ldap->get_groups($group);
-        $groups[0]->delMember($deluser);
-        $gui->session_info("Usuario '$adduser' eliminado del grupo $group.");
+        foreach($delusers as $deluser) {
+            // borrar usuario del grupo $grupo
+            $groups[0]->delMember($deluser);
+            $gui->session_info("Usuario '$deluser' eliminado del grupo $group.");
+        }
+        $url->ir($module, "groupmembers", $group);
+    }
+    else {
+        $gui->session_error("No ha seleccionado ningún usuario.");
         $url->ir($module, "groupmembers", $group);
     }
 }

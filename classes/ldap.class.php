@@ -722,6 +722,7 @@ class COMPUTER extends BASE {
         $mac=$this->macAddress;
         
         //max-control pxe --boot=max.menu --mac=08:00:27:96:0D:E6
+        $gui->debug("sudo ".MAXCONTROL." pxe --boot='$conffile' --mac='$mac' ");
         exec("sudo ".MAXCONTROL." pxe --boot='$conffile' --mac='$mac' ", &$output);
         $gui->debug("LDAP:boot($conffile, $mac)<pre>".print_r($output, true)."</pre>");
         if ( ! isset($result[0]) ) {

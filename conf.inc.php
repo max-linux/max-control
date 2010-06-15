@@ -1,7 +1,7 @@
 <?php
 
 // aparecerán cajas con información útil para errores.
-define("pruebas", True);
+define("DEBUG", True);
 
 // poner en True cuando se hayan editado todos los valores
 define("CONFIGURED", True);

@@ -63,8 +63,8 @@ function checkpass() {
 {/literal}
 
 
-
-{if $pruebas}
+{*
+{if $DEBUG}
 {debug}
 {/if}
-
+*}

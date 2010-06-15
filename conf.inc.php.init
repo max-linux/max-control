@@ -1,7 +1,7 @@
 <?php
 
 // aparecerán cajas con información útil para errores.
-define("pruebas", False);
+define("DEBUG", False);
 
 
 /*********** a partir de aqui puede que ya no hay aque editar nada ********/

@@ -207,6 +207,19 @@ function sanitize( &$data, $whatToKeep ) {
 /* see http://www.phpbuilder.com/columns/sanitize_inc_php.txt */
 
 
+function clean_array( $data, $varname, $type='str') {
+    $newdata=array();
+    if ( ! isset($data[$varname]) ) {
+        return $newdata;
+    }
+    if ( count($data[$varname]) < 1 ) {
+        return $newdata;
+    }
+    foreach($data[$varname] as $k => $v) {
+        $newdata[$k]=sanitizeOne($v, $type);
+    }
+    return $newdata;
+}
 
 
 function NTLMHash($Input) {

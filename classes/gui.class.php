@@ -32,8 +32,8 @@ class Gui
         //$this->smarty->caching = true;
         $this->smarty->plugins_dir = array( SMARTY_PLUGINS, $path . '/plugins');
         
-        if (pruebas) {
-            $this->smarty->assign('pruebas', "1");
+        if (DEBUG) {
+            $this->smarty->assign('DEBUG', "1");
             $this->smarty->debugging=true;
             $this->smarty->debug_tpl='debug.tpl';
             $this->smarty->debug_output="html";
@@ -64,7 +64,7 @@ class Gui
     }
     
     function render(){
-        if(pruebas) {
+        if(DEBUG) {
             error_reporting(E_ALL);
         }
         global $site;
@@ -84,11 +84,11 @@ class Gui
             $this->smarty->assign('alerts', $this->alert_txt );
         }
 
-        if ( pruebas && isset($this->debug_txt) ){
+        if ( DEBUG && isset($this->debug_txt) ){
             $this->smarty->assign('debug', $this->debug_txt );
         }
         
-        if ( pruebas && isset($this->debugger_txt) ){
+        if ( DEBUG && isset($this->debugger_txt) ){
             $this->smarty->assign('debugger', $this->debugger_txt );
         }
 
@@ -127,14 +127,14 @@ class Gui
     }
     
     function debug($txt){
-        if ( ! pruebas )
+        if ( ! DEBUG )
             return;
         $txt=str_replace('&', '&amp;', $txt);
         $this->debug_txt.="\n$txt<br/>";
     }   
     
     function debuga($a){
-        if ( ! pruebas )
+        if ( ! DEBUG )
             return;
         $this->debug_txt.="<pre>".print_r($a, true)."</pre>";
     } 
@@ -148,7 +148,7 @@ class Gui
     }
     
     function load_from_template($tpl, $data=array()){
-        if(pruebas) {
+        if(DEBUG) {
             error_reporting(E_ALL);
         }
         
@@ -173,8 +173,8 @@ class Gui
             $n->assign($key, $value);
         }
         
-        if (pruebas) {
-            $n->assign('pruebas', "1");
+        if (DEBUG) {
+            $n->assign('DEBUG', "1");
             $n->debugging=true;
             $n->debug_tpl='debug.tpl';
             $n->debug_output="html";
