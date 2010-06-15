@@ -113,7 +113,11 @@ def genPXELINUX(aulas):
 def bootMAC(boot, mac):
     aulas={}
     aulas[boot]=[ mac ]
-    #pprint (aulas)
+    # delete MACFILE (updating from unique computer)
+    macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
+    if os.path.exists( macfile ):
+        os.unlink(macfile)
+    # generate all links with this aula
     genPXELINUX(aulas)
 
 def cleanPXE():

@@ -10,13 +10,13 @@ require('../modules/common.inc.php');
 
 class GUI {
     function debug($txt) {
-        if (! pruebas)
+        if (! DEBUG)
             return;
         if($txt == '') return;
         echo "D: ".print_r($txt, true)." <br>\n";
     }
     function debuga($txt) {
-        if (! pruebas)
+        if (! DEBUG)
             return;
         if($txt == '') return;
         echo "D: ".print_r($txt, true)." <br>\n";
@@ -41,7 +41,7 @@ if ( ! isset($_SERVER['REMOTE_ADDR']) ) {
     die("error: bad origin");
 }
 
-if ( ! pruebas) {
+if ( ! DEBUG) {
     if ( ($_SERVER['REMOTE_ADDR'] != "127.0.0.1") ) {
         die("error: access denied from your IP");
     }
@@ -55,7 +55,6 @@ $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
 $changed=false;
 
 $computers=$ldap->get_computers();
-//$gui->debuga($computers);
 foreach($computers as $c) {
     if ( isset($c->macAddress ) && strtolower($c->macAddress) == strtolower($mac) ) {
         $gui->debug("found computer ". $c->hostname());

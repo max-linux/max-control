@@ -17,6 +17,6 @@
 
 
 
-{if $pruebas}
+{if $DEBUG}
 {debug}
 {/if}

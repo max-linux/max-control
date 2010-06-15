@@ -19,7 +19,7 @@ $active_action=$url->get("action");
 $active_subaction=$url->get("subaction");
 
 
-if(pruebas) {
+if(DEBUG) {
     error_reporting(E_ALL);
 }
 
@@ -213,7 +213,7 @@ if ($active_action == "aulas" && $active_subaction == 'miembros') {
 }
 
 if ($active_action == "miembros" && $active_subaction == 'guardar') {
-    //$gui->add( "<pre>".print_r($_POST, true)."</pre>" );
+    $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
     /*
     Array
         (
@@ -222,8 +222,7 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
             [aula] => grupoprueba
         )
     */
-    $editaaula=leer_datos('aula');
-    $adduser=leer_datos('adduser');
+    
     /*
     Array
     (
@@ -232,19 +231,34 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
         [aula] => grupoprueba
     )
     */
-    $deluser=leer_datos('deluser');
+    $editaaula=leer_datos('aula');
+    
+    $addusers=clean_array($_POST, 'adduser');
+    $delusers=clean_array($_POST, 'deluser');
+    
+    $gui->debug("addusers");
+    $gui->debuga($addusers);
+    $gui->debug("<hr><br>delusers ");
+    $gui->debuga($delusers);
+    
     $ldap= new LDAP();
     
-    if ( $adduser != '') {
-        // añadir profesor al aula $editaaula
+    if ( count($addusers) > 0 ) {
         $aula=$ldap->get_aula($editaaula);
-        $aula->newMember($adduser);
+        foreach($addusers as $adduser) {
+            // añadir usuario al grupo $grupo
+            $aula->newMember($adduser);
+            $gui->session_info("Usuario '$adduser' añadido al aula $editaaula.");
+        }
         $url->ir($active_module, "aulas", "miembros/$editaaula");
     }
-    elseif ( $deluser != '') {
-        // quitar profesor al aula $editaaula
+    elseif ( count($delusers) > 0 ) {
         $aula=$ldap->get_aula($editaaula);
-        $aula->delMember($deluser);
+        foreach($delusers as $deluser) {
+            // borrar usuario del grupo $grupo
+            $aula->delMember($deluser);
+            $gui->session_info("Usuario '$deluser' eliminado del aula $editaaula.");
+        }
         $url->ir($active_module, "aulas", "miembros/$editaaula");
     }
     else {
@@ -272,8 +286,8 @@ if ($active_action == "aulas" && $active_subaction == 'equipos') {
 }
 
 if ($active_action == "equipos" && $active_subaction == 'guardar') {
-    //$gui->add( "<pre>".print_r($_POST, true)."</pre>" );
-    $aula=leer_datos('aula');
+    $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
+    
     /* Add computer
     Array
     (
@@ -282,7 +296,6 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
         [aula] => grupoprueba
     )
     */
-    $addcomputer=leer_datos('addcomputer');
     /* del computer
     Array
     (
@@ -291,45 +304,50 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
         [aula] => aula primaria 1
     )
     */
-    $delcomputer=leer_datos('delcomputer');
-    $ldap=new LDAP();
     
-    if ( $addcomputer != '') {
-        // equitar el sambaProfilePath del equipo con el aula
-        $equipo=$ldap->get_computers($addcomputer .'$');
-        if ( isset($equipo[0]) ) {
-            $equipo[0]->sambaProfilePath=$aula;
+    $aula=leer_datos('aula');
+    $addcomputers=clean_array($_POST, 'addcomputer');
+    $delcomputers=clean_array($_POST, 'delcomputer');
+    
+    $gui->debug("addcomputers");
+    $gui->debuga($addcomputers);
+    $gui->debug("<hr><br>delcomputers ");
+    $gui->debuga($delcomputers);
+    
+    $ldap=new LDAP();
+
+
+    if ( count($addcomputers) > 0 ) {
+        foreach($addcomputers as $addcomputer) {
+             // equitar el sambaProfilePath del equipo con el aula
+            $equipo=$ldap->get_computers($addcomputer .'$');
             $equipo[0]->ldapdata['sambaProfilePath']=$aula;
             $res=$equipo[0]->save( array('sambaProfilePath') );
             if ($res) {
-                $gui->session_info("Equipo $addcomputer añadido al aula $aula correctamente.");
+                $gui->session_info("Equipo '$addcomputer' añadido al aula '$aula' correctamente.");
                 $equipo[0]->boot($aula);
             }
             else
-                $gui->session_error("No se puedo añadir el equipo $addcomputer al aula $aula.");
-            //$gui->add( "<pre>". print_r($equipo[0]->show(), true) . "</pre>" );
+                $gui->session_error("No se puedo añadir el equipo '$addcomputer' al aula '$aula'.");
         }
-        else {
-            $gui->session_error("No se pudo encontrar el equipo '$addcomputer'");
-        }
-        
         $url->ir($active_module, "aulas", "equipos/$aula");
     }
-    elseif ( $delcomputer != '') {
-        // borrar el sambaProfilePath
-        $equipo=$ldap->get_computers($delcomputer .'$');
-        if ( isset($equipo[0]) ) {
-            $res = $equipo[0]->empty_attr( 'sambaProfilePath' );
-            if ($res) {
-                $gui->session_info("Equipo $addcomputer quitado del aula $aula correctamente.");
-                $equipo[0]->boot('default');
+    elseif ( count($delcomputers) > 0 ) {
+        foreach($delcomputers as $delcomputer) {
+            // borrar el sambaProfilePath
+            $equipo=$ldap->get_computers($delcomputer .'$');
+            if ( isset($equipo[0]) ) {
+                $res = $equipo[0]->empty_attr( 'sambaProfilePath' );
+                if ($res) {
+                    $gui->session_info("Equipo '$delcomputer' quitado del aula '$aula' correctamente.");
+                    $equipo[0]->boot('default');
+                }
+                else
+                    $gui->session_error("No se puedo quitar el equipo '$delcomputer' del aula '$aula'.");
             }
-            else
-                $gui->session_error("No se puedo quitar el equipo $addcomputer del aula $aula.");
-            //$gui->add( "<pre>". print_r($equipo[0]->show(), true) . "</pre>" );
-        }
-        else {
-            $gui->session_error("No se pudo encontrar el equipo '$addcomputer'");
+            else {
+                $gui->session_error("No se pudo encontrar el equipo '$delcomputer'");
+            }
         }
         $url->ir($active_module, "aulas", "equipos/$aula");
     }

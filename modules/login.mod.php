@@ -27,7 +27,7 @@ $active_action=$url->get("action");
 $is_connected=False;
 $is_connecting=False;
 
-if(pruebas) {
+if(DEBUG) {
     error_reporting(E_ALL);
 }
 

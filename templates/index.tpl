@@ -7,7 +7,7 @@
 <link href="{$baseurl}/css/style.css" rel="stylesheet" type="text/css" /> 
 <link rel="shortcut icon" href="{$baseurl}/img/favicon.ico" type="image/x-icon" />
 <script type="text/javascript" src="{$baseurl}/js/jquery.js"></script>
-{if isset($pruebas)}
+{if isset($DEBUG)}
     <link href="{$baseurl}/css/debug.css" type="text/css" rel="stylesheet" /> 
     <script type="text/javascript">
     var debug_enabled=true;

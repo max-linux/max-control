@@ -45,7 +45,7 @@
 Puede copiarlos a través de su unidad I: (en Windows) o en MAX desde /mnt/isos</note>
 
 {*
-{if $pruebas}
+{if $DEBUG}
 {debug}
 {/if}
 *}

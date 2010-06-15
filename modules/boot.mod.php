@@ -112,7 +112,6 @@ function editarequipodo($module, $action, $subaction) {
     $equipos[0]->boot($boot);
     if ( leer_datos('reboot') == '1' ) {
         $equipos[0]->action('reboot');
-        //$gui->session_info("Equipo '$subaction' reiniciado.");
     }
     $url->ir($module, "equipo");
 }
