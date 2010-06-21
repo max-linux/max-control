@@ -57,6 +57,8 @@ def addComputersToAulas(aulas):
     l = ldap.initialize('ldap://localhost:389')
     allcomputers = l.search_s(read_conf("LDAP_OU_COMPUTERS"),ldap.SCOPE_SUBTREE,'(uid=*)',['cn', 'sambaProfilePath', 'macAddress'])
     for c in allcomputers:
+        if not c[1].has_key('macAddress'):
+            continue
         if not c[1].has_key('sambaProfilePath'):
             aulas['default'].append( c[1]['macAddress'][0] ) 
             continue
