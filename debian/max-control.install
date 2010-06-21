@@ -5,6 +5,7 @@ bin/pywakeonlan       usr/bin/
 bin/pygenlogonshares  usr/bin/
 bin/pyboot            usr/bin/
 bin/pyisos            usr/bin/
+bin/pymaxgensamba     usr/bin/
 classes               usr/share/max-control/
 modules               usr/share/max-control/
 plugins               usr/share/max-control/

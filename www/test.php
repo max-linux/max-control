@@ -107,13 +107,14 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 
 
 $teachers=$ldap->get_groups('Teachers', $include_teachers=true);
-if ( count($teachers) < 1 ) {
-    $group = new GROUP( array('cn' => 'Teachers' ) );
-    $group->newGroup('');
-}
-else {
-    $gui->debug("El grupo Teachers existe");
-}
+$gui->debuga($teachers);
+#if ( count($teachers) < 1 ) {
+#    $group = new GROUP( array('cn' => 'Teachers' ) );
+#    $group->newGroup('');
+#}
+#else {
+#    $gui->debug("El grupo Teachers existe");
+#}
 
 
 

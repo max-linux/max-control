@@ -9,6 +9,7 @@ from pprint import pprint
 import pyinotify
 
 CONF="/etc/max-control/conf.inc.php"
+SMB_CONF="/etc/samba/max-control.conf"
 SHARED_DIR="/home/samba/groups/"
 
 TO_ADD={'isos': {'comment': 'Archivos ISO', 
