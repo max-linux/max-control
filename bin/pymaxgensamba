@@ -1,0 +1,195 @@
+#!/usr/bin/env python
+
+import os
+import sys
+from configobj import ConfigObj
+import ldap
+import commands
+from pprint import pprint
+
+CONF="/etc/max-control/conf.inc.php"
+SMB_CONF="/etc/samba/max-control.conf"
+SHARED_DIR="/home/samba/groups/"
+
+TO_ADD={'isos': {'comment': 'Archivos ISO', 
+               'path': '/home/samba/shares/isos',
+               'valid users': ['@"Teachers"', '@"__USERS__"'],
+               'read list': ['@"Teachers"', '@"__USERS__"'],
+               'write list': '@"Teachers"',
+               'admin users': '@"Domain Admins"',
+               'read only': 'No', 
+               'browseable': 'Yes', 
+               'force create mode': '0664', 
+               'force directory mode': '0664',
+               }
+        }
+
+NOT_VALID_KEYS=['global', 'netlogon', 'profiles', 'homes', 'ebox-internal-backups', 'ebox-quarantine', 'print$', 'isos']
+
+def read_conf(varname):
+    f=open(CONF, 'r')
+    data=f.readlines()
+    f.close()
+    
+    for line in data:
+        if line.startswith('define') and varname in line:
+            if len(line.split('"')) >= 3:
+                return line.split('"')[3]
+            if len(line.split("'")) >= 3:
+                return line.split("'")[3]
+    return ''
+
+
+GROUPS=read_conf('LDAP_OU_GROUPS')
+DOMAIN=read_conf('LDAP_DOMAIN')
+
+
+def getGoupsShares():
+    sharedgroups=[]
+    l = ldap.initialize('ldap://localhost:389')
+    results = l.search_s(GROUPS,ldap.SCOPE_SUBTREE,'(cn=*)',['cn', 'memberUid', 'sambaGroupType', 'gidNumber'])
+    sharedgroups=[]
+
+    for group in results:
+        if "Teachers" in group[0]:
+            continue
+        
+        if int(group[1]['gidNumber'][0]) < 2000:
+            continue
+        
+        if int(group[1]['sambaGroupType'][0]) != 2:
+            continue
+        
+        
+        groupname=group[1]['cn'][0]
+        
+        
+        sharedgroups.append(groupname)
+    return sharedgroups
+
+
+class MyConfigObj (ConfigObj):
+
+    def _write_line(self, indent_string, entry, this_entry, comment):
+        """Write an individual line, for the write method"""
+        # NOTE: the calls to self._quote here handles non-StringType values.
+        if not self.unrepr:
+            val = self._decode_element(self._quote(this_entry))
+        else:
+            val = repr(this_entry)
+        
+        # delete simple quote from groups names
+        if "@" in val:
+            val=val.replace("'", "")
+        
+        # add space before varname
+        indent_string=' '
+        
+        return '%s%s%s%s%s' % (
+            indent_string,
+            self._decode_element(self._quote(entry, multiline=False)),
+            self._a_to_u(' = '),
+            val,
+            self._decode_element(comment))
+
+def newGroupShare(groupname):
+    """
+    [grupoprueba]
+     comment = "grupoprueba share directory"
+     path = /home/samba/groups/grupoprueba
+     valid users = @"grupoprueba"
+     force group = "grupoprueba"
+     force create mode = 0660
+     force directory mode = 0660
+     printable = No
+     read only = No
+     browseable = Yes
+    # FIXME: Removed for samba 3.4.3, add again when a new version fixes it
+    #% my $objects = 'full_audit';
+     vfs objects =  recycle
+     recycle: versions = Yes
+     recycle: repository = RecycleBin
+     recycle: keeptree = Yes
+     recycle: excludedir = /tmp|/var/tmp
+     recycle: directory_mode = 0700
+    """
+    share={
+            "comment": "compartido por %s"%groupname,
+            "path": os.path.join(SHARED_DIR, groupname),
+            "valid users": '@"grupoprueba"',
+            "force group": '@"grupoprueba"',
+            "force create mode":"0660",
+            "force directory mode": "0660",
+            "printable": "No",
+            "read only": "No",
+            "browseable": "Yes",
+          }
+    return share
+
+
+def loadFile(fname):
+    smb=MyConfigObj(fname)
+    return smb
+
+def reloadSamba():
+    """
+      if testparm -s /etc/samba/smb.conf >/dev/null 2>&1; then
+        PIDS=$(pidof smbd)
+        for pid in $PIDS; do
+            kill -1 $pid
+        done
+        exit 0
+      else
+        exit 1
+      fi
+    """
+    testparm=commands.getstatusoutput('testparm -s /etc/samba/smb.conf >/dev/null 2>&1')
+    if testparm[0] != 0:
+        print "testparm error"
+        return False
+    PIDS=commands.getoutput('pidof smbd').split('\n')
+    for pid in PIDS:
+        commands.getstatusoutput("kill -1 %s"%pid)
+    return True
+
+smb=loadFile(SMB_CONF)
+for key in TO_ADD:
+    smb[key]=TO_ADD[key]
+    # FIXME isos owned by teachers
+    result=commands.getstatusoutput("max-control createshared '%s' 'Teachers'"%key)
+    print "createshared ",key, " = " ,result
+
+ALL_GROUPS=getGoupsShares()
+for group in ALL_GROUPS:
+    if group in NOT_VALID_KEYS:
+        # no create special sections
+        continue
+    smb[group]=newGroupShare(group)
+    
+    # if exists check permisos
+    groupdir=os.path.join(SHARED_DIR, group)
+    if os.path.isdir(groupdir):
+        result=commands.getstatusoutput("max-control addgroup '%s'"%group)
+        print "addgroup ", group, " = " ,result
+
+
+smb.write()
+
+
+# test if smb.conf have include line
+f=open('/etc/samba/smb.conf', 'r')
+data=f.readlines()
+f.close()
+
+have_include=False
+for line in data:
+    if "include = /etc/samba/max-control.conf" in line:
+        have_include=True
+
+if not have_include:
+    f=open('/etc/samba/smb.conf', 'a')
+    f.write("\ninclude = /etc/samba/max-control.conf\n")
+    f.close()
+
+
+reloadSamba()
