@@ -1,3 +1,13 @@
+max-control (0.8.1) max; urgency=low
+
+  * bin/pyboot don't fail if not macAddress
+  * classes/ldap.class.php: fix save empty sambaProfilePath or bootFile
+    and add purgeWINS function
+  * modules/boot.mod.php add debug in refresh
+  * add purge wins button
+
+ -- root <root@max-server>  Mon, 21 Jun 2010 15:34:42 +0200
+
 max-control (0.8) max; urgency=low
 
   * Fix typo in get_groups
