@@ -130,7 +130,7 @@ if ($active_action == "borrardo") {
     $gui->debuga($equipos);
     if ( isset($equipos[0]) ) {
         $gui->debuga($equipos[0]);
-        //$equipos[0]->delComputer();
+        $equipos[0]->delComputer();
         $gui->session_info("Equipo '$equipo' borrado del dominio.");
     }
     else {
