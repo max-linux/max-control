@@ -617,6 +617,17 @@ class COMPUTER extends BASE {
              ( ! in_array("bootableDevice", $this->objectClass) ) ) {
             $this->objectClass[]="bootableDevice";
         }
+        
+        if (  $this->sambaProfilePath == '') {
+            $this->sambaProfilePath=array();
+            $this->ldapdata['sambaProfilePath']=array();
+        }
+        
+        if (  $this->bootFile == '') {
+            $this->bootFile=array();
+            $this->ldapdata['bootFile']=array();
+        }
+        
     }
     
     function action($actionname, $mac){
@@ -761,6 +772,7 @@ class COMPUTER extends BASE {
     }
     
     function delComputer() {
+        global $gui;
         /*
         *  smbpasswd -x 'wxp64$'
         */
@@ -1829,6 +1841,13 @@ class LDAP {
         global $gui;
         exec("sudo ".MAXCONTROL." genlogonshares '".LDAP_OU_GROUPS."'", &$output);
         $gui->debug("LDAP:updateLogonShares()<pre>".print_r($output, true)."</pre>");
+        return;
+    }
+
+    function purgeWINS() {
+        global $gui;
+        exec("sudo ".MAXCONTROL." purgewins", &$output);
+        $gui->debug("LDAP:purgeWINS()<pre>".print_r($output, true)."</pre>");
         return;
     }
 
