@@ -37,12 +37,14 @@ $module_actions=array(
 
 function refresh($module, $action, $subaction) {
     global $gui, $url;
+    $gui->debug("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1");
     exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", &$output);
     if ( ! isset($output[0]) )
         $gui->session_info("Actualizados aulas y equipos para arranque PXE.");
     else
         $gui->session_error("Error actualiando aulas y equipos para arranque PXE:<br/><pre>". implode("\n<br/>", $output). "</pre>");
-    $url->ir($module, "");
+    if(! DEBUG)
+        $url->ir($module, "");
 }
 
 
