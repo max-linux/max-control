@@ -245,7 +245,7 @@ function groups($module, $action, $subaction) {
     
     $filter=leer_datos('Filter');
     $ldap=new LDAP();
-    $groups=$ldap->get_groups($filter);
+    $groups=$ldap->get_groups($filter, $include_teachers=false);
     //$gui->debug("<pre>".print_r($groups, true)."</pre>");
     
     

@@ -1604,7 +1604,7 @@ class LDAP {
                  ($attrs['sambaGroupType'][0] == 2) &&
                  ($attrs['gidNumber'][0] >= 2000) ) {
                  
-                    if (! $include_teachers && $attrs['cn'][0] != TEACHERS) {
+                    if (!$include_teachers && $attrs['cn'][0] == TEACHERS) {
                         continue;
                     }
                 $groups[]=new GROUP($attrs);
