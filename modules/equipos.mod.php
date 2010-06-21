@@ -56,7 +56,13 @@ if ($active_action == "") {
 if ($active_action == "ver") {
     $button=leer_datos('button');
     $gui->debug("button='$button'");
-    if( $button !='' && $button != "Buscar"){
+    
+    
+    if( $button == "Limpiar cache WINS"){
+        $url->ir($active_module, "purgewins");
+    }
+    
+    if($button == "Actualizar MAC e IP de todos"){
         $url->ir($active_module, "update");
     }
 
@@ -115,6 +121,23 @@ if ($active_action == "updatedo") {
     }
 }
 
+
+if ($active_action == "purgewins") {
+    $data=array("urlaction"=>$url->create_url($active_module, 'purgewinsdo'));
+    $gui->add( $gui->load_from_template("purgewins.tpl", $data) );
+}
+
+if ($active_action == "purgewinsdo") {
+    $ldap=new LDAP();
+    $ldap->purgeWINS();
+    $gui->session_info("Cache WINS borrada.");
+    if(! DEBUG)
+        $url->ir($active_module, "ver");
+}
+
+
+
+
 if ($active_action == "borrar") {
     $data=array(
             "urlaction"=>$url->create_url($active_module, 'borrardo'),
@@ -136,7 +159,8 @@ if ($active_action == "borrardo") {
     else {
         $gui->session_error("El equipo '$equipo' no se ha encontrado");
     }
-    $url->ir($active_module, "ver");
+    if(! DEBUG)
+        $url->ir($active_module, "ver");
 }
 
 
