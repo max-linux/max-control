@@ -1,0 +1,8 @@
+default backhardditxt
+prompt 0
+timeout 1
+
+label bakhardditxt
+  menu label Arranque Backharddi-NG modo texto
+  kernel backharddi/vmlinuz
+  append quiet backharddi/medio=net initrd=backharddi/initrd.gz quiet
