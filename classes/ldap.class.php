@@ -677,6 +677,13 @@ class COMPUTER extends BASE {
         return;
     }
     
+    function cleanPXELinux() {
+        global $gui;
+        //bin/max-control pxe --clean
+        exec("sudo ".MAXCONTROL." pxe --clean 2>&1", &$output);
+        return;
+    }
+    
     function resetBoot() {
         global $gui;
         $gui->debug("COMPUTER:resetBoot() bootFile=".$this->bootFile);
@@ -744,11 +751,10 @@ class COMPUTER extends BASE {
     
     function getBoot() {
         global $gui;
-        //bin/max-control pxe --getboot=08:00:27:96:0D:E6
+        // /usr/bin/max-control pxe --getboot=08:00:27:96:0D:E6
         exec("sudo ".MAXCONTROL." pxe --getboot='".$this->macAddress."' ", &$output);
-        //$gui->debug("COMPUTER:getBoot(".$this->macAddress.")<pre>".print_r($output, true)."</pre>");
         if ( ! isset($output[0]) ) {
-            $gui->session_error("No se puedo leer el modo de arranque de '".$this->hostname()."'.");
+            $gui->session_error("No se pudo leer el modo de arranque de '".$this->hostname()."'<pre>". implode("\n<br/>", $output). "</pre>");
             return 'default';
         }
         return $output[0];

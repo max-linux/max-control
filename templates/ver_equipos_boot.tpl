@@ -10,6 +10,7 @@
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
           <input type='submit' name='button' value="Actualizar archivos PXE" title="Actualizar archivos PXE" /> 
+          <input type='submit' name='button' value="Limpiar archivos PXE" title="Limpiar archivos PXE" /> 
         </form>
         </td> 
     </tr> 

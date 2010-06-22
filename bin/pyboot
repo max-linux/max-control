@@ -83,9 +83,15 @@ def genPXELINUX(aulas):
             if os.path.exists( aulafile + ".menu"):
                 aulafile=aulafile+".menu"
         
-        
+
         for mac in aulas[aula]:
+            # don't write empty macs
+            #print "mac='%s'"%mac
+            if mac.strip() == "":
+                continue
+            
             macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
+            
             
             #
             # no borrar la MAC si el equipo apunta a *.menu o a default
