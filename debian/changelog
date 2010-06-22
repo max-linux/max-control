@@ -1,3 +1,9 @@
+max-control (0.8.2) max; urgency=low
+
+  * Add backharddi-ng-text (text mode)
+
+ -- root <root@max-server>  Tue, 22 Jun 2010 14:46:51 +0200
+
 max-control (0.8.1) max; urgency=low
 
   * bin/pyboot don't fail if not macAddress
