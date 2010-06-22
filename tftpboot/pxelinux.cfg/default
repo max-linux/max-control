@@ -23,7 +23,12 @@ LABEL MAX
   APPEND pxelinux.cfg/max.menu
 
 
+LABEL BACKHARDDItxt
+  MENU LABEL ^BackHarddi-NG modo texto
+  KERNEL sys/menu.c32
+  APPEND pxelinux.cfg/backharddi-ng-text.menu
+
 LABEL BACKHARDDI
-  MENU LABEL ^BackHarddi-NG
+  MENU LABEL ^BackHarddi-NG modo grafico
   KERNEL sys/menu.c32
   APPEND pxelinux.cfg/backharddi-ng.menu

@@ -42,18 +42,29 @@ function refresh($module, $action, $subaction) {
     if ( ! isset($output[0]) )
         $gui->session_info("Actualizados aulas y equipos para arranque PXE.");
     else
-        $gui->session_error("Error actualiando aulas y equipos para arranque PXE:<br/><pre>". implode("\n<br/>", $output). "</pre>");
+        $gui->session_error("Error actualizando aulas y equipos para arranque PXE:<br/><pre>". implode("\n<br/>", $output). "</pre>");
     if(! DEBUG)
         $url->ir($module, "");
 }
 
+function clean($module, $action, $subaction) {
+    global $gui, $url;
+    $gui->debug("sudo ".MAXCONTROL." pxe --clean 2>&1");
+    exec("sudo ".MAXCONTROL." pxe --clean 2>&1", &$output);
+    refresh($module, $action, $subaction);
+    if(! DEBUG)
+        $url->ir($module, "");
+}
 
 function equipo($module, $action, $subaction) {
     global $gui, $url;
     
     $button=leer_datos('button');
     $gui->debug("button='$button'");
-    if( $button !='' && $button != "Buscar"){
+    if( $button =='Limpiar archivos PXE'){
+        $url->ir($module, "clean");
+    }
+    if( $button =='Actualizar archivos PXE'){
         $url->ir($module, "refresh");
     }
     
@@ -124,7 +135,11 @@ function aula($module, $action, $subaction) {
     
     $button=leer_datos('button');
     $gui->debug("button='$button'");
-    if( $button !='' && $button != "Buscar"){
+    
+    if( $button =='Limpiar archivos PXE'){
+        $url->ir($module, "clean");
+    }
+    if( $button =='Actualizar archivos PXE'){
         $url->ir($module, "refresh");
     }
     
@@ -199,6 +214,7 @@ switch($action) {
     case "": $url->ir($module, "equipo"); break;
     
     case "refresh": refresh($module, $action, $subaction); break;
+    case "clean": clean($module, $action, $subaction); break;
     
     case "equipo": equipo($module, $action, $subaction); break;
     case "editarequipo": editarequipo($module, $action, $subaction); break;
