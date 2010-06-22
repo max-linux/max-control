@@ -1,3 +1,16 @@
+max-control (0.8.5) max; urgency=low
+
+  * Fix iso mount
+
+ -- root <root@max-server>  Tue, 22 Jun 2010 20:40:52 +0200
+
+max-control (0.8.4) max; urgency=low
+
+  * don't write pxelinux.cfg empty MAC, add Clean PXE files button and
+    show more info when getBoot() fails
+
+ -- root <root@max-server>  Tue, 22 Jun 2010 16:08:57 +0200
+
 max-control (0.8.3) max; urgency=low
 
   * Delete menus from tftpboot/pxelinux.cfg/

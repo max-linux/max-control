@@ -114,14 +114,17 @@ function mountdo($module, $action, $subaction) {
         }
         foreach ($equipos as $c) {
             if ( $c->exe->is_alive() ) {
-                $computer->mount($iso);
+                $gui->debug("Montando(".$computer->hostname()."), time: ". time_end() );
+                $computer->exe->mount($iso);
                 $gui->session_info("Montado $iso en ".$c->hostname());
+                $gui->debug("Montado(".$computer->hostname()."), time: ". time_end() );
             }
             else {
                 $gui->session_error("No se puede realizar la acción solicitada en '".$c->hostname()."', el equipo está apagado");
             }
         }
-        $url->ir($module, "ver");
+        if(!DEBUG)
+            $url->ir($module, "ver");
     }
     
     elseif ($equipo != '') {
@@ -130,17 +133,21 @@ function mountdo($module, $action, $subaction) {
             $gui->session_error("Equipo '$equipo' no encontrado.");
         }
         if ( $equipos[0]->exe->is_alive() ) {
-            $equipos[0]->mount($iso);
+            $gui->debug("Montando(".$equipos[0]->hostname()."), time: ". time_end() );
+            $equipos[0]->exe->mount($iso);
+            $gui->debug("Montado(".$equipos[0]->hostname()."), time: ". time_end() );
             $gui->session_info("Montado $iso en ".$equipos[0]->hostname());
         }
         else {
             $gui->session_error("No se puede realizar la acción solicitada en '".$equipos[0]->hostname()."', el equipo está apagado");
         }
-        $url->ir($module, "ver");
+        if(!DEBUG)
+            $url->ir($module, "ver");
     }
     else {
         $gui->session_error("Acción desconocida.");
-        $url->ir($module, "ver");
+        if(!DEBUG)
+            $url->ir($module, "ver");
     }
 }
 

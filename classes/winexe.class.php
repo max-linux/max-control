@@ -250,7 +250,7 @@ class WINEXE {
     function mount( $iso ) {
         global $gui;
         if (! $this->isLinux() ) {
-            return $this->windowsexe("mount.bat mount $iso");
+            return $this->windowsexe("mount.bat mount '$iso'");
         }
         else {
             return $this->linuxexe("mount '$iso'");
