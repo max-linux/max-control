@@ -2,7 +2,7 @@ default backharddi
 prompt 0
 timeout 1
 
-label bakharddi
+label backharddi
   menu label Arranque Backharddi-NG modo grafico
   kernel backharddi/vmlinuz
   append vga=788 video=vesa:ywrap,mtrr quiet backharddi/medio=net initrd=backharddi/initrd.gz quiet

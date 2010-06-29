@@ -62,6 +62,8 @@ print """;
 ;  generated file with pygenlogonshares '%s'
 ;
 ;
+setconsole('hide')
+
 """%GROUPS
 
 

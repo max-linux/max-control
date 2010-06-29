@@ -1,0 +1,9 @@
+default max2
+prompt 0
+timeout 1
+
+label max2
+  menu label Arranque MaX (linux) extlinux sda5
+  kernel sys/chain.c32
+  # arranque desde la primera particion extendida
+  append hd0 5

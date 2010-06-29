@@ -5,7 +5,15 @@ setconsole('hide')
 
 ; some vars
 $VOL = "H:"
-$DOMAIN="EBOX"
+; leer dominio desde \\max-server\netlogon\domain.txt
+; este archivo lo genera max-control postinst init.php
+IF Open(3, @lserver + "\netlogon\domain.txt") = 0
+  $DOMAIN = ReadLine(3)
+  Close (3)
+ELSE
+  $DOMAIN="EBOX"
+ENDIF
+
 
 ; sync time
 $timeserver = "@lserver"
@@ -27,7 +35,7 @@ ENDIF
 
 ; Check to See if Workstation is Running >=Windows Vista, if so apply settings and Policies
 $ntversion = READVALUE("HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\", "CurrentVersion")
-IF $ntversion = "6.0"
+IF $ntversion >= "6.0"
 
     ;$FolderRedirect = "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
     $FolderRedirect = "Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
@@ -89,9 +97,9 @@ IF $ntversion = "6.0"
 
     ; pagina de inicio
     ;[HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main]“Start Page”=”http://www.google.com/”
-    WriteValue("Software\Microsoft\Internet Explorer\Main", "Start Page", "http://educa.madrid.org/", "REG_SZ")
+    WriteValue("Software\Microsoft\Internet Explorer\Main", "Start Page", "http://www.educa.madrid.org/", "REG_SZ")
     ;SOFTWARE\Policies\Microsoft\Internet Explorer\Main\Start Page
-    WriteValue("Software\Policies\Microsoft\Internet Explorer\Main", "Start Page", "http://educa.madrid.org/", "REG_SZ")
+    WriteValue("Software\Policies\Microsoft\Internet Explorer\Main", "Start Page", "http://www.educa.madrid.org/", "REG_SZ")
 
 
     IF INGROUP("$DOMAIN\Domain Admins")
@@ -164,7 +172,7 @@ IF $ntversion = "6.0"
 
 
 
-; fin de if ntversion == 6.0
+; fin de if ntversion >= 6.0
 ENDIF
 
 
