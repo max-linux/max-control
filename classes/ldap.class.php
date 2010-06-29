@@ -1845,7 +1845,7 @@ class LDAP {
         to be loaded by logon.kix and mount shares that user is in.
         */
         global $gui;
-        exec("sudo ".MAXCONTROL." genlogonshares '".LDAP_OU_GROUPS."'", &$output);
+        exec("sudo ".MAXCONTROL." genlogonshares", &$output);
         $gui->debug("LDAP:updateLogonShares()<pre>".print_r($output, true)."</pre>");
         return;
     }

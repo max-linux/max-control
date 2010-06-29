@@ -8,7 +8,7 @@ Standards-Version: 3.8.4
 Package: max-control
 Architecture: all
 Depends:  libapache2-mod-php5, php5, php5-ldap, libssh2-php, php5-mcrypt, php5-mhash, php5-cli,
-          apache2, smarty, libjs-jquery, python-pyinotify, tree,
+          apache2, smarty, libjs-jquery, python-pyinotify, python-ldap, tree,
           samba-common-bin, tofrodos, python-configobj, atftpd | dnsmasq, syslinux, genisoimage,
           ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
 Description: Small PHP web based app to admin LDAP data from EBox

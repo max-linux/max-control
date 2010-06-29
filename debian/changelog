@@ -1,3 +1,26 @@
+max-control (0.8.8) max; urgency=low
+
+  * init.php: Create netlogon\domain.txt file
+  * netlogon/logon.kix: Read domain.txt and use as $DOMAIN var
+  * netlogon/logon.kix: change startpage to http://www.educa.madrid.org
+
+ -- root <root@max-server>  Tue, 29 Jun 2010 13:39:39 +0200
+
+max-control (0.8.7) max; urgency=low
+
+  * Add tftp.menus/max-extlinux.menu to boot MAX (linux) from sda5
+
+ -- root <root@max-server>  Mon, 28 Jun 2010 20:12:52 +0200
+
+max-control (0.8.6) max; urgency=low
+
+  * Add python-ldap to depends
+  * Fix label in backharddi PXE menus
+  * netlogon/logon.kix: Set ntversion >= 6.0 (win7 is 6.1)
+  * debian/max-control.postinst: generate shares.kix in postinst
+
+ -- root <root@max-server>  Mon, 28 Jun 2010 15:03:43 +0200
+
 max-control (0.8.5) max; urgency=low
 
   * Fix iso mount
