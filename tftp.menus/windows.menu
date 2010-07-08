@@ -4,6 +4,6 @@ timeout 1
 
 label windows
   menu label Arranque Windows
-  kernel sys/chain.c32
+  kernel chain.c32
   # particion 1 windows
   append hd0 1

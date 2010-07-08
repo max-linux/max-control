@@ -11,16 +11,37 @@ CONF="/etc/max-control/conf.inc.php"
 SMB_CONF="/etc/samba/max-control.conf"
 SHARED_DIR="/home/samba/groups/"
 
-TO_ADD={'isos': {'comment': 'Archivos ISO', 
+"""
+[isos]
+ comment = Archivos ISO
+ path = /home/samba/shares/isos
+ guest ok = yes
+ #valid users =
+ read list = @"__USERS__"
+ write list = @"Teachers"
+ admin users =
+ read only = No
+ browseable = No
+ force create mode = 0664
+ force directory mode = 0775
+"""
+
+TO_ADD={'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/',
+                  'vfs objects': ''
+                 },
+        'isos': {'comment': 'Archivos ISO', 
                'path': '/home/samba/shares/isos',
-               'valid users': ['@"Teachers"', '@"__USERS__"'],
+               #'valid users': ['@"Teachers"', '@"__USERS__"'],
                'read list': ['@"Teachers"', '@"__USERS__"'],
-               'write list': '@"Teachers"',
+               #'write list': '@"Teachers"',
+               'write list': ['@"Teachers"','@"Domain Admins"'],
+               'read list': '@"__USERS__"',
                'admin users': '@"Domain Admins"',
+               'guest ok': 'yes',
                'read only': 'No', 
-               'browseable': 'Yes', 
+               'browseable': 'No', 
                'force create mode': '0664', 
-               'force directory mode': '0664',
+               'force directory mode': '0775',
                }
         }
 
@@ -116,10 +137,14 @@ def newGroupShare(groupname):
     share={
             "comment": "compartido por %s"%groupname,
             "path": os.path.join(SHARED_DIR, groupname),
-            "valid users": '@"grupoprueba"',
-            "force group": '@"grupoprueba"',
+            #"valid users": '@"%s"'%groupname,
+            "valid users": ['@"Domain Admins"', '@"%s"'%groupname],
+            "force group": '@"%s"'%groupname,
+            "read list":  ['@"Domain Admins"', '@"%s"'%groupname],
+            "write list": ['@"Domain Admins"', '@"%s"'%groupname],
+            "admin users": '@"Domain Admins"',
             "force create mode":"0660",
-            "force directory mode": "0660",
+            "force directory mode": "0770",
             "printable": "No",
             "read only": "No",
             "browseable": "Yes",
@@ -157,7 +182,11 @@ for key in TO_ADD:
     smb[key]=TO_ADD[key]
     # FIXME isos owned by teachers
     result=commands.getstatusoutput("max-control createshared '%s' 'Teachers'"%key)
-    print "createshared ",key, " = " ,result
+    #print "createshared ",key, " = " ,result
+    print " * Create shared", key
+
+# delete not needed dir
+os.system("rm -rf %s/homes" %SHARED_DIR)
 
 ALL_GROUPS=getGoupsShares()
 for group in ALL_GROUPS:
@@ -170,7 +199,8 @@ for group in ALL_GROUPS:
     groupdir=os.path.join(SHARED_DIR, group)
     if os.path.isdir(groupdir):
         result=commands.getstatusoutput("max-control addgroup '%s'"%group)
-        print "addgroup ", group, " = " ,result
+        #print "addgroup ", group, " = " ,result
+        print " * Add group", group
 
 
 smb.write()

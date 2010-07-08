@@ -9,7 +9,7 @@
         <td class='tright'><span class="ftitle">Archivo de arranque:</span></td>
         <td> 
             <select name='boot' id='boot' > 
-                <option value=''></option> 
+                <option value=''>Menú de arranque</option> 
                 {foreach from=$tipos key=k item=o}
                 <option value='{$k}' {if $aulaboot == $k}selected{/if}>{$o}</option>
                 {/foreach}

@@ -7,12 +7,31 @@
 
 import struct, socket
 import sys
+import netifaces
 
 debug=False
 
 def print_debug(txt):
     if debug:
         print >> sys.stderr, "%s::%s" % ("pywakeonlan", txt)
+
+def get_broadcast_address(ifname):
+    print_debug("get_broadcast_address() ifname=%s" %(ifname) )
+    if not ifname in netifaces.interfaces():
+        return None
+    ip=netifaces.ifaddresses(ifname)
+    print_debug( "get_broadcast_address() data=%s" %ip[netifaces.AF_INET][0])
+    if ip.has_key(netifaces.AF_INET) and ip[netifaces.AF_INET][0].has_key('broadcast'):
+        return ip[netifaces.AF_INET][0]['broadcast']
+    return None
+
+def getBroadcastIP():
+    broadcasts=[]
+    for dev in netifaces.interfaces():
+        ip=get_broadcast_address(dev)
+        if ip:
+            broadcasts.append( ip )
+    return broadcasts
 
 def WakeOnLan(ethernet_address):
     errortxt=None
@@ -41,7 +60,15 @@ def WakeOnLan(ethernet_address):
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        s.sendto(msg, ('<broadcast>', 7))
+        
+        # in EBOX '<broadcast>' don't work, use all broadcast IPs
+        #s.sendto(msg, ('<broadcast>', 9))
+        #s.sendto(msg, ('192.168.1.255', 9))
+        
+        for broadip in getBroadcastIP():
+            print_debug("WakeOnLan() broadcast '%s'"%(broadip))
+            s.sendto(msg, (broadip, 9))
+        
         s.close()
         print_debug("WakeOnLan() send to %s done "%(ethernet_address))
         return True

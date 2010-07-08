@@ -105,7 +105,7 @@
 }
 
 .help {
-    display: none;
+    /*display: none;*/
     border-bottom: 1px solid #1d4efa;
     padding: 9pt 9pt 9pt 33pt;
     color: #484554;

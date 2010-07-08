@@ -40,6 +40,14 @@ $module_actions=array(
 function ver($module, $action, $subaction) {
     global $gui, $url;
     
+    $button=leer_datos('button');
+    $gui->debug("button='$button'");
+    
+    
+    if( $button == "Desmontar ISO"){
+        $url->ir($module, "desmontar");
+    }
+    
     // mostrar lista de equipos
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -108,16 +116,17 @@ function mountdo($module, $action, $subaction) {
     
     if ($aula != '') {
         $equipos=$ldap->get_computers_from_aula($aula);
-        $gui->debuga($equipos);
+        //$gui->debuga($equipos);
         if ( count($equipos) == 0 ) {
             $gui->session_error("El aula no tiene equipos.");
+            $url->ir($module, "ver");
         }
         foreach ($equipos as $c) {
             if ( $c->exe->is_alive() ) {
-                $gui->debug("Montando(".$computer->hostname()."), time: ". time_end() );
-                $computer->exe->mount($iso);
+                $gui->debug("Montando(".$c->hostname()."), time: ". time_end() );
+                $c->exe->mount($iso);
                 $gui->session_info("Montado $iso en ".$c->hostname());
-                $gui->debug("Montado(".$computer->hostname()."), time: ". time_end() );
+                $gui->debug("Montado(".$c->hostname()."), time: ". time_end() );
             }
             else {
                 $gui->session_error("No se puede realizar la acción solicitada en '".$c->hostname()."', el equipo está apagado");
@@ -131,6 +140,7 @@ function mountdo($module, $action, $subaction) {
         $equipos=$ldap->get_computers($equipo . '$');
         if ( count($equipos) == 0 ) {
             $gui->session_error("Equipo '$equipo' no encontrado.");
+            $url->ir($module, "ver");
         }
         if ( $equipos[0]->exe->is_alive() ) {
             $gui->debug("Montando(".$equipos[0]->hostname()."), time: ". time_end() );
@@ -145,12 +155,100 @@ function mountdo($module, $action, $subaction) {
             $url->ir($module, "ver");
     }
     else {
-        $gui->session_error("Acción desconocida.");
+        $gui->session_error("No ha seleccionado ni aula ni equipo.");
         if(!DEBUG)
             $url->ir($module, "ver");
     }
 }
 
+function desmontar($module, $action, $subaction) {
+    global $gui, $url;
+    
+    // mostrar lista de equipos
+    $ldap=new LDAP();
+    
+    $aulas=$ldap->get_aulas();
+    $equipos=$ldap->get_computers();
+    
+    $urlform=$url->create_url($module, 'umountdo');
+    
+    $data=array("aulas" => $aulas,
+                "computers"=> $equipos,
+                "filter" => $filter, 
+                "urlform" => $urlform, 
+                "urlmontar"=>$urlmontar);
+    
+    $gui->add( $gui->load_from_template("desmontar_iso.tpl", $data) );
+}
+
+function umountdo($module, $action, $subaction) {
+    global $gui, $url;
+    
+    $ldap=new LDAP();
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+    /*
+    Array
+    (
+        [aula] => aula primaria 2
+        [Desmontar_aula] => Desmontar aula
+    )
+    */
+    $aula=leer_datos('aula');
+    /*
+    Array
+    (
+        [equipo] => max60-alfa2
+        [Desmontar_en_equipo] => Desmontar en equipo
+    )
+    */
+    $equipo=leer_datos('equipo');
+    
+    if ($aula != '') {
+        $equipos=$ldap->get_computers_from_aula($aula);
+        //$gui->debuga($equipos);
+        if ( count($equipos) == 0 ) {
+            $gui->session_error("El aula no tiene equipos.");
+            $url->ir($module, "ver");
+        }
+        foreach ($equipos as $c) {
+            if ( $c->exe->is_alive() ) {
+                $gui->debug("Desmontando(".$c->hostname()."), time: ". time_end() );
+                $c->exe->umount();
+                $gui->session_info("Desmontado en ".$c->hostname());
+                $gui->debug("Desmontado(".$c->hostname()."), time: ". time_end() );
+            }
+            else {
+                $gui->session_error("No se puede realizar la acción solicitada en '".$c->hostname()."', el equipo está apagado");
+            }
+        }
+        if(!DEBUG)
+            $url->ir($module, "ver");
+    }
+    
+    elseif ($equipo != '') {
+        $equipos=$ldap->get_computers($equipo . '$');
+        if ( count($equipos) == 0 ) {
+            $gui->session_error("Equipo '$equipo' no encontrado.");
+            $url->ir($module, "ver");
+        }
+        if ( $equipos[0]->exe->is_alive() ) {
+            $gui->debug("Desmontando(".$equipos[0]->hostname()."), time: ". time_end() );
+            $equipos[0]->exe->umount();
+            $gui->debug("Desmontado(".$equipos[0]->hostname()."), time: ". time_end() );
+            $gui->session_info("Desmontado en ".$equipos[0]->hostname());
+        }
+        else {
+            $gui->session_error("No se puede realizar la acción solicitada en '".$equipos[0]->hostname()."', el equipo está apagado");
+        }
+        if(!DEBUG)
+            $url->ir($module, "ver");
+    }
+    else {
+        $gui->session_error("No ha seleccionado ni aula ni equipo.");
+        if(!DEBUG)
+            $url->ir($module, "ver");
+    }
+}
 
 //$gui->session_info("Accion '$action' en modulo '$module'");
 switch($action) {
@@ -159,6 +257,8 @@ switch($action) {
     case "montar": montar($module, $action, $subaction); break;
     case "mountdo": mountdo($module, $action, $subaction); break;
     
+    case "desmontar": desmontar($module, $action, $subaction); break;
+    case "umountdo": umountdo($module, $action, $subaction); break;
     
     default: $gui->session_error("Accion desconocida '$action' en modulo $module");
 }

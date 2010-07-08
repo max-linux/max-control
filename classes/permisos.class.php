@@ -27,7 +27,7 @@ class Permisos {
         }
     }
     
-    function get_rol($rol) {
+    function get_rol() {
         if ( ! $this->is_connected() ) return '';
         
         if ( ! isset($_SESSION['role']) ) return '';

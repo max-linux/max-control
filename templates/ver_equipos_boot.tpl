@@ -31,6 +31,7 @@
     <tbody> 
       {foreach from=$equipos key=k item=u}
       <tr class='border' id="{$u->hostname()}"> 
+      {if $u->teacher_in_computer()}
         <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
         <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
         <td class='tcenter'><span>{$u->getBoot()}</span></td>
@@ -42,6 +43,7 @@
         <td class='tcenter'>no MAC</td>
         {/if}
       </tr>
+      {/if}
       {/foreach}
 
     </tbody> 

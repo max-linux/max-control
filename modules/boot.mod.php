@@ -18,10 +18,9 @@ if ( ! $permisos->is_connected() ) {
 }
 
 if ( ! $permisos->is_admin() ) {
-    $gui->session_error("No es administrador para acceder al módulo de arranque");
-    $url->ir("", "");
+    $gui->session_error("Sólo pueden acceder al módulo de arranque los administradores.");
+    $url->ir("","");
 }
-
 
 
 
@@ -30,9 +29,8 @@ $action=$url->get("action");
 $subaction=$url->get("subaction");
 
 $module_actions=array(
-        "equipo" => "Por equipos",
         "aula" => "Por aulas",
-        #"config" => "Configurar tipos de arranque",
+        "equipo" => "Por equipos",
 );
 
 function refresh($module, $action, $subaction) {
@@ -114,14 +112,21 @@ function editarequipodo($module, $action, $subaction) {
     global $gui, $url;
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $ldap=new LDAP();
-    $equipos=$ldap->get_computers(leer_datos('hostname').'$');
+    $hostname=leer_datos('hostname');
+    $equipos=$ldap->get_computers($hostname.'$');
     $boot=leer_datos('boot');
     $gui->debuga($equipos[0]->show());
     
     if ( count($equipos) != 1 ) {
-        $gui->session_error("Equipo '$subaction' no encontrado");
+        $gui->session_error("Equipo '$hostname' no encontrado");
         $url->ir($module, "equipo");
     }
+    
+    if ( ! $equipos[0]->teacher_in_computer() ) {
+        $gui->session_error("No se tiene permiso para modificar el equipo '$hostname'");
+        $url->ir($module, "equipo");
+    }
+    
     $equipos[0]->boot($boot);
     if ( leer_datos('reboot') == '1' ) {
         $equipos[0]->action('reboot');
@@ -185,14 +190,20 @@ function editaaula($module, $action, $subaction) {
 function editaaulado($module, $action, $subaction) {
     global $gui, $url;
     $ldap=new LDAP();
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $aulas=$ldap->get_aulas(leer_datos('aula'));
     $boot=leer_datos('boot');
-    $gui->debuga($aulas);
+    //$gui->debuga($aulas);
     
     if ( count($aulas) != 1 ) {
         $gui->session_error("Aulas '".leer_datos('aula')."' no encontrado");
         $url->ir($module, "aula");
     }
+    if ( ! $aulas[0]->teacher_in_aula() ) {
+        $gui->session_error("No se tiene permiso para editar el aula '".leer_datos('aula')."'");
+        $url->ir($module, "aula");
+    }
+    
     $aulas[0]->boot($boot);
     
     if ( leer_datos('reboot') == '1' ) {
@@ -202,8 +213,8 @@ function editaaulado($module, $action, $subaction) {
         }
         $gui->session_info("Aula '".leer_datos('aula')."' reiniciada");
     }
-    
-    $url->ir($module, "aula");
+    if(!DEBUG)
+        $url->ir($module, "aula");
 }
 
 
@@ -211,7 +222,7 @@ function editaaulado($module, $action, $subaction) {
 
 //$gui->session_info("Accion '$action' en modulo '$module'");
 switch($action) {
-    case "": $url->ir($module, "equipo"); break;
+    case "": $url->ir($module, "aula"); break;
     
     case "refresh": refresh($module, $action, $subaction); break;
     case "clean": clean($module, $action, $subaction); break;

@@ -150,9 +150,9 @@ if ($active_action == "borrardo") {
     $equipo=leer_datos('equipo');
     $ldap=new LDAP();
     $equipos=$ldap->get_computers($equipo . '$');
-    $gui->debuga($equipos);
+    //$gui->debuga($equipos);
     if ( isset($equipos[0]) ) {
-        $gui->debuga($equipos[0]);
+        //$gui->debuga($equipos[0]);
         $equipos[0]->delComputer();
         $gui->session_info("Equipo '$equipo' borrado del dominio.");
     }
@@ -274,7 +274,8 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
             $aula->newMember($adduser);
             $gui->session_info("Usuario '$adduser' añadido al aula $editaaula.");
         }
-        $url->ir($active_module, "aulas", "miembros/$editaaula");
+        if (!DEBUG)
+          $url->ir($active_module, "aulas", "miembros/$editaaula");
     }
     elseif ( count($delusers) > 0 ) {
         $aula=$ldap->get_aula($editaaula);
@@ -283,7 +284,8 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
             $aula->delMember($deluser);
             $gui->session_info("Usuario '$deluser' eliminado del aula $editaaula.");
         }
-        $url->ir($active_module, "aulas", "miembros/$editaaula");
+        if (!DEBUG)
+          $url->ir($active_module, "aulas", "miembros/$editaaula");
     }
     else {
         $gui->session_error("No se ha seleccionado ningún profesor.");
@@ -345,6 +347,7 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
         foreach($addcomputers as $addcomputer) {
              // equitar el sambaProfilePath del equipo con el aula
             $equipo=$ldap->get_computers($addcomputer .'$');
+            $equipo[0]->sambaProfilePath=$aula;
             $equipo[0]->ldapdata['sambaProfilePath']=$aula;
             $res=$equipo[0]->save( array('sambaProfilePath') );
             if ($res) {
@@ -354,7 +357,8 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
             else
                 $gui->session_error("No se puedo añadir el equipo '$addcomputer' al aula '$aula'.");
         }
-        $url->ir($active_module, "aulas", "equipos/$aula");
+        if (!DEBUG)
+          $url->ir($active_module, "aulas", "equipos/$aula");
     }
     elseif ( count($delcomputers) > 0 ) {
         foreach($delcomputers as $delcomputer) {
@@ -373,7 +377,8 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
                 $gui->session_error("No se pudo encontrar el equipo '$delcomputer'");
             }
         }
-        $url->ir($active_module, "aulas", "equipos/$aula");
+        if (!DEBUG)
+          $url->ir($active_module, "aulas", "equipos/$aula");
     }
     else {
         $gui->session_error("No se ha seleccionado ningún equipo.");

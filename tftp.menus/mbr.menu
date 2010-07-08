@@ -1,0 +1,9 @@
+default mbr
+prompt 0
+timeout 1
+
+label mbr
+  menu label Arranque desde el MBR
+  kernel chain.c32
+  # arranque desde el MBR
+  append hd0 0

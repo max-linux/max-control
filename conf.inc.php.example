@@ -103,6 +103,7 @@ $site["private_modules_teacher"]=array(
         "isos" => "Distribuir ISOS",
         #"compartir" => "Compartir carpetas",
         "power" => "Apagado y reinicio",
+        #"boot" => "Programar arranque equipos",
         );
 
 $site["private_modules_none"]=array(

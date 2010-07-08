@@ -6,6 +6,7 @@
 *                net share admin$
 *     1.3.- Desde el max-server ejecutar
 *                winexe -U EBOX/admin //192.168.1.132 "ipconfig /all"
+*                winexe -U DOMINIO/usuario%contraseña --interactive=0 //192.168.x.x 'cmd -c ipconfig'
 *
 *     1.4.- Deberíamos haber visto la salida de ipconfig en la consola
 *     1.5.- En el windows, Mi PC -> Propiedades -> Administrar ->
@@ -211,6 +212,11 @@ class WINEXE {
     
     function poweroff( $mac ) {
         global $gui;
+        if ( ! $this->is_alive() ) {
+            $gui->session_error("No se puede apagar '".$this->hostname."', el equipo está apagado");
+            return false;
+        }
+        
         $gui->session_info("Equipo '".$this->hostname."' apagado.");
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -s -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Apagado remoto desde max-control"');
@@ -221,6 +227,10 @@ class WINEXE {
     
     function reboot( $mac ) {
         global $gui;
+        if ( ! $this->is_alive() ) {
+            $gui->session_error("No se puede reiniciar '".$this->hostname."', el equipo está apagado");
+            return false;
+        }
         $gui->session_info("Equipo '".$this->hostname."' reiniciado.");
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -r -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Reinicio remoto desde max-control"');
@@ -243,7 +253,7 @@ class WINEXE {
             $gui->session_info("Equipo '".$this->hostname."' enviado paquete WAKEONLAN.");
             return true;
         }
-        $gui->session_error("Error al enviar paquete WOL al equipo '".$this->hostname);
+        $gui->session_error("Error al enviar paquete WOL al equipo '".$this->hostname."<pre>".print_r($output, true)."</pre>");
         return false;
     }
     

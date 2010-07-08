@@ -11,7 +11,7 @@ define('LDAP_BINDPW', 'GzxovzAANdxoPux9');
 
 /* usuario creado por max-control */
 define('LDAP_ADMIN', 'max-control');
-define('LDAP_PASS', 'xsKNNuwZoc');
+define('LDAP_PASS', '2LmVmqKGtv8');
 
 define('LDAP_BASEDN', 'dc=max-server');
 
@@ -110,6 +110,7 @@ $site["private_modules_teacher"]=array(
         "isos" => "Distribuir ISOS",
         #"compartir" => "Compartir carpetas",
         "power" => "Apagado y reinicio",
+        #"boot" => "Programar arranque equipos",
         );
 
 $site["private_modules_none"]=array(

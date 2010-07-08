@@ -8,6 +8,8 @@ import glob
 import getopt
 
 from pprint import pprint
+from configobj import ConfigObj
+import time
 
 def read_conf(varname):
     f=open(CONF, 'r')
@@ -26,7 +28,8 @@ CONF="/etc/max-control/conf.inc.php"
 PXELINUXCFG=read_conf('PXELINUXCFG')
 DEFAULT=os.path.join( PXELINUXCFG, 'default')
 DONTDELETE=['default']
-
+CRON_FILE="/var/lib/max-control/cron"
+TIMEOUT=15*60
 
 def safe_aula(aula):
     return( aula.replace(' ', '_') )
@@ -177,9 +180,57 @@ def deleteMAC(mac):
     if os.path.exists( macfile ):
         os.unlink(macfile)
 
+def humanDate():
+    year, month, day, hour, minute, seconds ,wdy, yday, isdst= time.localtime()
+    savedatetxt="%4d-%02d-%02d %02d:%02d:%02d" %(year, month, day, hour, minute, seconds)
+    return savedatetxt
+
+
+def doCron():
+    if not os.path.isfile(CRON_FILE):
+        #print "[%s] no data"%(humanDate())
+        return
+    # leer CRON_FILE y borrar las entradas caducadas borrando las MAC's
+    data=ConfigObj(CRON_FILE)
+    for safemac in data:
+        if ( int(time.time()) - int(data[safemac]['time']) ) < TIMEOUT: #15minutos
+            print "[%s] %s NO caducado"%(humanDate(), data[safemac]['mac'])
+            #continue
+        else:
+            print "[%s] %s caducado, reseteando a '%s'"%(humanDate(), data[safemac]['mac'], data[safemac]['old'])
+            # configurar MAC a que apunte a OLD
+            bootMAC(data[safemac]['old'],data[safemac]['mac'])
+            # borrar de CRON_FILE
+            del data[safemac]
+    
+    data.write()
+
+def cronAdd(mac, boot):
+    # añadir a CRON_FILE 
+    data=ConfigObj(CRON_FILE)
+    if data.has_key(convertMAC(mac)):
+        # actualizar timestamp
+        data[convertMAC(mac)]['time']=int(time.time())
+        # guardar nuevo boot
+        data[convertMAC(mac)]['boot']=boot
+    else:
+        # crear nueva
+        data[convertMAC(mac)]={
+                           'time':int(time.time()), 
+                           'boot':boot,
+                           'old':getBoot(mac),
+                           'mac':mac
+                           }
+    data.write()
+    # configurar MAC para que apunte a boot
+    bootMAC(boot, mac)
+
+def cronClean():
+    if os.path.isfile(CRON_FILE):
+        os.unlink(CRON_FILE)
 
 try:
-    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help", "clean", "genpxelinux", "boot=", "mac=", "getboot=", "getbootaula=", "aula=", "delete="])
+    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help", "clean", "genpxelinux", "boot=", "mac=", "getboot=", "getbootaula=", "aula=", "delete=", "cron", "cronadd", "cronclean"])
 except getopt.error, msg:
     print (msg)
     print ("for command line options use pyboot --help")
@@ -193,6 +244,7 @@ if len(OPTS) == 0:
 boot=None
 mac=None
 aula=None
+cronadd=False
 
 for o, a in OPTS:
     if o in ("-h", "--help"):
@@ -228,10 +280,24 @@ for o, a in OPTS:
         deleteMAC(a)
         sys.exit(0)
     
+    elif o == "--cron":
+        doCron()
+        sys.exit(0)
+    
+    elif o == "--cronadd":
+        cronadd=True
+    
+    elif o == "--cronclean":
+        cronClean()
+        sys.exit(0)
+    
     else:
         print "unknow option"
         sys.exit(0)
 
+if cronadd and mac and boot:
+    cronAdd(mac, boot)
+    sys.exit(0)
 
 if boot and mac:
     bootMAC(boot, mac)

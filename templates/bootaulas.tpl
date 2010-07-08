@@ -30,6 +30,7 @@
     <tbody> 
       {foreach from=$aulas item=u}
       <tr class='border' id="{$u->safecn()}"> 
+      {if $u->teacher_in_aula()}
         <td class='tcenter'><span>{$u->cn}</span></td> 
         <td class='tcenter'><span>{$u->getBoot()}</span></td>
         <td class='tcenter'>
@@ -38,6 +39,7 @@
             </span>
         </td>
       </tr>
+      {/if}
       {/foreach}
 
     </tbody> 

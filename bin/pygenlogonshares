@@ -56,7 +56,7 @@ for group in results:
     sharedgroups.append(groupname)
 
 
-LAST=25 # y
+LAST=24 # W
 
 print """;
 ;  generated file with pygenlogonshares '%s'
