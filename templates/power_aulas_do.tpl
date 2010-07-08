@@ -33,8 +33,8 @@
 
 
 
-{*
+
 {if $DEBUG}
 {debug}
 {/if}
-*}
+

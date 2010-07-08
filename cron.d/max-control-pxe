@@ -1,0 +1,7 @@
+# /etc/cron.d/max-control-pxe
+
+SHELL=/bin/sh
+PATH=/usr/bin:/bin
+
+# Reset PXE boot files of Teacher configurations
+*/1 * * * * root [ -x /usr/bin/pyboot ] && /usr/bin/pyboot --cron > /var/log/max-control-pxe.log 2>&1

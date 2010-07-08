@@ -19,3 +19,5 @@ init.php              usr/share/max-control/
 
 tftpboot              var/lib/
 tftp.menus            usr/share/max-control/
+
+cron.d/max-control-pxe etc/cron.d/

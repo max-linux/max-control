@@ -30,9 +30,9 @@
             * Unir el equipo al dominio (no reiniciar aún).
             * Inicio -> Ejecutar -> cmd (y escribir)
 
-                net use z: \\max-server\netlogon
+                net use w: \\max-server\netlogon
 
-            * Abrir Mi PC (o Equipo) -> Z:
+            * Abrir Mi PC (o Equipo) -> w:
             * Botón derecho sobre winvista.win7.win2008.registry.fix.bat -> Ejecutar como Administrador
 
             * Reiniciar

@@ -1,6 +1,23 @@
 
 <h2>Listado de imágenes ISO</h2>
 
+<div class='help'>
+El listado que aparece a continuación son las ISOS disponibles para montar 
+en los equipos de los alumnos, como si estuviéramos introduciendo un CD o DVD 
+realmente en las unidades.<br/>
+
+Pulse sobre el icono montar y automáticamente los alumnos comenzarán a ver 
+dicho material en sus estaciones.<br/><br/>
+
+Para ampliar las imágenes ISO disponibles, solo tiene que generar una imagen 
+de un DVD o CD con programas como CloneCD, y copiar el archivo ISO a la unidad <b>Y:</b>
+o desde MaX desde <b>/mnt/isos</b><br/><br/>
+
+La próxima vez que entre en este panel, aparecerá como una imagen 
+más disponible para montar en los equipos de los alumnos.
+
+Por favor no use espacios o caracteres extraños en el nombre del archivo.
+</div>
 
 
 <table class="bDataTable"> 
@@ -9,7 +26,7 @@
         <form id="hosts" action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
-          
+          <input type='submit' name='button' value="Desmontar ISO" title="Desmontar ISO" />
         </form>
         </td> 
     </tr> 
@@ -40,9 +57,6 @@
 
     </tbody> 
 </table> 
-
-<note>Es necesario que los archivos no tengan espacios ni caracteres extraños.<br/>
-Puede copiarlos a través de su unidad I: (en Windows) o en MAX desde /mnt/isos</note>
 
 {*
 {if $DEBUG}

@@ -35,6 +35,7 @@ EOF
        unix2dos /home/samba/netlogon/mount.bat
        unix2dos /home/samba/netlogon/logon.kix
        unix2dos /home/samba/netlogon/winvista.win7.win2008.registry.fix.bat
+       unix2dos /home/samba/netlogon/prepara_unir_dominio.bat
        unix2dos /home/samba/netlogon/README.txt
 
        pygenlogonshares > /home/samba/netlogon/shares.kix
@@ -46,11 +47,17 @@ EOF
 
 
    # TFTPBOOT menus
+   rm -f /var/lib/tftpboot/pxelinux.cfg/max.menu
    for fname in $(find /usr/share/max-control/tftp.menus/ -type f); do
        filename=$(basename $fname)
        #[ ! -e /var/lib/tftpboot/pxelinux.cfg/$filename ] && cp $fname /var/lib/tftpboot/pxelinux.cfg/
        cp $fname /var/lib/tftpboot/pxelinux.cfg/
    done
+
+   # create samba configuration
+   echo " * Updating /etc/samba/max-control.conf"
+   /usr/bin/pymaxgensamba || true
+
 
    # enable mod_rewrite
    [ -x /usr/sbin/a2enmod ] && a2enmod rewrite

@@ -1,7 +1,7 @@
 <?php
 // 10 minutos de session
 ini_set("session.gc_maxlifetime", "600"); 
-set_time_limit(120);
+set_time_limit(30);
 session_start();
 $path=dirname(dirname(__FILE__));
 

@@ -10,7 +10,7 @@
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
           <input type='submit' name='button' value="Actualizar MAC e IP de todos" title="Actualizar todos" />
-          <input type='submit' name='button' value="Limpiar cache WINS" title="Limpiar cache WINS" />
+          <!--<input type='submit' name='button' value="Limpiar cache WINS" title="Limpiar cache WINS" />-->
         </form>
         </td> 
     </tr> 

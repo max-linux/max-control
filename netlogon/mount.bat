@@ -14,10 +14,10 @@ exit
 
 
 :MOUNT
-rem net use i: /d
-rem net use i: \\max-server\isos
+net use Y: /d
+net use Y: \\max-server\isos
 rem %VCDMOUNT% "\\max-server\isos\%2"
-%VCDMOUNT% "I:\%2"
+%VCDMOUNT% "Y:\%2"
 exit
 
 

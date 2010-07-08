@@ -1,0 +1,8 @@
+
+
+   * Configurar nsswitch:
+
+      cat nsswitch.conf | sed '/hosts:/ chosts:          files dns'
+
+
+   * Añadir iconos de reiniciar en windows y reiniciar en linux

@@ -13,6 +13,9 @@ use EBox::Gettext;
 # open apache and ldap
 use constant TCPPORTS => qw(80 389);
 
+# open UDP 7 and 9 for wakeonlan in input and output
+use constant UDPPORTS => qw(9);
+
 sub new
 {
         my $class = shift;
@@ -39,5 +42,26 @@ sub input
 	}
 	return \@rules;
 }
+
+
+sub output
+{
+	my $self = shift;
+	my @rules = ();
+
+	my $net = EBox::Global->modInstance('network');
+	my @ifaces = @{$net->InternalIfaces()};
+
+        foreach my $port (UDPPORTS) {
+            foreach my $ifc (@ifaces) {
+                my $r = "-m state --state NEW -o $ifc  ".
+                     "-p udp --dport $port -j ACCEPT";
+                push(@rules, $r);
+            }
+        }
+
+    return \@rules;
+}
+
 
 1;

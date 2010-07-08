@@ -257,6 +257,10 @@ class USER extends BASE {
     
     var $role='unset';
     
+    function init(){
+        return;
+    }
+    
     function get_save_dn(){
         return 'uid='.$this->uid.','.LDAP_OU_USERS;
     }
@@ -342,7 +346,7 @@ class USER extends BASE {
         $r = ldap_modify($ldap->cid, $this->get_save_dn() , $newpassword );
         
         if ($r) {
-            $gui->session_error("Contraseñas actualizadas: ".ldap_error($ldap->cid));
+            $gui->session_info("Contraseña actualizada.");
             $ldap->disconnect();
             return true;
         }
@@ -639,7 +643,30 @@ class COMPUTER extends BASE {
             $this->exe->$actionname($mac);
         }
         else {
-            $gui->debug("method '$actionname' don't exists");
+            if ( $actionname == 'rebootwindows' ) {
+                // cambiar MAC a windows.menu
+                // python bin/pyboot --cronadd --boot=windows --mac=08:00:27:96:0D:E6
+                $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=windows --mac=$mac 2>&1");
+                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=windows --mac=$mac 2>&1", &$output);
+                $gui->debuga($output);
+                // llamar a reiniciar
+                $this->action('reboot', $mac);
+                return;
+            }
+            elseif ( $actionname == 'rebootmax' ) {
+                // cambiar MAC a max-extlinux.menu
+                // python bin/pyboot --cronadd --boot=max-extlinux --mac=08:00:27:96:0D:E6
+                $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1");
+                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1", &$output);
+                $gui->debuga($output);
+                // llamar a reiniciar
+                $this->action('reboot', $mac);
+                return;
+            }
+            else {
+                $gui->session_error("Acción desconocida '$actionname' en equipo ". $this->hostname());
+                $gui->debug("method '$actionname' don't exists");
+            }
         }
     }
     
@@ -783,6 +810,14 @@ class COMPUTER extends BASE {
         *  smbpasswd -x 'wxp64$'
         */
         $result=false;
+        
+        // delete MAC
+        if ( $this->macAddress != '') {
+            $mac=$this->macAddress;
+            $gui->debug("sudo ".MAXCONTROL." pxe --delete='$mac' ");
+            exec("sudo ".MAXCONTROL." pxe --delete='$mac' ", &$output);
+            $gui->debug("delComputer($mac)<pre>".print_r($output, true)."</pre>");
+        }
         
         //borrar del LDAP
         $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
@@ -947,6 +982,10 @@ class AULA extends BASE {
         
         global $gui;
         $aula=$this->cn;
+        
+        if ($conffile == '') {
+            $conffile='default';
+        }
         
         //max-control pxe --aula=aula_primaria_1 --boot=windows
         exec("sudo ".MAXCONTROL." pxe --boot='$conffile' --aula='".$this->safecn()."' ", &$output);
