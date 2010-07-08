@@ -3,19 +3,6 @@
 
 if [ "$1" = "configure" ]; then
 
-   # create conf.inc.php from LDAP data (create max-control user or update-password)
-
-   rm -f /etc/max-control/conf.inc.php
-   (cd /usr/share/max-control && php init.php )
-   chmod 640 /etc/max-control/conf.inc.php
-   chown root:www-data /etc/max-control/conf.inc.php
-
-   chmod 644 /home/samba/netlogon/domain.txt
-   unix2dos /home/samba/netlogon/domain.txt
-
-   chmod 775 /var/lib/max-control/cache
-   chown -R www-data:www-data /var/lib/max-control/cache
-
    if ! grep -q ^www-data /etc/sudoers; then
      cat << EOF >> /etc/sudoers
 
@@ -54,10 +41,6 @@ EOF
        cp $fname /var/lib/tftpboot/pxelinux.cfg/
    done
 
-   # create samba configuration
-   echo " * Updating /etc/samba/max-control.conf"
-   /usr/bin/pymaxgensamba || true
-
 
    # enable mod_rewrite
    [ -x /usr/sbin/a2enmod ] && a2enmod rewrite
@@ -69,5 +52,10 @@ EOF
         /etc/init.d/apache2 reload || true
     fi
   fi
+
+  # configure max-control, create conf.inc.php and shares
+  /usr/bin/configure-max-control
+
+
 
 fi

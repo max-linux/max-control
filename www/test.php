@@ -41,7 +41,7 @@ include("../classes/winexe.class.php");
 //echo conectar('uid=test,ou=Users,dc=max-server','test');
 //echo conectar('uid=mario,ou=Users,dc=max-server','12345');
 
-echo "<h2>LDAP</h2><br/>\n";
+//echo "<h2>LDAP</h2><br/>\n";
 
 $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 //$ldap=new LDAP();
@@ -106,8 +106,8 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 #$gui->debug("\n\n\n");
 
 
-$teachers=$ldap->get_groups('Teachers', $include_teachers=true);
-$gui->debuga($teachers);
+#$teachers=$ldap->get_groups('Teachers', $include_teachers=true);
+#$gui->debuga($teachers);
 #if ( count($teachers) < 1 ) {
 #    $group = new GROUP( array('cn' => 'Teachers' ) );
 #    $group->newGroup('');
@@ -138,4 +138,9 @@ $gui->debuga($teachers);
 #echo $exe->mount('test.iso');
 //echo $exe->umount();
 //echo $exe->reboot($exe->mac);
+
+$exe=new WINEXE('192.168.1.148');
+$exe->fork('rebootwindows');
+
+
 ?>

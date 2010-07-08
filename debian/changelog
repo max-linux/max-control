@@ -1,3 +1,18 @@
+max-control (0.9.9) max; urgency=low
+
+  * Revert homes/vfs objects in pymaxgensamba
+  * Add support to FORK actions (reboot, poweroff)
+  * COMPUTER:init() Read IP from LDAP if valid
+
+ -- root <root@max-server>  Thu, 08 Jul 2010 20:12:35 +0200
+
+max-control (0.9.8) max; urgency=low
+
+  * Configure max-control from /usr/bin/configure-max-control
+    And stop if no needed files or services are found.
+
+ -- root <root@max-server>  Thu, 08 Jul 2010 16:17:35 +0200
+
 max-control (0.9.7) max; urgency=low
 
   * Don't overwrite cron data (specially old option) simply update.

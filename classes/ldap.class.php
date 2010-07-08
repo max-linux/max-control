@@ -574,8 +574,15 @@ class COMPUTER extends BASE {
     #var $bootParameter=''; # disable, complex syntax, see: http://tools.ietf.org/html/rfc2307
     
     
-    function init(){
+    function init() {
+        global $gui;
         $this->exe=new WINEXE($this->hostname());
+        /* try to use LDAP IP if exists */
+        if ($this->ipHostNumber != '' && 
+            $this->exe->checkIP($this->ipHostNumber) == $this->ipHostNumber) {
+                $gui->debug("COMPUTER:init(".$this->hostname().") using LDAP IP=". $this->ipHostNumber);
+                $this->exe->ip=$this->ipHostNumber;
+        }
         return;
     }
     
@@ -636,11 +643,14 @@ class COMPUTER extends BASE {
     
     function action($actionname, $mac){
         global $gui;
-        $gui->debug("COMPUTER:action($actionname) ".$this->uid);
+        $gui->debug("COMPUTER:action($actionname) mac=$mac uid=".$this->uid);
         if ( method_exists($this->exe, $actionname) ) {
             $this->exe->hostname=$this->hostname();
             $gui->debug("   COMPUTER:action($actionname) method exists");
-            $this->exe->$actionname($mac);
+            if (FORK_ACTIONS)
+                return $this->exe->fork($actionname);
+            else
+                return $this->exe->$actionname($mac);
         }
         else {
             if ( $actionname == 'rebootwindows' ) {
@@ -650,8 +660,7 @@ class COMPUTER extends BASE {
                 exec("sudo ".MAXCONTROL." pxe --cronadd --boot=windows --mac=$mac 2>&1", &$output);
                 $gui->debuga($output);
                 // llamar a reiniciar
-                $this->action('reboot', $mac);
-                return;
+                return $this->action('reboot', $mac);
             }
             elseif ( $actionname == 'rebootmax' ) {
                 // cambiar MAC a max-extlinux.menu
@@ -660,14 +669,14 @@ class COMPUTER extends BASE {
                 exec("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1", &$output);
                 $gui->debuga($output);
                 // llamar a reiniciar
-                $this->action('reboot', $mac);
-                return;
+                return $this->action('reboot', $mac);
             }
             else {
                 $gui->session_error("Acción desconocida '$actionname' en equipo ". $this->hostname());
                 $gui->debug("method '$actionname' don't exists");
             }
         }
+        return false;
     }
     
     function getMACIP() {
@@ -1464,6 +1473,25 @@ class LDAP {
         }
         
         return $computers;
+    }
+
+    function get_computer_by_ip($ip='') {
+        global $gui;
+        if ( ! $this->connect() )
+            return false;
+        
+        $computer=array();
+        $gui->debug("ldap::get_computers() (uid='*')".LDAP_OU_COMPUTERS);
+        $this->search("(uid=*)", $basedn=LDAP_OU_COMPUTERS);
+        while($attrs = $this->fetch()) {
+            if ( isset($attrs['ipHostNumber'][0]) ) {
+                if ( $attrs['ipHostNumber'][0] == $ip ) {
+                    $computer=new COMPUTER($attrs);
+                }
+            }
+            
+        }
+        return $computer;
     }
 
     function get_aulas($aula='') {
