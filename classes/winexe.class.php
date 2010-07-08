@@ -113,6 +113,7 @@ class WINEXE {
         */
         global $gui;
         $cmd="net lookup $hostname";
+        $gui->debug("WINEXE:getIpAddress($hostname) cmd='$cmd'");
         exec($cmd, &$output);
         if ( isset($output[0]) ) {
             $gui->debug("WINEXE:getIpAddress($hostname)=".$output[0]);
@@ -277,7 +278,19 @@ class WINEXE {
         }
     }
 
-
+    function fork($action) {
+        global $gui;
+        /* call action.php in background */
+        //$cmd="php /usr/share/max-control/action.php";
+        $cmd="cd /usr/share/max-control && ";
+        $cmd.="php action.php action=$action ip='".$this->ip. "' ";
+        $cmd.=">> ".FORK_LOGFILE." 2>&1 &";
+        
+        $gui->debug($cmd);
+        
+        // launch in background
+        pclose(popen($cmd, "r"));
+    }
 
 /* end of class WINEXE */
 }

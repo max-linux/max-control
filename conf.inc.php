@@ -11,7 +11,7 @@ define('LDAP_BINDPW', 'GzxovzAANdxoPux9');
 
 /* usuario creado por max-control */
 define('LDAP_ADMIN', 'max-control');
-define('LDAP_PASS', '2LmVmqKGtv8');
+define('LDAP_PASS', 'SpcWSs294Ov');
 
 define('LDAP_BASEDN', 'dc=max-server');
 
@@ -92,6 +92,9 @@ define("PXELINUXCFG", "/var/lib/tftpboot/pxelinux.cfg/");
 // compartir ISOS
 define("ISOS_PATH", "/home/samba/shares/isos/");
 
+define("FORK_ACTIONS", True);
+//define("FORK_LOGFILE", "/tmp/actions.log");
+define("FORK_LOGFILE", "/dev/null");
 
 $site["public_modules"]=array();
         

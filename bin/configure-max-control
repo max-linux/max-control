@@ -1,0 +1,42 @@
+#!/bin/sh
+
+CONFIGURE=1
+
+if [ ! -e /etc/ldap.conf ]; then
+  echo " * WARNING: /etc/ldap.conf not exists, no configuring max-control"
+  CONFIGURE=0
+fi
+
+if [ ! -e /etc/ldap.secret ]; then
+  echo " * WARNING: /etc/ldap.secret not exists, no configuring max-control"
+  CONFIGURE=0
+fi
+
+if [ "$(pidof slapd)" = "" ]; then
+  echo " * WARNING: slapd is not running, no configuring max-control"
+  CONFIGURE=0
+fi
+
+if [ "$CONFIGURE" = "1" ]; then
+
+    # create conf.inc.php from LDAP data 
+    # (create max-control user or update-password)
+
+    rm -f /etc/max-control/conf.inc.php
+    (cd /usr/share/max-control && php init.php )
+
+    chmod 640 /etc/max-control/conf.inc.php
+    chown root:www-data /etc/max-control/conf.inc.php
+
+    if [ -e /home/samba/netlogon/domain.txt ]; then
+        chmod 644 /home/samba/netlogon/domain.txt
+        unix2dos /home/samba/netlogon/domain.txt
+    fi
+
+    # create samba configuration
+    echo " * Updating /etc/samba/max-control.conf"
+    /usr/bin/pymaxgensamba
+
+    # create PXE files
+    /usr/bin/max-control pxe --genpxelinux
+fi

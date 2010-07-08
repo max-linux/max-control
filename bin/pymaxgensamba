@@ -26,9 +26,7 @@ SHARED_DIR="/home/samba/groups/"
  force directory mode = 0775
 """
 
-TO_ADD={'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/',
-                  'vfs objects': ''
-                 },
+TO_ADD={'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/'},
         'isos': {'comment': 'Archivos ISO', 
                'path': '/home/samba/shares/isos',
                #'valid users': ['@"Teachers"', '@"__USERS__"'],

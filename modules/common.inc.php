@@ -279,4 +279,23 @@ function LMhash($string)
     return strtoupper($p1.$p2);
 }
 
+
+
+function ParseCMDArgs() {
+    $args=array();
+    foreach( $_SERVER['argv'] as $k => $v) {
+        if ( $k < 1) {
+            continue;
+        }
+        $item=preg_split("#=#i",$v);
+        $args[$item[0]]=$item[1];
+    }
+    return $args;
+}
+
+function checkIP($ip) {
+    $cIP = ip2long($ip);
+    $fIP = long2ip($cIP);
+    return $fIP;
+}
 ?>
