@@ -38,6 +38,7 @@ if ( $permisos->get_rol() == '' ) {
 $module_actions=array(
         "aulas" => "Aulas",
         "equipos" => "Equipos",
+        #"backharddi" => "Backharddi-NG",
 );
 
 
@@ -66,6 +67,7 @@ if ($active_action == "aulas" && $active_subaction == '') {
     
     $urlrebootwindows=$url->create_url($active_module, 'aula_preguntar', 'rebootwindows');
     $urlrebootmax=$url->create_url($active_module, 'aula_preguntar', 'rebootmax');
+    $urlbackharddi=$url->create_url($active_module, 'aula_preguntar', 'rebootbackharddi');
     
     $data=array("aulas" => $aulas, 
                 "filter" => $filter,
@@ -74,6 +76,7 @@ if ($active_action == "aulas" && $active_subaction == '') {
                 "urlreboot"=>$urlreboot,
                 "urlrebootwindows"=>$urlrebootwindows,
                 "urlrebootmax"=>$urlrebootmax,
+                "urlbackharddi"=>$urlbackharddi,
                 "urlwakeonlan" => $urlwakeonlan);
     $gui->add( $gui->load_from_template("power_aulas.tpl", $data) );
 }
@@ -121,16 +124,6 @@ if ($active_action == "do" && $active_subaction != '') {
         $gui->debug("Acción $action en equipo '".$computer->hostname()."' tiempo: " . time_end() );
         //$res[]=$computer->action($action);
         $computer->action($action, $computer->macAddress);
-        /* exe->is_alive movido a los métodos de reinicio o apagado */
-#        if ($action == 'wakeonlan') {
-#            $computer->action($action, $computer->macAddress);
-#        }
-#        elseif ( $computer->exe->is_alive() ) {
-#            $computer->action($action, $computer->macAddress);
-#        }
-#        else {
-#            $gui->session_error("No se puede realizar la acción solicitada en '".$computer->hostname()."', el equipo está apagado");
-#        }
     }
     $gui->debug("Finalizadas acciones tiempo: " . time_end() );
     
@@ -152,6 +145,7 @@ if ($active_action == "equipos" && $active_subaction == '') {
     
     $urlrebootwindows=$url->create_url($active_module, 'equipo_preguntar', 'rebootwindows');
     $urlrebootmax=$url->create_url($active_module, 'equipo_preguntar', 'rebootmax');
+    $urlbackharddi=$url->create_url($active_module, 'equipo_preguntar', 'rebootbackharddi');
     
     $data=array("equipos" => $equipos, 
                 "filter" => $filter,
@@ -160,6 +154,7 @@ if ($active_action == "equipos" && $active_subaction == '') {
                 "urlreboot"=>$urlreboot,
                 "urlrebootwindows"=>$urlrebootwindows,
                 "urlrebootmax"=>$urlrebootmax,
+                "urlbackharddi"=>$urlbackharddi,
                 "urlwakeonlan" => $urlwakeonlan);
     $gui->add( $gui->load_from_template("power_equipos.tpl", $data) );
 }
@@ -199,18 +194,26 @@ if ($active_action == "docomputer" && $active_subaction != '') {
         $gui->debug("Acción $action en equipo '".$computer->hostname()."' tiempo: " . time_end() );
         //$res[]=$computer->action($action);
         $computer->action($action, $computer->macAddress);
-#        if ($action == 'wakeonlan') {
-#            $computer->action($action, $computer->macAddress);
-#        }
-#        elseif ( $computer->exe->is_alive() ) {
-#            $computer->action($action, $computer->macAddress);
-#        }
-#        else {
-#            $gui->session_error("No se puede realizar la acción solicitada en '".$computer->hostname()."', el equipo está apagado");
-#        }
     }
+    // si es backharddi redirigir a un iframe
+    if($action == 'rebootbackharddi') {
+        $url->ir($active_module, "backharddi");
+    }
+    
+    
     $gui->debug("Finalizadas acciones tiempo: " . time_end() );
     if (! DEBUG)
         $url->ir($active_module, "equipos");
+}
+
+if ($active_action == "backharddi") {
+    if ( ! $permisos->is_admin() ) {
+        $gui->session_error("Sólo pueden acceder al clonado los administradores.");
+        $url->ir($active_module,"");
+    }
+    //$gui->debuga($_SERVER);
+    $urliframe="http://".$_SERVER['SERVER_NAME'].":9091/";
+    $data=array("urliframe"=>$urliframe);
+    $gui->add( $gui->load_from_template("backharddi.tpl", $data) );
 }
 ?>

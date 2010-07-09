@@ -36,10 +36,19 @@ rem Compruebo si ya est unido al dominio. Si no lo est, en Multipoint Server 201
 rem la asignacin de permisos al no encontrar el grupo "Domain Users" por eso no se pueden
 rem ejecutar los subinacl hasta que est en el dominio.
 
-rem if /i %USERDOMAIN%==multiseat goto DOMINIO
-reg query "hklm\System\CurrentControlSet\Services\Tcpip\Parameters" /v Domain > %USERPROFILE%\so.txt
-find /i "MULTISEAT" %USERPROFILE%\so.txt > nul
-if not errorlevel 1 goto DOMINIO
+
+rem reg query "hklm\System\CurrentControlSet\Services\Tcpip\Parameters" /v Domain > %USERPROFILE%\so.txt
+rem find /i "MULTISEAT" %USERPROFILE%\so.txt > nul
+rem if not errorlevel 1 goto DOMINIO
+
+rem Averiguo si el equipo esta en el domino detectando Si la clave Domain esta vacia.
+reg add "hklm\System\CurrentControlSet\Services\Tcpip\Performance" /v Domain /f
+reg compare "hklm\System\CurrentControlSet\Services\Tcpip\Parameters" "hklm\System\CurrentControlSet\Services\Tcpip\Performance" /v Domain
+rem Si errorlevel 2 las claves son diferentes, no esta vacia, por lo que esta en un dominio.
+if errorlevel 2 goto DOMINIO
+
+
+
 cls
 echo Preparando equipo para unirlo al dominio...
 echo.
@@ -62,12 +71,13 @@ echo Primer paso configurado. Es necesario reiniciar el equipo, entonces ya
 echo lo podra unir al dominio "multiseat". Despues de unir el equipo y reiniciar,
 echo vuelva a ejecutar este script para terminar la configuracion.
 echo.
-goto fin
+goto fin2
 
 :DOMINIO
 
-del %USERPROFILE%\so.txt
+cls
 rem Mapeo "netlogin" y me cambio a la unidad para que encuentre el programa subinacl.exe
+echo Conectando unidad de red w:(\\max-server\netlogon)...
 net use w: \\max-server\netlogon
 w:
 if not exist w:\subinacl.exe goto nosubinacl
@@ -87,50 +97,76 @@ goto fin
 mkdir c:\Windows\educamadrid
 w:\unzip -o w:\fondos-iconos.zip -d C:\Windows\educamadrid > nul
 w:\unzip -o w:\GroupPolicy.zip -d C:\borrame > nul
+echo Copiando politicas de grupo a C:\Windows\System32\GroupPolicy...
 xcopy /e /y c:\borrame c:\Windows\System32\GroupPolicy
 rmdir /s /q c:\borrame
+echo Copiando mount.bat a C:\Windows\System32...
 copy w:\mount.bat c:\Windows\System32
 
 
 rem Se oculta la unidad C: a todos, incluidos administradores:
-reg add HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v NoDrives /t REG_DWORD /d 4 /f
+reg add HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v NoDrives /t REG_DWORD /d 4 /f > nul
 
 rem Se deniega el acceso la unidad C: a traves del explorer, a todos los ususarios
-reg add HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v NoViewOnDrive /t REG_DWORD /d 4 /f
+reg add HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /v NoViewOnDrive /t REG_DWORD /d 4 /f > nul
 
 rem Se fuerza al explorer a que no inicie hasta que se termine el script de logon.bat
-reg add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v RunLogonScriptSync /t REG_DWORD /d 1 /f
+reg add HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v RunLogonScriptSync /t REG_DWORD /d 1 /f > nul
 
 rem No muestra el ultimo nombre de usuario en la pantalla de login:
-reg add HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\NetCache /v NoConfigCache /t REG_DWORD /d 1 /f
+reg add HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\NetCache /v NoConfigCache /t REG_DWORD /d 1 /f > nul
 
 
 
+
+
+if not exist "c:\Program Files\Elaborate Bytes\VirtualCloneDrive" goto x86
+subinacl /nostatistic /subdirectories "c:\Program Files\Elaborate Bytes\VirtualCloneDrive" /revoke="Usuarios" > nul
+subinacl /nostatistic /subdirectories "c:\Program Files\Elaborate Bytes\VirtualCloneDrive" /grant="Teachers"=f > nul
+goto SIVCD
+:x86
+if not exist "c:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive" goto NOVCD
+subinacl /nostatistic /subdirectories "c:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive" /revoke="Usuarios" > nul
+subinacl /nostatistic /subdirectories "c:\Program Files (x86)\Elaborate Bytes\VirtualCloneDrive" /grant="Teachers"=f > nul
+goto SIVCD
+:NOVCD
+echo.
+echo ATENCION: No se ha detectado VirualCloneDrive, instalelo y vuelva a ejecutar
+echo           este script.
+echo.
 pause
 
+
+
+:SIVCD
 rem esta regla es para redirigir carpetas y aplicar la ocultacin de unidades
-subinacl /noverbose /subkeyreg Software\Microsoft\Windows\CurrentVersion\Explorer /grant="Domain Users"=f
-pause
+subinacl /nostatistic /subkeyreg Software\Microsoft\Windows\CurrentVersion\Explorer /grant="Domain Users"=f > nul
 
-reg add HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /f
-subinacl /noverbose /subkeyreg HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /grant="Domain Users"=f
-pause
-
-rem fondo de pantalla
-rem subinacl /noverbose /subkeyreg Software\Microsoft\Windows\CurrentVersion\Policies\System /grant="Domain Users"=f
+reg add HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /f > nul
+subinacl /nostatistic /subkeyreg HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /grant="Domain Users"=f > nul
 
 rem pagina de inicio de explorer
-reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Main" /f
-subinacl /noverbose /subkeyreg  "Software\Microsoft\Internet Explorer\Main" /grant="Domain Users"=f
-pause
+reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Main" /f > nul
+subinacl /nostatistic /subkeyreg  "Software\Microsoft\Internet Explorer\Main" /grant="Domain Users"=f > nul
 
 rem no mostrar el ultimo nombre de usuario
-subinacl /noverbose /subkeyreg HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /grant="Domain Admins"=f
-pause
+subinacl /nostatistic /subkeyreg HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /grant="Domain Admins"=f > nul
 
 rem archivos offline
-subinacl /noverbose /subkeyreg HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows /grant="Domain Admins"=f
+subinacl /nostatistic /subkeyreg HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows /grant="Domain Admins"=f > nul
 
+rem Como voy a eliminar w: me cambio de unidad ya que estoy trabajando ahora sobre ella, si no se producen errores
+c:
+echo.
+echo Desconectando la unidad w:(\\max-server\netlogon)...
 if exist w:\subinacl.exe net use w: /d /y
+
+echo.
+echo Fase 2 de configuracion terminada.
+echo.
+
+:fin2
+reg delete "hklm\System\CurrentControlSet\Services\Tcpip\Performance" /v Domain /f > nul
+
 :fin
 pause

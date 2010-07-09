@@ -80,11 +80,20 @@ $teachers=$ldap->get_groups(TEACHERS, $include_teachers=true);
 if ( ! isset($teachers[0]) ) {
     $group = new GROUP( array('cn' => TEACHERS ) );
     $group->newGroup('');
+    $group->description="Profesores no-borrar";
+    $group->ldapdata['description']="Profesores no-borrar";
+    $group->save( array('description') );
     echo " * Creado grupo Teachers (profesores).\n";
 }
 else {
+    $teachers[0]->description="Profesores no-borrar";
+    $teachers[0]->ldapdata['description']="Profesores no-borrar";
+    $teachers[0]->save( array('description') );
     echo " * El grupo Teachers (profesores) ya existe.\n";
 }
+
+
+
 
 $extra=file_get_contents('conf.inc.php.init');
 $extra = str_replace ( "<?php" , "" , $extra );

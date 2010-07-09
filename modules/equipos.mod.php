@@ -463,7 +463,7 @@ if ($active_action == "aulas" && $active_subaction == 'aulaborrar') {
     if ( $aulas->delAula() )
         $gui->session_info("Aula '$aula' borrada.");
     
-    $url->ir($module, "aulas");
+    $url->ir($active_module, "aulas");
 
 }
 
