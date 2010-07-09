@@ -654,6 +654,7 @@ class COMPUTER extends BASE {
         }
         else {
             if ( $actionname == 'rebootwindows' ) {
+                $this->action('wakeonlan', $mac);
                 // cambiar MAC a windows.menu
                 // python bin/pyboot --cronadd --boot=windows --mac=08:00:27:96:0D:E6
                 $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=windows --mac=$mac 2>&1");
@@ -663,10 +664,21 @@ class COMPUTER extends BASE {
                 return $this->action('reboot', $mac);
             }
             elseif ( $actionname == 'rebootmax' ) {
+                $this->action('wakeonlan', $mac);
                 // cambiar MAC a max-extlinux.menu
                 // python bin/pyboot --cronadd --boot=max-extlinux --mac=08:00:27:96:0D:E6
                 $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1");
                 exec("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1", &$output);
+                $gui->debuga($output);
+                // llamar a reiniciar
+                return $this->action('reboot', $mac);
+            }
+            elseif ( $actionname == 'rebootbackharddi' ) {
+                $this->action('wakeonlan', $mac);
+                // cambiar MAC a backharddi-ng-text.menu
+                // python bin/pyboot --cronadd --boot=backharddi-ng-text --mac=08:00:27:96:0D:E6
+                $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=backharddi-ng-text --mac=$mac 2>&1");
+                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=backharddi-ng-text --mac=$mac 2>&1", &$output);
                 $gui->debuga($output);
                 // llamar a reiniciar
                 return $this->action('reboot', $mac);
@@ -1070,6 +1082,13 @@ class AULA extends BASE {
         global $gui;
         $res=false;
         
+        /* borrar aula de los equipos que pertenezcan a ella */
+        $ldap=new LDAP();
+        $computers=$ldap->get_computers_from_aula($this->cn);
+        foreach($computers as $computer) {
+            $computer->empty_attr( 'sambaProfilePath' );
+        }
+        
         $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         
@@ -1079,6 +1098,12 @@ class AULA extends BASE {
         if ( ! $r)
             $res=false;
         $res=true;
+        
+        /* remove /var/lib/tftpboot/pxelinux.cfg/$AULA$ */
+        /* read all pxe of hosts and delete linked to aula */
+        exec("sudo ".MAXCONTROL." pxe --delaula='".$this->safecn()."' ", &$output);
+        $gui->debug("AULA:delAula(".$this->safecn().")<pre>".print_r($output, true)."</pre>");
+        
         
         $this->genPXELinux();
         

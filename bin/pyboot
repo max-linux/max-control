@@ -229,8 +229,28 @@ def cronClean():
     if os.path.isfile(CRON_FILE):
         os.unlink(CRON_FILE)
 
+
+def deleteAula(aula):
+    for pfile in glob.glob(PXELINUXCFG + "*"):
+        link=None
+        macfile=os.path.basename(pfile)
+        try:
+            link=os.path.basename(os.readlink(pfile))
+        except:
+            pass
+        if link:
+            if link == aula:
+                #print "rm -f %s"%pfile
+                os.unlink(pfile)
+            if macfile == aula:
+                #print "rm -f %s"%pfile
+                os.unlink(pfile)
+
+
+
+
 try:
-    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help", "clean", "genpxelinux", "boot=", "mac=", "getboot=", "getbootaula=", "aula=", "delete=", "cron", "cronadd", "cronclean"])
+    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help", "clean", "genpxelinux", "boot=", "mac=", "getboot=", "getbootaula=", "aula=", "delete=", "cron", "cronadd", "cronclean", "delaula="])
 except getopt.error, msg:
     print (msg)
     print ("for command line options use pyboot --help")
@@ -289,6 +309,10 @@ for o, a in OPTS:
     
     elif o == "--cronclean":
         cronClean()
+        sys.exit(0)
+    
+    elif o == "--delaula":
+        deleteAula(a)
         sys.exit(0)
     
     else:

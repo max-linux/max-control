@@ -4,6 +4,9 @@
  <h2>Se va a {if $action == 'poweroff'}apagar{/if}
              {if $action == 'reboot'}reiniciar{/if}
              {if $action == 'wakeonlan'}encender (WakeOnLAN){/if}
+             {if $action == 'rebootwindows'}reiniciar en Windows{/if}
+             {if $action == 'rebootmax'}reiniciar en MAX{/if}
+             {if $action == 'rebootbackharddi'}reiniciar en Backharddi-NG{/if}
  el equipo: {$equipo}</h2>
  <br/><br/>
 
@@ -33,8 +36,8 @@
 
 
 
-
+{*
 {if $DEBUG}
 {debug}
 {/if}
-
+*}
