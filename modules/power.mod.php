@@ -196,7 +196,7 @@ if ($active_action == "docomputer" && $active_subaction != '') {
         $computer->action($action, $computer->macAddress);
     }
     // si es backharddi redirigir a un iframe
-    if($action == 'rebootbackharddi') {
+    if ( $permisos->is_admin() && ($action == 'rebootbackharddi') ) {
         $url->ir($active_module, "backharddi");
     }
     

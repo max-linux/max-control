@@ -1,3 +1,11 @@
+max-control (0.9.12) max; urgency=low
+
+  * power module: only redirect to backharddi if admin
+  * Update AulaVirtual.zip
+  * Add Configuracion_Firefox.zip (initial firefox settings)
+
+ -- root <root@max-server>  Mon, 12 Jul 2010 11:25:40 +0200
+
 max-control (0.9.11) max; urgency=low
 
   * Add backharddi-NG in a iframe in rebootbackharddi
