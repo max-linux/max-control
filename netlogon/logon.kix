@@ -164,8 +164,8 @@ ENDIF
 IF NOT EXIST ("$VOL\Escritorio\Programas")
   use w: /d
   use w: "@lserver\netlogon"
-  $UnzipCMD = '%comSpec% /c w:\unzip -o w:\AulaVirtual.zip -d $VOL\Escritorio'
-  Shell $UnzipCMD
+  Shell '%comSpec% /c w:\unzip -o w:\AulaVirtual.zip -d $VOL\Escritorio'
+  Shell '%comSpec% /c w:\unzip -o w:\Configuracion_Firefox.zip -d %userprofile%\AppData\Roaming\Mozilla'
   use w: /d
 
   ; Si es un alumno se borran de su escritorio los iconos que no necesita
