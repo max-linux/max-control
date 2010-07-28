@@ -29,7 +29,8 @@ if [ "$1" = "createhome" ]; then
   
 
   # set quota
-  /usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
+  #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
+  /usr/bin/edit.quotas --set --user=${NEWUSER} --size=${QUOTA}
   exit 0
 fi
 

@@ -39,4 +39,7 @@ if [ "$CONFIGURE" = "1" ]; then
 
     # create PXE files
     /usr/bin/max-control pxe --genpxelinux
+
+    # reset quotas
+    /usr/bin/reset-quotas >/dev/null 2>&1
 fi

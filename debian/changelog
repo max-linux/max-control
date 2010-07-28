@@ -1,3 +1,37 @@
+max-control (0.9.17) max; urgency=low
+
+  * bin/reset-quotas: 
+    - double Teachers quota
+    - set grace time to 0 seconds
+
+ -- root <root@max-server>  Wed, 28 Jul 2010 13:54:57 +0200
+
+max-control (0.9.16) max; urgency=low
+
+  * Add reset-quotas script
+  * edit.quotas: disable remote RPC
+
+ -- root <root@max-server>  Tue, 27 Jul 2010 22:37:07 +0200
+
+max-control (0.9.15) max; urgency=low
+
+  * Fix max-control edit.quota => edit.quotas
+
+ -- root <root@max-server>  Tue, 27 Jul 2010 17:07:40 +0200
+
+max-control (0.9.14) max; urgency=low
+
+  * Add bin/edit.quotas to change user quotas (ebox don't support NFS /home/samba)
+
+ -- root <root@max-server>  Tue, 27 Jul 2010 16:51:22 +0200
+
+max-control (0.9.13) max; urgency=low
+
+  * Add 'ea support' and 'store dos attributes' to /etc/samba/max-
+    control.conf
+
+ -- root <root@max-server>  Wed, 14 Jul 2010 15:30:20 +0200
+
 max-control (0.9.12) max; urgency=low
 
   * power module: only redirect to backharddi if admin
