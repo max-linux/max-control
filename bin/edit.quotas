@@ -1,0 +1,90 @@
+#!/usr/bin/python
+
+
+
+import os
+import sys
+from subprocess import Popen, PIPE, STDOUT
+import getopt
+
+os.environ['LC_ALL']="C"
+os.environ['EDITOR']="/bin/cat"
+
+HOME="/home/samba"
+REMOTE_NFS="/dev/nbd0"
+
+
+
+
+
+def getquota(user):
+    """
+    LC_ALL=C edquota -u profesorpruebas -f /home/samba/
+    Disk quotas for user profesorpruebas (uid 2050):
+      Filesystem                   blocks       soft       hard     inodes     soft     hard
+      192.168.11.2:/data               12    2048000    2048000          3        0        0
+    """
+    size=0
+    cmd="edquota -u %s -f %s"%(user, HOME)
+    p = Popen(cmd, shell=True, bufsize=0, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    stdout = p.stdout
+    for line in stdout.readlines():
+        if line != '\n':
+            line=line.replace('\n', '')
+            #print "==>%s"%line
+            if REMOTE_NFS in line:
+                size=line.split()[2]
+    size=int(size)/1024
+    return size
+
+
+def setquota(user, size):
+    """
+    setquota -u profesorpruebas 2048000 2048000 0 0 -a /home/samba/
+    """
+    size=int(size)*1024
+    cmd="setquota -u %s %s %s 0 0 -a %s"%(user, size, size, HOME)
+    p = Popen(cmd, shell=True, bufsize=0, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    stdout = p.stdout
+    for line in stdout.readlines():
+        if line != '\n':
+            line=line.replace('\n', '')
+            print "==>%s"%line
+    return 0
+
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "size=", "set"])
+except getopt.error, msg:
+    print( msg )
+    print( "for command line options use edit.quotas --help")
+    sys.exit(2)
+
+user=""
+size=0
+mode="get"
+
+# process options
+for o, a in opts:
+    if o == "--user":
+        user = str(a)
+    if o == "--size":
+        size = str(a)
+    if o == "--set":
+        mode = "set"
+
+
+
+if mode == "get":
+    print getquota(user)
+else:
+    if user and size > 0:
+        setquota(user, size)
+        print getquota(user)
+    else:
+        print "user or size null"
+
+
+
+
+
