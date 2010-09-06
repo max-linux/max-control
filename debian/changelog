@@ -1,3 +1,46 @@
+max-control (0.9.23.1) max; urgency=low
+
+  * Build package with correct date
+
+ -- root <root@max-server>  Mon, 06 Sep 2010 17:47:22 +0200
+
+max-control (0.9.23) max; urgency=low
+
+  * Fix selected in /bin/bash not /bin/false
+
+ -- root <root@max-server>  Mon, 06 Sep 2010 19:42:12 +0200
+
+max-control (0.9.22) max; urgency=low
+
+  * By default shell is enabled in add_users template
+
+ -- root <root@max-server>  Mon, 06 Sep 2010 19:35:13 +0200
+
+max-control (0.9.21) max; urgency=low
+
+  * bin/max-control: set double quota on Teachers or Administrators
+
+ -- root <root@max-server>  Thu, 02 Sep 2010 17:24:29 +0200
+
+max-control (0.9.20) max; urgency=low
+
+  * Fix zero division in edit.quotas and be more verbose in reset-quotas
+
+ -- root <root@max-server>  Thu, 02 Sep 2010 17:05:10 +0200
+
+max-control (0.9.19) max; urgency=low
+
+  * Disable NBD mount/umount for now (manual edit)
+
+ -- root <root@max-server>  Sun, 29 Aug 2010 06:08:52 +0200
+
+max-control (0.9.18) max; urgency=low
+
+  * Use /home for NBD root
+  * Show quota usage in every user web panel
+
+ -- root <root@max-server>  Sat, 28 Aug 2010 18:37:59 +0200
+
 max-control (0.9.17) max; urgency=low
 
   * bin/reset-quotas: 

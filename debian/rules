@@ -2,6 +2,9 @@
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 
+DEB_UPDATE_RCD_PARAMS := "start 99 2 3 4 5 . stop 40 0 1 6 ."
+#DEB_DH_INSTALLINIT_ARGS := "--no-start"
+
 #clean::
 #	bin/pyboot --clean || true
 

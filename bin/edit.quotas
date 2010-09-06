@@ -10,22 +10,29 @@ import getopt
 os.environ['LC_ALL']="C"
 os.environ['EDITOR']="/bin/cat"
 
-HOME="/home/samba"
+HOME="/home"
 REMOTE_NFS="/dev/nbd0"
 
+if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quota.user"):
+    HOME="/home/samba"
 
+if not os.path.isfile(HOME + "/aquota.user") and not os.path.isfile(HOME + "/quota.user"):
+    print "no quotas found"
+    sys.exit(0)
 
-
-
-def getquota(user):
+def getquota(user, used=False):
     """
-    LC_ALL=C edquota -u profesorpruebas -f /home/samba/
+    LC_ALL=C edquota -u profesorpruebas -f /home
     Disk quotas for user profesorpruebas (uid 2050):
-      Filesystem                   blocks       soft       hard     inodes     soft     hard
-      192.168.11.2:/data               12    2048000    2048000          3        0        0
+      Filesystem          blocks       soft       hard     inodes     soft     hard
+      /dev/nbd0               12    2048000    2048000          3        0        0
     """
+    column=2
+    percent=""
+    if used:
+        column=1
     size=0
-    cmd="edquota -u %s -f %s"%(user, HOME)
+    cmd="edquota -u %s -f %s 2>/dev/null"%(user, HOME)
     p = Popen(cmd, shell=True, bufsize=0, stdout=PIPE, stderr=STDOUT, close_fds=True)
     stdout = p.stdout
     for line in stdout.readlines():
@@ -33,14 +40,24 @@ def getquota(user):
             line=line.replace('\n', '')
             #print "==>%s"%line
             if REMOTE_NFS in line:
-                size=line.split()[2]
+                size=line.split()[column]
+                if used:
+                    if int(line.split()[2]) == 0:
+                        return "<span style='color:red'>no cuota</span>"
+                    percent=float(line.split()[1])/float(line.split()[2])*100
+                    size=int(size)/1024
+                    maxsize=int(line.split()[2])/1024
+                    color="black"
+                    if size >= maxsize:
+                        color="red"
+                    return "<span style='color:%s'>%sMB/%sMB (%0.2f%%)</span>"%(color, size, maxsize, percent)
     size=int(size)/1024
     return size
 
 
 def setquota(user, size):
     """
-    setquota -u profesorpruebas 2048000 2048000 0 0 -a /home/samba/
+    setquota -u profesorpruebas 2048000 2048000 0 0 -a /home/
     """
     size=int(size)*1024
     cmd="setquota -u %s %s %s 0 0 -a %s"%(user, size, size, HOME)
@@ -54,7 +71,7 @@ def setquota(user, size):
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "size=", "set"])
+    opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "size=", "set", "getused"])
 except getopt.error, msg:
     print( msg )
     print( "for command line options use edit.quotas --help")
@@ -72,11 +89,15 @@ for o, a in opts:
         size = str(a)
     if o == "--set":
         mode = "set"
+    if o == "--getused":
+        mode = "getused"
 
 
 
 if mode == "get":
     print getquota(user)
+elif mode == "getused":
+    print getquota(user, True)
 else:
     if user and size > 0:
         setquota(user, size)

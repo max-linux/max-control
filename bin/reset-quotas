@@ -1,10 +1,27 @@
 #!/bin/bash
 
+QUOTA_PATH=/home/samba
+if [ -f $(grep home /proc/mounts | awk '{print $2}')/aquota.user ] || [ -f $(grep home /proc/mounts | awk '{print $2}')/quota.user ]; then
+  QUOTA_PATH=$(grep home /proc/mounts | awk '{print $2}')
+fi
 
-quotaoff /home/samba
-rm -f /home/samba/aquota*
-quotacheck -vug /home/samba/ >/dev/null 2>&1
-quotaon /home/samba
+if [ "$QUOTA_PATH" = "" ]; then
+  echo " * /home or /home/samba not mounted"
+  exit 0
+fi
+
+echo " * Disabling quotas on $QUOTA_PATH"
+
+quotaoff $QUOTA_PATH
+rm -f $QUOTA_PATH/*quota.*
+touch $QUOTA_PATH/quota.user $QUOTA_PATH/quota.group
+#quotacheck -vug $QUOTA_PATH/ 
+quotacheck -vug $QUOTA_PATH/ >/dev/null 2>&1
+
+echo " * Enabling quotas on $QUOTA_PATH"
+quotaon $QUOTA_PATH
+
+quotaon -p $QUOTA_PATH
 
 # set grace time to 0 segs
 setquota -t 0 0 -a
@@ -21,10 +38,18 @@ for u in /home/samba/users/*; do
     if id "$username" | grep -q Teachers ; then
         # doble quota para tener ISOS
         size_teachers=$((size*2))
+        echo " * Set quota for user $username (teacher) $size_teachers MB"
         edit.quotas --user=$username --size=$size_teachers --set >/dev/null 2>&1
+    elif id "$username" | grep -q Administrators ; then
+        # doble quota para tener ISOS
+        size_admins=$((size*2))
+        echo " * Set quota for user $username (admins) $size_admins MB"
+        edit.quotas --user=$username --size=$size_admins --set >/dev/null 2>&1
     else
+        echo " * Set quota for user $username $size MB"
 	edit.quotas --user=$username --size=$size --set >/dev/null 2>&1
     fi
+    setquota -T $username 0 0 -a > /dev/null 2>&1
   fi
 
 done

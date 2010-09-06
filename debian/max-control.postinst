@@ -59,3 +59,11 @@ EOF
 
 
 fi
+
+
+
+#if [ "$1" = "configure" ]; then
+#  update-rc.d max-control remove >/dev/null
+#fi
+
+#DEBHELPER#

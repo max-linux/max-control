@@ -41,5 +41,6 @@ if [ "$CONFIGURE" = "1" ]; then
     /usr/bin/max-control pxe --genpxelinux
 
     # reset quotas
-    /usr/bin/reset-quotas >/dev/null 2>&1
+    #echo " * Reseting quotas"
+    /usr/bin/reset-quotas || true
 fi
