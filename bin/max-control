@@ -26,6 +26,12 @@ if [ "$1" = "createhome" ]; then
   mkdir ${PROFILES_DIR}/${NEWUSER}.V2
   chown ${NEWUSER}:Domain\ Users ${PROFILES_DIR}/${NEWUSER}.V2
   chmod 701 ${PROFILES_DIR}/${NEWUSER}.V2
+
+  if id "$NEWUSER" 2>/dev/null | grep -q Teachers ; then
+        QUOTA=$((QUOTA*2))
+  elif id "$NEWUSER" 2>/dev/null | grep -q Administrators ; then
+        QUOTA=$((QUOTA*2))
+  fi
   
 
   # set quota
@@ -76,6 +82,10 @@ if [ "getdefaultquota" = "$1" ]; then
    echo $DEF
   fi
   exit 0
+fi
+
+if [ "getquota" = "$1" ]; then
+  /usr/bin/edit.quotas --getused --user=$2  
 fi
 
 

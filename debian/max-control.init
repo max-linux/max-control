@@ -1,4 +1,17 @@
 #!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides: max-control
+# Required-Start: $local_fs $network $remote_fs $syslog
+# Required-Stop: $local_fs $network $remote_fs $syslog
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop quotas on NBD and create PXE files
+# Description: start and stop quotas on NBD and create PXE files
+### END INIT INFO
+#
+
+
 
 PYBOOT=/usr/bin/pyboot
 
@@ -9,7 +22,39 @@ case "$1" in
         echo -n "Generating PXE files: max-control"
         $PYBOOT --genpxelinux
         echo "."	
+
+	#grep -q nbd0 /etc/fstab || exit 0
+
+	# need this in /etc/nbc-client file
+	# NBD_DEVICE[0]=/dev/nbd0
+	# NBD_TYPE[0]="f"
+	# NBD_HOST[0]="192.168.0.2"
+	# NBD_PORT[0]="1234"
+
+	# and this in /etc/fstab
+	# /dev/nbd0  /home ext3 defaults,rw,noauto,usrquota,grpquota,acl,user_xattr 0 0
+
+	# start NBD
+	#modprobe nbd
+	#grep -q /dev/nbd0 /proc/mounts || /etc/init.d/nbd-client start
+
+	#/etc/init.d/quota start
+
+	# restart samba
+	#/etc/init.d/ebox samba restart
+
     ;;
+
+    stop)
+
+	#grep -q /dev/nbd0 /etc/fstab || exit 0
+
+	# stop NBD
+	#/etc/init.d/quota stop
+	#grep -q /dev/nbd0 /proc/mounts && /etc/init.d/nbd-client stop
+
+	;;
+
 
     *)
         exit 0

@@ -528,6 +528,13 @@ class USER extends BASE {
             return false;
         return true;
     }
+    
+    function getquota() {
+        global $gui;
+        exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);
+        $gui->debug("<pre>getquota(".$this->uid.")".print_r($output, true)."</pre>");
+        return $output[0];
+    }
 }
 
 

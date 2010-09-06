@@ -23,6 +23,7 @@
       <th class=''>Nombre</th> 
       <th class=''>Nombre completo</th> 
       <th class=''>Rol</th> 
+      <th class=''>Cuota</th> 
       <th class=''>Editar</th> 
       <th class=''>Borrar</th> 
       </tr>
@@ -42,6 +43,7 @@
             {if $u->get_role() == 'admin'}Administrador{/if}
             {if $u->get_role() == ''}Alumno{/if}
                         </span></td> 
+        <td class='tcenter'><span>{$u->getquota()}</span></td>
         <td class='tcenter'> 
             <a href="{$urleditar}/{$u->attr('uid')}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
         </td>
