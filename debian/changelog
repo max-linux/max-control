@@ -1,3 +1,9 @@
+max-control (0.9.24) max; urgency=low
+
+  * Update Office icons 2003 => 2007
+
+ -- root <root@max-server>  Tue, 07 Sep 2010 11:26:24 +0200
+
 max-control (0.9.23.1) max; urgency=low
 
   * Build package with correct date
