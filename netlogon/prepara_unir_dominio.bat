@@ -1,4 +1,5 @@
 @echo off
+rem Version 23-09-2010-1
 cls
 rem echo Copie este script y el fichero "subinacl.exe" a una carpeta local
 rem echo del equipo que quiere unir al dominio y ejecutelo desde ahi.
@@ -77,8 +78,8 @@ goto fin2
 
 cls
 rem Mapeo "netlogin" y me cambio a la unidad para que encuentre el programa subinacl.exe
-echo Conectando unidad de red w:(\\max-server\netlogon)...
-net use w: \\max-server\netlogon
+echo Conectando unidad de red w:(\\192.168.10.1\netlogon)...
+net use w: \\192.168.10.1\netlogon
 w:
 if not exist w:\subinacl.exe goto nosubinacl
 goto sisubinacl
@@ -86,7 +87,7 @@ goto sisubinacl
 cls
 echo.
 echo ERROR: No se encuentra el fichero "subinacl.exe". Probablemente no
-echo        se ha podido mapear la unidad w: en \\max-server\netlogon.
+echo        se ha podido mapear la unidad w: en \\192.168.10.1\netlogon.
 echo        Compruebe que la letra w: no pertenece a ninguna unidad.
 echo.
 goto fin
@@ -140,14 +141,14 @@ pause
 
 :SIVCD
 rem esta regla es para redirigir carpetas y aplicar la ocultacin de unidades
-subinacl /nostatistic /subkeyreg Software\Microsoft\Windows\CurrentVersion\Explorer /grant="Domain Users"=f > nul
+rem subinacl /nostatistic /subkeyreg Software\Microsoft\Windows\CurrentVersion\Explorer /grant="Domain Users"=f > nul
 
 reg add HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /f > nul
-subinacl /nostatistic /subkeyreg HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /grant="Domain Users"=f > nul
+rem subinacl /nostatistic /subkeyreg HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer /grant="Domain Users"=f > nul
 
 rem pagina de inicio de explorer
 reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Main" /f > nul
-subinacl /nostatistic /subkeyreg  "Software\Microsoft\Internet Explorer\Main" /grant="Domain Users"=f > nul
+rem subinacl /nostatistic /subkeyreg  "Software\Microsoft\Internet Explorer\Main" /grant="Domain Users"=f > nul
 
 rem no mostrar el ultimo nombre de usuario
 subinacl /nostatistic /subkeyreg HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /grant="Domain Admins"=f > nul
@@ -158,7 +159,7 @@ subinacl /nostatistic /subkeyreg HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\
 rem Como voy a eliminar w: me cambio de unidad ya que estoy trabajando ahora sobre ella, si no se producen errores
 c:
 echo.
-echo Desconectando la unidad w:(\\max-server\netlogon)...
+echo Desconectando la unidad w:(\\192.168.10.1\netlogon)...
 if exist w:\subinacl.exe net use w: /d /y
 
 echo.

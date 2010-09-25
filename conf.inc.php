@@ -11,7 +11,7 @@ define('LDAP_BINDPW', 'GzxovzAANdxoPux9');
 
 /* usuario creado por max-control */
 define('LDAP_ADMIN', 'max-control');
-define('LDAP_PASS', 'Kc4ycz3WhfD');
+define('LDAP_PASS', 'iPXmWoFYb2f');
 
 define('LDAP_BASEDN', 'dc=max-server');
 
