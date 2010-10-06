@@ -3,6 +3,9 @@
 
 if [ "$1" = "configure" ]; then
 
+   # remove old cache
+   rm -f /var/lib/max-control/cache/* >/dev/null 2>&1 || true
+
    if ! grep -q ^www-data /etc/sudoers; then
      cat << EOF >> /etc/sudoers
 

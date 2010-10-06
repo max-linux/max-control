@@ -77,6 +77,11 @@ define("FORK_ACTIONS", False);
 //define("FORK_LOGFILE", "/tmp/actions.log");
 define("FORK_LOGFILE", "/dev/null");
 
+
+/* paginador */
+define("PAGER_LIMIT", 15);
+define("PAGER_MAX_LINKS", 5);
+
 $site["public_modules"]=array();
         
 $site["private_modules_admin"]=array(

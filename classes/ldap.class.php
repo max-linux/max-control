@@ -1378,7 +1378,7 @@ class LDAP {
         return true;
     }
 
-    function get_users($filter='*', $group=LDAP_OU_USERS) {
+    function get_users($filter='*', $group=LDAP_OU_USERS, $ignore="") {
         global $gui;
         if ( $filter == '' )
             $filter='*';
@@ -1387,6 +1387,9 @@ class LDAP {
         $this->search("(uid=$filter)", $basedn=$group);
         while($attrs = $this->fetch())
         {
+            if ($ignore != "" && $attrs['uid'][0] == $ignore ) {
+                continue;
+            }
             $user= new USER($attrs);
             $users[]=$user;
         }
@@ -2087,7 +2090,7 @@ class LDAP {
         if (!$this->connect()) {
             return(0);
         }
-
+        
         $this->sr = ldap_search($this->cid, $localbasedn, $filter);
         $this->error = ldap_error($this->cid);
         $this->resetResult();
@@ -2117,5 +2120,115 @@ class LDAP {
     function disconnect() {
         ldap_close($this->cid);
     }
+}
+
+
+class PAGER {
+    function PAGER($items, $baseurl, $skip) {
+        global $gui;
+        $this->items=$items;
+        $this->number=sizeof($items);
+        $this->baseurl=$baseurl;
+        
+        if ($skip == "") {
+            $this->skip=0;
+        }
+        else {
+            $this->skip=intval($skip);
+        }
+        
+        
+        $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$baseurl skip=".$this->skip."</pre>");
+        return;
+    }
+    
+    function getHTML() {
+        global $gui;
+        
+        $total_pages=intval($this->number/PAGER_LIMIT);
+        $resto=$this->number%PAGER_LIMIT;
+        if ($resto > 0) {
+            $total_pages++;
+        }
+        
+        $gui->debug("<pre>PAGER number=".$this->number." total_pages=$total_pages resto=$resto</pre>");
+        $html="<div class='pages'>";
+        
+        if ( ($this->skip-PAGER_LIMIT)>= 0 ) {
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/skip=".($this->skip-PAGER_LIMIT)."'>« Anterior</a>";
+        }
+        else {
+            $html.="&nbsp;&nbsp;<span class='nextprev'>« Anterior</span>";
+        }
+        /* based on http://www.smarty.net/forums/viewtopic.php?p=12747&sid=941343163ff96ced4e8bcbac6fe3f4c3 */
+        $delta_l = 0;
+        $delta_r = 0;
+        if (PAGER_LIMIT % 2 == 0) {
+            $delta_l = (PAGER_MAX_LINKS / 2 ) - 1;
+            $delta_r = PAGER_MAX_LINKS / 2;
+        } else {
+            $delta_l = $delta_r = (PAGER_MAX_LINKS - 1) / 2;
+        }
+
+        $links = array();
+        for($i = 0; $i < $total_pages; $i++) {
+            $links[$i] = $i + 1;
+        }
+        //$gui->debuga($links);
+        
+        $int_curpage=$this->skip/PAGER_LIMIT;
+        $linknum=PAGER_MAX_LINKS;
+        $pagecount=$total_pages;
+        
+        if (($int_curpage - $delta_l) < 1) { // Delta_l needs adjustment, we are too far left 
+            $delta_l = $int_curpage - 1;
+            $delta_r = $linknum - $delta_l - 1;
+        }
+        if (($int_curpage + $delta_r) > $pagecount) { // Delta_r needs adjustment, we are too far right 
+            $delta_r = $pagecount - $int_curpage;
+            $delta_l = $linknum - $delta_r - 1;
+        }
+        if ($int_curpage - $delta_l > 1) { // Let's do some cutting on the left side 
+            array_splice($links, 0, $int_curpage - $delta_l);
+        }
+        if ($int_curpage + $delta_r < $pagecount) { // The right side will also need some treatment 
+            array_splice($links, $int_curpage + $delta_r + 2 - $links[0]);
+        }
+        
+        $gui->debuga($links);
+        
+        for($i=0; $i<$total_pages; $i++) {
+            $skipcount=$i*PAGER_LIMIT;
+            
+            if ($this->skip == $skipcount) {
+                $html.="&nbsp;&nbsp;<span class='current'>".($i+1)."</span>";
+            }
+            else{
+                if ( in_array($i+1, $links) ) {
+                    $gui->debug("i=$i en array() curpage=$int_curpage");
+                    $html.="&nbsp;&nbsp;<a class='pagerLink' href='".$this->baseurl."/skip=$skipcount'>".($i+1)."</a>";
+                }
+                else {
+                    $gui->debug("i=$i **NO** en array() curpage=$int_curpage");
+                }
+            }
+        }
+        if ( ($this->skip+PAGER_LIMIT)< $this->number ) {
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/skip=".($this->skip+PAGER_LIMIT)."'>Siguiente »</a>";
+        }
+        else {
+            $html.="&nbsp;&nbsp;<span class='nextprev'>Siguiente »</span>";
+        }
+        
+        $html.="<br style='clear:both' /></div>";
+        return $html;
+    }
+    
+    function getItems() {
+        /* array array_slice ( array $array , int $offset [, int $length [, bool $preserve_keys = false ]] ) */
+        $this->items=array_slice($this->items, $this->skip, PAGER_LIMIT, $preserve_keys = false );
+        return $this->items;
+    }
+
 }
 ?>

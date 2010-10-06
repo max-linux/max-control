@@ -10,6 +10,7 @@
                 <span class="error" style="display:none;" id='usernotvalid'>El identificador está ocupado</span>
                 <span class="note" style="display:none;" id='uservalid'>El identificador está libre</span>
                 <span class="error" style="display:none;" id='userempty'>El identificador no puede estar vacío</span>
+                <span class="error" style="display:none;" id='userinvalid'>Identificador no válido (letras ASCII, números o .-_)</span>
             </td> 
         </tr> 
 
@@ -84,6 +85,7 @@ function useduid(uid) {
         return false;
     }
     $('#userempty')[0].style.display='none';
+    $('#userinvalid')[0].style.display='none';
     // ver si el usuario está ocupado
     $.ajax({
       type: "POST",
@@ -95,10 +97,17 @@ function useduid(uid) {
             $('#uservalid')[0].style.display='none';
             return false;
         }
+        else if (data == 'invalid') {
+            $('#userinvalid')[0].style.display='';
+            $('#uservalid')[0].style.display='none';
+            return false;
+        }
         else if (data == 'free') {
             $('#usernotvalid')[0].style.display='none';
             $('#uservalid')[0].style.display='';
-            //alert('usuario disponible');
+        }
+        else {
+            alert("Respuesta desconocida: \n'" + data + "'");
         }
       }
     });

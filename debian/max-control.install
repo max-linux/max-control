@@ -24,6 +24,7 @@ tftpboot              var/lib/
 tftp.menus            usr/share/max-control/
 
 cron.d/max-control-pxe etc/cron.d/
+cron.d/clamav-freshclam etc/cron.d/
 bin/configure-max-control usr/bin/
 
 action.php            usr/share/max-control/
