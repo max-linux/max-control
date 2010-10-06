@@ -11,7 +11,7 @@ define('LDAP_BINDPW', 'GzxovzAANdxoPux9');
 
 /* usuario creado por max-control */
 define('LDAP_ADMIN', 'max-control');
-define('LDAP_PASS', 'iPXmWoFYb2f');
+define('LDAP_PASS', 'rurv5wsFJPB');
 
 define('LDAP_BASEDN', 'dc=max-server');
 
@@ -95,6 +95,11 @@ define("ISOS_PATH", "/home/samba/shares/isos/");
 define("FORK_ACTIONS", True);
 //define("FORK_LOGFILE", "/tmp/actions.log");
 define("FORK_LOGFILE", "/dev/null");
+
+
+/* paginador */
+define("PAGER_LIMIT", 15);
+define("PAGER_MAX_LINKS", 5);
 
 $site["public_modules"]=array();
         

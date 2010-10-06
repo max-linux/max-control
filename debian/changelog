@@ -1,3 +1,12 @@
+max-control (0.9.26) max; urgency=low
+
+  * Add Pager in user list
+  * Don't allow usernames starting with number, with non ASCII chars or spaces
+  * Remove smarty cache files
+  * Add /etc/cron.d/clamav-freshclam run fresh clam at 02:00
+
+ -- root <root@max-server>  Wed, 06 Oct 2010 19:37:22 +0200
+
 max-control (0.9.25) max; urgency=low
 
   * Update netlogon scripts and zip files

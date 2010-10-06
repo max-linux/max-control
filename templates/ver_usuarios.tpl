@@ -1,5 +1,5 @@
 
-<h2>Listado de usuarios</h2>
+<h2>Listado de usuarios ({$numusuarios})</h2>
 
 
 
@@ -32,9 +32,6 @@
  
     <tbody> 
       {foreach from=$usuarios key=k item=u}
-      {if $u->attr('uid') == 'max-control'}
-      <!-- max-control no mostrado -->
-      {else}
       <tr class='border' id="{$u->attr('uid')}"> 
         <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
         <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
@@ -51,12 +48,16 @@
             <a href="{$urlborrar}/{$u->attr('uid')}"><img src="{$baseurl}/img/delete.gif" alt="borrar" /></a>
         </td>
       </tr>
-      {/if}
       {/foreach}
+      
 
     </tbody> 
 </table> 
 
+<!-- paginador -->
+{if $pager}
+{$pager->getHTML()}
+{/if}
 
 {*
 {if $DEBUG}

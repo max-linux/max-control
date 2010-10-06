@@ -63,18 +63,28 @@ function ver($module, $action, $subaction) {
     $ldap=new LDAP();
     /* /control/usuarios/usuarios?Filter=test&button=Buscar */
     $filter=leer_datos('Filter');
-    $usuarios=$ldap->get_users( $filter );
+    $usuarios=$ldap->get_users( $filter, LDAP_OU_USERS, $ignore="max-control" );
     $urlform=$url->create_url($module, $action);
     $urleditar=$url->create_url($module,'editar');
     $urlborrar=$url->create_url($module,'delete');
     
-    //$gui->debug("<pre>".print_r($usuarios,true)."</pre>");
+    $skip=str_replace ( "skip=" , "" , leer_datos('subaction') );
+    
+    $numusuarios=sizeof($usuarios);
+    
+    $pager=NULL;
+    if ( sizeof($usuarios) > PAGER_LIMIT ){
+        $pager=new PAGER($usuarios, $urlform, $skip);
+        $usuarios=$pager->getItems();
+    }
     
     $data=array("usuarios" => $usuarios, 
+                "numusuarios" => $numusuarios,
                 "filter" => $filter, 
                 "urlform" => $urlform, 
                 "urleditar"=>$urleditar,
-                "urlborrar"=>$urlborrar);
+                "urlborrar"=>$urlborrar,
+                "pager"=>$pager);
     $gui->add( $gui->load_from_template("ver_usuarios.tpl", $data) );
 }
 

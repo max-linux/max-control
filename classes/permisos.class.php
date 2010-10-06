@@ -18,11 +18,11 @@ class Permisos {
     function is_connected(){
         global $gui;
         if ( isset($_SESSION["user"]) ) {
-            $gui->debug("permisos::is_connected() return true");
+            $gui->debug("permisos::is_connected() true");
             return True;
         }
         else {
-            $gui->debug("permisos::is_connected() return false");
+            $gui->debug("permisos::is_connected() false");
             return False;
         }
     }
