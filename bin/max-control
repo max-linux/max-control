@@ -104,6 +104,16 @@ if [ "$1" = "genlogonshares" ]; then
   #pygenlogonshares 'ou=Groups,dc=max-server'
   pygenlogonshares > /home/samba/netlogon/shares.kix
   unix2dos /home/samba/netlogon/shares.kix
+  echo "ok"
+  exit 0
+fi
+
+############################################################################
+
+if [ "$1" = "gensamba" ]; then
+  rm -f /etc/samba/max-control.conf
+  pymaxgensamba
+  echo "ok"
   exit 0
 fi
 
@@ -165,3 +175,8 @@ if [ "$1" = "purgewins" ]; then
   /etc/init.d/ebox samba start
   exit 0
 fi
+
+
+
+echo "unknow_action"
+exit 0
