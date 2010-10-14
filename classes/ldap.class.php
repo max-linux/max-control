@@ -1211,6 +1211,7 @@ class GROUP extends BASE {
         
         if ($delprofile == '1') {
             $ldap->deleteGroupProfile($this->cn);
+            $ldap->genSamba();
         }
         
         $ldap->updateLogonShares();
@@ -1299,6 +1300,7 @@ class GROUP extends BASE {
         
         if ($createshared == '1') {
             $ldap->addGroupProfile($this->cn);
+            $ldap->genSamba();
         }
         
         $ldap->updateLogonShares();
@@ -1941,6 +1943,13 @@ class LDAP {
         return $output[0];
     }
 
+    function genSamba() {
+        global $gui;
+        exec("sudo ".MAXCONTROL." gensamba", &$output);
+        $gui->debug("LDAP:genSamba()<pre>".print_r($output, true)."</pre>");
+        return $output[0];
+    }
+
     function updateLogonShares() {
         /*
         This method call script to generate /home/samba/netlogon/shares.kix 
@@ -1949,7 +1958,7 @@ class LDAP {
         global $gui;
         exec("sudo ".MAXCONTROL." genlogonshares", &$output);
         $gui->debug("LDAP:updateLogonShares()<pre>".print_r($output, true)."</pre>");
-        return;
+        return $output[0];
     }
 
     function purgeWINS() {

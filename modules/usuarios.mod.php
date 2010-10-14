@@ -188,7 +188,9 @@ function deletedo($module, $action, $subaction) {
     
     if ( $user->delUser($deleteprofile) )
         $gui->session_info("Usuario '$username' borrado.");
-    $url->ir($module, "ver");
+    
+    if(! DEBUG)
+        $url->ir($module, "ver");
 }
 
 function add($module, $action, $subaction) {
@@ -241,7 +243,8 @@ function guardarnuevo($module, $action, $subaction) {
     if ( ! $user->newUser() ) 
         $url->ir($module, "add");
     
-    $url->ir($module, "ver");
+    if(! DEBUG)
+        $url->ir($module, "ver");
 }
 
 function groups($module, $action, $subaction) {
@@ -340,11 +343,13 @@ function groupmembersguardar($module, $action, $subaction) {
             $groups[0]->delMember($deluser);
             $gui->session_info("Usuario '$deluser' eliminado del grupo $group.");
         }
-        $url->ir($module, "groupmembers", $group);
+        if(! DEBUG)
+            $url->ir($module, "groupmembers", $group);
     }
     else {
         $gui->session_error("No ha seleccionado ningún usuario.");
-        $url->ir($module, "groupmembers", $group);
+        if(! DEBUG)
+            $url->ir($module, "groupmembers", $group);
     }
 }
 
@@ -390,7 +395,8 @@ function groupdeletedo($module, $action, $subaction) {
     if ( $groups[0]->delGroup($deleteprofile) )
         $gui->session_info("Grupo '$group' borrado.");
     
-    $url->ir($module, "grupos");
+    if(! DEBUG)
+        $url->ir($module, "grupos");
 }
 
 function groupadd($module, $action, $subaction) {
@@ -429,7 +435,8 @@ function groupsavenew($module, $action, $subaction) {
     if ( $group->newGroup($createshared) )
         $gui->session_info("Grupo '".$group->cn."' añadido correctamente.");
     
-    $url->ir($module, "grupos");
+    if(! DEBUG)
+        $url->ir($module, "grupos");
 }
 /*************************************************/
 
