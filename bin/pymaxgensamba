@@ -138,7 +138,7 @@ def newGroupShare(groupname):
             "path": os.path.join(SHARED_DIR, groupname),
             #"valid users": '@"%s"'%groupname,
             "valid users": ['@"Domain Admins"', '@"%s"'%groupname],
-            "force group": '"%s"'%groupname,
+            "force group": "%s"%groupname,
             "read list":  ['@"Domain Admins"', '@"%s"'%groupname],
             "write list": ['@"Domain Admins"', '@"%s"'%groupname],
             "admin users": '@"Domain Admins"',

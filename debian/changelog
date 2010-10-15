@@ -1,3 +1,15 @@
+max-control (0.9.30) max; urgency=low
+
+  * Don't install classes/ldap2.php
+
+ -- root <root@max-server>  Fri, 15 Oct 2010 18:41:37 +0200
+
+max-control (0.9.29) max; urgency=low
+
+  * bin/pymaxgensamba: remove extra quotation marks in force group
+
+ -- root <root@max-server>  Fri, 15 Oct 2010 18:30:18 +0200
+
 max-control (0.9.28) max; urgency=low
 
   * bin/pymaxgensamba: force group without '@'
