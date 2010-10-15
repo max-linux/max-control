@@ -34,7 +34,7 @@
       {foreach from=$usuarios key=k item=u}
       <tr class='border' id="{$u->attr('uid')}"> 
         <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
-        <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
+        <td class='tcenter'><span>{$u->attr('cn')} {$u->attr('sn')}</span></td> 
         <td class='tcenter'><span>
             {if $u->get_role() == 'teacher'}Profesor{/if}
             {if $u->get_role() == 'admin'}Administrador{/if}

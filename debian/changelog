@@ -1,3 +1,11 @@
+max-control (0.9.28) max; urgency=low
+
+  * bin/pymaxgensamba: force group without '@'
+  * Save username in cn and surname in sn.
+  * Check for incorrect characters in groups name and aulas name.
+
+ -- root <root@max-server>  Fri, 15 Oct 2010 14:21:10 +0200
+
 max-control (0.9.27) max; urgency=low
 
   * Call pymaxgensamba when add/delete group.

@@ -6,8 +6,15 @@
  <form action='{$urlform}' method='post'> 
     <table class='formTable'> 
     <tr> 
-        <td class='tright'><span class="ftitle">Nombre y apellidos:</span></td>
-        <td><input type='text' class='inputText' name='cn' id='cn' value="{$u->attr('cn')}" /> 
+        <td class='tright'><span class="ftitle">Nombre:</span></td>
+        <td>
+            <input type='text' class='inputText' name='cn' id='cn' value="{$u->attr('cn')}" /> 
+        </td>
+    </tr>
+    <tr> 
+        <td class='tright'><span class="ftitle">Apellidos:</span></td>
+        <td>
+            <input type='text' class='inputText' name='sn' id='sn' value="{$u->attr('sn')}" /> 
         </td>
     </tr>
 
