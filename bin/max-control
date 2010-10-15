@@ -86,6 +86,7 @@ fi
 
 if [ "getquota" = "$1" ]; then
   /usr/bin/edit.quotas --getused --user=$2  
+  exit 0
 fi
 
 

@@ -16,7 +16,7 @@
 
         <tr> 
             <td class='tright'><span class='ftitle'>Nombre:</span></td> 
-            <td><input type='text' class='inputText' name='givenName' autocomplete="off" /></td> 
+            <td><input type='text' class='inputText' name='cn' autocomplete="off" /></td> 
         </tr>
 
         <tr>

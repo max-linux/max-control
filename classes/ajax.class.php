@@ -28,7 +28,7 @@ class Ajax {
         $this->output=$exe->getMacAddress($hostname);
     }
 
-    function test_username($uid) {
+    function test_string($uid) {
         /* comprobar no espacios, empiece por letra y no caracteres raros */
         $re='/(^[A-Za-z])([A-Za-z0-9-._]+)$/';
         
@@ -47,7 +47,7 @@ class Ajax {
     }
 
     function useduid($uid) {
-        if ( !$this->test_username($uid) ) {
+        if ( !$this->test_string($uid) ) {
             $this->output = "invalid";
             return;
         }
@@ -59,6 +59,10 @@ class Ajax {
     }
 
     function usedcn($cn) {
+        if ( !$this->test_string($cn) ) {
+            $this->output = "invalid";
+            return;
+        }
         $ldap=new LDAP();
         if ( ! $ldap->get_group($cn) )
             $this->output="free";
@@ -67,6 +71,10 @@ class Ajax {
     }
 
     function usedaula($cn) {
+        if ( !$this->test_string($cn) ) {
+            $this->output = "invalid";
+            return;
+        }
         $ldap=new LDAP();
         $aula=$ldap->get_aula($cn);
         

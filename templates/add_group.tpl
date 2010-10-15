@@ -10,6 +10,7 @@
                 <span class="error" style="display:none;" id='groupnotvalid'>El identificador está ocupado</span>
                 <span class="note" style="display:none;" id='groupvalid'>El identificador está libre</span>
                 <span class="error" style="display:none;" id='groupempty'>El identificador no puede estar vacío</span>
+                <span class="error" style="display:none;" id='groupinvalid'>Identificador no válido (letras ASCII, números o .-_)</span>
             </td> 
         </tr> 
 
@@ -45,6 +46,7 @@ function usedcn(cn) {
         return false;
     }
     $('#groupempty')[0].style.display='none';
+    $('#groupinvalid')[0].style.display='none';
     // ver si el usuario está ocupado
     $.ajax({
       type: "POST",
@@ -53,6 +55,11 @@ function usedcn(cn) {
       success: function(data) {
         if (data == 'used') {
             $('#groupnotvalid')[0].style.display='';
+            $('#groupvalid')[0].style.display='none';
+            return false;
+        }
+        else if (data == 'invalid') {
+            $('#groupinvalid')[0].style.display='';
             $('#groupvalid')[0].style.display='none';
             return false;
         }

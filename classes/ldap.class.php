@@ -220,7 +220,6 @@ class USER extends BASE {
     var $cn='';
     var $uid='';
     var $sn='';
-    var $givenName='';
     var $description='';
     var $uidNumber='';
     var $gidNumber='';
@@ -367,7 +366,7 @@ class USER extends BASE {
             return false;
         }
         
-        $this->cn=$this->uid. " ".$this->sn;
+        //$this->cn=$this->uid. " ".$this->sn;
         
         $this->uidNumber=$ldap->lastUID() +1;
         $this->gidNumber=$ldap->getGID('__USERS__');

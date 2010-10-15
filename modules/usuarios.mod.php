@@ -73,7 +73,7 @@ function ver($module, $action, $subaction) {
     $numusuarios=sizeof($usuarios);
     
     $pager=NULL;
-    if ( sizeof($usuarios) > PAGER_LIMIT ){
+    if ( $numusuarios > PAGER_LIMIT ){
         $pager=new PAGER($usuarios, $urlform, $skip);
         $usuarios=$pager->getItems();
     }
@@ -118,13 +118,16 @@ function guardar($module, $action, $subaction) {
     */
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     /*
-    Array
+        Array
         (
-            [cn] => mario izquierdo
-            [uid] => mario
-            [role] => teacher
+            [cn] => Juan
+            [sn] => Lopez Gómez
+            [role] => 
             [loginShell] => /bin/bash
+            [newpwd] => 
+            [newpwd2] => 
             [Editar] => Guardar
+            [uid] => juan12
         )
     */
     $useruid=leer_datos('uid');
@@ -135,7 +138,7 @@ function guardar($module, $action, $subaction) {
     $usuario=$ldap->get_user($useruid);
     
     $usuario->set($_POST);
-    $res=$usuario->save( array('cn', 'loginShell') );
+    $res=$usuario->save( array('cn', 'sn', 'loginShell') );
     
     if ($res)
         $gui->session_info("Datos guardados correctamente");
@@ -156,7 +159,8 @@ function guardar($module, $action, $subaction) {
             $usuario->update_password($new, $usuario->uid);
         }
     }
-    $url->ir($module, "ver");
+    if(! DEBUG)
+        $url->ir($module, "ver");
 }
 
 function delete($module, $action, $subaction) {
@@ -215,18 +219,18 @@ function guardarnuevo($module, $action, $subaction) {
     */
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     /*
-    Array
-    (
-        [uid] => aaa
-        [givenName] => aa
-        [sn] => ee
-        [description] => aassqq
-        [password] => 12345
-        [repassword] => 12345
-        [role] => 
-        [loginShell] => /bin/bash
-        [add] => Añadir
-    )
+        Array
+        (
+            [uid] => x6523
+            [cn] => Pedro
+            [sn] => Lopez González
+            [description] => comentario de pedro
+            [password] => 1234
+            [repassword] => 1234
+            [role] => 
+            [loginShell] => /bin/bash
+            [add] => Añadir
+        )
     */
     
     // comprobar contraseñas

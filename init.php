@@ -57,7 +57,7 @@ if ( ! $user ) {
     // user not exists, create it
     $new=array(
             "uid" => $LDAP_ADMIN,
-            "givenName" => $LDAP_ADMIN,
+            "cn" => $LDAP_ADMIN,
             "sn" => "admin-no-borrar",
             "description" => "Usuario administrador creado para uso del panel max-control",
             "password" => $LDAP_PASS,
