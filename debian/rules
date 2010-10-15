@@ -10,9 +10,7 @@ DEB_UPDATE_RCD_PARAMS := "start 99 2 3 4 5 . stop 40 0 1 6 ."
 
 
 binary-install/max-control::
-	# clean svn dirs
-	find $(CURDIR)/debian/max-control -type d -name .svn | xargs rm -rf --
-
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ldap.php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ssh-test.php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/test*php
+	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/classes/ldap2.class.php
