@@ -21,7 +21,7 @@ Description: Small PHP web based app to admin LDAP data from EBox
 Package: ebox-max-control
 Architecture: all
 Depends: ebox (>= 1.5), ebox-dhcp (>= 1.5), max-control
-Description: eBox - MAX Conttrol
+Description: eBox - MAX Control
  eBox Platform is an open source small business server that can act as
  a Gateway, a Unified Threat Manager, an Office Server, an Infrastructure
  Manager, a Unified Communications Server or a combination of them. One
