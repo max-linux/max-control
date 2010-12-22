@@ -33,6 +33,8 @@ if [ "$CONFIGURE" = "1" ]; then
         unix2dos /home/samba/netlogon/domain.txt
     fi
 
+    [ -d /var/lib/max-control/cache ] && chown www-data /var/lib/max-control/cache
+
     # create samba configuration
     echo " * Updating /etc/samba/max-control.conf"
     /usr/bin/pymaxgensamba
