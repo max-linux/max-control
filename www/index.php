@@ -1,6 +1,7 @@
 <?php
 // 10 minutos de session
 ini_set("session.gc_maxlifetime", "600"); 
+ini_set('memory_limit','128M');
 set_time_limit(30);
 session_start();
 $path=dirname(dirname(__FILE__));
@@ -89,6 +90,7 @@ elseif ( isset($gui) ) {
 
 if (isset($gui)) {
     $gui->debug("Session cache=" .  ini_get("session.gc_maxlifetime") );
+    $gui->debug("Memory  limit=" .  ini_get("memory_limit") );
     $gui->debug("Tiempo de ejecución: " . time_end() );
     $gui->debug("QUERY_STRING=".$_SERVER['QUERY_STRING']);
     $gui->debug_array($_POST, "index.php POST");
