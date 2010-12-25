@@ -14,7 +14,7 @@
 
 
 </head> 
-<body> 
+<body onload="document.login.username.focus();"> 
 <center> 
     <div id='login'> 
         <div id='loginin'> 
