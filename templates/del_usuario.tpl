@@ -9,7 +9,7 @@
      
      <input type='hidden' name='username' value='{$user}' />
      
-    <input type='checkbox' class='inputText' name='deleteprofile' value='1' />
+    <input type='checkbox' class='inputText' name='deleteprofile' value='1' checked/>
     Borrar también su perfil y todos sus datos
      <input class='inputButton' type='submit' name='confirm' value="Confirmar" alt="Confirmar" />
     </div>
