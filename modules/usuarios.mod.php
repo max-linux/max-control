@@ -62,19 +62,26 @@ function ver($module, $action, $subaction) {
     
     $ldap=new LDAP();
     /* /control/usuarios/usuarios?Filter=test&button=Buscar */
+
+    $filteruri='';
     $filter=leer_datos('Filter');
-    $usuarios=$ldap->get_users( $filter, LDAP_OU_USERS, $ignore="max-control" );
+    if ($filter != '') {
+       $filteruri="&Filter=$filter";
+    }
+
+    $usuarios=$ldap->get_users( $filter, LDAP_OU_USERS);
     $urlform=$url->create_url($module, $action);
     $urleditar=$url->create_url($module,'editar');
     $urlborrar=$url->create_url($module,'delete');
     
-    $skip=str_replace ( "skip=" , "" , leer_datos('subaction') );
+    /*$skip=str_replace ( "skip=" , "" , leer_datos('subaction') );*/
+    $skip=leer_datos('skip');
     
     $numusuarios=sizeof($usuarios);
     
     $pager=NULL;
     if ( $numusuarios > PAGER_LIMIT ){
-        $pager=new PAGER($usuarios, $urlform, $skip);
+        $pager=new PAGER($usuarios, $urlform, $skip, $args=$filteruri);
         $usuarios=$pager->getItems();
     }
     
