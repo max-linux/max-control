@@ -1,12 +1,12 @@
 <h3>Añadir usuario</h3>
 
 
-<form action='{$urlform}' method='post'> 
+<form action='{$urlform}' method='post' onsubmit="return checkpass(); return false;"> 
     <table class='formTable'> 
         <tr> 
             <td class='tright'><span class="ftitle">Nombre de usuario:</span></td> 
             <td>
-                <input type='text' class='inputText' name='uid' autocomplete="off" onblur='javascript:useduid(this.value);' />
+                <input type='text' class='inputText' name='uid' autocomplete="off" maxlength='20' onblur='javascript:useduid(this.value);' />
                 <span class="error" style="display:none;" id='usernotvalid'>El identificador está ocupado</span>
                 <span class="note" style="display:none;" id='uservalid'>El identificador está libre</span>
                 <span class="error" style="display:none;" id='userempty'>El identificador no puede estar vacío</span>
@@ -20,13 +20,8 @@
         </tr>
 
         <tr>
-            <td class='tright'><span class='ftitle'>Apellido:</span></td> 
+            <td class='tright'><span class='ftitle'>Apellidos:</span></td> 
             <td><input type='text' class='inputText' name='sn' autocomplete="off" /></td> 
-        </tr>
-
-        <tr> 
-            <td class='tright'><span class='ftitle'>Comentario:</span></td> 
-            <td><input type='text' class='inputText' name='description' autocomplete="off" /></td> 
         </tr>
 
         <tr> 
@@ -41,6 +36,11 @@
                 <span class="error" style="display:none;" id='badpassword'>Las contraseñas no coinciden</span>
             </td> 
         </tr> 
+
+        <tr> 
+            <td class='tright'><span class='ftitle'>Comentario:</span></td> 
+            <td><input type='text' class='inputText' name='description' autocomplete="off" /></td> 
+        </tr>
 
         <tr>
             <td class='tright'><span class='ftitle'>Rol (permisos):</span></td> 
