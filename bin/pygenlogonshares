@@ -63,16 +63,41 @@ print """;--------------------------------------------
 ;
 setconsole('hide')
 
+/*****************************************************************************/
+FUNCTION CreaUnidadDeRed ( $i, $grupo )
+   ; $i es el indice del array $Letras que ira aumentando desde 0 hasta 18
+   ; Las letras "y", "z" estan reservadas para la carpeta de isos y la carpeta de usuario respectivamente.
+   ; Desde la "a" hasta la "f", estan reservadas para unidades asignadas por Windows.
+   ; En total quedan 18 letras disponibles, esto limita a que un usuario puede estar en mas de 18 grupos
+   ; pero solo los 18 primeros en los que se haya activado el "crear recurso compartido", se creara la
+   ; unidad de red, y suponiendo que ninguna letra entra en conflicto con alguna existente de Windows:
+
+   $i_max = 18 /* maximo valor que puede tomar $i */
+   $Letras = "x:","w:","v:","u:","t:","s:","r:","q:","p:","o:","n:","m:","l:","k:","j:","i:","h:","g:"
+
+   IF $i < $i_max
+      use $Letras[$i] "@lserver\\"+$grupo
+      $i = $i + 1
+      $CreaUnidadDeRed = $i
+   ELSE 
+      $CreaUnidadDeRed=$i_max
+   ENDIF
+ENDFUNCTION
+/*****************************************************************************/
+
+$r = 0 /* para guardar el resultado de la funcion y el indice de letra */
+
 """%GROUPS
 
 
 for group in sharedgroups:
-    if LAST <= 10:
+#    if LAST <= 10:
         # no usar letras de unidad <= 10 (i)
-        continue
+#        continue
+# Ahora quien limita el numero de letras que pueden ser asignadas a un usuario es $i_max
     print """
 IF INGROUP("%s\%s")
-  use %s: "@lserver\%s"
+  $r = CreaUnidadDeRed ( $r, "%s" )
 ENDIF
-"""%(DOMAIN,group,chr(LAST+96),group)
+"""%(DOMAIN,group,group)
     LAST=LAST-1
