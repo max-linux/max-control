@@ -530,8 +530,11 @@ class USER extends BASE {
     
     function getquota() {
         global $gui;
+        if (file_exists("/etc/max-control/quota.disabled")) {
+            return "<b>disabled</b> <small>/etc/max-control/quota.disabled</small>";
+        }
         exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);
-        $gui->debug("<pre>getquota(".$this->uid.")".print_r($output, true)."</pre>");
+        //$gui->debug("<pre>getquota(".$this->uid.")".print_r($output, true)."</pre>");
         return $output[0];
     }
 }
@@ -1379,7 +1382,7 @@ class LDAP {
         return true;
     }
 
-    function get_users($filter='*', $group=LDAP_OU_USERS, $ignore="") {
+    function get_users($filter='*', $group=LDAP_OU_USERS, $ignore="max-control") {
         global $gui;
         if ( $filter == '' )
             $filter='*';
@@ -1740,7 +1743,7 @@ class LDAP {
         outgroup => allusers - memberUID
         */
         global $gui;
-        $allusers=$this->get_user_uids();
+        $allusers=$this->get_user_uids($group=LDAP_OU_USERS);
         $group=$this->get_groups($groupfilter);
         
         $all=array('ingroup'=>array(), 'outgroup'=>array());
@@ -2132,11 +2135,12 @@ class LDAP {
 
 
 class PAGER {
-    function PAGER($items, $baseurl, $skip) {
+    function PAGER($items, $baseurl, $skip, $args='') {
         global $gui;
         $this->items=$items;
         $this->number=sizeof($items);
         $this->baseurl=$baseurl;
+        $this->args=$args;
         
         if ($skip == "") {
             $this->skip=0;
@@ -2146,7 +2150,7 @@ class PAGER {
         }
         
         
-        $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$baseurl skip=".$this->skip."</pre>");
+        $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$baseurl skip=".$this->skip." args=".$this->args."</pre>");
         return;
     }
     
@@ -2163,7 +2167,8 @@ class PAGER {
         $html="<div class='pages'>";
         
         if ( ($this->skip-PAGER_LIMIT)>= 0 ) {
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/skip=".($this->skip-PAGER_LIMIT)."'>« Anterior</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/".$this->args."'>« Primero</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/".$this->args."&skip=".($this->skip-PAGER_LIMIT)."'>« Anterior</a>";
         }
         else {
             $html.="&nbsp;&nbsp;<span class='nextprev'>« Anterior</span>";
@@ -2213,16 +2218,18 @@ class PAGER {
             }
             else{
                 if ( in_array($i+1, $links) ) {
-                    $gui->debug("i=$i en array() curpage=$int_curpage");
-                    $html.="&nbsp;&nbsp;<a class='pagerLink' href='".$this->baseurl."/skip=$skipcount'>".($i+1)."</a>";
+                    /*$gui->debug("i=$i en array() curpage=$int_curpage");*/
+                    $html.="&nbsp;&nbsp;<a class='pagerLink' href='".$this->baseurl."/".$this->args."&skip=$skipcount'>".($i+1)."</a>";
                 }
-                else {
+                /*else {
                     $gui->debug("i=$i **NO** en array() curpage=$int_curpage");
-                }
+                }*/
             }
         }
         if ( ($this->skip+PAGER_LIMIT)< $this->number ) {
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/skip=".($this->skip+PAGER_LIMIT)."'>Siguiente »</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/".$this->args."&skip=".($this->skip+PAGER_LIMIT)."'>Siguiente »</a>";
+            $last=($total_pages-1)*PAGER_LIMIT;
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/".$this->args."&skip=$last'>Último »</a>";
         }
         else {
             $html.="&nbsp;&nbsp;<span class='nextprev'>Siguiente »</span>";
