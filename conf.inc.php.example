@@ -90,8 +90,8 @@ define("FORK_ACTIONS", False);
 define("FORK_LOGFILE", "/dev/null");
 
 /* paginador */
-define("PAGER_LIMIT", 15);
-define("PAGER_MAX_LINKS", 5);
+define("PAGER_LIMIT", 25);
+define("PAGER_MAX_LINKS", 10);
 
 $site["public_modules"]=array();
         
