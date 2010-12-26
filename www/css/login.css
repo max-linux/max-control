@@ -37,7 +37,7 @@ body {
     background-color: #a4b1f0;
     color: #000000;
     font-family: Verdana, sans-serif;
-    behavior: url(/control/js/csshover.htc);
+    behavior: url(../js/csshover.htc);
     margin-top: 90px;
 }
 
@@ -93,7 +93,7 @@ dd {
     margin-bottom: 10px;
     color: #484554;
     font-size: 8pt;
-    background: #b4c7ea url("/control/img/msg.gif") 6pt 6pt no-repeat;
+    background: #b4c7ea url("../img/msg.png") 6pt 6pt no-repeat;
     margin: 1em 0px 0em 0px;
     margin-bottom: 5px;
 }
@@ -103,6 +103,6 @@ dd {
     padding: 9pt 9pt 9pt 33pt;
     color: #484554;
     font-size: 8pt;
-    background: #FDDDD9 url("/control/img/error.gif") 6pt 6pt no-repeat;
+    background: #FDDDD9 url("../img/error.png") 6pt 6pt no-repeat;
     margin: 1em 0px 0em 0px;
 }
