@@ -1115,3 +1115,6 @@ a.minBox, a.minBox:hover, a.maxBox, a.maxBox:hover {
     text-decoration:none;
 }
 
+.nomargin{
+    margin: 0;
+}

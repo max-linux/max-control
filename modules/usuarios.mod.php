@@ -108,6 +108,7 @@ function ver($module, $action, $subaction) {
                 "filter" => $filter, 
                 "role" => $role,
                 "urlform" => $urlform, 
+                "urlformmultiple" => $url->create_url($module, 'deletemultiple'),
                 "urleditar"=>$url->create_url($module,'editar'),
                 "urlborrar"=>$url->create_url($module,'delete'),
                 "pager"=>$pager);
@@ -219,6 +220,43 @@ function deletedo($module, $action, $subaction) {
     if ( $user->delUser($deleteprofile) )
         $gui->session_info("Usuario '$username' borrado.");
     
+    if(! DEBUG)
+        $url->ir($module, "ver");
+}
+
+function deletemultiple($module, $action, $subaction) {
+    global $gui, $url;
+    $users=leer_datos('usernames');
+    $usersarray=split(',', $users);
+    $data=array("users" => $users,
+                "usersarray"=>$usersarray,
+                "urlform"=>$url->create_url($module, 'deletemultipledo'));
+    
+    $gui->add( $gui->load_from_template("delmultiple_usuarios.tpl", $data) );
+}
+
+function deletemultipledo($module, $action, $subaction) {
+    global $gui, $url;
+    $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
+    $usernames=leer_datos('usernames');
+    $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
+
+    if ($usernames == '') {
+        $gui->session_error("No se han pasado usuarios: '$usernames'");
+        $url->ir($module, "ver");
+    }
+
+    $ldap=new LDAP();
+    $users=split(',', $usernames);
+    $gui->debuga($users);
+    foreach($users as $username) {
+        $user=$ldap->get_user($username);
+        if ( ! $user ){
+            $gui->session_error(" El usuario '$username' no existe.");
+        }
+        if ( $user->delUser($deleteprofile) )
+            $gui->session_info("Usuario '$username' borrado.");
+    }
     if(! DEBUG)
         $url->ir($module, "ver");
 }
@@ -493,6 +531,9 @@ switch($action) {
     case "guardar": guardar($module, $action, $subaction); break; /* guardar usuario */
     case "delete": delete($module, $action, $subaction); break; /* avisar del borrado de usuario */
     case "deletedo": deletedo($module, $action, $subaction); break; /* borrar usuario */
+    
+    case "deletemultiple": deletemultiple($module, $action, $subaction); break; /* avisar del borrado de varios usuarios */
+    case "deletemultipledo": deletemultipledo($module, $action, $subaction); break; /* borrar varios usuarios */
     
     case "add": add($module, $action, $subaction); break; /* formulario añadir usuario */
     case "guardarnuevo": guardarnuevo($module, $action, $subaction); break; /* guardar nuevo usuario */

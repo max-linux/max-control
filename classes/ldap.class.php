@@ -538,7 +538,8 @@ class USER extends BASE {
     function getquota() {
         global $gui;
         if (file_exists("/etc/max-control/quota.disabled")) {
-            return "<b>disabled</b> <small>/etc/max-control/quota.disabled</small>";
+            //return "<b>disabled</b> <small>/etc/max-control/quota.disabled</small>";
+            return "<b>disabled</b>";
         }
         exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);
         //$gui->debug("<pre>getquota(".$this->uid.")".print_r($output, true)."</pre>");
@@ -1395,6 +1396,7 @@ class LDAP {
             $filter='*';
         else
             $filter="*$filter*";
+        
         $users=array();
         $gui->debug("ldap::get_users() (uid='$filter') basedn='$group' ignore='$ignore' role='$filterrole'");
         $this->search("(|(uid=$filter)(cn=$filter)(sn=$filter))", $basedn=$group);
@@ -1435,11 +1437,15 @@ class LDAP {
     }
 
     function get_user_uids($group=LDAP_OU_USERS) {
+        global $gui;
         $uids=array();
-        $users=$this->get_users($filter='*', $group=$group);
+        $users=$this->get_users($filter='', $group=$group);
+        $gui->debuga($users);
         foreach($users as $user) {
             $uids[]=$user->uid;
         }
+        /* sort users */
+        sort($uids);
         return $uids;
     }
 
@@ -1462,6 +1468,8 @@ class LDAP {
                 unset($teachers['count']);
             }
         }
+        /* sort teachers */
+        sort($teachers);
         return $teachers;
     }
 
@@ -2301,32 +2309,29 @@ class PAGER {
     
     function getSortIcons($filter) {
         /*
-        &#9650; ▲
-        &#9651; △
-        &#9660; ▼
-        &#9661; ▽
+        &#9650; ▲ &#9651; △
+        &#9660; ▼ &#9661; ▽
         */
         global $gui;
         global $site;
         $down="&#9661;";
         $up="&#9651;";
         
-        
         if ( preg_match("/&sort=$filter&mode=asc/", $this->args) ) {
-            $down="&#9660;";
+            $up="&#9650;";
         }
         if ( preg_match("/&sort=$filter&mode=dsc/", $this->args) ) {
-            $up="&#9650;";
+            $down="&#9660;";
         }
         
         /* clean $this->args */
         $newargs = preg_replace("/&sort=(uid|cn|sn)&mode=(asc|dsc)/",'',$this->args);
-        $gui->debug("getSortIcons($filter) this->args='".$this->args."' => newargs='$newargs'");
+        //$gui->debug("getSortIcons($filter) this->args='".$this->args."' => newargs='$newargs'");
         
         $html="\n";
-        /* icono de ordenar descendente */
-        $html.="<a class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=asc'>$down</a>\n";
-        $html.="<a class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=dsc'>$up</a>";
+        /* iconos */
+        $html.="<a class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=asc'>$up</a>\n";
+        $html.="<a class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=dsc'>$down</a>";
         return $html;
     }
 }
