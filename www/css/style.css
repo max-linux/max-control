@@ -1,6 +1,6 @@
 #header {
     height: 46px;
-    background: #3352c7 url('/control/img/bkgwhite.png') top left no-repeat;
+    background: #3352c7 url('../img/bkgwhite.png') top left no-repeat;
     padding:0;
     margin: 0;
     color: transparent;
@@ -110,7 +110,7 @@
     padding: 9pt 9pt 9pt 33pt;
     color: #484554;
     font-size: 8pt;
-    background: #DFF5FE url("/control/img/help.gif") 6pt 6pt no-repeat;
+    background: #DFF5FE url("../img/help.png") 6pt 6pt no-repeat;
     margin: 1em 0px 1em 0px;
 }
 
@@ -120,7 +120,7 @@
     margin-bottom: 10px;
     color: #484554;
     font-size: 8pt;
-    background: #b4c7ea url("/control/img/msg.gif") 6pt 6pt no-repeat;
+    background: #b4c7ea url("../img/msg.png") 6pt 6pt no-repeat;
     margin: 1em 0px 0em 0px;
     margin-bottom: 5px;
 }
@@ -130,7 +130,7 @@
     padding: 9pt 9pt 9pt 33pt;
     color: #484554;
     font-size: 8pt;
-    background: #FDDDD9 url("/control/img/error.gif") 6pt 6pt no-repeat;
+    background: #FDDDD9 url("../img/error.png") 6pt 6pt no-repeat;
     margin: 1em 0px 0em 0px;
 }
 
@@ -139,7 +139,7 @@
     padding: 9pt 9pt 9pt 33pt;
     color: #484554;
     font-size: 8pt;
-    background: #f8fea5 url("/control/img/warning.gif") 6pt 6pt no-repeat;
+    background: #f8fea5 url("../img/warning.png") 6pt 6pt no-repeat;
     margin: 1em 0px 0em 0px;
     margin-bottom: 10px;
 }
@@ -150,7 +150,7 @@
     text-align: justify;
     margin-left: 30px;
     padding-left: 25px;
-    background: url("/control/img/help.gif") no-repeat center left;
+    background: url("../img/help.png") no-repeat center left;
 }
 
 .ifname {
@@ -702,13 +702,13 @@ a.changed:hover {
 }
 
 .addNew {
-    background: #fff url('/control/img/add.gif') left no-repeat;
+    background: #fff url('../img/add.gif') left no-repeat;
     padding-left: 18px;
 }
 
 .addNew:hover {
-    background: #fff url('/control/img/add.gif') left no-repeat;
-    background: #fff url('/control/img/add.gif') left no-repeat;
+    background: #fff url('../img/add.gif') left no-repeat;
+    background: #fff url('../img/add.gif') left no-repeat;
     color: #888;
     text-decoration: underline;
 }
@@ -928,13 +928,13 @@ a.minBox:hover {
 }
 
 a.closeBox, a.closeBox:hover {
-        background-image:url('/control/img/widget_controls.png');
+        background-image:url('../img/widget_controls.png');
         height:12px;
         width:12px;
 }
 
 a.minBox, a.minBox:hover, a.maxBox, a.maxBox:hover {
-        background-image:url('/control/img/triangles.png');
+        background-image:url('../img/triangles.png');
         height:15px;
         width:15px;
 }
@@ -1108,3 +1108,10 @@ a.minBox, a.minBox:hover, a.maxBox, a.maxBox:hover {
 .pages .nextprev-next {
     float: right;
 }
+
+.sortlink{
+    color: #fff;
+    font-size:1.2em;
+    text-decoration:none;
+}
+
