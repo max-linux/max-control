@@ -6,10 +6,16 @@
 <table class="bDataTable"> 
     <tr> 
         <td> 
-        <form id="user" action="{$urlform}" method="post"> 
+        <form id="formuser" action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
           <input type='submit' name='button' value="Añadir usuario" title="Añadir usuario" />
+          <select name='role' id='role' onchange="javascript:document.forms.formuser.submit();">
+            <option value='' {if $role == ''}selected{/if}>Filtrar por rol</option>
+            <option value='alumno' {if $role == 'alumno'}selected{/if}>Alumno</option> 
+            <option value='teacher' {if $role == 'teacher'}selected{/if}>Profesor</option> 
+            <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
+          </select>
         </form>
         
         </td> 
@@ -20,8 +26,8 @@
 <table class='dataTable'> 
     <thead> 
       <tr>
-      <th class=''>Nombre</th> 
-      <th class=''>Nombre completo</th> 
+      <th class=''>Identificador {$pager->getSortIcons('uid')}</th> 
+      <th class=''>Nombre {$pager->getSortIcons('cn')} Apellidos {$pager->getSortIcons('sn')}</th> 
       <th class=''>Rol</th> 
       <th class=''>Cuota</th> 
       <th class=''>Editar</th> 
