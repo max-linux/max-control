@@ -16,12 +16,16 @@
             <option value='teacher' {if $role == 'teacher'}selected{/if}>Profesor</option> 
             <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
           </select>
+          <input style="display:none;float:right;" type='button' name='btnDelete' id='btnDelete' value="Borrar seleccionados" title="Borrar seleccionados" onclick="javascript:deleteSelected();"/>
         </form>
         
         </td> 
     </tr> 
 </table> 
 
+<form id="formdeletemultipleuser" id="formdeletemultipleuser" action="{$urlformmultiple}" method="post">
+    <input type='hidden' name='usernames' id="usernames" value='' />
+</form>
 
 <table class='dataTable'> 
     <thead> 
@@ -32,6 +36,7 @@
       <th class=''>Cuota</th> 
       <th class=''>Editar</th> 
       <th class=''>Borrar</th> 
+      <th class=''>Múltiple <input class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
       </tr>
     </thead>
  
@@ -53,6 +58,9 @@
         <td class='tcenter'> 
             <a href="{$urlborrar}/{$u->attr('uid')}"><img src="{$baseurl}/img/delete.gif" alt="borrar" /></a>
         </td>
+        <td class='tcenter'> 
+            <input type='checkbox' class="userdel" name="{$u->attr('uid')}" id="{$u->attr('uid')}" onchange="javascript:oncheckboxChange();"/>
+        </td>
       </tr>
       {/foreach}
       
@@ -65,6 +73,50 @@
 {$pager->getHTML()}
 {/if}
 
+{literal}
+<script type="text/javascript">
+<!--
+
+function oncheckboxChange() {
+    var multiple=false;
+    var toDelete=new Array();
+    $.each($('.userdel'), function(i) { 
+        if ($('.userdel')[i].checked) {
+            toDelete.push($('.userdel')[i].id);
+            multiple=true;
+        }
+    });
+    if(multiple)
+        $('#btnDelete')[0].style.display='';
+    else
+        $('#btnDelete')[0].style.display='none';
+}
+
+function deleteSelected(){
+    var toDelete=new Array();
+    $.each($('.userdel'), function(i) { 
+        if ($('.userdel')[i].checked) {
+            toDelete.push($('.userdel')[i].id);
+            multiple=true;
+        }
+    });
+    //alert(toDelete);
+    $('#usernames')[0].value=toDelete;
+    $('#formdeletemultipleuser')[0].submit();
+}
+
+function enableAll(obj){
+    $.each($('.userdel'), function(i) { 
+        $('.userdel')[i].checked=obj.checked;
+    });
+    if(obj.checked)
+        $('#btnDelete')[0].style.display='';
+    else
+        $('#btnDelete')[0].style.display='none';
+}
+-->
+</script>
+{/literal}
 {*
 {if $DEBUG}
 {debug}
