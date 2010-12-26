@@ -1405,9 +1405,6 @@ class LDAP {
             }
             $user= new USER($attrs);
             
-            /*FIXME esto puede romper algo*/
-            $user->ldapdata=NULL;
-            
             /* si pasamos role y si no coincide con el que pasamos, no lo añadimos */
             if( $filterrole != '' && ! $user->is_role($filterrole) )
                 continue;
