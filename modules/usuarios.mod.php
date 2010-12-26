@@ -68,29 +68,48 @@ function ver($module, $action, $subaction) {
     if ($filter != '') {
        $filteruri="&Filter=$filter";
     }
-
-    $usuarios=$ldap->get_users( $filter, LDAP_OU_USERS);
-    $urlform=$url->create_url($module, $action);
-    $urleditar=$url->create_url($module,'editar');
-    $urlborrar=$url->create_url($module,'delete');
-    
-    /*$skip=str_replace ( "skip=" , "" , leer_datos('subaction') );*/
+    $sortarray=NULL;
+    $sort=leer_datos('sort');
+    $sortmode=leer_datos('mode');
+    if ($sort != '') {
+       if($sortmode=="dsc") {
+         $sortarray=array($sort, SORT_DESC);
+         $filteruri.="&sort=$sort&mode=dsc";
+        }
+       else {
+         $sortarray=array($sort, SORT_ASC);
+         $filteruri.="&sort=$sort&mode=asc";
+       }
+    }
     $skip=leer_datos('skip');
+    if ($skip != '') {
+       $filteruri.="&skip=$skip";
+    }
+    
+    $role=leer_datos('role');
+    if ($role != '') {
+       $filteruri.="&role=$role";
+    }
+
+    /* get_users($filter='*', $group=LDAP_OU_USERS, $ignore="max-control", $role='') */
+    $usuarios=$ldap->get_users( $filter, $group=LDAP_OU_USERS, $ignore="max-control", $filterrole=$role);
+    
+    $urlform=$url->create_url($module, $action);
+    //$urleditar=$url->create_url($module,'editar');
+    //$urlborrar=$url->create_url($module,'delete');
     
     $numusuarios=sizeof($usuarios);
     
-    $pager=NULL;
-    if ( $numusuarios > PAGER_LIMIT ){
-        $pager=new PAGER($usuarios, $urlform, $skip, $args=$filteruri);
-        $usuarios=$pager->getItems();
-    }
+    $pager=new PAGER($usuarios, $urlform, $skip, $args=$filteruri, $sortarray);
+    $usuarios=$pager->getItems();
     
     $data=array("usuarios" => $usuarios, 
                 "numusuarios" => $numusuarios,
                 "filter" => $filter, 
+                "role" => $role,
                 "urlform" => $urlform, 
-                "urleditar"=>$urleditar,
-                "urlborrar"=>$urlborrar,
+                "urleditar"=>$url->create_url($module,'editar'),
+                "urlborrar"=>$url->create_url($module,'delete'),
                 "pager"=>$pager);
     $gui->add( $gui->load_from_template("ver_usuarios.tpl", $data) );
 }
