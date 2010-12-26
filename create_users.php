@@ -52,16 +52,16 @@ $LDAP_PASS=createPassword();
 
 
 
-function create_user($username) {
+function create_user($username, $i) {
     $ldap=new LDAP();
     $user=$ldap->get_user($username);
     if ( ! $user ) {
         // user not exists, create it
         $new=array(
                 "uid" => $username,
-                "cn" => $username,
-                "sn" => "admin-no-borrar",
-                "description" => "Usuario ",
+                "cn" => "Nombre$i",
+                "sn" => "Apellido$i Apellido$i",
+                "description" => "Descripción Usuario",
                 "password" => $username,
                 "role" => "alumno",
                 "loginShell" => "/bin/false"
@@ -76,8 +76,8 @@ function create_user($username) {
 }
 
 $prefix="alumno";
-for($i=1000; $i<1013; $i++) {
-    create_user("$prefix$i");
+for($i=1; $i<100; $i++) {
+    create_user("$prefix$i", $i);
 }
 die("fin\n");
 
