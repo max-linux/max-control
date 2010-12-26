@@ -41,6 +41,7 @@ for /f %%a in (file_with_clients_names.txt) do (psexec \\%%a -u DOMAIN\USER-p -e
 */
 
 global $gui;
+global $sort_opts;
 
 class BASE {
     var $ldapdata=array();
@@ -281,6 +282,12 @@ class USER extends BASE {
             $this->role="";
         }
         return $this->role;
+    }
+    
+    function is_role($role) {
+        if($role == 'alumno')
+            $role='';
+        return $this->get_role() == $role;
     }
     
     function set_role($role) {
@@ -1382,19 +1389,28 @@ class LDAP {
         return true;
     }
 
-    function get_users($filter='*', $group=LDAP_OU_USERS, $ignore="max-control") {
+    function get_users($filter='*', $group=LDAP_OU_USERS, $ignore="max-control", $filterrole='') {
         global $gui;
         if ( $filter == '' )
             $filter='*';
+        else
+            $filter="*$filter*";
         $users=array();
-        $gui->debug("ldap::get_users() (uid='$filter') basedn='$group'");
-        $this->search("(uid=$filter)", $basedn=$group);
+        $gui->debug("ldap::get_users() (uid='$filter') basedn='$group' ignore='$ignore' role='$filterrole'");
+        $this->search("(|(uid=$filter)(cn=$filter)(sn=$filter))", $basedn=$group);
         while($attrs = $this->fetch())
         {
             if ($ignore != "" && $attrs['uid'][0] == $ignore ) {
                 continue;
             }
             $user= new USER($attrs);
+            
+            /*FIXME esto puede romper algo*/
+            $user->ldapdata=NULL;
+            
+            /* si pasamos role y si no coincide con el que pasamos, no lo añadimos */
+            if( $filterrole != '' && ! $user->is_role($filterrole) )
+                continue;
             $users[]=$user;
         }
         return $users;
@@ -1435,7 +1451,7 @@ class LDAP {
         if ( $filter == '' )
             $filter='*';
         $teachers=array();
-        $gui->debug("ldap::get_teachers_uids() ".LDAP_OU_TEACHERS);
+        //$gui->debug("ldap::get_teachers_uids() ".LDAP_OU_TEACHERS);
         @$this->search("(cn=*)", $basedn=LDAP_OU_TEACHERS);
         
         if (! $this->sr ) {
@@ -1487,11 +1503,11 @@ class LDAP {
             $members=$attrs["memberUid"];
             //$gui->debug("<pre>".print_r($members, true)." </pre><br>\n");
             if ( in_array($uid, $members) ) {
-                $gui->debug("ldap::is_admin() user $uid is admin");
+                //$gui->debug("ldap::is_admin() user $uid is admin");
                 return true;
             }
         }
-        $gui->debug("ldap::is_admin() user $uid is NOT admin");
+        //$gui->debug("ldap::is_admin() user $uid is NOT admin");
         return false;
     }
 
@@ -2135,12 +2151,13 @@ class LDAP {
 
 
 class PAGER {
-    function PAGER($items, $baseurl, $skip, $args='') {
+    function PAGER($items, $baseurl, $skip, $args='', $sort=NULL) {
         global $gui;
         $this->items=$items;
         $this->number=sizeof($items);
         $this->baseurl=$baseurl;
         $this->args=$args;
+        $this->sort=$sort;
         
         if ($skip == "") {
             $this->skip=0;
@@ -2150,11 +2167,17 @@ class PAGER {
         }
         
         
-        $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$baseurl skip=".$this->skip." args=".$this->args."</pre>");
+        $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$baseurl <br/>
+        skip=".$this->skip." <br/>
+        args=".$this->args." <br/>
+        sort=".print_r($sort,true)."</pre>");
         return;
     }
     
     function getHTML() {
+        if ( $this->number <= PAGER_LIMIT ){
+            return "";
+        }
         global $gui;
         
         $total_pages=intval($this->number/PAGER_LIMIT);
@@ -2163,12 +2186,14 @@ class PAGER {
             $total_pages++;
         }
         
+        $newargs = preg_replace("/&skip=([0-9]+)/",'',$this->args);
+        
         $gui->debug("<pre>PAGER number=".$this->number." total_pages=$total_pages resto=$resto</pre>");
         $html="<div class='pages'>";
         
         if ( ($this->skip-PAGER_LIMIT)>= 0 ) {
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/".$this->args."'>« Primero</a>";
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/".$this->args."&skip=".($this->skip-PAGER_LIMIT)."'>« Anterior</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs'>« Primero</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&skip=".($this->skip-PAGER_LIMIT)."'>« Anterior</a>";
         }
         else {
             $html.="&nbsp;&nbsp;<span class='nextprev'>« Anterior</span>";
@@ -2219,7 +2244,7 @@ class PAGER {
             else{
                 if ( in_array($i+1, $links) ) {
                     /*$gui->debug("i=$i en array() curpage=$int_curpage");*/
-                    $html.="&nbsp;&nbsp;<a class='pagerLink' href='".$this->baseurl."/".$this->args."&skip=$skipcount'>".($i+1)."</a>";
+                    $html.="&nbsp;&nbsp;<a class='pagerLink' href='".$this->baseurl."/$newargs&skip=$skipcount'>".($i+1)."</a>";
                 }
                 /*else {
                     $gui->debug("i=$i **NO** en array() curpage=$int_curpage");
@@ -2227,9 +2252,9 @@ class PAGER {
             }
         }
         if ( ($this->skip+PAGER_LIMIT)< $this->number ) {
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/".$this->args."&skip=".($this->skip+PAGER_LIMIT)."'>Siguiente »</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&skip=".($this->skip+PAGER_LIMIT)."'>Siguiente »</a>";
             $last=($total_pages-1)*PAGER_LIMIT;
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/".$this->args."&skip=$last'>Último »</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&skip=$last'>Último »</a>";
         }
         else {
             $html.="&nbsp;&nbsp;<span class='nextprev'>Siguiente »</span>";
@@ -2240,10 +2265,72 @@ class PAGER {
     }
     
     function getItems() {
+        global $gui;
+        global $sort_opts;
+        if ($this->sort) {
+            //$gui->debuga($this->items);
+            //$this->objSort(&$this->items, $this->sort[0], $this->sort[1]);
+            $sort_opts=$this->sort;
+            usort($this->items, array(&$this, "compareObjects"));
+        }
         /* array array_slice ( array $array , int $offset [, int $length [, bool $preserve_keys = false ]] ) */
         $this->items=array_slice($this->items, $this->skip, PAGER_LIMIT, $preserve_keys = false );
         return $this->items;
     }
-
+    
+    static function compareObjects($a, $b) {
+        global $gui;
+        global $sort_opts;
+        $value=$sort_opts[0];
+        $reverse=1;
+        if ($sort_opts[1] == SORT_DESC)
+            $reverse=-1;
+        
+        if( ! isset($a->$value) ) {
+            $gui->session_error("No se pudo ordenar por el campo '$value'");
+            return 0;
+        }
+        if ($a->$value == $b->$value) {
+            return 0;
+        } else {
+            if ( $a->$value < $b->$value ) {
+                return -1*$reverse;
+            }
+            else {
+                return 1*$reverse;
+            }
+        }
+    }
+    
+    function getSortIcons($filter) {
+        /*
+        &#9650; ▲
+        &#9651; △
+        &#9660; ▼
+        &#9661; ▽
+        */
+        global $gui;
+        global $site;
+        $down="&#9661;";
+        $up="&#9651;";
+        
+        
+        if ( preg_match("/&sort=$filter&mode=asc/", $this->args) ) {
+            $down="&#9660;";
+        }
+        if ( preg_match("/&sort=$filter&mode=dsc/", $this->args) ) {
+            $up="&#9650;";
+        }
+        
+        /* clean $this->args */
+        $newargs = preg_replace("/&sort=(uid|cn|sn)&mode=(asc|dsc)/",'',$this->args);
+        $gui->debug("getSortIcons($filter) this->args='".$this->args."' => newargs='$newargs'");
+        
+        $html="\n";
+        /* icono de ordenar descendente */
+        $html.="<a class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=asc'>$down</a>\n";
+        $html.="<a class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=dsc'>$up</a>";
+        return $html;
+    }
 }
 ?>
