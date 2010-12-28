@@ -10,13 +10,9 @@
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
           <input type='submit' name='button' value="Añadir usuario" title="Añadir usuario" />
-          <select name='role' id='role' onchange="javascript:document.forms.formuser.submit();">
-            <option value='' {if $role == ''}selected{/if}>Filtrar por rol</option>
-            <option value='alumno' {if $role == 'alumno'}selected{/if}>Alumno</option> 
-            <option value='teacher' {if $role == 'teacher'}selected{/if}>Profesor</option> 
-            <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
-          </select>
-          <input style="display:none;float:right;" type='button' name='btnDelete' id='btnDelete' value="Borrar seleccionados" title="Borrar seleccionados" onclick="javascript:deleteSelected();"/>
+          <input type='hidden' name='role' id="role" value='{$role}' />
+          <input style="display:none;float:right;" type='button' name='btnDelete' id='btnDelete' 
+           value="Borrar seleccionados" title="Borrar seleccionados" onclick="javascript:deleteSelected();"/>
         </form>
         
         </td> 
@@ -32,10 +28,17 @@
       <tr>
       <th class=''>Identificador {$pager->getSortIcons('uid')}</th> 
       <th class=''>Nombre {$pager->getSortIcons('cn')} Apellidos {$pager->getSortIcons('sn')}</th> 
-      <th class=''>Rol</th> 
+      <th class=''>Rol
+          <select name='selectrole' id='selectrole' onchange="javascript:rolFilter(this);">
+            <option value='' {if $role == ''}selected{/if}>Filtrar por rol</option>
+            <option value='alumno' {if $role == 'alumno'}selected{/if}>Alumno</option> 
+            <option value='teacher' {if $role == 'teacher'}selected{/if}>Profesor</option> 
+            <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
+          </select>
+      </th> 
       <th class=''>Cuota</th> 
       <th class=''>Editar</th> 
-      <th class=''>Borrar</th> 
+      {*<th class=''>Borrar</th> *}
       <th class=''>Múltiple <input class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
       </tr>
     </thead>
@@ -55,9 +58,9 @@
         <td class='tcenter'> 
             <a href="{$urleditar}/{$u->attr('uid')}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
         </td>
-        <td class='tcenter'> 
+        {*<td class='tcenter'> 
             <a href="{$urlborrar}/{$u->attr('uid')}"><img src="{$baseurl}/img/delete.gif" alt="borrar" /></a>
-        </td>
+        </td>*}
         <td class='tcenter'> 
             <input type='checkbox' class="userdel" name="{$u->attr('uid')}" id="{$u->attr('uid')}" onchange="javascript:oncheckboxChange();"/>
         </td>
@@ -100,7 +103,6 @@ function deleteSelected(){
             multiple=true;
         }
     });
-    //alert(toDelete);
     $('#usernames')[0].value=toDelete;
     $('#formdeletemultipleuser')[0].submit();
 }
@@ -113,6 +115,11 @@ function enableAll(obj){
         $('#btnDelete')[0].style.display='';
     else
         $('#btnDelete')[0].style.display='none';
+}
+
+function rolFilter(obj) {
+    $('#role')[0].value=obj.options[obj.selectedIndex].value;
+    document.forms.formuser.submit();
 }
 -->
 </script>
