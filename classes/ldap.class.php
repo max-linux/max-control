@@ -1139,10 +1139,12 @@ class GROUP extends BASE {
     var $sambaSID='';
     
     var $memberUid='';
-    var $sambaGroupType=''; 
+    var $sambaGroupType='';
+    
+    var $numUsers=0;
     
     function init(){
-        return;
+        $this->numUsers=$this->get_num_users();
     }
     
     function get_num_users() {
@@ -1739,6 +1741,8 @@ class LDAP {
             return false;
         if ( $groupfilter == '' )
             $groupfilter='*';
+        else
+            $groupfilter="*$groupfilter*";
         
         $groups=array();
         $gui->debug("ldap::get_groups() (cn='$groupfilter')".LDAP_OU_GROUPS);
@@ -2163,6 +2167,7 @@ class PAGER {
         $this->baseurl=$baseurl;
         $this->args=$args;
         $this->sort=$sort;
+        $this->sortfilter="(uid|cn|sn|numUsers)";
         
         if ($skip == "") {
             $this->skip=0;
@@ -2273,8 +2278,6 @@ class PAGER {
         global $gui;
         global $sort_opts;
         if ($this->sort) {
-            //$gui->debuga($this->items);
-            //$this->objSort(&$this->items, $this->sort[0], $this->sort[1]);
             $sort_opts=$this->sort;
             usort($this->items, array(&$this, "compareObjects"));
         }
@@ -2325,7 +2328,7 @@ class PAGER {
         }
         
         /* clean $this->args */
-        $newargs = preg_replace("/&sort=(uid|cn|sn)&mode=(asc|dsc)/",'',$this->args);
+        $newargs = preg_replace("/&sort=".$this->sortfilter."&mode=(asc|dsc)/",'',$this->args);
         //$gui->debug("getSortIcons($filter) this->args='".$this->args."' => newargs='$newargs'");
         
         $html="\n";
