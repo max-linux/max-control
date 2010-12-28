@@ -6,7 +6,7 @@
         <tr> 
             <td class='tright'><span class="ftitle">Nombre del grupo:</span></td> 
             <td>
-                <input type='text' class='inputText' name='cn' id='cn' autocomplete="off" onblur='javascript:usedcn(this.value);' />
+                <input type='text' class='inputText' name='cn' id='cn' autocomplete="off" maxlength='20' onblur='javascript:usedcn(this.value);' />
                 <span class="error" style="display:none;" id='groupnotvalid'>El identificador está ocupado</span>
                 <span class="note" style="display:none;" id='groupvalid'>El identificador está libre</span>
                 <span class="error" style="display:none;" id='groupempty'>El identificador no puede estar vacío</span>
