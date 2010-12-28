@@ -33,6 +33,7 @@ require(SMARTY_REQUIRE);
 include($path . '/classes/gui.class.php');
 include($path . '/classes/permisos.class.php');
 include($path . '/classes/ldap.class.php');
+include($path . '/classes/pager.class.php');
 include($path . '/classes/winexe.class.php');
 
 
@@ -91,10 +92,10 @@ elseif ( isset($gui) ) {
 if (isset($gui)) {
     $gui->debug("Session cache=" .  ini_get("session.gc_maxlifetime") );
     $gui->debug("Memory  limit=" .  ini_get("memory_limit") );
-    $gui->debug("Tiempo de ejecución: " . time_end() );
     $gui->debug("QUERY_STRING=".$_SERVER['QUERY_STRING']);
     $gui->debug_array($_POST, "index.php POST");
     $gui->debug_array($_GET, "index.php GET");
+    $gui->debug("Tiempo de ejecución: " . time_end() );
     $gui->render();
 }
 
