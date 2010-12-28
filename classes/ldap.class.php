@@ -545,6 +545,14 @@ class USER extends BASE {
         //$gui->debug("<pre>getquota(".$this->uid.")".print_r($output, true)."</pre>");
         return $output[0];
     }
+    
+    function resetProfile() {
+        global $gui;
+        
+        exec("sudo ".MAXCONTROL." resetprofile '".$this->uid."' 2>&1", &$output);
+        $gui->debug("<pre>resetProfile(".$this->uid.") output=".print_r($output, true)."</pre>");
+        return true;
+    }
 }
 
 

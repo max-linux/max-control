@@ -3,7 +3,7 @@
 <h3>Editando usuario  <span class='stitle'>{$username}</span></h3> 
  
 
- <form action='{$urlform}' method='post'> 
+ <form action='{$urlform}' method='post' onsubmit="return checkpass(); return false;"> 
     <table class='formTable'> 
     <tr> 
         <td class='tright'><span class="ftitle">Nombre:</span></td>
@@ -60,14 +60,16 @@
         <td> 
         <input class='inputButton' type='submit' name='{$action}' value="Guardar" alt="Guardar" /> 
         <input type='hidden' name='uid' value='{$u->attr('uid')}' />
+        <input class='inputButton' type='button' name='reset' value="Resetear perfil" 
+         title="Borra todos los archivos personales de este usuario" onclick="javascript:resetProfile('{$username}');"/> 
         </td> 
     </tr> 
     </table> 
     </form> 
 
 <script type="text/javascript">
-    var hostname="{$hostname}";
     var ajaxurl="{$baseurl}/index.php?ajax=1";
+    var baseurl="{$baseurl}/usuarios/";
 </script>
 
 {literal}
@@ -81,6 +83,10 @@ function checkpass() {
         $('#badpassword')[0].style.display='none';
         return true;
     }
+}
+
+function resetProfile(username) {
+    document.location.href=baseurl+"resetprofile/"+username;
 }
 </script>
 {/literal}

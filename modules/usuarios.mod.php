@@ -544,10 +544,35 @@ function groupsavenew($module, $action, $subaction) {
 }
 /*************************************************/
 
+function resetprofile ($module, $action, $subaction) {
+    global $url, $gui;
+    $user=$subaction;
+    $data=array("user" => $user,
+                "urlform"=>$url->create_url($module, 'resetprofiledo', $user));
+    $gui->add( $gui->load_from_template("resetprofile.tpl", $data) );
+}
 
+function resetprofiledo ($module, $action, $subaction) {
+    global $url, $gui;
 
-
-
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+    $username=leer_datos('user');
+    
+    if ( $username == '') {
+        $gui->session_error("Usuario incorrecto");
+        $url->ir($module, "ver");
+    }
+    
+    $ldap=new LDAP();
+    $user=$ldap->get_user($username);
+    //$gui->debuga($user);
+    
+    if ( $user->resetProfile() )
+        $gui->session_info("Perfil del usuario '$username' borrado correctamente.");
+    
+    if(! DEBUG)
+        $url->ir($module, "ver");
+}
 
 
 
@@ -570,6 +595,9 @@ switch($action) {
     
     case "deletemultiple": deletemultiple($module, $action, $subaction); break; /* avisar del borrado de varios usuarios */
     case "deletemultipledo": deletemultipledo($module, $action, $subaction); break; /* borrar varios usuarios */
+    
+    case "resetprofile": resetprofile($module, $action, $subaction); break; /* avisar del borrado del perfil del usuario */
+    case "resetprofiledo": resetprofiledo($module, $action, $subaction); break; /* borrado del perfil del usuario */
     
     case "add": add($module, $action, $subaction); break; /* formulario añadir usuario */
     case "guardarnuevo": guardarnuevo($module, $action, $subaction); break; /* guardar nuevo usuario */
