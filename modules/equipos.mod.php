@@ -66,21 +66,65 @@ if ($active_action == "ver") {
         $url->ir($active_module, "update");
     }
 
+    $filteruri='';
+    $filter=leer_datos('Filter');
+    if ($filter != '') {
+       $filteruri="&Filter=$filter";
+    }
+    $sortarray=NULL;
+    $sort=leer_datos('sort');
+    $sortmode=leer_datos('mode');
+    if ($sort != '') {
+       if($sortmode=="dsc") {
+         $sortarray=array($sort, SORT_DESC);
+         $filteruri.="&sort=$sort&mode=dsc";
+        }
+       else {
+         $sortarray=array($sort, SORT_ASC);
+         $filteruri.="&sort=$sort&mode=asc";
+       }
+    }
+    $skip=leer_datos('skip');
+    if ($skip != '') {
+       $filteruri.="&skip=$skip";
+    }
+
+    $aula=leer_datos('aula');
+    if ($aula != '') {
+       $filteruri.="&aula=$aula";
+    }
+
     // mostrar lista de equipos
     $ldap=new LDAP();
-    $filter=leer_datos('Filter');
+    
     if ( ($filter != '') && (substr($filter, -1) != '$') )
         $filter.='$';
-    $equipos=$ldap->get_computers( $filter );
+    
+    if ($aula != '')
+        $equipos=$ldap->get_computers_from_aula($aula);
+    else
+        $equipos=$ldap->get_computers( $filter );
+
     $urlform=$url->create_url($active_module, $active_action);
-    $urleditar=$url->create_url($active_module,'editar');
-    $urlborrar=$url->create_url($active_module,'borrar');
+    
+    $numequipos=sizeof($equipos);
+    
+    $pager=new PAGER($equipos, $urlform, $skip, $args=$filteruri, $sortarray);
+    $equipos=$pager->getItems();
+    $pager->sortfilter="(uid|ipHostNumber|macAddress|sambaProfilePath)";
+    
+    $aulas=$ldap->get_aulas_cn();
+    $gui->debuga($aulas);
     
     $data=array("equipos" => $equipos, 
+                "numequipos" => $numequipos,
+                "aulas" => $aulas,
+                "aula" => $aula,
                 "filter" => $filter, 
                 "urlform" => $urlform, 
-                "urleditar"=>$urleditar,
-                "urlborrar"=>$urlborrar);
+                "urleditar"=>$url->create_url($active_module,'editar'),
+                "urlborrar"=>$url->create_url($active_module,'borrar'),
+                "pager" => $pager);
     $gui->add( $gui->load_from_template("ver_equipos.tpl", $data) );
 }
 
@@ -139,28 +183,48 @@ if ($active_action == "purgewinsdo") {
 
 
 if ($active_action == "borrar") {
+    if ( $permisos->is_tic() ) {
+        $gui->session_error("Los Coordinadores TIC no pueden borrar equipos.");
+        $url->ir($active_module, "ver");
+    }
+    $equipos=leer_datos("hostnames");
+    $equiposarray=split(',', $equipos);
     $data=array(
             "urlaction"=>$url->create_url($active_module, 'borrardo'),
-            "equipo" =>leer_datos('subaction')
+            "equipos" =>$equipos,
+            "equiposarray" => $equiposarray
                 );
     $gui->add( $gui->load_from_template("borrar_equipo.tpl", $data) );
 }
 
 if ($active_action == "borrardo") {
-    $equipo=leer_datos('equipo');
-    $ldap=new LDAP();
-    $equipos=$ldap->get_computers($equipo . '$');
-    //$gui->debuga($equipos);
-    if ( isset($equipos[0]) ) {
-        //$gui->debuga($equipos[0]);
-        $equipos[0]->delComputer();
-        $gui->session_info("Equipo '$equipo' borrado del dominio.");
+    if ( $permisos->is_tic() ) {
+        $gui->session_error("Los Coordinadores TIC no pueden borrar equipos.");
+        $url->ir($active_module, "ver");
     }
-    else {
-        $gui->session_error("El equipo '$equipo' no se ha encontrado");
+    $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
+    $equipos=leer_datos('equipos');
+    
+    if ($equipos == '') {
+        $gui->session_error("No se han seleccionado equipos");
+        $url->ir($module, "ver");
+    }
+    
+    $ldap=new LDAP();
+    $equiposarray=split(',', $equipos);
+    $gui->debuga($equiposarray);
+    foreach($equiposarray as $equipo) {
+        $obj=$ldap->get_computers($equipo);
+        if ( isset($obj[0]) ) {
+            $obj[0]->delComputer();
+             $gui->session_info("Equipo '$equipo' borrado del dominio.");
+        }
+        else {
+            $gui->session_error("El equipo '$equipo' no se ha encontrado");
+        }
     }
     if(! DEBUG)
-        $url->ir($active_module, "ver");
+        $url->ir($module, "ver");
 }
 
 
@@ -172,7 +236,7 @@ if ($active_action == "guardar") {
         $url->ir($active_module, "ver");
     
     $equipo=$equipos[0];
-    //$gui->add( "<pre>". print_r($_POST, true) . "</pre>" );
+    $gui->add( "<pre>". print_r($_POST, true) . "</pre>" );
     $equipo->set($_POST);
     $res=$equipo->save( array('sambaProfilePath', 
                          'ipHostNumber', 
@@ -184,11 +248,13 @@ if ($active_action == "guardar") {
     //$gui->add( "<pre>guardado=$res". print_r($equipo, true) . "</pre>" );
     if ($res) {
         $gui->session_info("Equipo guardado correctamente.");
-        $url->ir($active_module, "ver");
+        if(! DEBUG)
+            $url->ir($active_module, "ver");
     }
     else {
         $gui->session_error("Error guardando datos, por favor inténtelo de nuevo.");
-        $url->ir($active_module, "editar", $hostname);
+        if(! DEBUG)
+            $url->ir($active_module, "editar", $hostname);
     }
 }
 
@@ -296,6 +362,10 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
 
 /****************************************************/
 if ($active_action == "aulas" && $active_subaction == 'equipos') {
+    if ( $permisos->is_tic() ) {
+        $gui->session_error("Los Coordinadores TIC no pueden añadir o quitar equipos de aulas.");
+        $url->ir($active_module, "aulas");
+    }
     $aula=leer_datos('args');
     $ldap=new LDAP();
     $all=$ldap->get_computers_in_and_not_aula($aula);
@@ -312,6 +382,10 @@ if ($active_action == "aulas" && $active_subaction == 'equipos') {
 }
 
 if ($active_action == "equipos" && $active_subaction == 'guardar') {
+    if ( $permisos->is_tic() ) {
+        $gui->session_error("Los Coordinadores TIC no pueden añadir o quitar equipos de aulas.");
+        $url->ir($active_module, "aulas");
+    }
     $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
     
     /* Add computer
@@ -389,6 +463,10 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
 
 
 if ($active_action == "aulas" && $active_subaction == 'nueva') {
+    if ( $permisos->is_tic() ) {
+        $gui->session_error("Los Coordinadores TIC no pueden añadir aulas.");
+        $url->ir($active_module, "aulas");
+    }
     $group=new GROUP();
     $url=new URLHandler();
     $urlform=$url->create_url($active_module, $active_action, 'aulaguardar');
@@ -401,6 +479,10 @@ if ($active_action == "aulas" && $active_subaction == 'nueva') {
 }
 
 if ($active_action == "aulas" && $active_subaction == 'aulaguardar') {
+    if ( $permisos->is_tic() ) {
+        $gui->session_error("Los Coordinadores TIC no pueden añadir aulas.");
+        $url->ir($active_module, "aulas");
+    }
     //$gui->add( "<pre>".print_r($_POST, true)."</pre>" );
     /*
     Array
@@ -425,6 +507,10 @@ if ($active_action == "aulas" && $active_subaction == 'aulaguardar') {
 
 
 if ($active_action == "aulas" && $active_subaction == 'borrar') {
+    if ( $permisos->is_tic() ) {
+        $gui->session_error("Los Coordinadores TIC no pueden borrar aulas.");
+        $url->ir($active_module, "aulas");
+    }
     $aula=leer_datos('args');
     $gui->add("borrar aula: $aula");
     $urlform=$url->create_url($active_module, $active_action, 'aulaborrar');
@@ -435,6 +521,10 @@ if ($active_action == "aulas" && $active_subaction == 'borrar') {
 }
 
 if ($active_action == "aulas" && $active_subaction == 'aulaborrar') {
+    if ( $permisos->is_tic() ) {
+        $gui->session_error("Los Coordinadores TIC no pueden borrar aulas.");
+        $url->ir($active_module, "aulas");
+    }
     $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
     /*
     Array
