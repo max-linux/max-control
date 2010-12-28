@@ -884,6 +884,136 @@ class COMPUTER extends BASE {
         
         return $result;
     }
+
+    function newComputer($data) {
+        /* used by create_hosts.php */
+        global $gui;
+        
+        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        
+        if ( $ldap->get_computers($data['hostname'].'$') ) {
+            $gui->session_error("El equipo '".$data['hostname']."' ya existe.");
+            return false;
+        }
+        $this->ldapdata=array();
+        $this->uid=$data['hostname'].'$';
+        $this->cn=$data['hostname'].'$';
+        
+        $this->description="Computer";
+        $this->displayName="Computer";
+        $this->gecos="Computer";
+        $this->uidNumber=$ldap->lastUID() +1;
+        $this->gidNumber="515"; /*Domain Computers ()*/
+        
+        
+        $rid = (2 * $this->uidNumber) + 1000;
+        
+        $this->sambaSID=$ldap->getSID()."-$rid";
+        //$this->sambaPrimaryGroupSID=$ldap->getSID()."-". $ldap->getGID('Domain Users');
+        
+        $this->homeDirectory="/dev/null";
+        $this->loginShell="/bin/false";
+        $this->sambaAcctFlags="[WX         ]";
+        $this->sambaHomePath=array();
+        $this->sambaProfilePath=array(); /* aqui se guarda el aula */
+        
+        $this->objectClass = array('top', 'account', 'posixAccount', 'sambaSamAccount');
+        $this->sambaNTPassword="E44AA99B52BB7604F9DC31D6298D4EFB";
+        //$additionalPasswords=$ldap->additionalPasswords(leer_datos('password') , $this->uid, $samba=true);
+        //$this->set( $additionalPasswords );
+        
+        $this->sambaPwdLastSet=time();
+        
+        $newdata=$this->show();
+        
+        $init=array(
+            "uid" => $this->uid,
+            "cn" => $this->cn,
+            "uidNumber" => $this->uidNumber,
+            "gidNumber" => $this->gidNumber,
+            "description" => $this->description,
+            #"displayName" => $this->displayName,
+            "gecos" => $this->gecos,
+            "homeDirectory" => $this->homeDirectory,
+            "loginShell" => $this->loginShell,
+            #"sambaAcctFlags" => $this->sambaAcctFlags,
+            #"sambaProfilePath" => $this->sambaProfilePath,
+            #"userPassword" => "{SHA}".base64_encode(sha1(leer_datos('password'), TRUE)),
+            "objectClass" => array('top', 'account', 'posixAccount'),
+                    );
+        $gui->debuga($init);
+        $r=ldap_add($ldap->cid, "uid=".$this->uid.",".LDAP_OU_COMPUTERS, $init);
+        
+        $gui->debug(ldap_error($ldap->cid));
+        
+        
+        if ( ! $r ) {
+            $gui->session_error("No se ha podido añadir el equipo, compruebe todos los campos.");
+            return false;
+        }
+        
+        $gui->debug("INIT DONE save rest");
+        $this->ldapdata=$newdata;
+        
+        
+        // save SAMBA attributes
+        $init=array(
+            "objectClass" => array('top', 'account', 'posixAccount', 'sambaSamAccount'),
+            
+            "sambaNTPassword" => $this->sambaNTPassword,
+            #"sambaLMPassword" => $this->sambaLMPassword,
+            
+            #"sambaPwdCanChange" => $this->sambaPwdCanChange,
+            #"sambaLogonTime" => $this->sambaLogonTime,
+            #"sambaLogoffTime" => $this->sambaLogoffTime,
+            
+            #"sambaPwdMustChange" => $this->sambaPwdMustChange,
+            "sambaPwdLastSet" => $this->sambaPwdLastSet,
+            #"sambaPasswordHistory" => $this->sambaPasswordHistory,
+            
+            "sambaAcctFlags" => $this->sambaAcctFlags,
+            #"sambaKickoffTime" => $this->sambaKickoffTime,
+            
+            #"sambaNTPassword" => $this->sambaNTPassword,
+            #"sambaLMPassword" => $this->sambaLMPassword,
+            
+            #"sambaPrimaryGroupSID" => $this->sambaPrimaryGroupSID,
+            "sambaHomePath" => $this->sambaHomePath,
+            #"sambaProfilePath" => $this->sambaProfilePath,
+            "sambaSID" => $this->sambaSID,
+                    );
+        $gui->debuga($init);
+        $r=ldap_modify($ldap->cid, "uid=".$this->uid.",".LDAP_OU_COMPUTERS, $init);
+        
+        $gui->debug(ldap_error($ldap->cid));
+        if ( ! $r )
+            return false;
+        
+        $other=array('displayName');
+        $this->save( $other );
+        
+        //$gui->debuga($this);
+        
+        // guardar MAC e IP
+        $new=array("macAddress" => $data['macAddress'],
+                    "ipHostNumber" => $data['ipHostNumber'],
+                    "bootFile" => "",
+                    "sambaProfilePath" => "",
+                    "hostname" => $data['hostname']);
+        $this->set($new);
+        $this->ldapdata['macAddress']=$data['macAddress'];
+        $this->ldapdata['ipHostNumber']=$data['ipHostNumber'];
+        
+        $res=$this->save( array('sambaProfilePath', 
+                         'ipHostNumber', 
+                         'ipNetmaskNumber', 
+                         'ipNetmaskNumber', 
+                         'macAddress', 
+                         'bootFile') );
+        
+        $gui->session_info("Equipo añadido correctamente.");
+        return true;
+    }
 }
 
 
