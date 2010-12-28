@@ -48,6 +48,7 @@
                 <select name='role' id='role' > 
                     <option value=''>Alumno</option> 
                     <option value='teacher'>Profesor</option> 
+                    <option value='tic'>Coordinador TIC</option> 
                     <option value='admin'>Administrador</option> 
                 </select> 
             </td> 

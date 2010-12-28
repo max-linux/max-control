@@ -16,6 +16,7 @@
         <td> 
             {if $u->get_role() == ''}Alumno{/if}
             {if $u->get_role() == 'teacher'}Profesor{/if}
+            {if $u->get_role() == 'tic'}Coordinador TIC{/if}
             {if $u->get_role() == 'admin'}Administrador{/if}
         </td> 
     </tr>

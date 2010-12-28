@@ -358,7 +358,7 @@ function groups($module, $action, $subaction) {
     
     
     $ldap=new LDAP();
-    $groups=$ldap->get_groups($filter, $include_teachers=false);
+    $groups=$ldap->get_groups($filter, $include_system=false);
     //$gui->debug("<pre>".print_r($groups, true)."</pre>");
     
     $numgroups=sizeof($groups);

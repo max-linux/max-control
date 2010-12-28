@@ -24,6 +24,7 @@
             <select name='role' id='role' > 
                 <option value='' {if $u->get_role() == ''}selected{/if}>Alumno</option> 
                 <option value='teacher' {if $u->get_role() == 'teacher'}selected{/if}>Profesor</option> 
+                <option value='tic' {if $u->get_role() == 'tic'}selected{/if}>Coordinador TIC</option> 
                 <option value='admin' {if $u->get_role() == 'admin'}selected{/if}>Administrador</option> 
             </select> 
         </td> 

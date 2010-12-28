@@ -44,6 +44,8 @@ define("LDAP_OU_ADMINS", "cn=Administrators,ou=Groups,dc=max-server");
 define("TEACHERS", "Teachers");
 define("LDAP_OU_TEACHERS", "cn=Teachers,ou=Groups,dc=max-server");
 define("LDAP_OU_DUSERS", "cn=Domain Users,ou=Groups,dc=max-server");
+define("TICS", "CoordinadoresTIC");
+define("LDAP_OU_TICS", "cn=CoordinadoresTIC,ou=Groups,dc=max-server");
 
 // ruta al comando winexe
 define("WINEXE", "/usr/bin/winexe");
@@ -102,13 +104,21 @@ define("PAGER_LIMIT", 25);
 define("PAGER_MAX_LINKS", 10);
 
 $site["public_modules"]=array();
-        
+
 $site["private_modules_admin"]=array(
         "miperfil" => "Mi perfil",
         "usuarios" => "Usuarios y Grupos",
         "equipos" => "Equipos del dominio",
         "isos" => "Distribuir ISOS",
-        #"compartir" => "Compartir carpetas",
+        "power" => "Apagado y reinicio",
+        "boot" => "Programar arranque equipos",
+        );
+
+$site["private_modules_tic"]=array(
+        "miperfil" => "Mi perfil",
+        "usuarios" => "Usuarios y Grupos",
+        "equipos" => "Equipos del dominio",
+        "isos" => "Distribuir ISOS",
         "power" => "Apagado y reinicio",
         "boot" => "Programar arranque equipos",
         );
@@ -116,9 +126,7 @@ $site["private_modules_admin"]=array(
 $site["private_modules_teacher"]=array(
         "miperfil" => "Mi perfil",
         "isos" => "Distribuir ISOS",
-        #"compartir" => "Compartir carpetas",
         "power" => "Apagado y reinicio",
-        #"boot" => "Programar arranque equipos",
         );
 
 $site["private_modules_none"]=array(

@@ -33,6 +33,7 @@
             <option value='' {if $role == ''}selected{/if}>----------</option>
             <option value='alumno' {if $role == 'alumno'}selected{/if}>Alumno</option> 
             <option value='teacher' {if $role == 'teacher'}selected{/if}>Profesor</option> 
+            <option value='tic' {if $role == 'tic'}selected{/if}>Coordinador TIC</option> 
             <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
           </select>
       </th> 
@@ -51,6 +52,7 @@
         <td class='tcenter'><span>{$u->attr('cn')} {$u->attr('sn')}</span></td> 
         <td class='tcenter'><span>
             {if $u->get_role() == 'teacher'}Profesor{/if}
+            {if $u->get_role() == 'tic'}Coordinador TIC{/if}
             {if $u->get_role() == 'admin'}Administrador{/if}
             {if $u->get_role() == ''}Alumno{/if}
                         </span></td> 
