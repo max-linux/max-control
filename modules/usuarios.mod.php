@@ -102,6 +102,7 @@ function ver($module, $action, $subaction) {
     
     $pager=new PAGER($usuarios, $urlform, $skip, $args=$filteruri, $sortarray);
     $usuarios=$pager->getItems();
+    $pager->sortfilter="(uid|cn|sn)";
     
     $data=array("usuarios" => $usuarios, 
                 "numusuarios" => $numusuarios,
@@ -331,23 +332,52 @@ function groups($module, $action, $subaction) {
     }
     
     $filter=leer_datos('Filter');
+    
+        $filteruri='';
+    $filter=leer_datos('Filter');
+    if ($filter != '') {
+       $filteruri="&Filter=$filter";
+    }
+    $sortarray=NULL;
+    $sort=leer_datos('sort');
+    $sortmode=leer_datos('mode');
+    if ($sort != '') {
+       if($sortmode=="dsc") {
+         $sortarray=array($sort, SORT_DESC);
+         $filteruri.="&sort=$sort&mode=dsc";
+        }
+       else {
+         $sortarray=array($sort, SORT_ASC);
+         $filteruri.="&sort=$sort&mode=asc";
+       }
+    }
+    $skip=leer_datos('skip');
+    if ($skip != '') {
+       $filteruri.="&skip=$skip";
+    }
+    
+    
     $ldap=new LDAP();
     $groups=$ldap->get_groups($filter, $include_teachers=false);
     //$gui->debug("<pre>".print_r($groups, true)."</pre>");
     
-    
+    $numgroups=sizeof($groups);
     
     $urlform=$url->create_url($module, 'grupos');
-    $urleditar=$url->create_url($module, 'groupeditar');
-    $urlborrar=$url->create_url($module, 'groupdelete');
-    $urlmiembros=$url->create_url($module,'groupmembers');
     
+    $pager=new PAGER($groups, $urlform, $skip, $args=$filteruri, $sortarray);
+    $groups=$pager->getItems();
+    
+    $pager->sortfilter="(cn|numUsers)";
+
     $data=array("groups" => $groups, 
                 "filter" => $filter, 
+                "numgroups" => $numgroups,
                 "urlform" => $urlform, 
-                "urleditar"=>$urleditar,
-                "urlborrar"=>$urlborrar,
-                "urlmiembros"=> $urlmiembros);
+                "urleditar"=>$url->create_url($module, 'groupeditar'),
+                "urlborrar"=>$url->create_url($module, 'groupdelete'),
+                "urlmiembros"=> $url->create_url($module,'groupmembers'),
+                "pager"=>$pager);
     $gui->add( $gui->load_from_template("ver_grupos.tpl", $data) );
 }
 
@@ -429,9 +459,12 @@ function groupmembersguardar($module, $action, $subaction) {
 
 function groupdelete($module, $action, $subaction) {
     global $gui, $url;
-    $group=$subaction;
-    $data=array("group" => $group,
-                "urlform"=>$url->create_url($module, 'groupdeletedo', $group));
+    $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
+    $groups=leer_datos("groupnames");
+    $groupsarray=split(',', $groups);
+    $data=array("groups" => $groups,
+                "groupsarray" => $groupsarray,
+                "urlform"=>$url->create_url($module, 'groupdeletedo', $groups));
     
     $gui->add( $gui->load_from_template("del_group.tpl", $data) );
 }
@@ -442,33 +475,30 @@ function groupdeletedo($module, $action, $subaction) {
     /*
     Array
     (
-        [group] => grupoprueba
+        [groups] => grupoprueba,grupo2,grupo3
         [deleteprofile] => 1
         [confirm] => Confirmar
     )
     */
     
-    $group=leer_datos('group');
+    $groups=leer_datos('groups');
     $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
 
-    if ($group == '') {
-        $gui->session_error("No se pudo encontrar el grupo '$group'");
+    if ($groups == '') {
+        $gui->session_error("No se han seleccionado grupos");
         $url->ir($module, "grupos");
     }
-
+    $groupsarray=split(',', $groups);
     $ldap=new LDAP();
-    $groups=$ldap->get_groups($group);
-    
-    $gui->debug( "<pre>". print_r($groups, true) . "</pre>" );
-    
-    if ( ! $groups[0] ){
-        $gui->session_error(" El grupo '$group' no existe.");
-        $url->ir($module, "grupos");
+    foreach($groupsarray as $group) {
+        $todelete=$ldap->get_groups($group);
+        if ( ! $todelete[0] ){
+            $gui->session_error(" El grupo '$group' no existe.");
+            continue;
+        }
+        if ( $todelete[0]->delGroup($deleteprofile) )
+            $gui->session_info("Grupo '$group' borrado.");
     }
-    
-    if ( $groups[0]->delGroup($deleteprofile) )
-        $gui->session_info("Grupo '$group' borrado.");
-    
     if(! DEBUG)
         $url->ir($module, "grupos");
 }
