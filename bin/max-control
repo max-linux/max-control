@@ -50,7 +50,22 @@ if [ "$1" = "deleteprofile" ]; then
   exit 0
 fi
 
-
+if [ "$1" = "resetprofile" ]; then
+  DELUSER=$2
+  [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
+  rm -rf $HOMES_DIR/${DELUSER}/* $HOMES_DIR/${DELUSER}/.* 2>/dev/null
+  rm -rf $PROFILES_DIR/${DELUSER}/* $PROFILES_DIR/${DELUSER}/.* 2>/dev/null
+  rm -rf $PROFILES_DIR/${DELUSER}.V2/* $PROFILES_DIR/${DELUSER}.V2/.* 2>/dev/null
+  
+  # arreglar permisos
+  chown ${DELUSER}:Domain\ Users ${HOMES_DIR}/${DELUSER}
+  chmod 701 ${HOMES_DIR}/${DELUSER}
+  chown ${DELUSER}:Domain\ Users ${PROFILES_DIR}/${DELUSER}
+  chmod 701 ${PROFILES_DIR}/${DELUSER}
+  chown ${DELUSER}:Domain\ Users ${PROFILES_DIR}/${DELUSER}.V2
+  chmod 701 ${PROFILES_DIR}/${DELUSER}.V2
+  exit 0
+fi
 ############################################################################
 
 if [ "$1" = "addgroup" ]; then
