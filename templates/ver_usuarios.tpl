@@ -30,7 +30,7 @@
       <th class=''>Nombre {$pager->getSortIcons('cn')} Apellidos {$pager->getSortIcons('sn')}</th> 
       <th class=''>Rol
           <select name='selectrole' id='selectrole' onchange="javascript:rolFilter(this);">
-            <option value='' {if $role == ''}selected{/if}>Filtrar por rol</option>
+            <option value='' {if $role == ''}selected{/if}>----------</option>
             <option value='alumno' {if $role == 'alumno'}selected{/if}>Alumno</option> 
             <option value='teacher' {if $role == 'teacher'}selected{/if}>Profesor</option> 
             <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
@@ -39,7 +39,7 @@
       <th class=''>Cuota</th> 
       <th class=''>Editar</th> 
       {*<th class=''>Borrar</th> *}
-      <th class=''>Múltiple <input class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
+      <th class=''>Borrar <input class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
       </tr>
     </thead>
  
@@ -118,7 +118,7 @@ function enableAll(obj){
 }
 
 function rolFilter(obj) {
-    $('#role')[0].value=obj.options[obj.selectedIndex].value;
+    $('#role')[0].value=obj.value;
     document.forms.formuser.submit();
 }
 -->

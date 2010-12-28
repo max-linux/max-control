@@ -190,6 +190,7 @@ function guardar($module, $action, $subaction) {
         $url->ir($module, "ver");
 }
 
+/*
 function delete($module, $action, $subaction) {
     global $gui, $url;
     $user=leer_datos('subaction');
@@ -203,7 +204,7 @@ function deletedo($module, $action, $subaction) {
     global $gui, $url;
     $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
     $username=leer_datos('username');
-    $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
+    $deleteprofile=leer_datos('deleteprofile'); // 1 o vacio 
 
     if ($username == '') {
         $gui->session_error("No se pudo encontrar el usuario '$username'");
@@ -223,10 +224,15 @@ function deletedo($module, $action, $subaction) {
     if(! DEBUG)
         $url->ir($module, "ver");
 }
+*/
 
 function deletemultiple($module, $action, $subaction) {
     global $gui, $url;
     $users=leer_datos('usernames');
+    if( ! $users) {
+        $gui->session_error("No se han seleccionado usuarios");
+        $url->ir($module, "ver");
+    }
     $usersarray=split(',', $users);
     $data=array("users" => $users,
                 "usersarray"=>$usersarray,
@@ -242,7 +248,7 @@ function deletemultipledo($module, $action, $subaction) {
     $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
 
     if ($usernames == '') {
-        $gui->session_error("No se han pasado usuarios: '$usernames'");
+        $gui->session_error("No se han seleccionado usuarios: '$usernames'");
         $url->ir($module, "ver");
     }
 
@@ -529,8 +535,8 @@ switch($action) {
     case "ver": ver($module, $action, $subaction); break; /* ver lista de usuarios */
     case "editar": editar($module, $action, $subaction); break; /* editar usuario */
     case "guardar": guardar($module, $action, $subaction); break; /* guardar usuario */
-    case "delete": delete($module, $action, $subaction); break; /* avisar del borrado de usuario */
-    case "deletedo": deletedo($module, $action, $subaction); break; /* borrar usuario */
+    /*case "delete": delete($module, $action, $subaction); break; */ /* avisar del borrado de usuario */
+    /*case "deletedo": deletedo($module, $action, $subaction); break; */ /* borrar usuario */
     
     case "deletemultiple": deletemultiple($module, $action, $subaction); break; /* avisar del borrado de varios usuarios */
     case "deletemultipledo": deletemultipledo($module, $action, $subaction); break; /* borrar varios usuarios */
