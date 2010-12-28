@@ -134,7 +134,7 @@ class BASE {
         
         
         
-        $new_objects=array_diff($this->objectClass, $this->ldapdata['objectClass']);
+        $new_objects=@array_diff($this->objectClass, $this->ldapdata['objectClass']);
         //add new objectclass
         if ( $new_objects ) {
             $gui->debug("BASE:save() NEW OBJECTS <pre>".print_r($new_objects, true)."</pre>");
@@ -272,7 +272,10 @@ class USER extends BASE {
             return $this->role;
         
         $ldap=new LDAP();
-        if ( $ldap->is_admin($this->uid)) {
+        if ( $ldap->is_tic($this->uid)) {
+            $this->role="tic";
+        }
+        elseif ( $ldap->is_admin($this->uid)) {
             $this->role="admin";
         }
         elseif ( $ldap->is_teacher($this->uid) ) {
@@ -315,6 +318,15 @@ class USER extends BASE {
             // quitar de administradores
             $ldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
             $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
+            return;
+        }
+        elseif ($role == 'tic') {
+            // debe estar en el grupo LDAP_OU_TIC Domain Users y __USERS__
+            $ldap->addUserToGroup($this->uid, LDAP_OU_TICS);
+            
+            // meter en administradores
+            $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
+            $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
             return;
         }
         elseif ($role == 'teacher') {
@@ -473,19 +485,8 @@ class USER extends BASE {
         //$gui->debuga($this);
         
         // añadir a domain users
-        
         $ldap->addUserToGroup($this->uid, LDAP_OU_DUSERS);
-        
-        // si el rol es profesor añadir a profesores
-        if ($this->role == 'teacher') {
-            $ldap->addUserToGroup($this->uid, LDAP_OU_TEACHERS);
-        }
-        // si el rol es administrador añadir a administradores
-        if ($this->role == 'admin') {
-            $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
-            $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
-        }
-        
+        $this->set_role($this->role);
         
         // crear home, profiles y aplicar quota
         exec('sudo '.MAXCONTROL.' createhome '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1', &$output);
@@ -519,6 +520,9 @@ class USER extends BASE {
         
         // delete from Teachers
         $ldap->delUserFromGroup($this->uid, LDAP_OU_TEACHERS);
+        
+        // delete from TICS
+        $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
         
         // delete from admins
         $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
@@ -873,8 +877,9 @@ class COMPUTER extends BASE {
         
         $result=true;
         
-        // borrar de samba
-        exec("sudo ".MAXCONTROL." delcomputer'".$this->uid."' ", &$output);
+        // forzar borrado de samba
+        $gui->debug("sudo ".MAXCONTROL." delcomputer '".$this->uid."' ");
+        exec("sudo ".MAXCONTROL." delcomputer '".$this->uid."' ", &$output);
         $gui->debuga($output);
         
         return $result;
@@ -1459,6 +1464,39 @@ class LDAP {
         return $uids;
     }
 
+    function get_tics_uids($filter='*') {
+        global $gui;
+        if ( $filter == '' )
+            $filter='*';
+        $tics=array();
+        //$gui->debug("ldap::get_tics_uids() ".LDAP_OU_TICS);
+        @$this->search("(cn=*)", $basedn=LDAP_OU_TICS);
+        
+        if (! $this->sr ) {
+            return $tics;
+        }
+        //$gui->debug("res=".$this->sr." ".ldap_error($this->cid));
+        
+        while($attrs = $this->fetch()) {
+            if ( isset($attrs['memberUid']) ) {
+                $tics=$attrs['memberUid'];
+                unset($tics['count']);
+            }
+        }
+        /* sort tics */
+        sort($tics);
+        return $tics;
+    }
+
+    function is_tic($uid='') {
+        $tics=$this->get_tics_uids();
+        foreach ($tics as $tic) {
+            if ( $uid == $tic )
+                return true;
+        }
+        return false;
+    }
+
     function get_teachers_uids($filter='*') {
         global $gui;
         if ( $filter == '' )
@@ -1735,6 +1773,33 @@ class LDAP {
         return $all;
     }
 
+    function get_aulas_cn($aula='') {
+        global $gui;
+        $aulas=array();
+        $gui->debug("ldap::get_aula_cn() (cn='*')".LDAP_OU_GROUPS);
+        $this->search("(cn=*)", $basedn=LDAP_OU_GROUPS);
+        
+        while($attrs = $this->fetch()) {
+            //$gui->debug("<pre>".print_r($attrs, true)."</pre>");
+            if ( isset($attrs['sambaGroupType']) && ($attrs['sambaGroupType'][0] == 9) ) {
+                if ($aula == '') {
+                    //$aulas[]=$attrs['cn'][0];
+                    $aulas[]=$attrs['cn'][0];
+                }
+                else {
+                    // remove '*' from $aula
+                    $aula=str_replace('*', '', $aula);
+                    if (preg_match("/$aula/i", $attrs['cn'][0])) {
+                        //$aulas[]=$attrs['cn'][0];
+                        $aulas[]=$attrs['cn'][0];
+                        $gui->debug("ldap::get_aulas() ADD '$aula' match '".$attrs['cn'][0]."'");
+                    }
+                }
+            }
+        }
+        
+        return $aulas;
+    }
 
     function get_group($cn) {
         $groups=$this->get_groups($cn);
@@ -1743,7 +1808,7 @@ class LDAP {
         return false;
     }
 
-    function get_groups($groupfilter='*', $include_teachers=false) {
+    function get_groups($groupfilter='*', $include_system=false) {
         global $gui;
         if ( ! $this->connect() )
             return false;
@@ -1761,7 +1826,7 @@ class LDAP {
                  ($attrs['sambaGroupType'][0] == 2) &&
                  ($attrs['gidNumber'][0] >= 2000) ) {
                  
-                    if (!$include_teachers && $attrs['cn'][0] == TEACHERS) {
+                    if (!$include_system && ($attrs['cn'][0] == TEACHERS || $attrs['cn'][0] == TICS)) {
                         continue;
                     }
                 $groups[]=new GROUP($attrs);

@@ -106,7 +106,7 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 #$gui->debug("\n\n\n");
 
 
-#$teachers=$ldap->get_groups('Teachers', $include_teachers=true);
+#$teachers=$ldap->get_groups('Teachers', $include_system=true);
 #$gui->debuga($teachers);
 #if ( count($teachers) < 1 ) {
 #    $group = new GROUP( array('cn' => 'Teachers' ) );

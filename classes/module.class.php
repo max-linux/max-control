@@ -35,7 +35,9 @@ class ModuleLoader
         global $permisos;
         global $gui;
         if( $permisos->is_connected() ){
-            if( $_SESSION['role'] == 'admin')
+            if( $_SESSION['role'] == 'tic')
+                return $site["private_modules_tic"];
+            elseif( $_SESSION['role'] == 'admin')
                 return $site["private_modules_admin"];
             elseif( $_SESSION['role'] == 'teacher')
                 return $site["private_modules_teacher"];

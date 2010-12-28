@@ -1,6 +1,13 @@
 <?php
+/*
 
+    Roles:
+        * Administrador (admin) puede hacer de todo
+        * Coordinador TIC (tic) administrador sin permiso en borrar equipos / añadir/quitar equipos de aula
+        * Profesor permitir cambiar contraseña a sus alumnos
+        * Alumno
 
+*/
 
 class Permisos {
     
@@ -83,6 +90,24 @@ class Permisos {
         return False;
     }
 
+    function is_tic() {
+        global $gui;
+        
+        if ( ! isset($_SESSION["username"]) )
+            return false;
+        
+        if ( isset($_SESSION['is_tic']) ) {
+            $gui->debug("permisos::is_tic() return session var='".$_SESSION['is_tic']."'");
+            return $_SESSION['is_tic'];
+        }
+        
+        $ldap = new LDAP();
+        $tics=$ldap->get_tics_uids();
+        if ( in_array($_SESSION["username"], $tics) )
+            return True;
+        return False;
+    }
+
     
     function conectar($user, $pass){
         global $gui;
@@ -97,17 +122,21 @@ class Permisos {
         }
         
         
-        
         $_SESSION["user"]="si";
         $_SESSION["username"]=$user;
-        $_SESSION["ldap"]=$ldap->get_user($user);
-        //$_SESSION['userdn']=$userdn;
+        
+        unset($_SESSION['is_tic']);
+        $_SESSION['is_tic']=$this->is_tic();
+        
         unset($_SESSION['is_admin']);
         $_SESSION['is_admin']=$this->is_admin();
+        
         unset($_SESSION['is_teacher']);
         $_SESSION['is_teacher']=$this->is_teacher();
         
-        if ($_SESSION['is_admin'])
+        if($_SESSION['is_tic'])
+            $_SESSION['role']='tic';
+        elseif ($_SESSION['is_admin'])
             $_SESSION['role']='admin';
         elseif($_SESSION['is_teacher'])
             $_SESSION['role']='teacher';
@@ -119,7 +148,6 @@ class Permisos {
         
         $ldap->disconnect();
         
-        $gui->debug("<pre>".print_r($_SESSION["ldap"], true)."</pre>");
         return true;
     }
     
@@ -128,10 +156,9 @@ class Permisos {
         $gui->debug("permisos::desconectar()");
         unset($_SESSION["user"]);
         unset($_SESSION["dni"]);
-        unset($_SESSION["ldap"]);
-        //unset($_SESSION['bindn']);
         unset($_SESSION['is_admin']);
         unset($_SESSION['is_teacher']);
+        unset($_SESSION['is_tic']);
         unset($_SESSION['role']);
         session_unset();
         session_destroy();
