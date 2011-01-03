@@ -70,12 +70,11 @@ function ver($module, $action, $subaction) {
     
     $urlform=$url->create_url($module, $action);
     
-    $numusuarios=sizeof($usuarios);
     
     $pager=new PAGER($usuarios, $urlform, 0, $args='', NULL);
     $pager->processArgs( array('Filter', 'skip', 'role', 'sort') );
     $usuarios=$pager->getItems();
-    $pager->sortfilter="(uid|cn|sn)";
+    $pager->sortfilter="(uid|cn|sn|usedSize)";
     
     /*  overquota 
     *   try to load /var/lib/max-control/quota.cache.php
@@ -83,7 +82,7 @@ function ver($module, $action, $subaction) {
     $overQuota=array();
     $overQuotaEnabled=False;
     if (is_readable("/var/lib/max-control/quota.cache.php")) {
-        include("/var/lib/max-control/quota.cache.php");
+        require("/var/lib/max-control/quota.cache.php");
         if (sizeof($overQuota) > 0) {
             $overQuotaEnabled=True;
         }
@@ -91,7 +90,6 @@ function ver($module, $action, $subaction) {
     /*******************************************************/
     
     $data=array("usuarios" => $usuarios, 
-                "numusuarios" => $numusuarios,
                 "filter" => leer_datos('Filter'), 
                 "role" => leer_datos('role'),
                 "overQuota" => $overQuota,
@@ -326,7 +324,6 @@ function groups($module, $action, $subaction) {
     $ldap=new LDAP();
     $groups=$ldap->get_groups($filter, $include_system=false);
     
-    $numgroups=sizeof($groups);
     
     $urlform=$url->create_url($module, 'grupos');
     
@@ -338,7 +335,6 @@ function groups($module, $action, $subaction) {
 
     $data=array("groups" => $groups, 
                 "filter" => $filter, 
-                "numgroups" => $numgroups,
                 "urlform" => $urlform, 
                 "urleditar"=>$url->create_url($module, 'groupeditar'),
                 "urlborrar"=>$url->create_url($module, 'groupdelete'),
