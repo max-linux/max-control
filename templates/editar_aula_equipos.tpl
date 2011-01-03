@@ -1,6 +1,6 @@
 
 
-<h3>Administration del aula  <span class='stitle'>{$aula}</span></h3> 
+<h3>Administración de los equipos del aula: <span class='stitle'>{$aula}</span></h3> 
  
 
  

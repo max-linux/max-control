@@ -1,5 +1,5 @@
 
-<h2>Listado de aulas</h2>
+<h2>Listado de aulas ({$numaulas})</h2>
 
 
 
@@ -19,7 +19,7 @@
 <table class='dataTable'> 
     <thead> 
      <tr>
-      <th class=''>Nombre</th> 
+      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>Profesores en este aula</th>
       <th class=''>Equipos en este aula</th>
       <th class=''>Borrar</th> 
