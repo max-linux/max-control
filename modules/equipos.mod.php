@@ -65,17 +65,12 @@ function ver($module, $action, $subaction) {
     // mostrar lista de equipos
     $ldap=new LDAP();
     
-    if ( ($filter != '') && (substr($filter, -1) != '$') )
-        $filter.='$';
-    
     if ($aula != '')
         $equipos=$ldap->get_computers_from_aula($aula);
     else
         $equipos=$ldap->get_computers( $filter );
 
     $urlform=$url->create_url($module, $action);
-    
-    $numequipos=sizeof($equipos);
     
     $pager=new PAGER($equipos, $urlform, 0, $args='', NULL);
     $pager->processArgs( array('Filter', 'skip', 'aula', 'sort') );
@@ -87,7 +82,6 @@ function ver($module, $action, $subaction) {
     //$gui->debuga($aulas);
     
     $data=array("equipos" => $equipos, 
-                "numequipos" => $numequipos,
                 "aulas" => $aulas,
                 "aula" => $aula,
                 "filter" => $filter, 
@@ -250,9 +244,6 @@ function veraulas($module, $action, $subaction){
     $aulas=$ldap->get_aulas($filter);
     $urlform=$url->create_url($module, $action);
     
-    
-    $numaulas=sizeof($aulas);
-    
     $pager=new PAGER($aulas, $urlform, 0, $args='', NULL);
     $pager->processArgs( array('Filter', 'skip', 'sort') );
     $aulas=$pager->getItems();
@@ -260,7 +251,6 @@ function veraulas($module, $action, $subaction){
     
     
     $data=array("aulas" => $aulas, 
-                "numaulas" => $numaulas,
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "urlprofesores"=>$url->create_url($module,'aulas', 'miembros'),
