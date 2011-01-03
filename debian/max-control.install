@@ -8,6 +8,7 @@ bin/pyisos            usr/bin/
 bin/pymaxgensamba     usr/bin/
 bin/edit.quotas       usr/bin/
 bin/reset-quotas      usr/bin/
+bin/pyoverquota       usr/bin/
 
 classes               usr/share/max-control/
 modules               usr/share/max-control/
