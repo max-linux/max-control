@@ -609,7 +609,7 @@ class COMPUTER extends BASE {
         /* try to use LDAP IP if exists */
         if ($this->ipHostNumber != '' && 
             $this->exe->checkIP($this->ipHostNumber) == $this->ipHostNumber) {
-                $gui->debug("COMPUTER:init(".$this->hostname().") using LDAP IP=". $this->ipHostNumber);
+                //$gui->debug("COMPUTER:init(".$this->hostname().") using LDAP IP=". $this->ipHostNumber);
                 $this->exe->ip=$this->ipHostNumber;
         }
         return;
@@ -828,13 +828,38 @@ class COMPUTER extends BASE {
     
     function getBoot() {
         global $gui;
+        /*
+        python way
+        macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
+        if os.path.exists(macfile):
+            boot=os.path.basename(os.readlink(macfile))
+            return boot.replace('.menu', '')
+        else:
+            return 'default'
+        
+        */
+        $fname=PXELINUXCFG.$this->pxeMAC();
+        if (is_readable($fname)) {
+            $target=basename(readlink($fname));
+            return str_replace('.menu' , '' , $target);
+        }
+        
+        return 'default';
+        /* OLD METHOD
         // /usr/bin/max-control pxe --getboot=08:00:27:96:0D:E6
         exec("sudo ".MAXCONTROL." pxe --getboot='".$this->macAddress."' ", &$output);
         if ( ! isset($output[0]) ) {
-            $gui->session_error("No se pudo leer el modo de arranque de '".$this->hostname()."'<pre>". implode("\n<br/>", $output). "</pre>");
+            $gui->session_error("No se pudo leer el modo de arranque de '".
+                        $this->hostname()."'<pre>". implode("\n<br/>", $output). "</pre>");
             return 'default';
         }
         return $output[0];
+        */
+    }
+    
+    function pxeMAC() {
+        /* return pxelinux.cfg filename for TFTP */
+        return "01-" . strtolower(str_replace ( ':' , '-' , $this->macAddress )); 
     }
     
     function teacher_in_computer() {
