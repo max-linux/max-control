@@ -1,5 +1,5 @@
 
-<h2>Apagado o reinicio de equipos</h2>
+<h2>Apagado o reinicio de equipos ({$pager->getMAX()})</h2>
 
 
 
@@ -18,9 +18,9 @@
 <table class='dataTable'> 
     <thead> 
     <tr>
-      <th class=''>Nombre</th> 
-      <th class=''>IP / MAC</th> 
-      <th class=''>Aula</th> 
+      <th class=''>Nombre {$pager->getSortIcons('uid')}</th> 
+      <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
+      <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')}</th> 
       <th class=''>Acciones</th> 
       <th class=''>Encender/Reiniciar en</th> 
     </tr>
@@ -50,6 +50,12 @@
 
     </tbody> 
 </table> 
+
+<!-- paginador -->
+{if $pager}
+{$pager->getHTML()}
+{/if}
+
 
 {*
 {if $DEBUG}
