@@ -11,7 +11,7 @@ os.environ['LC_ALL']="C"
 os.environ['EDITOR']="/bin/cat"
 
 HOME="/home"
-REMOTE_NFS="/dev/nbd0"
+REMOTE="/dev/nbd0"
 
 if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quota.user"):
     HOME="/home/samba"
@@ -39,7 +39,7 @@ def getquota(user, used=False):
         if line != '\n':
             line=line.replace('\n', '')
             #print "==>%s"%line
-            if REMOTE_NFS in line:
+            if REMOTE in line:
                 size=line.split()[column]
                 if used:
                     if int(line.split()[2]) == 0:
