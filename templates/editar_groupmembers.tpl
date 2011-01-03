@@ -1,6 +1,6 @@
 
 
-<h3>Administration del grupo  <span class='stitle'>{$group}</span></h3> 
+<h3>Administración del grupo  <span class='stitle'>{$group}</span></h3> 
  
 
  

@@ -14,10 +14,9 @@ global $module_actions;
 
 $url=new URLHandler();
 
-$active_module=$url->get("module");
-$active_action=$url->get("action");
-$active_subaction=$url->get("subaction");
-
+$module=$url->get("module");
+$action=$url->get("action");
+$subaction=$url->get("subaction");
 
 if(DEBUG) {
     error_reporting(E_ALL);
@@ -40,30 +39,25 @@ $module_actions=array(
 );
 
 
-// si tiene permisos de administrador mostrar submenus
-
-#if ($permisos->is_admin() ) {
-#    $module_actions['backhardding']="Backharddi";
-#}
-
 
 /*************************************************/
 
-if ($active_action == "") {
-    $url->ir($active_module, "ver");
+if ($action == "") {
+    $url->ir($module, "ver");
 }
 
-if ($active_action == "ver") {
+function ver($module, $action, $subaction) {
+    global $gui, $url;
     $button=leer_datos('button');
     $gui->debug("button='$button'");
     
     
     if( $button == "Limpiar cache WINS"){
-        $url->ir($active_module, "purgewins");
+        $url->ir($module, "purgewins");
     }
     
     if($button == "Actualizar MAC e IP de todos"){
-        $url->ir($active_module, "update");
+        $url->ir($module, "update");
     }
 
     $filteruri='';
@@ -105,7 +99,7 @@ if ($active_action == "ver") {
     else
         $equipos=$ldap->get_computers( $filter );
 
-    $urlform=$url->create_url($active_module, $active_action);
+    $urlform=$url->create_url($module, $action);
     
     $numequipos=sizeof($equipos);
     
@@ -114,7 +108,7 @@ if ($active_action == "ver") {
     $pager->sortfilter="(uid|ipHostNumber|macAddress|sambaProfilePath)";
     
     $aulas=$ldap->get_aulas_cn();
-    $gui->debuga($aulas);
+    //$gui->debuga($aulas);
     
     $data=array("equipos" => $equipos, 
                 "numequipos" => $numequipos,
@@ -122,13 +116,14 @@ if ($active_action == "ver") {
                 "aula" => $aula,
                 "filter" => $filter, 
                 "urlform" => $urlform, 
-                "urleditar"=>$url->create_url($active_module,'editar'),
-                "urlborrar"=>$url->create_url($active_module,'borrar'),
+                "urleditar"=>$url->create_url($module,'editar'),
+                "urlborrar"=>$url->create_url($module,'borrar'),
                 "pager" => $pager);
     $gui->add( $gui->load_from_template("ver_equipos.tpl", $data) );
 }
 
-if ($active_action == "editar") {
+function editar($module, $action, $subaction){
+    global $gui, $url;
     $hostname=$url->get("subaction");
     $ldap=new LDAP();
     $equipo=$ldap->get_computers($hostname.'$');
@@ -139,7 +134,7 @@ if ($active_action == "editar") {
     }
     
     $aulas=$ldap->get_aulas();
-    $urlform=$url->create_url($active_module, 'guardar');
+    $urlform=$url->create_url($module, 'guardar');
     
     $data=array("hostname"=>$hostname, 
                 "aulas" => $aulas,
@@ -151,27 +146,30 @@ if ($active_action == "editar") {
 }
 
 
-if ($active_action == "update") {
-    $data=array("urlaction"=>$url->create_url($active_module, 'updatedo'));
+function update($module, $action, $subaction){
+    global $gui, $url;
+    $data=array("urlaction"=>$url->create_url($module, 'updatedo'));
     $gui->add( $gui->load_from_template("update_equipos.tpl", $data) );
 }
 
-if ($active_action == "updatedo") {
+function updatedo($module, $action, $subaction){
+    global $gui, $url;
     $ldap=new LDAP();
     $equipos=$ldap->get_computers();
-    //$gui->debuga($equipos);
     foreach($equipos as $equipo) {
         $equipo->getMACIP();
     }
 }
 
 
-if ($active_action == "purgewins") {
-    $data=array("urlaction"=>$url->create_url($active_module, 'purgewinsdo'));
+function purgewins($module, $action, $subaction){
+    global $gui, $url;
+    $data=array("urlaction"=>$url->create_url($module, 'purgewinsdo'));
     $gui->add( $gui->load_from_template("purgewins.tpl", $data) );
 }
 
-if ($active_action == "purgewinsdo") {
+function purgewinsdo($module, $action, $subaction){
+    global $gui, $url;
     $ldap=new LDAP();
     $ldap->purgeWINS();
     $gui->session_info("Cache WINS borrada.");
@@ -181,26 +179,27 @@ if ($active_action == "purgewinsdo") {
 
 
 
-
-if ($active_action == "borrar") {
+function borrar($module, $action, $subaction){
+    global $gui, $url, $permisos;
     if ( $permisos->is_tic() ) {
         $gui->session_error("Los Coordinadores TIC no pueden borrar equipos.");
-        $url->ir($active_module, "ver");
+        $url->ir($module, "ver");
     }
     $equipos=leer_datos("hostnames");
     $equiposarray=split(',', $equipos);
     $data=array(
-            "urlaction"=>$url->create_url($active_module, 'borrardo'),
+            "urlaction"=>$url->create_url($module, 'borrardo'),
             "equipos" =>$equipos,
             "equiposarray" => $equiposarray
                 );
     $gui->add( $gui->load_from_template("borrar_equipo.tpl", $data) );
 }
 
-if ($active_action == "borrardo") {
+function borrardo($module, $action, $subaction){
+    global $gui, $url, $permisos;
     if ( $permisos->is_tic() ) {
         $gui->session_error("Los Coordinadores TIC no pueden borrar equipos.");
-        $url->ir($active_module, "ver");
+        $url->ir($module, "ver");
     }
     $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
     $equipos=leer_datos('equipos');
@@ -227,16 +226,16 @@ if ($active_action == "borrardo") {
         $url->ir($module, "ver");
 }
 
-
-if ($active_action == "guardar") {
+function guardar($module, $action, $subaction){
+    global $gui, $url;
     $hostname=leer_datos('hostname');
     $ldap=new LDAP();
     $equipos=$ldap->get_computers($hostname.'$');
     if ( ! isset($equipos[0]) )
-        $url->ir($active_module, "ver");
+        $url->ir($module, "ver");
     
     $equipo=$equipos[0];
-    $gui->add( "<pre>". print_r($_POST, true) . "</pre>" );
+    $gui->debuga($_POST);
     $equipo->set($_POST);
     $res=$equipo->save( array('sambaProfilePath', 
                          'ipHostNumber', 
@@ -245,55 +244,84 @@ if ($active_action == "guardar") {
                          'macAddress', 
                          'bootFile') );
     
-    //$gui->add( "<pre>guardado=$res". print_r($equipo, true) . "</pre>" );
     if ($res) {
         $gui->session_info("Equipo guardado correctamente.");
         if(! DEBUG)
-            $url->ir($active_module, "ver");
+            $url->ir($module, "ver");
     }
     else {
         $gui->session_error("Error guardando datos, por favor inténtelo de nuevo.");
         if(! DEBUG)
-            $url->ir($active_module, "editar", $hostname);
+            $url->ir($module, "editar", $hostname);
     }
 }
 
 /*****************   aulas   ************************/
 
-
-if ($active_action == "aulas" && $active_subaction == '') {
+function veraulas($module, $action, $subaction){
+    global $gui, $url;
     $button=leer_datos('button');
     $gui->debug("button='$button'");
     if( $button !='' && $button != "Buscar"){
-        $url->ir($active_module, "aulas", "nueva");
+        $url->ir($module, "aulas", "nueva");
+    }
+    
+    $filteruri='';
+    $filter=leer_datos('Filter');
+    if ($filter != '') {
+       $filteruri="&Filter=$filter";
+    }
+    $sortarray=NULL;
+    $sort=leer_datos('sort');
+    $sortmode=leer_datos('mode');
+    if ($sort != '') {
+       if($sortmode=="dsc") {
+         $sortarray=array($sort, SORT_DESC);
+         $filteruri.="&sort=$sort&mode=dsc";
+        }
+       else {
+         $sortarray=array($sort, SORT_ASC);
+         $filteruri.="&sort=$sort&mode=asc";
+       }
+    }
+    $skip=leer_datos('skip');
+    if ($skip != '') {
+       $filteruri.="&skip=$skip";
     }
     
     // mostrar lista de aulas
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
     $aulas=$ldap->get_aulas($filter);
-    $urlform=$url->create_url($active_module, $active_action);
-    $urlprofesores=$url->create_url($active_module,'aulas', 'miembros');
-    $urlequipos=$url->create_url($active_module,'aulas', 'equipos');
-    $urlborrar=$url->create_url($active_module,'aulas', 'borrar');
+    $urlform=$url->create_url($module, $action);
+    
+    
+    $numaulas=sizeof($aulas);
+    
+    $pager=new PAGER($aulas, $urlform, $skip, $args=$filteruri, $sortarray);
+    $aulas=$pager->getItems();
+    $pager->sortfilter="(cn)";
+    
     
     $data=array("aulas" => $aulas, 
+                "numaulas" => $numaulas,
                 "filter" => $filter,
                 "urlform" => $urlform,
-                "urlprofesores"=>$urlprofesores,
-                "urlequipos"=>$urlequipos,
-                "urlborrar" =>$urlborrar);
+                "urlprofesores"=>$url->create_url($module,'aulas', 'miembros'),
+                "urlequipos"=>$url->create_url($module,'aulas', 'equipos'),
+                "urlborrar" =>$url->create_url($module,'aulas', 'borrar'),
+                "pager" => $pager);
     $gui->add( $gui->load_from_template("ver_aulas.tpl", $data) );
 }
 
-
-if ($active_action == "aulas" && $active_subaction == 'miembros') {
+function aulasmiembros($module, $action, $subaction){
+    global $gui, $url;
     $aula=leer_datos('args');
     $ldap=new LDAP();
     $miembros=$ldap->get_teacher_from_aula($aula);
-    //$gui->add( "<pre>". print_r($miembros, true) . "</pre>" );
+    $gui->debuga($miembros);
     
-    $urlform=$url->create_url($active_module, $active_subaction, 'guardar');
+    $urlform=$url->create_url($module, $action, 'guardar');
     
     $data=array("aula"=>$aula, 
                 "miembros"=>$miembros, 
@@ -302,7 +330,8 @@ if ($active_action == "aulas" && $active_subaction == 'miembros') {
     $gui->add( $gui->load_from_template("editar_aula.tpl", $data) );
 }
 
-if ($active_action == "miembros" && $active_subaction == 'guardar') {
+function aulasguardar($module, $action, $subaction){
+    global $gui, $url;
     $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
     /*
     Array
@@ -341,7 +370,7 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
             $gui->session_info("Usuario '$adduser' añadido al aula $editaaula.");
         }
         if (!DEBUG)
-          $url->ir($active_module, "aulas", "miembros/$editaaula");
+          $url->ir($module, "aulas", "miembros/$editaaula");
     }
     elseif ( count($delusers) > 0 ) {
         $aula=$ldap->get_aula($editaaula);
@@ -351,28 +380,29 @@ if ($active_action == "miembros" && $active_subaction == 'guardar') {
             $gui->session_info("Usuario '$deluser' eliminado del aula $editaaula.");
         }
         if (!DEBUG)
-          $url->ir($active_module, "aulas", "miembros/$editaaula");
+          $url->ir($module, "aulas", "miembros/$editaaula");
     }
     else {
         $gui->session_error("No se ha seleccionado ningún profesor.");
-        $url->ir($active_module, "aulas", "miembros/$editaaula");
+        $url->ir($module, "aulas", "miembros/$editaaula");
     }
 }
 
 
 /****************************************************/
-if ($active_action == "aulas" && $active_subaction == 'equipos') {
+function aulasequipos($module, $action, $subaction){
+    global $gui, $url, $permisos;
     if ( $permisos->is_tic() ) {
         $gui->session_error("Los Coordinadores TIC no pueden añadir o quitar equipos de aulas.");
-        $url->ir($active_module, "aulas");
+        $url->ir($module, "aulas");
     }
     $aula=leer_datos('args');
     $ldap=new LDAP();
     $all=$ldap->get_computers_in_and_not_aula($aula);
     
-    //$gui->add( "<pre>". print_r($all, true) . "</pre>" );
+    $gui->debuga($all);
     
-    $urlform=$url->create_url($active_module, $active_subaction, 'guardar');
+    $urlform=$url->create_url($module, $subaction, 'guardar');
     
     $data=array("aula"=>$aula, 
                 "equipos"=>$all, 
@@ -381,10 +411,11 @@ if ($active_action == "aulas" && $active_subaction == 'equipos') {
     $gui->add( $gui->load_from_template("editar_aula_equipos.tpl", $data) );
 }
 
-if ($active_action == "equipos" && $active_subaction == 'guardar') {
+function equiposguardar($module, $action, $subaction){
+    global $gui, $url, $permisos;
     if ( $permisos->is_tic() ) {
         $gui->session_error("Los Coordinadores TIC no pueden añadir o quitar equipos de aulas.");
-        $url->ir($active_module, "aulas");
+        $url->ir($module, "aulas");
     }
     $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
     
@@ -432,7 +463,7 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
                 $gui->session_error("No se puedo añadir el equipo '$addcomputer' al aula '$aula'.");
         }
         if (!DEBUG)
-          $url->ir($active_module, "aulas", "equipos/$aula");
+          $url->ir($module, "aulas", "equipos/$aula");
     }
     elseif ( count($delcomputers) > 0 ) {
         foreach($delcomputers as $delcomputer) {
@@ -452,24 +483,24 @@ if ($active_action == "equipos" && $active_subaction == 'guardar') {
             }
         }
         if (!DEBUG)
-          $url->ir($active_module, "aulas", "equipos/$aula");
+          $url->ir($module, "aulas", "equipos/$aula");
     }
     else {
         $gui->session_error("No se ha seleccionado ningún equipo.");
-        $url->ir($active_module, "aulas", "equipos/$aula");
+        $url->ir($module, "aulas", "equipos/$aula");
     }
 }
 
 
-
-if ($active_action == "aulas" && $active_subaction == 'nueva') {
+function aulasnueva($module, $action, $subaction){
+    global $gui, $url, $permisos;
     if ( $permisos->is_tic() ) {
         $gui->session_error("Los Coordinadores TIC no pueden añadir aulas.");
-        $url->ir($active_module, "aulas");
+        $url->ir($module, "aulas");
     }
     $group=new GROUP();
     $url=new URLHandler();
-    $urlform=$url->create_url($active_module, $active_action, 'aulaguardar');
+    $urlform=$url->create_url($module, $action, 'aulaguardar');
     
     $data=array("u"=>$group,
                 "urlform"=>$urlform,
@@ -478,12 +509,13 @@ if ($active_action == "aulas" && $active_subaction == 'nueva') {
     $gui->add( $gui->load_from_template("add_aula.tpl", $data ) );
 }
 
-if ($active_action == "aulas" && $active_subaction == 'aulaguardar') {
+function aulasaulaguardar($module, $action, $subaction){
+    global $gui, $url, $permisos;
     if ( $permisos->is_tic() ) {
         $gui->session_error("Los Coordinadores TIC no pueden añadir aulas.");
-        $url->ir($active_module, "aulas");
+        $url->ir($module, "aulas");
     }
-    //$gui->add( "<pre>".print_r($_POST, true)."</pre>" );
+    $gui->debuga($_POST);
     /*
     Array
     (
@@ -502,28 +534,29 @@ if ($active_action == "aulas" && $active_subaction == 'aulaguardar') {
     if ( $group->newAula() )
         $gui->session_info("Aula '".$group->cn."' añadida correctamente.");
     
-    $url->ir($active_module, "aulas");
+    if (!DEBUG)
+        $url->ir($module, "aulas");
 }
 
-
-if ($active_action == "aulas" && $active_subaction == 'borrar') {
+function aulasborrar($module, $action, $subaction){
+    global $gui, $url, $permisos;
     if ( $permisos->is_tic() ) {
         $gui->session_error("Los Coordinadores TIC no pueden borrar aulas.");
-        $url->ir($active_module, "aulas");
+        $url->ir($module, "aulas");
     }
     $aula=leer_datos('args');
-    $gui->add("borrar aula: $aula");
-    $urlform=$url->create_url($active_module, $active_action, 'aulaborrar');
+    $urlform=$url->create_url($module, $action, 'aulaborrar');
     $data=array("aula" => $aula,
                 "urlform"=>$urlform);
     
     $gui->add( $gui->load_from_template("del_aula.tpl", $data) );
 }
 
-if ($active_action == "aulas" && $active_subaction == 'aulaborrar') {
+function aulasborrardo($module, $action, $subaction){
+    global $gui, $url, $permisos;
     if ( $permisos->is_tic() ) {
         $gui->session_error("Los Coordinadores TIC no pueden borrar aulas.");
-        $url->ir($active_module, "aulas");
+        $url->ir($module, "aulas");
     }
     $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
     /*
@@ -537,7 +570,7 @@ if ($active_action == "aulas" && $active_subaction == 'aulaborrar') {
 
     if ($aula == '') {
         $gui->session_error("No se pudo encontrar el aula '$aula'");
-        $url->ir($active_module, "aulas");
+        $url->ir($module, "aulas");
     }
 
     $ldap=new LDAP();
@@ -547,14 +580,54 @@ if ($active_action == "aulas" && $active_subaction == 'aulaborrar') {
     
     if ($aulas->cn != $aula) {
         $gui->session_error(" El aula '$aula' no existe.");
-        $url->ir($active_module, "aulas");
+        $url->ir($module, "aulas");
     }
     
     if ( $aulas->delAula() )
         $gui->session_info("Aula '$aula' borrada.");
     
-    $url->ir($active_module, "aulas");
-
+    if (!DEBUG)
+        $url->ir($module, "aulas");
 }
+
+
+
+switch($action) {
+    case "ver":          ver($module, $action, $subaction); break;
+    case "editar":       editar($module, $action, $subaction); break;
+    case "update":       update($module, $action, $subaction); break;
+    case "updatedo":     updatedo($module, $action, $subaction); break;
+    case "purgewins":    purgewins($module, $action, $subaction); break;
+    case "purgewinsdo":  purgewinsdo($module, $action, $subaction); break;
+    case "borrar":       borrar($module, $action, $subaction); break;
+    case "borrardo":     borrardo($module, $action, $subaction); break;
+    case "guardar":      guardar($module, $action, $subaction); break;
+    
+    case "aulas":
+            switch($subaction) {
+                case "":            veraulas($module, $action, $subaction); break;
+                case "miembros":    aulasmiembros($module, $action, $subaction); break;
+                case "guardar":     aulasguardar($module, $action, $subaction); break;
+                case "equipos":     aulasequipos($module, $action, $subaction); break;
+                case "nueva":       aulasnueva($module, $action, $subaction); break;
+                case "aulaguardar": aulasaulaguardar($module, $action, $subaction); break;
+                case "borrar":      aulasborrar($module, $action, $subaction); break;
+                case "aulaborrar":  aulasborrardo($module, $action, $subaction); break;
+                
+                default: $gui->session_error("Subaccion desconocida '$subaction' en módulo equipos/aulas");
+            }
+            break;
+    
+    case "equipos":
+            switch($subaction) {
+                case "guardar":     equiposguardar($module, $action, $subaction); break;
+                
+                default: $gui->session_error("Subaccion desconocida '$subaction' en módulo equipos/equipos");
+            }
+            break;
+    
+    default: $gui->session_error("Accion desconocida '$action' en modulo equipos");
+}
+
 
 ?>
