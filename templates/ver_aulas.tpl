@@ -1,5 +1,5 @@
 
-<h2>Listado de aulas ({$numaulas})</h2>
+<h2>Listado de aulas ({$pager->getMAX()})</h2>
 
 
 

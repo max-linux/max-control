@@ -1,5 +1,5 @@
 
-<h2>Listado de grupos ({$numgroups})</h2>
+<h2>Listado de grupos ({$pager->getMAX()})</h2>
 
 
 
