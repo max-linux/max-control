@@ -1,5 +1,5 @@
 
-<h2>Listado de aulas</h2>
+<h2>Listado de aulas ({$pager->getMAX()})</h2>
 
 
 
@@ -20,8 +20,8 @@
 <table class='dataTable'> 
     <thead> 
      <tr>
-      <th class=''>Nombre</th> 
-      <th class=''>Arranque por defecto</th>
+      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
+      <th class=''>Arranque por defecto {$pager->getSortIcons('cachedBoot')}</th>
       <th class=''>Cambiar</th>
      </tr>
     </thead>
@@ -32,7 +32,7 @@
       <tr class='border' id="{$u->safecn()}"> 
       {if $u->teacher_in_aula()}
         <td class='tcenter'><span>{$u->cn}</span></td> 
-        <td class='tcenter'><span>{$u->getBoot()}</span></td>
+        <td class='tcenter'><span>{$u->cachedBoot}</span></td>
         <td class='tcenter'>
             <span>
             <a href="{$urleditar}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
@@ -45,7 +45,10 @@
     </tbody> 
 </table> 
 
-
+<!-- paginador -->
+{if $pager}
+{$pager->getHTML()}
+{/if}
 
 
 {*
