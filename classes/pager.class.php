@@ -18,12 +18,49 @@ class PAGER {
             $this->skip=intval($skip);
         }
         
-        
+        /*
         $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$baseurl <br/>
         skip=".$this->skip." <br/>
         args=".$this->args." <br/>
-        sort=".print_r($sort,true)."</pre>");
+        sort=".print_r($sort,true)."</pre>");*/
         return;
+    }
+    
+    function getMAX() {
+        return $this->number;
+    }
+    
+    function processArgs($argsarray) {
+        global $gui;
+        
+        foreach($argsarray as $argname) {
+            $argvalue=leer_datos($argname);
+            
+            if ($argname == 'sort' && $argvalue != '') {
+                $sortmode=leer_datos('mode');
+                if($sortmode=="dsc") {
+                    $this->sort=array($argvalue, SORT_DESC);
+                    $this->args.="&sort=$argvalue&mode=dsc";
+                }
+                else {
+                    $this->sort=array($argvalue, SORT_ASC);
+                    $this->args.="&sort=$argvalue&mode=asc";
+                }
+                /* break loop $this->args edited */
+                continue;
+            }
+            elseif($argname == 'skip' && $argvalue != '') {
+                $this->skip=intval($argvalue);
+            }
+            
+            if($argvalue != '') {
+                $this->args.="&$argname=$argvalue";
+            }
+        }
+        $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$this->baseurl <br/>
+        skip=".$this->skip." <br/>
+        args=".$this->args." <br/>
+        sort=".print_r($this->sort,true)."</pre>");
     }
     
     function getHTML() {

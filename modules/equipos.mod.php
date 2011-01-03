@@ -60,34 +60,8 @@ function ver($module, $action, $subaction) {
         $url->ir($module, "update");
     }
 
-    $filteruri='';
     $filter=leer_datos('Filter');
-    if ($filter != '') {
-       $filteruri="&Filter=$filter";
-    }
-    $sortarray=NULL;
-    $sort=leer_datos('sort');
-    $sortmode=leer_datos('mode');
-    if ($sort != '') {
-       if($sortmode=="dsc") {
-         $sortarray=array($sort, SORT_DESC);
-         $filteruri.="&sort=$sort&mode=dsc";
-        }
-       else {
-         $sortarray=array($sort, SORT_ASC);
-         $filteruri.="&sort=$sort&mode=asc";
-       }
-    }
-    $skip=leer_datos('skip');
-    if ($skip != '') {
-       $filteruri.="&skip=$skip";
-    }
-
     $aula=leer_datos('aula');
-    if ($aula != '') {
-       $filteruri.="&aula=$aula";
-    }
-
     // mostrar lista de equipos
     $ldap=new LDAP();
     
@@ -103,7 +77,9 @@ function ver($module, $action, $subaction) {
     
     $numequipos=sizeof($equipos);
     
-    $pager=new PAGER($equipos, $urlform, $skip, $args=$filteruri, $sortarray);
+    $pager=new PAGER($equipos, $urlform, 0, $args='', NULL);
+    $pager->processArgs( array('Filter', 'skip', 'aula', 'sort') );
+    
     $equipos=$pager->getItems();
     $pager->sortfilter="(uid|ipHostNumber|macAddress|sambaProfilePath)";
     
@@ -266,28 +242,7 @@ function veraulas($module, $action, $subaction){
         $url->ir($module, "aulas", "nueva");
     }
     
-    $filteruri='';
     $filter=leer_datos('Filter');
-    if ($filter != '') {
-       $filteruri="&Filter=$filter";
-    }
-    $sortarray=NULL;
-    $sort=leer_datos('sort');
-    $sortmode=leer_datos('mode');
-    if ($sort != '') {
-       if($sortmode=="dsc") {
-         $sortarray=array($sort, SORT_DESC);
-         $filteruri.="&sort=$sort&mode=dsc";
-        }
-       else {
-         $sortarray=array($sort, SORT_ASC);
-         $filteruri.="&sort=$sort&mode=asc";
-       }
-    }
-    $skip=leer_datos('skip');
-    if ($skip != '') {
-       $filteruri.="&skip=$skip";
-    }
     
     // mostrar lista de aulas
     $ldap=new LDAP();
@@ -298,7 +253,8 @@ function veraulas($module, $action, $subaction){
     
     $numaulas=sizeof($aulas);
     
-    $pager=new PAGER($aulas, $urlform, $skip, $args=$filteruri, $sortarray);
+    $pager=new PAGER($aulas, $urlform, 0, $args='', NULL);
+    $pager->processArgs( array('Filter', 'skip', 'sort') );
     $aulas=$pager->getItems();
     $pager->sortfilter="(cn)";
     

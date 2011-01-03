@@ -52,6 +52,10 @@
 </table> 
 
 
+<!-- paginador -->
+{if $pager}
+{$pager->getHTML()}
+{/if}
 
 {*
 {if $DEBUG}
