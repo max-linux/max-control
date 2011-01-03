@@ -48,5 +48,5 @@ if [ "$CONFIGURE" = "1" ]; then
 
     # create quotas cache
     echo " * Updating Quota cache in /var/lib/max-control/quota.cache.php"
-    /usr/bin/pyoverquota > /var/lib/max-control/quota.cache.php 2>/dev/null &
+    /usr/bin/pyoverquota > /var/lib/max-control/quota.cache.php &
 fi
