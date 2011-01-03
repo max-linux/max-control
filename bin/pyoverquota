@@ -17,7 +17,7 @@ CONF="/etc/max-control/conf.inc.php"
 LIMIT=float(80) #percent
 
 if not os.path.isfile(CONF):
-    echo " * No existe el archivo %s"%CONF
+    print " * No existe el archivo %s"%CONF
     sys.exit(0)
 
 if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quota.user"):
