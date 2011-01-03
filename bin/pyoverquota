@@ -16,11 +16,15 @@ REMOTE="/dev/nbd0"
 CONF="/etc/max-control/conf.inc.php"
 LIMIT=float(80) #percent
 
+if not os.path.isfile(CONF):
+    echo " * No existe el archivo %s"%CONF
+    sys.exit(0)
+
 if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quota.user"):
     HOME="/home/samba"
 
 if not os.path.isfile(HOME + "/aquota.user") and not os.path.isfile(HOME + "/quota.user"):
-    print "no quotas found"
+    print " * No quotas found"
     sys.exit(0)
 
 
@@ -88,6 +92,10 @@ def generateOverQuotas():
     for a in allusers:
         uid=a[1]['uid'][0]
         (overquota, size, maxsize, percent)=getQuota(uid, True)
+        
+        print """$quotaArray['%s']=array('size'=>%s, 'maxsize'=> %s, 'percent'=>'%s', 'overQuota'=>%s);"""\
+                            %(uid,size,maxsize,percent, overquota)
+        
         if overquota:
             print "$overQuota[]=array('uid'=>'%s', 'size'=>%s, 'maxsize'=> %s, 'percent'=>'%s');"%(uid,size,maxsize,percent)
         #else:
@@ -102,7 +110,11 @@ print """<?php
 */
 
 $overQuota=array();
+$quotaArray=array();
+
 """%(time.asctime(), LIMIT)
 generateOverQuotas()
 
-print "?>"
+print """
+
+?>"""

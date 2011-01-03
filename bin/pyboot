@@ -31,6 +31,10 @@ DONTDELETE=['default']
 CRON_FILE="/var/lib/max-control/cron"
 TIMEOUT=15*60
 
+if not os.path.isfile(CONF):
+    echo " * No existe el archivo %s"%CONF
+    sys.exit(0)
+
 def safe_aula(aula):
     return( aula.replace(' ', '_') )
 
