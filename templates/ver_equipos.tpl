@@ -1,5 +1,5 @@
 
-<h2>Listado de equipos ({$numequipos})</h2>
+<h2>Listado de equipos ({$pager->getMAX()})</h2>
 
 
 

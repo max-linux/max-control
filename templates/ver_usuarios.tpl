@@ -19,7 +19,7 @@
 {/if}
 
 
-<h2>Listado de usuarios ({$numusuarios})</h2>
+<h2>Listado de usuarios ({$pager->getMAX()})</h2>
 
 
 
@@ -57,7 +57,7 @@
             <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
           </select>
       </th> 
-      <th class=''>Cuota</th> 
+      <th class=''>Cuota {$pager->getSortIcons('usedSize')}</th> 
       <th class=''>Editar</th> 
       {*<th class=''>Borrar</th> *}
       <th class=''>Borrar <input class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
