@@ -74,14 +74,11 @@ function equipo($module, $action, $subaction) {
     $equipos=$ldap->get_computers( $filter );
     $urlform=$url->create_url($module, $action);
     
-    $gui->debuga(sizeof($equipos));
     
     $pager=new PAGER($equipos, $urlform, 0, $args='', NULL);
     $pager->processArgs( array('Filter', 'skip', 'sort') );
     $equipos=$pager->getItems();
     $pager->sortfilter="(uid|ipHostNumber|macAddress)";
-    
-    $gui->debuga(sizeof($equipos));
     
     $data=array("equipos" => $equipos,
                 "filter" => $filter, 
@@ -162,12 +159,18 @@ function aula($module, $action, $subaction) {
     $aulas=$ldap->get_aulas($filter);
     //$gui->debuga($aulas);
     $urlform=$url->create_url($module, $action);
-    $urleditar=$url->create_url($module, 'editaaula', 'arranque');
+    
+    $pager=new PAGER($aulas, $urlform, 0, $args='', NULL);
+    $pager->processArgs( array('Filter', 'skip', 'sort') );
+    $aulas=$pager->getItems();
+    $pager->sortfilter="(cn|cachedBoot)";
+    
     
     $data=array("aulas" => $aulas, 
                 "filter" => $filter,
                 "urlform" => $urlform,
-                "urleditar"=>$urleditar);
+                "urleditar"=>$url->create_url($module, 'editaaula', 'arranque'),
+                "pager" => $pager);
     $gui->add( $gui->load_from_template("bootaulas.tpl", $data) );
 }
 
