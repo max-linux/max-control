@@ -256,8 +256,10 @@ class USER extends BASE {
     var $sambaKickoffTime=2147483647;
     
     var $role='unset';
+    var $usedSize=0;
     
     function init(){
+        $this->usedSize=$this->getNumericQuota();
         return;
     }
     
@@ -539,15 +541,47 @@ class USER extends BASE {
         return true;
     }
     
+    function getNumericQuota() {
+        if (is_readable("/var/lib/max-control/quota.cache.php")) {
+            require("/var/lib/max-control/quota.cache.php");
+            if ( isset($quotaArray[$this->uid]) ) {
+                return $quotaArray[$this->uid]['size'];
+            }
+        }
+        return 0;
+    }
+    
     function getquota() {
         global $gui;
         if (file_exists("/etc/max-control/quota.disabled")) {
-            //return "<b>disabled</b> <small>/etc/max-control/quota.disabled</small>";
             return "<b>disabled</b>";
         }
-        exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);
-        //$gui->debug("<pre>getquota(".$this->uid.")".print_r($output, true)."</pre>");
-        return $output[0];
+        /* read /var/lib/max-control/quota.cache.php */
+        if (is_readable("/var/lib/max-control/quota.cache.php")) {
+            require("/var/lib/max-control/quota.cache.php");
+            
+            if ( isset($quotaArray[$this->uid]) ) {
+                
+                $color="black";
+                if($quotaArray[$this->uid]['overQuota'])
+                    $color="red";
+                
+                $size=$quotaArray[$this->uid]['size'];
+                $maxsize=$quotaArray[$this->uid]['maxsize'];
+                $percent=$quotaArray[$this->uid]['percent'];
+                
+                return "<span style='color:$color'>$size MB / $maxsize MB ($percent)</span>";
+            }
+            else {
+                exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);
+                return $output[0];
+            }
+        }
+        else {
+            exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);
+            //$gui->debug("<pre>getquota(".$this->uid.")".print_r($output, true)."</pre>");
+            return $output[0];
+        }
     }
     
     function resetProfile() {
@@ -839,22 +873,19 @@ class COMPUTER extends BASE {
         
         */
         $fname=PXELINUXCFG.$this->pxeMAC();
+        $sublinktxt='';
         if (is_readable($fname)) {
             $target=basename(readlink($fname));
-            return str_replace('.menu' , '' , $target);
+            if ( is_link(readlink($fname)) ) {
+                $sublink=str_replace('.menu' , '' , basename(readlink(readlink($fname))));
+                if ($sublink != 'default') {
+                    $sublinktxt=" =&gt; $sublink";
+                }
+            }
+            return str_replace('.menu' , '' , $target).$sublinktxt;
         }
         
         return 'default';
-        /* OLD METHOD
-        // /usr/bin/max-control pxe --getboot=08:00:27:96:0D:E6
-        exec("sudo ".MAXCONTROL." pxe --getboot='".$this->macAddress."' ", &$output);
-        if ( ! isset($output[0]) ) {
-            $gui->session_error("No se pudo leer el modo de arranque de '".
-                        $this->hostname()."'<pre>". implode("\n<br/>", $output). "</pre>");
-            return 'default';
-        }
-        return $output[0];
-        */
     }
     
     function pxeMAC() {
@@ -1051,6 +1082,7 @@ class AULA extends BASE {
     var $displayName='';
     var $memberUid='';
     var $sambaGroupType=''; 
+    var $cachedBoot=NULL;
     /*
         sambaGroupType
         > #ifndef USE_UINT_ENUMS
@@ -1069,6 +1101,8 @@ class AULA extends BASE {
         */
     
     function init(){
+        $this->get_num_computers();
+        $this->getBoot();
         return;
     }
     
@@ -1160,17 +1194,33 @@ class AULA extends BASE {
         return $this->save(array('memberUid'));
     }
     
-    
     function getBoot() {
         global $gui;
-        //bin/max-control pxe --getbootaula='aula primaria 1'
-        exec("sudo ".MAXCONTROL." pxe --getbootaula='".$this->safecn()."' ", &$output);
-        //$gui->debug("LDAP:getBoot(".$this->safecn().")<pre>".print_r($output, true)."</pre>");
-        if ( ! isset($output[0]) ) {
-            $gui->session_error("No se puedo leer el modo de arranque de '".$this->safecn()."'.");
-            return 'default';
+        if ($this->cachedBoot)
+            return $this->cachedBoot;
+        /*
+        aulafile=os.path.join( PXELINUXCFG , safe_aula(aula) )
+        if not os.path.exists(aulafile):
+            if os.path.exists( aulafile + ".menu"):
+                aulafile=aulafile+".menu"
+        if not os.path.exists(aulafile):
+            return 'default'
+        return os.path.basename(os.readlink(aulafile)).replace('.menu', '')
+        
+        */
+        $aulafile=PXELINUXCFG.$this->safecn();
+        if (is_readable($aulafile)) {
+            $target=basename(readlink($aulafile));
+            $this->cachedBoot=str_replace('.menu' , '' , $target);
         }
-        return $output[0];
+        elseif (is_readable($aulafile.".menu")) {
+            $target=basename(readlink($aulafile.".menu"));
+            $this->cachedBoot=str_replace('.menu' , '' , $target);
+        }
+        else {
+            $this->cachedBoot='default';
+        }
+        return $this->cachedBoot;
     }
     
     
@@ -1726,6 +1776,8 @@ class LDAP {
             return false;
         if ( $uid == '' )
             $uid='*';
+        else
+            $uid="*$uid*";
         $computers=array();
         $gui->debug("ldap::get_computers() (uid='$uid')".LDAP_OU_COMPUTERS);
         $this->search("(uid=$uid)", $basedn=LDAP_OU_COMPUTERS);
