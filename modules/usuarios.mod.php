@@ -104,14 +104,31 @@ function ver($module, $action, $subaction) {
     $usuarios=$pager->getItems();
     $pager->sortfilter="(uid|cn|sn)";
     
+    /*  overquota 
+    *   try to load /var/lib/max-control/quota.cache.php
+    */
+    $overQuota=array();
+    $overQuotaEnabled=False;
+    if (is_readable("/var/lib/max-control/quota.cache.php")) {
+        include("/var/lib/max-control/quota.cache.php");
+        if (sizeof($overQuota) > 0) {
+            $overQuotaEnabled=True;
+        }
+    }
+    /*******************************************************/
+    
     $data=array("usuarios" => $usuarios, 
                 "numusuarios" => $numusuarios,
                 "filter" => $filter, 
                 "role" => $role,
+                "overQuota" => $overQuota,
+                "overQuotaEnabled" => $overQuotaEnabled,
+                "overQuotaLimit"=> OVERQUOTA_LIMIT,
                 "urlform" => $urlform, 
                 "urlformmultiple" => $url->create_url($module, 'deletemultiple'),
                 "urleditar"=>$url->create_url($module,'editar'),
                 "urlborrar"=>$url->create_url($module,'delete'),
+                "resetprofilebase" => $url->create_url($module, 'resetprofile'),
                 "pager"=>$pager);
     $gui->add( $gui->load_from_template("ver_usuarios.tpl", $data) );
 }

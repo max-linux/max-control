@@ -1,3 +1,23 @@
+{if $overQuotaEnabled}
+<div id="overQuotaDiv" class="warning" style="font-size:10pt;">
+    Los siguientes usuarios han superado el {$overQuotaLimit}% de la cuota máxima:
+    <ul>
+    {foreach from=$overQuota key=k item=u}
+        {* $overQuota[]=array('uid'=>'test', 'size'=>3, 'maxsize'=> 2000, 'percent'=>'0.16%'); *}
+        <li>
+            <a href="{$urleditar}/{$u.uid}">{$u.uid}</a>
+            Usado {$u.size} MB de {$u.maxsize} MB ({$u.percent})
+            <a href="{$resetprofilebase}/{$u.uid}"><img src="{$baseurl}/img/delete.gif" alt="borrar" /></a>
+        </li>
+    {/foreach}
+    </ul>
+    <span style="float:right;">
+        <a href="javascript:$('#overQuotaDiv')[0].style.display='none';">ocultar</a>
+    </span>
+    <br/>
+</div>
+{/if}
+
 
 <h2>Listado de usuarios ({$numusuarios})</h2>
 

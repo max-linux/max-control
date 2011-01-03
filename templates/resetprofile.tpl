@@ -2,7 +2,7 @@
 
 <form action='{$urlform}' method='post'> 
     <div class="warning">
-     <h2>Se van a borrar los archivos del perfil del usuario "{$user}"</h2>
+     <h2>CUIDADO: Se van a borrar todos los archivos del perfil del usuario "{$user}"</h2>
      
      <h4>Esta operación no se puede deshacer</h4>
      <br/><br/>
