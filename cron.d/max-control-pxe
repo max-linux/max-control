@@ -4,4 +4,7 @@ SHELL=/bin/sh
 PATH=/usr/bin:/bin
 
 # Reset PXE boot files of Teacher configurations
-*/1 * * * * root [ -x /usr/bin/pyboot ] && /usr/bin/pyboot --cron >> /var/log/max-control-pxe.log 2>&1
+*/1 *	* * * root [ -x /usr/bin/pyboot ] && /usr/bin/pyboot --cron >> /var/log/max-control-pxe.log 2>&1
+
+# cache quotas every hour
+0 */1	* * * root [ -x /usr/bin/pyoverquota ] && /usr/bin/pyoverquota > /var/lib/max-control/quota.cache.php 2>/dev/null

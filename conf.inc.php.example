@@ -95,6 +95,9 @@ define("FORK_LOGFILE", "/dev/null");
 define("PAGER_LIMIT", 25);
 define("PAGER_MAX_LINKS", 10);
 
+/* quota % to show a warning (needed by pyoverquota) */
+define("OVERQUOTA_LIMIT", 80);
+
 $site["public_modules"]=array();
 
 $site["private_modules_admin"]=array(
