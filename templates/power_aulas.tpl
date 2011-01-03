@@ -1,5 +1,5 @@
 
-<h2>Apagado o reinicio de aulas</h2>
+<h2>Apagado o reinicio de aulas ({$pager->getMAX()})</h2>
 
 
 
@@ -18,8 +18,8 @@
 <table class='dataTable'> 
     <thead> 
     <tr>
-      <th class=''>Nombre</th> 
-      <th class=''>Equipos en este aula</th>
+      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
+      <th class=''>Equipos en este aula {$pager->getSortIcons('cachednumcomputers')}</th>
       <th class=''>Acciones</th> 
       <th class=''>Encender/Reiniciar en</th> 
     </tr>
@@ -52,6 +52,11 @@
 
     </tbody> 
 </table> 
+
+<!-- paginador -->
+{if $pager}
+{$pager->getHTML()}
+{/if}
 
 {*
 {if $DEBUG}
