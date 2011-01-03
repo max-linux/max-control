@@ -74,13 +74,20 @@ function equipo($module, $action, $subaction) {
     $equipos=$ldap->get_computers( $filter );
     $urlform=$url->create_url($module, $action);
     
-    $urleditar=$url->create_url($module,'editarequipo');
+    $gui->debuga(sizeof($equipos));
     
-    $data=array("equipos" => $equipos, 
+    $pager=new PAGER($equipos, $urlform, 0, $args='', NULL);
+    $pager->processArgs( array('Filter', 'skip', 'sort') );
+    $equipos=$pager->getItems();
+    $pager->sortfilter="(uid|ipHostNumber|macAddress)";
+    
+    $gui->debuga(sizeof($equipos));
+    
+    $data=array("equipos" => $equipos,
                 "filter" => $filter, 
                 "urlform" => $urlform, 
-                "urleditar"=>$urleditar,
-                "urlrestore"=>$urlrestore);
+                "urleditar"=>$url->create_url($module,'editarequipo'),
+                "pager"=>$pager);
     $gui->add( $gui->load_from_template("ver_equipos_boot.tpl", $data) );
 }
 

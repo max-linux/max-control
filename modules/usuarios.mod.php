@@ -61,46 +61,19 @@ function ver($module, $action, $subaction) {
     }
     
     $ldap=new LDAP();
-    /* /control/usuarios/usuarios?Filter=test&button=Buscar */
-
-    $filteruri='';
-    $filter=leer_datos('Filter');
-    if ($filter != '') {
-       $filteruri="&Filter=$filter";
-    }
-    $sortarray=NULL;
-    $sort=leer_datos('sort');
-    $sortmode=leer_datos('mode');
-    if ($sort != '') {
-       if($sortmode=="dsc") {
-         $sortarray=array($sort, SORT_DESC);
-         $filteruri.="&sort=$sort&mode=dsc";
-        }
-       else {
-         $sortarray=array($sort, SORT_ASC);
-         $filteruri.="&sort=$sort&mode=asc";
-       }
-    }
-    $skip=leer_datos('skip');
-    if ($skip != '') {
-       $filteruri.="&skip=$skip";
-    }
     
-    $role=leer_datos('role');
-    if ($role != '') {
-       $filteruri.="&role=$role";
-    }
-
     /* get_users($filter='*', $group=LDAP_OU_USERS, $ignore="max-control", $role='') */
-    $usuarios=$ldap->get_users( $filter, $group=LDAP_OU_USERS, $ignore="max-control", $filterrole=$role);
+    $usuarios=$ldap->get_users( leer_datos('Filter'),
+                                $group=LDAP_OU_USERS,
+                                $ignore="max-control",
+                                $filterrole=leer_datos('role'));
     
     $urlform=$url->create_url($module, $action);
-    //$urleditar=$url->create_url($module,'editar');
-    //$urlborrar=$url->create_url($module,'delete');
     
     $numusuarios=sizeof($usuarios);
     
-    $pager=new PAGER($usuarios, $urlform, $skip, $args=$filteruri, $sortarray);
+    $pager=new PAGER($usuarios, $urlform, 0, $args='', NULL);
+    $pager->processArgs( array('Filter', 'skip', 'role', 'sort') );
     $usuarios=$pager->getItems();
     $pager->sortfilter="(uid|cn|sn)";
     
@@ -119,8 +92,8 @@ function ver($module, $action, $subaction) {
     
     $data=array("usuarios" => $usuarios, 
                 "numusuarios" => $numusuarios,
-                "filter" => $filter, 
-                "role" => $role,
+                "filter" => leer_datos('Filter'), 
+                "role" => leer_datos('role'),
                 "overQuota" => $overQuota,
                 "overQuotaEnabled" => $overQuotaEnabled,
                 "overQuotaLimit"=> OVERQUOTA_LIMIT,
@@ -350,39 +323,15 @@ function groups($module, $action, $subaction) {
     
     $filter=leer_datos('Filter');
     
-        $filteruri='';
-    $filter=leer_datos('Filter');
-    if ($filter != '') {
-       $filteruri="&Filter=$filter";
-    }
-    $sortarray=NULL;
-    $sort=leer_datos('sort');
-    $sortmode=leer_datos('mode');
-    if ($sort != '') {
-       if($sortmode=="dsc") {
-         $sortarray=array($sort, SORT_DESC);
-         $filteruri.="&sort=$sort&mode=dsc";
-        }
-       else {
-         $sortarray=array($sort, SORT_ASC);
-         $filteruri.="&sort=$sort&mode=asc";
-       }
-    }
-    $skip=leer_datos('skip');
-    if ($skip != '') {
-       $filteruri.="&skip=$skip";
-    }
-    
-    
     $ldap=new LDAP();
     $groups=$ldap->get_groups($filter, $include_system=false);
-    //$gui->debug("<pre>".print_r($groups, true)."</pre>");
     
     $numgroups=sizeof($groups);
     
     $urlform=$url->create_url($module, 'grupos');
     
-    $pager=new PAGER($groups, $urlform, $skip, $args=$filteruri, $sortarray);
+    $pager=new PAGER($groups, $urlform, 0, $args='', NULL);
+    $pager->processArgs( array('Filter', 'skip', 'sort') );
     $groups=$pager->getItems();
     
     $pager->sortfilter="(cn|numUsers)";

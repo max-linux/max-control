@@ -1,5 +1,5 @@
 
-<h2>Tipo de arranque de equipos</h2>
+<h2>Tipo de arranque de equipos ({$pager->getMAX()})</h2>
 
 
 
@@ -20,8 +20,8 @@
 <table class='dataTable'> 
     <thead> 
     <tr>
-      <th class=''>Nombre</th> 
-      <th class=''>IP / MAC</th> 
+      <th class=''>Nombre {$pager->getSortIcons('uid')}</th> 
+      <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
       <th class=''>Arranque configurado</th> 
       <th class=''>Configurar Arranque</th> 
     </tr>
@@ -37,7 +37,7 @@
         <td class='tcenter'><span>{$u->getBoot()}</span></td>
         {if $u->attr('macAddress') != ''}
         <td class='tcenter'> 
-            <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/reboot.png" alt="hacer backup" /></a>
+            <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/reboot.png" title="Configurar arranque" /></a>
         </td>
         {else}
         <td class='tcenter'>no MAC</td>
@@ -50,6 +50,10 @@
 </table> 
 
 
+<!-- paginador -->
+{if $pager}
+{$pager->getHTML()}
+{/if}
 
 {*
 {if $DEBUG}
