@@ -1,6 +1,6 @@
 
 
-<h3>Configurar el arranque del equipo <u>{$aula->cn}</u></h3>
+<h3>Configurar el arranque del aula <u>{$aula->cn}</u></h3>
 <form action='{$urlform}' method='post'> 
     <table class='formTable'> 
 
