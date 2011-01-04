@@ -966,8 +966,8 @@ a.minBox, a.minBox:hover, a.maxBox, a.maxBox:hover {
 
 .dashboardTable {
     border-collapse: collapse;
-    border: 0;
-    font-size: 11px;
+    border: 1px;
+    font-size: 1.1em;
     width: 100%;
 }
 
@@ -1117,4 +1117,17 @@ a.minBox, a.minBox:hover, a.maxBox, a.maxBox:hover {
 
 .nomargin{
     margin: 0;
+}
+
+.margin20{
+    margin: 20px;
+}
+
+.marginl5{
+    margin-left: 5px;
+}
+.thAction {
+    padding:0;
+    margin:0;
+    background: #CCC;
 }

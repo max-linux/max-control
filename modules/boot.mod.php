@@ -170,6 +170,7 @@ function aula($module, $action, $subaction) {
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "urleditar"=>$url->create_url($module, 'editaaula', 'arranque'),
+                "urlprogramar"=>$url->create_url($module, 'programaaula'),
                 "pager" => $pager);
     $gui->add( $gui->load_from_template("bootaulas.tpl", $data) );
 }
@@ -228,6 +229,37 @@ function editaaulado($module, $action, $subaction) {
 }
 
 
+function programaaula($module, $action, $subaction) {
+    global $gui, $url;
+    $ldap=new LDAP();
+    $aulas=$ldap->get_aulas($subaction);
+    //$gui->debuga($aulas);
+    if ( count($aulas) != 1 ) {
+        $gui->session_error("Aula '$subaction' no encontrada.");
+        $url->ir($module, "aula");
+    }
+    
+    $tipos=$ldap->getBootMenus($aula=False);
+    
+    $urlform=$url->create_url($module, "programaaulado");
+    
+    $programer=new Programer($aulas[0]->safecn());
+    
+    $data=array("aula" => $aulas[0],
+                "aulaboot" => $aulas[0]->getBoot(),
+                "tipos" => $tipos,
+                "filter" => $filter, 
+                "programer"=>$programer,
+                "urlform" => $urlform);
+    
+    $gui->add( $gui->load_from_template("bootprogramaaula.tpl", $data) );
+}
+
+function programaaulado($module, $action, $subaction) {
+    global $gui, $url;
+    $ldap=new LDAP();
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+}
 
 
 //$gui->session_info("Accion '$action' en modulo '$module'");
@@ -244,6 +276,9 @@ switch($action) {
     case "aula": aula($module, $action, $subaction); break;
     case "editaaula": editaaula($module, $action, $subaction); break;
     case "editaaulado": editaaulado($module, $action, $subaction); break;
+    
+    case "programaaula": programaaula($module, $action, $subaction); break;
+    case "programaaulado": programaaulado($module, $action, $subaction); break;
     
     default: $gui->session_error("Accion desconocida '$action' en modulo $module");
     /*default: $url->ir($module, "equipo");*/

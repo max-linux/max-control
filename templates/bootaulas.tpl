@@ -22,6 +22,7 @@
      <tr>
       <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>Arranque por defecto {$pager->getSortIcons('cachedBoot')}</th>
+      <th class=''>Programar</th>
       <th class=''>Cambiar</th>
      </tr>
     </thead>
@@ -33,6 +34,11 @@
       {if $u->teacher_in_aula()}
         <td class='tcenter'><span>{$u->cn}</span></td> 
         <td class='tcenter'><span>{$u->cachedBoot}</span></td>
+        <td class='tcenter'>
+            <span>
+            <a href="{$urlprogramar}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="programar" /></a>
+            </span>
+        </td>
         <td class='tcenter'>
             <span>
             <a href="{$urleditar}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
