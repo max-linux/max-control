@@ -106,6 +106,10 @@ define("PAGER_MAX_LINKS", 10);
 /* quota % to show a warning (needed by pyoverquota) */
 define("OVERQUOTA_LIMIT", 80);
 
+/* file to read/write programer events */
+define("PROGRAMER_INI", "/var/lib/max-control/programer.ini");
+
+
 $site["public_modules"]=array();
 
 $site["private_modules_admin"]=array(
