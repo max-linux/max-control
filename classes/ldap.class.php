@@ -1770,7 +1770,7 @@ class LDAP {
     }
 
 
-    function get_computers($uid='*') {
+    function get_computers($uid='') {
         global $gui;
         if ( ! $this->connect() )
             return false;

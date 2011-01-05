@@ -28,6 +28,9 @@ if [ "$CONFIGURE" = "1" ]; then
     chmod 640 /etc/max-control/conf.inc.php
     chown root:www-data /etc/max-control/conf.inc.php
 
+    [ ! -e /var/lib/max-control/programer.ini ] && touch /var/lib/max-control/programer.ini
+    chown www-data:www-data /var/lib/max-control/programer.ini
+
     if [ -e /home/samba/netlogon/domain.txt ]; then
         chmod 644 /home/samba/netlogon/domain.txt
         unix2dos /home/samba/netlogon/domain.txt
