@@ -13,7 +13,6 @@ binary-install/max-control:: test
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ldap.php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ssh-test.php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/test*php
-	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/classes/ldap2.class.php
 
 
 test:
