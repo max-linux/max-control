@@ -222,7 +222,7 @@ function deletemultiple($module, $action, $subaction) {
         $gui->session_error("No se han seleccionado usuarios");
         $url->ir($module, "ver");
     }
-    $usersarray=split(',', $users);
+    $usersarray=preg_split('/,/', $users);
     $data=array("users" => $users,
                 "usersarray"=>$usersarray,
                 "urlform"=>$url->create_url($module, 'deletemultipledo'));
@@ -242,7 +242,7 @@ function deletemultipledo($module, $action, $subaction) {
     }
 
     $ldap=new LDAP();
-    $users=split(',', $usernames);
+    $users=preg_split('/,/', $usernames);
     $gui->debuga($users);
     foreach($users as $username) {
         $user=$ldap->get_user($username);
@@ -423,7 +423,7 @@ function groupdelete($module, $action, $subaction) {
     global $gui, $url;
     $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
     $groups=leer_datos("groupnames");
-    $groupsarray=split(',', $groups);
+    $groupsarray=preg_split('/,/', $groups);
     $data=array("groups" => $groups,
                 "groupsarray" => $groupsarray,
                 "urlform"=>$url->create_url($module, 'groupdeletedo', $groups));
@@ -450,7 +450,7 @@ function groupdeletedo($module, $action, $subaction) {
         $gui->session_error("No se han seleccionado grupos");
         $url->ir($module, "grupos");
     }
-    $groupsarray=split(',', $groups);
+    $groupsarray=preg_split('/,/', $groups);
     $ldap=new LDAP();
     foreach($groupsarray as $group) {
         $todelete=$ldap->get_groups($group);

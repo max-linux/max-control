@@ -2381,7 +2381,7 @@ class LDAP {
         foreach($output as $iso) {
             /* test.iso|4.00 MB|CDROM */
             //$gui->debuga($iso);
-            list ($filename, $size, $volumeid)=split('\|', $iso);
+            list ($filename, $size, $volumeid)=preg_split('/\|/', $iso);
             if ($filter != '') {
                 if (! preg_match("/$filter/i", $filename)) {
                     continue;
