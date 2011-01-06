@@ -156,7 +156,7 @@ function borrar($module, $action, $subaction){
         $url->ir($module, "ver");
     }
     $equipos=leer_datos("hostnames");
-    $equiposarray=split(',', $equipos);
+    $equiposarray=preg_split("/,/", $equipos);
     $data=array(
             "urlaction"=>$url->create_url($module, 'borrardo'),
             "equipos" =>$equipos,
@@ -180,7 +180,7 @@ function borrardo($module, $action, $subaction){
     }
     
     $ldap=new LDAP();
-    $equiposarray=split(',', $equipos);
+    $equiposarray=preg_split('/,/', $equipos);
     $gui->debuga($equiposarray);
     foreach($equiposarray as $equipo) {
         $obj=$ldap->get_computers($equipo);

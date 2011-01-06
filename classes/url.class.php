@@ -26,7 +26,7 @@ class URLHandler {
         global $gui;
         
         // leemos las variables de la URL
-        $this->query_string=split('&', $_SERVER['QUERY_STRING'] );
+        $this->query_string=preg_split("/&/", $_SERVER['QUERY_STRING']);
         $this->post_array=$_POST;
         $this->url_array=array();
         
@@ -35,7 +35,7 @@ class URLHandler {
             return;
         }
         foreach($this->query_string as $clave){
-            list($key, $value)=split('=', $clave);
+            list($key, $value)=preg_split("/=/", $clave);
             $this->url_array[$key]=$this->clean($value);
         }
     }
