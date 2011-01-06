@@ -57,7 +57,13 @@
             <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
           </select>
       </th> 
-      <th class=''>Cuota {$pager->getSortIcons('usedSize')}</th> 
+      <th class=''>
+        {if $quotaTime != ''}
+        <acronym title="Cache de cuota generado el: '{$quotaTime}'">Cuota</acronym>
+        {else}
+        Cuota
+         {/if}
+        {$pager->getSortIcons('usedSize')}</th> 
       <th class=''>Editar</th> 
       {*<th class=''>Borrar</th> *}
       <th class=''>Borrar <input class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>

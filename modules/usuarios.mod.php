@@ -81,6 +81,7 @@ function ver($module, $action, $subaction) {
     */
     $overQuota=array();
     $overQuotaEnabled=False;
+    $quotaTime="";
     if (is_readable("/var/lib/max-control/quota.cache.php")) {
         require("/var/lib/max-control/quota.cache.php");
         if (sizeof($overQuota) > 0) {
@@ -95,6 +96,7 @@ function ver($module, $action, $subaction) {
                 "overQuota" => $overQuota,
                 "overQuotaEnabled" => $overQuotaEnabled,
                 "overQuotaLimit"=> OVERQUOTA_LIMIT,
+                "quotaTime" => $quotaTime,
                 "urlform" => $urlform, 
                 "urlformmultiple" => $url->create_url($module, 'deletemultiple'),
                 "urleditar"=>$url->create_url($module,'editar'),
