@@ -212,8 +212,8 @@ class PAGER {
         
         $html="\n";
         /* iconos */
-        $html.="<a class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=asc'>$up</a>\n";
-        $html.="<a class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=dsc'>$down</a>";
+        $html.="<a title='Ordenar de menor a mayor por \"$filter\"' class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=asc'>$up</a>\n";
+        $html.="<a title='Ordenar de mayor a menor por \"$filter\"' class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=dsc'>$down</a>";
         return $html;
     }
 }
