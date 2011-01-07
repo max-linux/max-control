@@ -41,12 +41,20 @@ $module_actions=array(
         #"backharddi" => "Backharddi-NG",
 );
 
+global $multiple_actions;
+$multiple_actions=array("poweroff" =>         "Apagar seleccionados",
+                        "reboot"=>            "Reiniciar seleccionados",
+                        "wakeonlan" =>        "Encender seleccionados",
+                        "rebootwindows" =>    "Reiniciar en Windows los seleccionados",
+                        "rebootmax" =>        "Reiniciar en MAX los seleccionados",
+                        "rebootbackharddi" => "Reiniciar en Backharddi los seleccionados",
+                        );
 
 
 /*************************************************/
 
 function aulas($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url, $multiple_actions;
     // mostrar lista de aulas
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -68,6 +76,8 @@ function aulas($module, $action, $subaction) {
                 "urlrebootmax"=>$url->create_url($module, 'aula_preguntar', 'rebootmax'),
                 "urlbackharddi"=>$url->create_url($module, 'aula_preguntar', 'rebootbackharddi'),
                 "urlwakeonlan" => $url->create_url($module, 'aula_preguntar', 'wakeonlan'),
+                "urlformmultiple" => $url->create_url($module, 'aulamultiple_preguntar'),
+                "multiple_actions" => $multiple_actions,
                 "pager"=>$pager);
     $gui->add( $gui->load_from_template("power_aulas.tpl", $data) );
 }
@@ -121,7 +131,7 @@ function aulado($module, $action, $subaction) {
 }
 
 function equipos($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url, $multiple_actions;
     // mostrar lista de equipos
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -143,6 +153,8 @@ function equipos($module, $action, $subaction) {
                 "urlrebootmax"=>$url->create_url($module, 'equipo_preguntar', 'rebootmax'),
                 "urlbackharddi"=>$url->create_url($module, 'equipo_preguntar', 'rebootbackharddi'),
                 "urlwakeonlan" => $url->create_url($module, 'equipo_preguntar', 'wakeonlan'),
+                "urlformmultiple" => $url->create_url($module, 'equipomultiple_preguntar'),
+                "multiple_actions" => $multiple_actions,
                 "pager"=>$pager);
     $gui->add( $gui->load_from_template("power_equipos.tpl", $data) );
 }
@@ -165,7 +177,7 @@ function equipo_preguntar($module, $action, $subaction) {
 }
 
 function docomputer($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url, $permisos;
     // 
     $equipo=leer_datos('args');
     
@@ -173,7 +185,7 @@ function docomputer($module, $action, $subaction) {
     $computers=$ldap->get_computers( $equipo . '$' );
     
     if ( ! $computers[0]->teacher_in_computer() ) {
-        $gui->session_error("No se tiene permiso para modificar el equipo '$equipo'");
+        $gui->session_error("No tiene permiso para modificar el equipo '$equipo'");
         $url->ir($module, "equipos");
     }
     //$gui->debuga($computers);
@@ -184,7 +196,7 @@ function docomputer($module, $action, $subaction) {
         $computer->action($subaction, $computer->macAddress);
     }
     // si es backharddi redirigir a un iframe
-    if ( $permisos->is_admin() && ($action == 'rebootbackharddi') ) {
+    if ( $permisos->is_admin() && ($subaction == 'rebootbackharddi') ) {
         $url->ir($module, "backharddi");
     }
     
@@ -195,7 +207,7 @@ function docomputer($module, $action, $subaction) {
 }
 
 function backharddi($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url, $permisos;
     if ( ! $permisos->is_admin() ) {
         $gui->session_error("Sólo pueden acceder al clonado los administradores.");
         $url->ir($module,"");
@@ -206,7 +218,71 @@ function backharddi($module, $action, $subaction) {
     $gui->add( $gui->load_from_template("backharddi.tpl", $data) );
 }
 
+function equipomultiple_preguntar($module, $action, $subaction){
+    global $gui;
+    $gui->debuga($_POST);
+    $computers=preg_split('/,/', leer_datos('computers'));
+    $gui->debuga($computers);
+    if( ! isset($computers[0]) ) {
+        $gui->session_error("No se han seleccionado equipos.");
+        $url->ir($module, "equipos");
+    }
+    
+    $faction=leer_datos('faction');
+    if ( $faction == '' ) {
+        $gui->session_error("Accion desconocida.");
+        $url->ir($module, "equipos");
+    }
+    
+    $ldap = new LDAP();
+    $counter=0;
+    foreach( $computers as $hostname) {
+        $computer=$ldap->get_computers( $hostname . '$' );
+        if ( ! isset($computer[0]) )
+            continue;
+        if ( ! $computer[0]->teacher_in_computer() ) {
+            $gui->session_error("No tiene permiso para modificar el equipo '$equipo'");
+            continue;
+        }
+        $gui->debug("Acción $faction en equipo '".$computer[0]->hostname());
+        $computer[0]->action($faction, $computer[0]->macAddress);
+        $counter++;
+    }
+    $gui->session_info("Accion '$faction' realizada en $counter equipo/s.");
+    if (! DEBUG)
+        $url->ir($module, "equipos");
+}
 
+function aulamultiple_preguntar($module, $action, $subaction){
+    global $gui;
+    $gui->debuga($_POST);
+    $aulas=preg_split('/,/', leer_datos('aulas'));
+    $gui->debuga($aulas);
+    if( ! isset($aulas[0]) ) {
+        $gui->session_error("No se han seleccionado aulas.");
+        $url->ir($module, "aulas");
+    }
+    
+    $faction=leer_datos('faction');
+    if ( $faction == '' ) {
+        $gui->session_error("Accion desconocida.");
+        $url->ir($module, "aulas");
+    }
+    
+    $ldap = new LDAP();
+    $counter=0;
+    foreach($aulas as $aula) {
+        $computers=$ldap->get_computers_from_aula($aula);
+        foreach( $computers as $computer) {
+            $gui->debug("Acción $faction en equipo '".$computer->hostname());
+            $computer->action($faction, $computer->macAddress);
+            $counter++;
+        }
+    }
+    $gui->session_info("Accion '$faction' realizada en $counter equipo/s.");
+    if (! DEBUG)
+        $url->ir($module, "aulas");
+}
 
 switch($action) {
     case "": $url->ir($module, "aulas"); break;
@@ -218,6 +294,10 @@ switch($action) {
     case "equipo_preguntar": equipo_preguntar($module, $action, $subaction); break;
     case "docomputer":       docomputer($module, $action, $subaction); break;
     case "backharddi":       backharddi($module, $action, $subaction); break;
+    
+    case "equipomultiple_preguntar": equipomultiple_preguntar($module, $action, $subaction); break;
+    case "aulamultiple_preguntar": aulamultiple_preguntar($module, $action, $subaction); break;
+    
     
     default: $gui->session_error("Accion desconocida '$action' en modulo $module");
     /*default: $url->ir($module, "equipo");*/
