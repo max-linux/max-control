@@ -41,9 +41,14 @@ def read_conf(varname):
                 return line.split("'")[3]
     return ''
 
-CONF_LIMIT=read_conf("OVERQUOTA_LIMIT")
-if CONF_LIMIT != '':
-    LIMIT=float(CONF_LIMIT)
+try:
+    CONF_LIMIT=read_conf("OVERQUOTA_LIMIT")
+    if CONF_LIMIT != '':
+        LIMIT=float(CONF_LIMIT)
+except Exception, err:
+    import traceback
+    print >> sys.stderr, err
+    traceback.print_exc(file=sys.stderr)
 
 def getQuota(user, used=False):
     """

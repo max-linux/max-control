@@ -27,6 +27,8 @@ define("LDAP_OU_TEACHERS", "cn=Teachers,ou=Groups,dc=max-server");
 define("LDAP_OU_DUSERS", "cn=Domain Users,ou=Groups,dc=max-server");
 define("TICS", "CoordinadoresTIC");
 define("LDAP_OU_TICS", "cn=CoordinadoresTIC,ou=Groups,dc=max-server");
+define("INSTALLATORS", "Instaladores");
+define("LDAP_OU_INSTALLATORS", "cn=Instaladores,ou=Groups,dc=max-server");
 
 // ruta al comando winexe
 define("WINEXE", "/usr/bin/winexe");
@@ -85,7 +87,7 @@ define("PAGER_LIMIT", 25);
 define("PAGER_MAX_LINKS", 10);
 
 /* quota % to show a warning (needed by pyoverquota) */
-define("OVERQUOTA_LIMIT", 80);
+define("OVERQUOTA_LIMIT", "80");
 
 /* file to read/write programer events */
 define("PROGRAMER_INI", "/var/lib/max-control/programer.ini");
