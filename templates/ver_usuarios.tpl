@@ -66,7 +66,7 @@
         {$pager->getSortIcons('usedSize')}</th> 
       <th class=''>Editar</th> 
       {*<th class=''>Borrar</th> *}
-      <th class=''>Borrar <input class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
+      <th class=''>Borrar <input title='Borrar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
       </tr>
     </thead>
  

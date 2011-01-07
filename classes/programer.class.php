@@ -2,7 +2,7 @@
 
 
 class Programer {
-    function Programer($aula) {
+    function Programer($aula=NULL) {
         global $gui;
         $this->aula=$aula;
         $gui->debug("Programer($aula)");
@@ -26,7 +26,7 @@ class Programer {
         for($i=0; $i<7; $i++) {
             $html="<select class='$varprefix' name='".$varprefix.$i."' id='".$varprefix.$i."'>";
             //$gui->debug($confdata[$varprefix.$i]." ¿=? off");
-            if( $confdata && $confdata[$varprefix.$i] == 'off') {
+            if( $confdata && isset($confdata[$varprefix.$i]) && $confdata[$varprefix.$i] == 'off') {
                 $html.="<option value='off' selected>off</option>\n";
             }
             else {
@@ -37,7 +37,7 @@ class Programer {
                     $hour="0$hour";
                 }
                 foreach($this->minutes as $minute) {
-                    if( $confdata && $confdata[$varprefix.$i] == $hour.":".$minute) {
+                    if( $confdata && isset($confdata[$varprefix.$i]) && $confdata[$varprefix.$i] == $hour.":".$minute) {
                         $html.="<option value='".$hour.":".$minute."' selected>".$hour.":".$minute."</option>\n";
                     }
                     else {
@@ -55,16 +55,95 @@ class Programer {
         return $timers;
     }
     
+    function getSO($varname, $types) {
+        $html="<select name='".$varname."_menu' id='".$varname."_menu' > ";
+        $html.="<option value=''>-----------</option>";
+        foreach($types as $k => $v) {
+            $selected="";
+            if ( isset($this->config[$this->aula]["$varname"."_menu"]) ) {
+                $selected=$this->config[$this->aula]["$varname"."_menu"]== $k ? 'selected' :'';
+            }
+            $html.="<option value='$k' $selected>$v</option>";
+        }
+        $html.="</select>";
+        return $html;
+    }
+    
     
     function readIni() {
         $data=parse_ini_file(PROGRAMER_INI, true);
         return($data);
     }
     
-    /*
-    &#9650; ▲ &#9651; △
-    &#9660; ▼ &#9661; ▽
-    */
+    function saveAula($aula, $data, $faction) {
+        global $gui;
+        if ($faction == 'save') {
+            $this->config[$aula]=$data;
+        }
+        elseif($faction == 'delete') {
+            if ( isset($this->config[$aula] ) ) {
+                unset($this->config[$aula]);
+            }
+        }
+        else {
+            $gui->session_error("Acción desconocida para el programador '$faction'");
+            return;
+        }
+        $gui->debuga($this->config);
+        return $this->write_ini_file($this->config, PROGRAMER_INI, true);
+    }
+    
+    
+    /* http://www.php.net/manual/en/function.parse-ini-file.php#91623 */
+    function write_ini_file($assoc_arr, $path, $has_sections=FALSE) { 
+        $content = ""; 
+
+        if ($has_sections) { 
+            foreach ($assoc_arr as $key=>$elem) { 
+                $content .= "[".$key."]\n"; 
+                foreach ($elem as $key2=>$elem2) 
+                { 
+                    if(is_array($elem2)) 
+                    { 
+                        for($i=0;$i<count($elem2);$i++) 
+                        { 
+                            $content .= $key2."[] = \"".$elem2[$i]."\"\n"; 
+                        } 
+                    } 
+                    else if($elem2=="") $content .= $key2." = \n"; 
+                    else $content .= $key2." = \"".$elem2."\"\n"; 
+                } 
+            } 
+        } 
+        else { 
+            foreach ($assoc_arr as $key=>$elem) { 
+                if(is_array($elem)) 
+                { 
+                    for($i=0;$i<count($elem);$i++) 
+                    { 
+                        $content .= $key2."[] = \"".$elem[$i]."\"\n"; 
+                    } 
+                } 
+                else if($elem=="") $content .= $key2." = \n"; 
+                else $content .= $key2." = \"".$elem."\"\n"; 
+            } 
+        } 
+
+        if (!$handle = fopen($path, 'w')) { 
+            return false; 
+        } 
+        if (!fwrite($handle, $content)) { 
+            return false; 
+        } 
+        fclose($handle); 
+        return true; 
+    }
+    
+    function isProgramed($aula) {
+        if ( isset($this->config[$aula] ) )
+            return true;
+        return false;
+    }
 }
 
 class CronProgramer {
@@ -133,10 +212,10 @@ class CronProgramer {
                 /*
                 *
                 *          [15:10] event in INI file
-                *        /    |   \ 
+                *        /    |    \ 
                 *     (-10)   0    (+10)
-                *       /     |       \
-                *   [15:00] [15:10]  [15:20] (cron calls)
+                *      /      |       \
+                *  [15:00]  [15:10]  [15:20] (cron calls)
                 *
                 *   15:00-15:10 => (-10) nothing
                 *   15:10-15:10 =>   (0) do it
@@ -152,21 +231,21 @@ class CronProgramer {
                 
                 $gui->debug("diff=$diff do the JOB");
                 
-                //FIXME delete continue
-                continue;
-                $action=NULL;
-                $iniaction=preg_replace("/([0-9])/",'',$k);
-                switch($iniaction) {
-                    case "start": $action='wakeonlan'; break;
-                    case "stop": $action='poweroff'; break;
-                    case "reboot": $action='reboot'; break;
+                $action=preg_replace("/([0-9])/",'',$k);
+                
+                $os='';
+                if ( isset($aula[$action.'_menu']) ) {
+                    $os=$aula[$action.'_menu'];
+                    if ($os != '') {
+                        $gui->debug("aula boot($os)");
+                        //$aulas[0]->boot($os);
+                    }
                 }
                 
                 $computers=$ldap->get_computers_from_aula($aula['cn']);
                 foreach( $computers as $computer) {
                     $gui->debug("Acción '$action' en equipo '".$computer->hostname());
-                    //$res[]=$computer->action($action);
-                    //$computer->action($subaction, $computer->macAddress);
+                    $computer->action($action, $computer->macAddress);
                 }
             }
         } /* foreach $this->config */

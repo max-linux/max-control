@@ -22,8 +22,8 @@
      <tr>
       <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>Arranque por defecto {$pager->getSortIcons('cachedBoot')}</th>
-      <th class=''>Programar</th>
       <th class=''>Cambiar</th>
+      <th class=''>Programar</th>
      </tr>
     </thead>
  
@@ -36,12 +36,16 @@
         <td class='tcenter'><span>{$u->cachedBoot}</span></td>
         <td class='tcenter'>
             <span>
-            <a href="{$urlprogramar}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="programar" /></a>
+            <a href="{$urleditar}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
             </span>
         </td>
         <td class='tcenter'>
             <span>
-            <a href="{$urleditar}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
+            {if $programer->isProgramed($u->safecn()) }
+            <a href="{$urlprogramar}/{$u->cn}"><img src="{$baseurl}/img/tempor.png" alt="programar" /></a>
+            {else}
+            <a href="{$urlprogramar}/{$u->cn}"><img src="{$baseurl}/img/add.gif" alt="programar" /></a>
+            {/if}
             </span>
         </td>
       </tr>

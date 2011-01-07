@@ -1,11 +1,12 @@
 
 
 <h3>Configurar el arranque programado del aula <u>{$aula->cn}</u></h3>
-<form action='{$urlform}' method='post'> 
+<form id='programerform' action='{$urlform}' method='post'> 
     <table class='dashboardTable' border='1'>
         <thead>
         <tr>
             <th class='thAction'>Acción</th>
+            <th>Sistema Operativo</th>
             {foreach from=$programer->weekDays() key=k item=u}
             <th>{$u}</th>
             {/foreach}
@@ -14,56 +15,33 @@
         
         <tr>
             <td>Arrancar</td>
-            {foreach from=$programer->getTimers('start') key=k item=u}
+            <td>{$programer->getSO('wakeonlan', $tipos)}</td>
+            {foreach from=$programer->getTimers('wakeonlan') key=k item=u}
             <td>{$u}</td>
             {/foreach}
         </tr>
         <tr>
             <td>Reiniciar</td>
+            <td>{$programer->getSO('reboot', $tipos)}</td>
             {foreach from=$programer->getTimers('reboot') key=k item=u}
             <td>{$u}</td>
             {/foreach}
         </tr>
         <tr>
             <td>Parar</td>
-            {foreach from=$programer->getTimers('stop') key=k item=u}
+            <td>{* poweroff no tiene select *}</td>
+            {foreach from=$programer->getTimers('poweroff') key=k item=u}
             <td>{$u}</td>
             {/foreach}
         </tr>
     </table>
-
-{*    <table class='formTable'> 
-    <tr> 
-        <td class='tright'><span class="ftitle">Archivo de arranque:</span></td>
-        <td> 
-            <select name='boot' id='boot' > 
-                <option value=''>Menú de arranque</option> 
-                {foreach from=$tipos key=k item=o}
-                <option value='{$k}' {if $aulaboot == $k}selected{/if}>{$o}</option>
-                {/foreach}
-            </select> 
-            
-        </td> 
-    </tr> 
-
-    <tr> 
-        <td class='tright'><span class="ftitle">Reiniciar aula:</span></td>
-        <td> <input type='checkbox' class='inputText' name='reboot' value='1' /></td> 
-    </tr> 
-
-    <tr> 
-        <td></td> 
-        <td> 
-        <input class='inputButton' type='submit' name='Guardar' value="Guardar" alt="Guardar" /> 
-        <input type='hidden' name='aula' value='{$aula->cn}' />
-        </td> 
-    </tr>
-
-    </table> *}
     
     <div class="tright margin20">
+        <input class='inputButton' type='button' name='Resetear' value="Borrar" alt="Borrar" onclick="javascript:reset_form();" /> 
+        <input type='hidden' name='cn' value='{$aula->cn}' />
+        <input type='hidden' name='safecn' value='{$aula->safecn()}' />
+        <input type='hidden' name='faction' id='faction' value='save' />
         <input class='inputButton' type='submit' name='Guardar' value="Guardar" alt="Guardar" /> 
-        <input type='hidden' name='aula' value='{$aula->cn}' />
     </div>
     </form> 
 
@@ -78,7 +56,22 @@ function programer(classname, ssource) {
     });
 }
 
-
+function reset_form() {
+    var answer = confirm("¿Está seguro de borrar la programación para este aula?")
+    if (answer ==0 ) {
+        return false;
+    }
+    $('#faction')[0].value='delete';
+    var form = $("#programerform");
+    form.find(':input').each(function() {
+        //console.log(":input => " + $(this).attr('name') + "=" + $(this).val() + " type=" +  $(this).attr('type'));
+        if ( $(this).attr('type') == 'select-one' ) {
+            //console.log( $(this)[0].selectedIndex );
+            $(this)[0].selectedIndex=0;
+        }
+    });
+    form.submit();
+}
 -->
 </script>
 {/literal}

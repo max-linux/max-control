@@ -1131,3 +1131,8 @@ a.minBox, a.minBox:hover, a.maxBox, a.maxBox:hover {
     margin:0;
     background: #CCC;
 }
+
+abbr, acronym {
+    border-bottom: .1em dotted;
+    cursor: help;
+}

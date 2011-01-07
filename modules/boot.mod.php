@@ -165,12 +165,14 @@ function aula($module, $action, $subaction) {
     $aulas=$pager->getItems();
     $pager->sortfilter="(cn|cachedBoot)";
     
+    $programer=new Programer();
     
     $data=array("aulas" => $aulas, 
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "urleditar"=>$url->create_url($module, 'editaaula', 'arranque'),
                 "urlprogramar"=>$url->create_url($module, 'programaaula'),
+                "programer" => $programer,
                 "pager" => $pager);
     $gui->add( $gui->load_from_template("bootaulas.tpl", $data) );
 }
@@ -258,7 +260,36 @@ function programaaula($module, $action, $subaction) {
 function programaaulado($module, $action, $subaction) {
     global $gui, $url;
     $ldap=new LDAP();
-    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+    //$gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+    $aula=leer_datos('safecn');
+    $faction=leer_datos('faction');
+    $programer=new Programer( leer_datos('aula') );
+    
+    sanitize($_POST, array("wakeonlan_menu"=>"str", "wakeonlan0"=>"str", 
+                           "wakeonlan1"=>"str", "wakeonlan2"=>"str",
+                           "wakeonlan3"=>"str", "wakeonlan4"=>"str",
+                           "wakeonlan5"=>"str", "wakeonlan6"=>"str",
+                           
+                           "reboot_menu"=>"str", "reboot0"=>"str",
+                           "reboot1"=>"str", "reboot2"=>"str",
+                           "reboot3"=>"str", "reboot4"=>"str",
+                           "reboot5"=>"str", "reboot6"=>"str",
+                           
+                           "poweroff0"=>"str", "poweroff1"=>"str",
+                           "poweroff2"=>"str", "poweroff3"=>"str",
+                           "poweroff4"=>"str", "poweroff5"=>"str",
+                           "poweroff6"=>"str",
+                           
+                           "cn"=>"str", "safecn"=>"str")
+             );
+    
+    if ( ! $programer->saveAula(leer_datos('safecn'), $_POST, $faction) ) 
+        $gui->session_error("Aula '".leer_datos('cn')."' no guardada");
+    else
+        $gui->session_info("Aula '".leer_datos('cn')."' guardada");
+    
+    if(!DEBUG)
+        $url->ir($module, "aula");
 }
 
 
