@@ -62,7 +62,11 @@
             {/if}
         </td>
         <td class='tcenter'> 
+            {if $u->get_num_computers() > 0 }
             <input type='checkbox' class="aulaaction" name="{$u->cn}" id="{$u->cn}" onchange="javascript:oncheckboxChange();"/>
+            {else}
+            aula vacía
+            {/if}
         </td>
       </tr>
       {/if}
