@@ -26,8 +26,8 @@ if ( ! $permisos->is_connected() ) {
     $url->ir("","");
 }
 
-if ( ! $permisos->is_admin() ) {
-    $gui->session_error("Sólo pueden acceder al módulo de usuarios los administradores.");
+if ( ! ( $permisos->is_admin() || $permisos->is_tic() ) ) {
+    $gui->session_error("Sólo pueden acceder al módulo de usuarios los administradores o coordinadores TIC.");
     $url->ir("","");
 }
 

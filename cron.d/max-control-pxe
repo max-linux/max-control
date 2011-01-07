@@ -8,3 +8,7 @@ PATH=/usr/bin:/bin
 
 # cache quotas every hour
 0 */1	* * * root [ -x /usr/bin/pyoverquota ] && (pyoverquota > /var/lib/max-control/quota.cache.php.new 2>/var/log/max-control-pxe.log && mv /var/lib/max-control/quota.cache.php.new /var/lib/max-control/quota.cache.php)
+
+
+# call programer every 10 minutes
+*/10 *	* * *	www-data [ -e /usr/share/max-control/programer.php ] && (cd /usr/share/max-control && php programer.php >> /var/log/max-control-programer.log 2>&1)

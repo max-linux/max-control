@@ -29,3 +29,6 @@ cron.d/clamav-freshclam etc/cron.d/
 bin/configure-max-control usr/bin/
 
 action.php            usr/share/max-control/
+programer.php         usr/share/max-control/
+
+logrotate.d/max-control etc/logrotate.d/

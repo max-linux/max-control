@@ -5,3 +5,4 @@ etc/apache2/conf.d
 etc/max-control
 var/lib/tftpboot
 etc/cron.d
+etc/logrotate.d/

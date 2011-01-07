@@ -84,6 +84,10 @@ class Programer {
             if ( isset($this->config[$aula] ) ) {
                 unset($this->config[$aula]);
             }
+            else {
+                /* no existe el aula, nada que guardar */
+                return true;
+            }
         }
         else {
             $gui->session_error("Acción desconocida para el programador '$faction'");
@@ -95,48 +99,49 @@ class Programer {
     
     
     /* http://www.php.net/manual/en/function.parse-ini-file.php#91623 */
-    function write_ini_file($assoc_arr, $path, $has_sections=FALSE) { 
-        $content = ""; 
-
-        if ($has_sections) { 
-            foreach ($assoc_arr as $key=>$elem) { 
-                $content .= "[".$key."]\n"; 
-                foreach ($elem as $key2=>$elem2) 
-                { 
-                    if(is_array($elem2)) 
-                    { 
-                        for($i=0;$i<count($elem2);$i++) 
-                        { 
-                            $content .= $key2."[] = \"".$elem2[$i]."\"\n"; 
-                        } 
-                    } 
-                    else if($elem2=="") $content .= $key2." = \n"; 
-                    else $content .= $key2." = \"".$elem2."\"\n"; 
+    function write_ini_file($assoc_arr, $path, $has_sections=FALSE) {
+        global $gui;
+        $content = "";
+        
+        if ($has_sections) {
+            foreach ($assoc_arr as $key=>$elem) {
+                $content .= "[".$key."]\n";
+                foreach ($elem as $key2=>$elem2) {
+                    if(is_array($elem2)) {
+                        for($i=0;$i<count($elem2);$i++) {
+                            $content .= $key2."[] = \"".$elem2[$i]."\"\n";
+                        }
+                    }
+                    else if($elem2=="") $content .= $key2." = \n";
+                    else $content .= $key2." = \"".$elem2."\"\n";
                 } 
             } 
         } 
-        else { 
-            foreach ($assoc_arr as $key=>$elem) { 
-                if(is_array($elem)) 
-                { 
-                    for($i=0;$i<count($elem);$i++) 
-                    { 
-                        $content .= $key2."[] = \"".$elem[$i]."\"\n"; 
-                    } 
-                } 
-                else if($elem=="") $content .= $key2." = \n"; 
-                else $content .= $key2." = \"".$elem."\"\n"; 
+        else {
+            foreach ($assoc_arr as $key=>$elem) {
+                if(is_array($elem)) {
+                    for($i=0;$i<count($elem);$i++) {
+                        $content .= $key2."[] = \"".$elem[$i]."\"\n";
+                    }
+                }
+                else if($elem=="") $content .= $key2." = \n";
+                else $content .= $key2." = \"".$elem."\"\n";
             } 
         } 
-
-        if (!$handle = fopen($path, 'w')) { 
-            return false; 
+        
+        if (!$handle = fopen($path, 'w')) {
+            $gui->session_error("No se puede abrir el archivo '$path' para escribir.");
+            return false;
+        }
+        if (!fwrite($handle, $content)) {
+            if ( $content != '' ) {
+                $gui->session_error("No se puede escribir en el archivo '$path'");
+                return false;
+            }
         } 
-        if (!fwrite($handle, $content)) { 
-            return false; 
-        } 
-        fclose($handle); 
-        return true; 
+        fclose($handle);
+        //$gui->session_info("Archivo '$path' guardado y cerrado correctamente.");
+        return true;
     }
     
     function isProgramed($aula) {
@@ -164,7 +169,7 @@ class CronProgramer {
         $lastTime=strtotime($lastTime);
         $timeDiff=$lastTime-$firstTime;
         // return minutes
-        return abs(intval($timeDiff/60));
+        return intval($timeDiff/60);
     }
 
     function doJobs() {
@@ -182,13 +187,13 @@ class CronProgramer {
         
         foreach($this->config as $aula) {
             if ( ! isset($aula['cn']) ) {
-                $gui->debug("aula obj don't have 'cn' element");
+                $gui->info("aula obj don't have 'cn' element");
                 continue;
             }
             /* load aula object */
             $aulas=$ldap->get_aulas($aula['cn']);
             if ( isset($aulas[0]) && $aulas[0]->get_num_computers() < 1) {
-                $gui->debug("EMPTY aula ".$aula['cn']);
+                $gui->info("EMPTY aula ".$aula['cn']);
                 /* empty aula / no computers */
                 continue;
             }
@@ -224,27 +229,28 @@ class CronProgramer {
                 /* check time +- 9 minutes */
                 $diff=$this->timeDiff($v, "$hour:$minute");
                 $gui->debug("diff($v, $hour:$minute)=$diff");
-                if ( $diff >= 9 ) {
+                if ( $diff < 0 || $diff >= 9 ) {
                     /* diff > 9 minutes nothing to do */
                     continue;
                 }
                 
-                $gui->debug("diff=$diff do the JOB");
-                
                 $action=preg_replace("/([0-9])/",'',$k);
+                $gui->info("(".$aula['cn'].") $k => $v (now=$hour:$minute) (weekday=$weekday) diff=$diff, DO THE JOB action=$action");
                 
                 $os='';
                 if ( isset($aula[$action.'_menu']) ) {
                     $os=$aula[$action.'_menu'];
                     if ($os != '') {
                         $gui->debug("aula boot($os)");
-                        //$aulas[0]->boot($os);
+                        /* change pxelinux.cfg/xxxx to menu $os */
+                        $gui->info("Change boot aula '".$aula['cn']."' to '$os'");
+                        $aulas[0]->boot($os);
                     }
                 }
                 
                 $computers=$ldap->get_computers_from_aula($aula['cn']);
                 foreach( $computers as $computer) {
-                    $gui->debug("Acción '$action' en equipo '".$computer->hostname());
+                    $gui->info("Acción '$action' en equipo '".$computer->hostname());
                     $computer->action($action, $computer->macAddress);
                 }
             }
