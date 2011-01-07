@@ -11,8 +11,14 @@ from pprint import pprint
 from configobj import ConfigObj
 import time
 
+CONFIG_FILE="/etc/max-control/conf.inc.php"
+if not os.path.isfile(CONFIG_FILE):
+    print " * No existe el archivo %s"%(CONFIG_FILE)
+    sys.exit(0)
+
+
 def read_conf(varname):
-    f=open(CONF, 'r')
+    f=open(CONFIG_FILE, 'r')
     data=f.readlines()
     f.close()
     
@@ -24,16 +30,14 @@ def read_conf(varname):
                 return line.split("'")[3]
     return ''
 
-CONF="/etc/max-control/conf.inc.php"
+
 PXELINUXCFG=read_conf('PXELINUXCFG')
 DEFAULT=os.path.join( PXELINUXCFG, 'default')
 DONTDELETE=['default']
 CRON_FILE="/var/lib/max-control/cron"
 TIMEOUT=15*60
 
-if not os.path.isfile(CONF):
-    echo " * No existe el archivo %s"%CONF
-    sys.exit(0)
+
 
 def safe_aula(aula):
     return( aula.replace(' ', '_') )
