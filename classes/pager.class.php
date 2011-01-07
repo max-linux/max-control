@@ -76,6 +76,7 @@ class PAGER {
         }
         
         $newargs = preg_replace("/&skip=([0-9]+)/",'',$this->args);
+        $newargs = preg_replace("/&amp;skip=([0-9]+)/",'',$newargs);
         
         $gui->debug("<pre>PAGER number=".$this->number." total_pages=$total_pages resto=$resto</pre>");
         $html="<div class='pages'>";
@@ -199,15 +200,18 @@ class PAGER {
         $down="&#9661;";
         $up="&#9651;";
         
-        if ( preg_match("/&sort=$filter&mode=asc/", $this->args) ) {
+        if ( preg_match("/&sort=$filter&mode=asc/", $this->args) || 
+             preg_match("/&amp;sort=$filter&amp;mode=asc/", $this->args)) {
             $up="&#9650;";
         }
-        if ( preg_match("/&sort=$filter&mode=dsc/", $this->args) ) {
+        if ( preg_match("/&sort=$filter&mode=dsc/", $this->args) || 
+             preg_match("/&amp;sort=$filter&amp;mode=dsc/", $this->args)) {
             $down="&#9660;";
         }
         
         /* clean $this->args */
         $newargs = preg_replace("/&sort=".$this->sortfilter."&mode=(asc|dsc)/",'',$this->args);
+        $newargs = preg_replace("/&amp;sort=".$this->sortfilter."&amp;mode=(asc|dsc)/",'',$newargs);
         //$gui->debug("getSortIcons($filter) this->args='".$this->args."' => newargs='$newargs'");
         
         $html="\n";
