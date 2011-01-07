@@ -1,3 +1,14 @@
+max-control (1.0.4) max; urgency=low
+
+  [ Mario Izquierdo (mariodebian) ]
+  * modules/power.mod.php: fix global url in equipomultiple_preguntar()
+    and aulamultiple_preguntar()
+  * templates/bootaulas.tpl templates/power_aulas.tpl: don't sohow
+    actions in aulas when no computers in
+  * Add title in multiple select input elements
+
+ -- root <root@max-server>  Fri, 07 Jan 2011 20:59:31 +0100
+
 max-control (1.0.3) max; urgency=low
 
   [ Mario Izquierdo (mariodebian) ]
