@@ -22,7 +22,7 @@
     </tr> 
 </table> 
 
-<form id="formactionmultiplecomputer" id="formactionmultiplecomputer" action="{$urlformmultiple}" method="post">
+<form id="formactionmultiplecomputer" name="formactionmultiplecomputer" action="{$urlformmultiple}" method="post">
     <input type='hidden' name='computers' id="computers" value='' />
     <input type='hidden' name='faction' id="faction" value='' />
 </form>
@@ -36,15 +36,16 @@
       <th class=''>Acciones</th> 
       <th class=''>Encender/Reiniciar en</th> 
       <th class=''>Múltiple
-       <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
+       <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/>
       </th>
+    </tr>
     </thead>
  
  
     <tbody> 
       {foreach from=$equipos item=u}
       {if $u->teacher_in_computer()}
-      <tr class='border' id="{$u->hostname()}"> 
+      <tr class='border' id="computer-{$u->hostname()}"> 
         <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
         <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
         <td class='tcenter'><span>{$u->attr('sambaProfilePath')}</span></td>

@@ -58,7 +58,7 @@
             <td class='tright'><span class='ftitle'>Acceso a consola:</span></td> 
             <td> 
                 <select name='loginShell' id='loginShell' > 
-                    <option value='/bin/false' selected>Sin acceso a shell</option> 
+                    <option value='/bin/false' selected='selected'>Sin acceso a shell</option> 
                     <option value='/bin/bash'>Con acceso a shell (bash)</option> 
                 </select> 
             </td> 

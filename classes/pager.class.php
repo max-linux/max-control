@@ -40,11 +40,11 @@ class PAGER {
                 $sortmode=leer_datos('mode');
                 if($sortmode=="dsc") {
                     $this->sort=array($argvalue, SORT_DESC);
-                    $this->args.="&sort=$argvalue&mode=dsc";
+                    $this->args.="&amp;sort=$argvalue&amp;mode=dsc";
                 }
                 else {
                     $this->sort=array($argvalue, SORT_ASC);
-                    $this->args.="&sort=$argvalue&mode=asc";
+                    $this->args.="&amp;sort=$argvalue&amp;mode=asc";
                 }
                 /* break loop $this->args edited */
                 continue;
@@ -54,7 +54,7 @@ class PAGER {
             }
             
             if($argvalue != '') {
-                $this->args.="&$argname=$argvalue";
+                $this->args.="&amp;$argname=$argvalue";
             }
         }
         $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$this->baseurl <br/>
@@ -82,7 +82,7 @@ class PAGER {
         
         if ( ($this->skip-PAGER_LIMIT)>= 0 ) {
             $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs'>« Primero</a>";
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&skip=".($this->skip-PAGER_LIMIT)."'>« Anterior</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&amp;skip=".($this->skip-PAGER_LIMIT)."'>« Anterior</a>";
         }
         else {
             $html.="&nbsp;&nbsp;<span class='nextprev'>« Anterior</span>";
@@ -133,7 +133,7 @@ class PAGER {
             else{
                 if ( in_array($i+1, $links) ) {
                     /*$gui->debug("i=$i en array() curpage=$int_curpage");*/
-                    $html.="&nbsp;&nbsp;<a class='pagerLink' href='".$this->baseurl."/$newargs&skip=$skipcount'>".($i+1)."</a>";
+                    $html.="&nbsp;&nbsp;<a class='pagerLink' href='".$this->baseurl."/$newargs&amp;skip=$skipcount'>".($i+1)."</a>";
                 }
                 /*else {
                     $gui->debug("i=$i **NO** en array() curpage=$int_curpage");
@@ -141,9 +141,9 @@ class PAGER {
             }
         }
         if ( ($this->skip+PAGER_LIMIT)< $this->number ) {
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&skip=".($this->skip+PAGER_LIMIT)."'>Siguiente »</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&amp;skip=".($this->skip+PAGER_LIMIT)."'>Siguiente »</a>";
             $last=($total_pages-1)*PAGER_LIMIT;
-            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&skip=$last'>Último »</a>";
+            $html.="&nbsp;&nbsp;<a class='nextprev' href='".$this->baseurl."/$newargs&amp;skip=$last'>Último »</a>";
         }
         else {
             $html.="&nbsp;&nbsp;<span class='nextprev'>Siguiente »</span>";
@@ -212,8 +212,8 @@ class PAGER {
         
         $html="\n";
         /* iconos */
-        $html.="<a title='Ordenar de menor a mayor por \"$filter\"' class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=asc'>$up</a>\n";
-        $html.="<a title='Ordenar de mayor a menor por \"$filter\"' class='sortlink' href='".$this->baseurl."/$newargs&sort=$filter&mode=dsc'>$down</a>";
+        $html.="<a title='Ordenar de menor a mayor por \"$filter\"' class='sortlink' href='".$this->baseurl."/$newargs&amp;sort=$filter&amp;mode=asc'>$up</a>\n";
+        $html.="<a title='Ordenar de mayor a menor por \"$filter\"' class='sortlink' href='".$this->baseurl."/$newargs&amp;sort=$filter&amp;mode=dsc'>$down</a>";
         return $html;
     }
 }

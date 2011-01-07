@@ -54,13 +54,11 @@ function ver($module, $action, $subaction) {
     
     $isos=$ldap->getISOS($filter);
     
-    $urlform=$url->create_url($module, $action);
-    $urlmontar=$url->create_url($module,'montar');
-    
     $data=array("isos" => $isos, 
+                "numisos" => sizeof($isos),
                 "filter" => $filter, 
-                "urlform" => $urlform, 
-                "urlmontar"=>$urlmontar);
+                "urlform" => $url->create_url($module, $action), 
+                "urlmontar"=>$url->create_url($module,'montar'));
     $gui->add( $gui->load_from_template("ver_isos.tpl", $data) );
 }
 

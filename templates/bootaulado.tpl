@@ -11,7 +11,7 @@
             <select name='boot' id='boot' > 
                 <option value=''>Menú de arranque</option> 
                 {foreach from=$tipos key=k item=o}
-                <option value='{$k}' {if $aulaboot == $k}selected{/if}>{$o}</option>
+                <option value='{$k}' {if $aulaboot == $k}selected='selected'{/if}>{$o}</option>
                 {/foreach}
             </select> 
             

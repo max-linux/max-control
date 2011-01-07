@@ -64,9 +64,7 @@ function reset_form() {
     $('#faction')[0].value='delete';
     var form = $("#programerform");
     form.find(':input').each(function() {
-        //console.log(":input => " + $(this).attr('name') + "=" + $(this).val() + " type=" +  $(this).attr('type'));
         if ( $(this).attr('type') == 'select-one' ) {
-            //console.log( $(this)[0].selectedIndex );
             $(this)[0].selectedIndex=0;
         }
     });

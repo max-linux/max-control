@@ -15,7 +15,7 @@
                 {if $k == 'aula' && $u->attr('sambaProfilePath') == ''}
                 <!-- empty aula -->
                 {else}
-                <option value='{$k}' {if $k == 'aula'}selected{/if}>{$o} {if $k == 'aula'}({$u->attr('sambaProfilePath')}){/if}</option>
+                <option value='{$k}' {if $k == 'aula'}selected='selected'{/if}>{$o} {if $k == 'aula'}({$u->attr('sambaProfilePath')}){/if}</option>
                 {/if}
                 {/foreach}
             </select> 

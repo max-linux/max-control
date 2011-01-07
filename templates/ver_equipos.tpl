@@ -19,7 +19,7 @@
     </tr> 
 </table> 
 
-<form id="formdeletemultiplehost" id="formdeletemultiplehost" action="{$urlborrar}" method="post">
+<form id="formdeletemultiplehost" name="formdeletemultiplehost" action="{$urlborrar}" method="post">
     <input type='hidden' name='hostnames' id="hostnames" value='' />
 </form>
 
@@ -30,9 +30,9 @@
       <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
       <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')} 
           <select name='selectaula' id='selectaula' onchange="javascript:aulaFilter(this);">
-            <option value='' {if $aula == ''}selected{/if}>----------</option>
+            <option value='' {if $aula == ''}selected='selected'{/if}>----------</option>
             {foreach from=$aulas key=k item=u}
-            <option value='{$u}' {if $aula == $u}selected{/if}>{$u}</option>
+            <option value='{$u}' {if $aula == $u}selected='selected'{/if}>{$u}</option>
             {/foreach}
           </select>
       </th> 
@@ -44,7 +44,7 @@
  
     <tbody> 
       {foreach from=$equipos key=k item=u}
-      <tr class='border' id="{$u->hostname()}"> 
+      <tr class='border' id="computer-{$u->hostname()}"> 
         <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
         <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
         <td class='tcenter'><span>{$u->attr('sambaProfilePath')}</span></td>
