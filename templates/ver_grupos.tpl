@@ -27,7 +27,7 @@
       <tr>
       <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>Miembros {$pager->getSortIcons('numUsers')}</th>
-      <th class=''>Borrar <input class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th> 
+      <th class=''>Borrar <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th> 
       </tr>
     </thead>
  
