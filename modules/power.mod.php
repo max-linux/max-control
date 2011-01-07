@@ -219,7 +219,7 @@ function backharddi($module, $action, $subaction) {
 }
 
 function equipomultiple_preguntar($module, $action, $subaction){
-    global $gui;
+    global $gui, $url;
     $gui->debuga($_POST);
     $computers=preg_split('/,/', leer_datos('computers'));
     $gui->debuga($computers);
@@ -254,7 +254,7 @@ function equipomultiple_preguntar($module, $action, $subaction){
 }
 
 function aulamultiple_preguntar($module, $action, $subaction){
-    global $gui;
+    global $gui, $url;
     $gui->debuga($_POST);
     $aulas=preg_split('/,/', leer_datos('aulas'));
     $gui->debuga($aulas);
