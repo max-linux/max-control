@@ -41,10 +41,14 @@
         </td>
         <td class='tcenter'>
             <span>
-            {if $programer->isProgramed($u->safecn()) }
-            <a href="{$urlprogramar}/{$u->cn}"><img src="{$baseurl}/img/tempor.png" alt="programar" /></a>
+            {if $u->get_num_computers() > 0 }
+                {if $programer->isProgramed($u->safecn()) }
+                <a href="{$urlprogramar}/{$u->cn}"><img src="{$baseurl}/img/tempor.png" alt="programar" /></a>
+                {else}
+                <a href="{$urlprogramar}/{$u->cn}"><img src="{$baseurl}/img/add.gif" alt="programar" /></a>
+                {/if}
             {else}
-            <a href="{$urlprogramar}/{$u->cn}"><img src="{$baseurl}/img/add.gif" alt="programar" /></a>
+                aula vacía
             {/if}
             </span>
         </td>
