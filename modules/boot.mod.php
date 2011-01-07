@@ -69,8 +69,7 @@ function equipo($module, $action, $subaction) {
     // mostrar lista de equipos con macAddress
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
-    if ( ($filter != '') && (substr($filter, -1) != '$') )
-        $filter.='$';
+    
     $equipos=$ldap->get_computers( $filter );
     $urlform=$url->create_url($module, $action);
     

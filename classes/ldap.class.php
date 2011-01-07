@@ -894,7 +894,10 @@ class COMPUTER extends BASE {
     }
     
     function teacher_in_computer() {
-        if ( $_SESSION['role']=='teacher' ) {
+        if ( $_SESSION['role']=='admin' || $_SESSION['role']=='tic' ) {
+            return true;
+        }
+        elseif ( $_SESSION['role']=='teacher' ) {
             $teacher=$_SESSION['username'];
             // if computer in aula and teacher in aula
             
@@ -907,7 +910,7 @@ class COMPUTER extends BASE {
             }
             return false;
         }
-        return true;
+        return false;
     }
     
     function delComputer() {
@@ -1209,7 +1212,10 @@ class AULA extends BASE {
         
         */
         $aulafile=PXELINUXCFG.$this->safecn();
-        if (is_readable($aulafile)) {
+        if ( !is_file($aulafile) ) {
+            return 'default';
+        }
+        elseif (is_readable($aulafile)) {
             $target=basename(readlink($aulafile));
             $this->cachedBoot=str_replace('.menu' , '' , $target);
         }
@@ -1776,6 +1782,8 @@ class LDAP {
             return false;
         if ( $uid == '' )
             $uid='*';
+        elseif ( preg_match('/\$$/', $uid) )
+            $uid=$uid;
         else
             $uid="*$uid*";
         $computers=array();

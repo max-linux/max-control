@@ -9,11 +9,23 @@
         <form action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
+          
+          <select style="display:none;float:right;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
+            <option value=''>Seleccionar acción...</option>
+            {foreach from=$multiple_actions key=k item=u}
+            <option value='{$k}'>&nbsp;&nbsp;&nbsp;&nbsp;{$u}</option>
+            {/foreach}
+          </select>
+          
         </form>
         </td> 
     </tr> 
 </table> 
 
+<form id="formactionmultiplecomputer" id="formactionmultiplecomputer" action="{$urlformmultiple}" method="post">
+    <input type='hidden' name='computers' id="computers" value='' />
+    <input type='hidden' name='faction' id="faction" value='' />
+</form>
 
 <table class='dataTable'> 
     <thead> 
@@ -23,7 +35,9 @@
       <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')}</th> 
       <th class=''>Acciones</th> 
       <th class=''>Encender/Reiniciar en</th> 
-    </tr>
+      <th class=''>Múltiple
+       <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
+      </th>
     </thead>
  
  
@@ -44,6 +58,9 @@
             <a href="{$urlrebootmax}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en MAX"><img src="{$baseurl}/img/linux-logo.jpg" alt="MAX" /></a>
             <a href="{$urlbackharddi}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en Backharddi-NG"><img src="{$baseurl}/img/backharddi-logo.jpg" alt="Backharddi-NG" /></a>
         </td>
+        <td class='tcenter'> 
+            <input type='checkbox' class="computeraction" name="{$u->hostname()}" id="{$u->hostname()}" onchange="javascript:oncheckboxChange();"/>
+        </td>
       </tr>
       {/if}
       {/foreach}
@@ -56,6 +73,56 @@
 {$pager->getHTML()}
 {/if}
 
+
+{literal}
+<script type="text/javascript">
+<!--
+
+function oncheckboxChange() {
+    var multiple=false;
+    var toDelete=new Array();
+    $.each($('.computeraction'), function(i) { 
+        if ($('.computeraction')[i].checked) {
+            toDelete.push($('.computeraction')[i].id);
+            multiple=true;
+        }
+    });
+    if(multiple)
+        $('#selAction')[0].style.display='';
+    else
+        $('#selAction')[0].style.display='none';
+}
+
+function actionSelected(){
+    var toDelete=new Array();
+    $.each($('.computeraction'), function(i) { 
+        if ($('.computeraction')[i].checked) {
+            toDelete.push($('.computeraction')[i].id);
+            multiple=true;
+        }
+    });
+    $('#computers')[0].value=toDelete;
+    $('#faction')[0].value=$('#selAction :selected').val();
+    $('#formactionmultiplecomputer')[0].submit();
+}
+
+function enableAll(obj){
+    $.each($('.computeraction'), function(i) { 
+        $('.computeraction')[i].checked=obj.checked;
+    });
+    if(obj.checked)
+        $('#selAction')[0].style.display='';
+    else
+        $('#selAction')[0].style.display='none';
+}
+
+function rolFilter(obj) {
+    $('#role')[0].value=obj.value;
+    document.forms.formuser.submit();
+}
+-->
+</script>
+{/literal}
 
 {*
 {if $DEBUG}

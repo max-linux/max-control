@@ -39,7 +39,7 @@
     </tr> 
 </table> 
 
-<form id="formdeletemultipleuser" id="formdeletemultipleuser" action="{$urlformmultiple}" method="post">
+<form id="formdeletemultipleuser" name="formdeletemultipleuser" action="{$urlformmultiple}" method="post">
     <input type='hidden' name='usernames' id="usernames" value='' />
 </form>
 

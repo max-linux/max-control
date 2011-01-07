@@ -9,11 +9,23 @@
         <form action="{$urlform}" method="post"> 
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
+          
+          <select style="display:none;float:right;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
+            <option value=''>Seleccionar acción...</option>
+            {foreach from=$multiple_actions key=k item=u}
+            <option value='{$k}'>&nbsp;&nbsp;&nbsp;&nbsp;{$u}</option>
+            {/foreach}
+          </select>
+          
         </form>
         </td> 
     </tr> 
 </table> 
 
+<form id="formactionmultipleaulas" id="formactionmultipleaulas" action="{$urlformmultiple}" method="post">
+    <input type='hidden' name='aulas' id="aulas" value='' />
+    <input type='hidden' name='faction' id="faction" value='' />
+</form>
 
 <table class='dataTable'> 
     <thead> 
@@ -22,6 +34,9 @@
       <th class=''>Equipos en este aula {$pager->getSortIcons('cachednumcomputers')}</th>
       <th class=''>Acciones</th> 
       <th class=''>Encender/Reiniciar en</th> 
+      <th class=''>Múltiple
+       <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
+      </th>
     </tr>
     </thead>
  
@@ -46,6 +61,9 @@
             <a href="{$urlbackharddi}/{$u->cn}" title="Reiniciar equipo '{$u->cn}' en Backharddi-NG"><img src="{$baseurl}/img/backharddi-logo.jpg" alt="Backharddi-NG" /></a>
             {/if}
         </td>
+        <td class='tcenter'> 
+            <input type='checkbox' class="aulaaction" name="{$u->cn}" id="{$u->cn}" onchange="javascript:oncheckboxChange();"/>
+        </td>
       </tr>
       {/if}
       {/foreach}
@@ -57,6 +75,59 @@
 {if $pager}
 {$pager->getHTML()}
 {/if}
+
+
+{literal}
+<script type="text/javascript">
+<!--
+
+function oncheckboxChange() {
+    var multiple=false;
+    var toDelete=new Array();
+    $.each($('.aulaaction'), function(i) { 
+        if ($('.aulaaction')[i].checked) {
+            toDelete.push($('.aulaaction')[i].id);
+            multiple=true;
+        }
+    });
+    if(multiple)
+        $('#selAction')[0].style.display='';
+    else
+        $('#selAction')[0].style.display='none';
+}
+
+function actionSelected(){
+    var toDelete=new Array();
+    $.each($('.aulaaction'), function(i) { 
+        if ($('.aulaaction')[i].checked) {
+            toDelete.push($('.aulaaction')[i].id);
+            multiple=true;
+        }
+    });
+    $('#aulas')[0].value=toDelete;
+    $('#faction')[0].value=$('#selAction :selected').val();
+    $('#formactionmultipleaulas')[0].submit();
+}
+
+function enableAll(obj){
+    $.each($('.aulaaction'), function(i) { 
+        $('.aulaaction')[i].checked=obj.checked;
+    });
+    if(obj.checked)
+        $('#selAction')[0].style.display='';
+    else
+        $('#selAction')[0].style.display='none';
+}
+
+function rolFilter(obj) {
+    $('#role')[0].value=obj.value;
+    document.forms.formuser.submit();
+}
+-->
+</script>
+{/literal}
+
+
 
 {*
 {if $DEBUG}
