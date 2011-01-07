@@ -27,7 +27,7 @@ class Programer {
             $html="<select class='$varprefix' name='".$varprefix.$i."' id='".$varprefix.$i."'>";
             //$gui->debug($confdata[$varprefix.$i]." ¿=? off");
             if( $confdata && isset($confdata[$varprefix.$i]) && $confdata[$varprefix.$i] == 'off') {
-                $html.="<option value='off' selected>off</option>\n";
+                $html.="<option value='off' selected='selected'>off</option>\n";
             }
             else {
                 $html.="<option value='off'>off</option>\n";
@@ -38,7 +38,7 @@ class Programer {
                 }
                 foreach($this->minutes as $minute) {
                     if( $confdata && isset($confdata[$varprefix.$i]) && $confdata[$varprefix.$i] == $hour.":".$minute) {
-                        $html.="<option value='".$hour.":".$minute."' selected>".$hour.":".$minute."</option>\n";
+                        $html.="<option value='".$hour.":".$minute."' selected='selected'>".$hour.":".$minute."</option>\n";
                     }
                     else {
                         $html.="<option value='".$hour.":".$minute."'>".$hour.":".$minute."</option>\n";
@@ -61,7 +61,7 @@ class Programer {
         foreach($types as $k => $v) {
             $selected="";
             if ( isset($this->config[$this->aula]["$varname"."_menu"]) ) {
-                $selected=$this->config[$this->aula]["$varname"."_menu"]== $k ? 'selected' :'';
+                $selected=$this->config[$this->aula]["$varname"."_menu"]== $k ? 'selected="selected"' :'';
             }
             $html.="<option value='$k' $selected>$v</option>";
         }

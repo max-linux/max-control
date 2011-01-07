@@ -22,7 +22,7 @@
     </tr> 
 </table> 
 
-<form id="formactionmultipleaulas" id="formactionmultipleaulas" action="{$urlformmultiple}" method="post">
+<form id="formactionmultipleaulas" name="formactionmultipleaulas" action="{$urlformmultiple}" method="post">
     <input type='hidden' name='aulas' id="aulas" value='' />
     <input type='hidden' name='faction' id="faction" value='' />
 </form>
@@ -35,7 +35,7 @@
       <th class=''>Acciones</th> 
       <th class=''>Encender/Reiniciar en</th> 
       <th class=''>Múltiple
-       <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
+       <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/>
       </th>
     </tr>
     </thead>

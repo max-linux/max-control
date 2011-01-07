@@ -22,10 +22,10 @@
         <td class='tright'><span class='ftitle'>Rol (permisos):</span></td> 
         <td> 
             <select name='role' id='role' > 
-                <option value='' {if $u->get_role() == ''}selected{/if}>Alumno</option> 
-                <option value='teacher' {if $u->get_role() == 'teacher'}selected{/if}>Profesor</option> 
-                <option value='tic' {if $u->get_role() == 'tic'}selected{/if}>Coordinador TIC</option> 
-                <option value='admin' {if $u->get_role() == 'admin'}selected{/if}>Administrador</option> 
+                <option value='' {if $u->get_role() == ''}selected='selected'{/if}>Alumno</option> 
+                <option value='teacher' {if $u->get_role() == 'teacher'}selected='selected'{/if}>Profesor</option> 
+                <option value='tic' {if $u->get_role() == 'tic'}selected='selected'{/if}>Coordinador TIC</option> 
+                <option value='admin' {if $u->get_role() == 'admin'}selected='selected'{/if}>Administrador</option> 
             </select> 
         </td> 
     <tr>
@@ -35,8 +35,8 @@
         <td class='tright'><span class='ftitle'>Acceso a consola:</span></td> 
         <td> 
             <select name='loginShell' id='loginShell' > 
-                <option value='/bin/false' {if $u->attr('loginShell') == '/bin/false'}selected{/if}>Sin acceso a shell</option> 
-                <option value='/bin/bash' {if $u->attr('loginShell') == '/bin/bash'}selected{/if}>Con acceso a shell (bash)</option> 
+                <option value='/bin/false' {if $u->attr('loginShell') == '/bin/false'}selected='selected'{/if}>Sin acceso a shell</option> 
+                <option value='/bin/bash' {if $u->attr('loginShell') == '/bin/bash'}selected='selected'{/if}>Con acceso a shell (bash)</option> 
             </select> 
         </td> 
     <tr>

@@ -37,7 +37,7 @@
         <td class='tcenter'><span>{$u->getBoot()}</span></td>
         {if $u->attr('macAddress') != ''}
         <td class='tcenter'> 
-            <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/reboot.png" title="Configurar arranque" /></a>
+            <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/reboot.png" alt="configurar" title="Configurar arranque" /></a>
         </td>
         {else}
         <td class='tcenter'>no MAC</td>

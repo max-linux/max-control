@@ -1,5 +1,5 @@
 
-<h2>Listado de imágenes ISO</h2>
+<h2>Listado de imágenes ISO ({$numisos})</h2>
 
 <div class='help'>
 El listado que aparece a continuación son las ISOS disponibles para montar 
@@ -43,6 +43,7 @@ Por favor no use espacios o caracteres extraños en el nombre del archivo.
     </tr>
     </thead>
 
+    {if $numisos > 0}
     <tbody> 
       {foreach from=$isos key=k item=u}
       <tr class='border' id="{$u->attr('filename')}"> 
@@ -50,12 +51,13 @@ Por favor no use espacios o caracteres extraños en el nombre del archivo.
         <td class='tcenter'><span>{$u->attr('size')}</span></td> 
         <td class='tcenter'><span>{$u->attr('volumeid')}</span></td>
         <td class='tcenter'> 
-            <a href="{$urlmontar}/{$u->attr('filename')}"><img src="{$baseurl}/img/edit-table.gif" alt="montar" /></a>
+            <a href="{$urlmontar}/{$u->attr('filename')}"><img src="{$baseurl}/img/edit-table.gif" alt="montar" title='Montar ISO' /></a>
         </td>
       </tr>
       {/foreach}
 
     </tbody> 
+    {/if}
 </table> 
 
 {*

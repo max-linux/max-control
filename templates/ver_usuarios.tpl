@@ -50,11 +50,11 @@
       <th class=''>Nombre {$pager->getSortIcons('cn')} Apellidos {$pager->getSortIcons('sn')}</th> 
       <th class=''>Rol
           <select name='selectrole' id='selectrole' onchange="javascript:rolFilter(this);">
-            <option value='' {if $role == ''}selected{/if}>----------</option>
-            <option value='alumno' {if $role == 'alumno'}selected{/if}>Alumno</option> 
-            <option value='teacher' {if $role == 'teacher'}selected{/if}>Profesor</option> 
-            <option value='tic' {if $role == 'tic'}selected{/if}>Coordinador TIC</option> 
-            <option value='admin' {if $role == 'admin'}selected{/if}>Administrador</option> 
+            <option value='' {if $role == ''}selected="selected"{/if}>----------</option>
+            <option value='alumno' {if $role == 'alumno'}selected="selected"{/if}>Alumno</option> 
+            <option value='teacher' {if $role == 'teacher'}selected="selected"{/if}>Profesor</option> 
+            <option value='tic' {if $role == 'tic'}selected="selected"{/if}>Coordinador TIC</option> 
+            <option value='admin' {if $role == 'admin'}selected="selected"{/if}>Administrador</option> 
           </select>
       </th> 
       <th class=''>
@@ -65,7 +65,6 @@
          {/if}
         {$pager->getSortIcons('usedSize')}</th> 
       <th class=''>Editar</th> 
-      {*<th class=''>Borrar</th> *}
       <th class=''>Borrar <input title='Borrar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
       </tr>
     </thead>
@@ -73,7 +72,7 @@
  
     <tbody> 
       {foreach from=$usuarios key=k item=u}
-      <tr class='border' id="{$u->attr('uid')}"> 
+      <tr class='border' id="user-{$u->attr('uid')}"> 
         <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
         <td class='tcenter'><span>{$u->attr('cn')} {$u->attr('sn')}</span></td> 
         <td class='tcenter'><span>

@@ -18,7 +18,7 @@
     </tr> 
 </table> 
 
-<form id="formdeletemultiplegroup" id="formdeletemultiplegroup" action="{$urlborrar}" method="post">
+<form id="formdeletemultiplegroup" name="formdeletemultiplegroup" action="{$urlborrar}" method="post">
     <input type='hidden' name='groupnames' id="groupnames" value='' />
 </form>
 
@@ -34,7 +34,7 @@
  
     <tbody> 
       {foreach from=$groups key=k item=u}
-      <tr class='border' id="{$u->attr('cn')}"> 
+      <tr class='border' id="group-{$u->attr('cn')}"> 
         <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
         <td class='tcenter'><span>
                         {$u->attr('numUsers')}
