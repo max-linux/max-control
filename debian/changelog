@@ -1,3 +1,109 @@
+max-control (1.0.1) max; urgency=low
+
+  [ Mario Izquierdo (mariodebian) ]
+  * bin/configure-max-control: chown www-data /var/lib/max-control/cache
+  * debian/control: fix typo
+  * Foco en el login, cierra petición #35
+  * forzar memoria PHP a 128M
+  * Cambiado paginador a 25 con 10 botones #36
+  * Cambiada shell por defecto a /bin/false
+  * mod_rewrite add support for GET params
+  * set width 90% in debug div
+  * templates/del_usuario.tpl: delete user profile by default
+  * bin/pygenlogonshares: Limitación número de grupos/letras de unidad,
+    close #42
+  * templates/add_usuario.tpl: uid 20 caracteres, mover comentario
+    debajo de contraseñas y no enviar formulario si contraseñas no
+    coinciden, petición #36
+  * classes/ldap.class.php: no mostrar max-control por defecto y
+    arreglar paginador y parámetros
+  * modules/usuarios.mod.php: preservar Filter en paginador
+  * create_users.php: script debug para crear usuarios masivamente
+  * add sort icons
+  * remove ugly icons, use UTF-8 chars (triangles)
+  * renamed false gif icons => png
+  * www/css/login.css www/css/style.css: fix gif=>png and change
+    absolute path
+  * create_users.php: create users with cn and sn
+  * delete_users.php: script to remove alumno* users
+  * templates/ver_usuarios.tpl: add role filter, add sort icons
+  * sort by uid, cn, sn, allow to search users by role, issue #36
+  * classes/ldap.class.php don't delete ldapdata array
+  * Delete multiple users, reverse sort buttons images sort uid in
+    add/remove from group
+  * templates/ver_usuarios.tpl: delete 'Borrar' column and move Role
+    select filter to column title
+  * modules/usuarios.mod.php: disable delete and deletedo actions
+  * templates/add_group.tpl: limit 20 chars in groupname
+  * classes/ldap.class.php modules/usuarios.mod.php
+    templates/del_group.tpl templates/ver_grupos.tpl: use pager in group
+    list and sort by cn or numUsers
+  * templates/resetprofile.tpl bin/max-control classes/ldap.class.php
+    modules/usuarios.mod.php templates/editar_usuario.tpl: reset user
+    profiles
+  * create_groups.php: debug script to create groups
+  * move Pager class to his own file classes/pager.class.php
+  * templates/ver_equipos.tpl templates/borrar_equipo.tpl
+    modules/equipos.mod.php: Order equipos and paginate
+  * bin/max-control: redirect stderr to stdout in delcomputer
+  * classes/ldap.class.php classes/module.class.php
+    classes/permisos.class.php conf.inc.php conf.inc.php.example
+    conf.inc.php.init init.php modules/usuarios.mod.php
+    templates/add_usuario.tpl templates/editar_usuario.tpl
+    templates/miperfil.tpl templates/ver_usuarios.tpl www/test.php: Add
+    'CoordinadorTIC' group
+  * classes/ldap.class.php create_hosts.php: batch create computers
+    objects
+  * bin/edit.quotas: replace var REMOTE_NFS => REMOTE
+  * bin/pyoverquota conf.inc.* cron.d/max-control-pxe
+    modules/usuarios.mod.php templates/resetprofile.tpl
+    templates/ver_usuarios.tpl: show a warning message if user is over
+    quota 80% by default issue #36
+  * debian/control debian/rules: check for PHP syntax errors when
+    building package, depends on php5-cli
+  * refactor equipos.mod.php
+  * classes/ldap.class.php: don't call pyboot to read PXE default
+    method, use PHP
+  * add processArgs() in PAGER class to read all GET/POST arguments,
+    this made more easy the modules code
+  * bin/configure-max-control: call pyoverquota in postinst to generate
+    cache
+  * bin/pyboot bin/pyoverquota: don't run if /etc/max-
+    control/config.inc.php no exist
+  * bin/pyoverquota: replace typo echo => print
+  * debian/max-control.install: install pyoverquota script
+  * cron.d/max-control-pxe: generate tmp file and move if success
+  * bin/configure-max-control: don't hidde errors
+  * modules/equipos.mod.php: don't overwrite filter argument and delete
+    sizeof() calls
+  * modules/boot.mod.php: delete sizeof() calls and add pager to aulas
+  * modules/power.mod.php: refactorize and add pagers
+  * templates/bootaulas.tpl: add pager
+  * templates/power_aulas.tpl: add pager
+  * templates/power_equipos.tpl: add pager
+  * templates/ver_aulas.tpl templates/ver_equipos.tpl
+    templates/ver_grupos.tpl templates/ver_usuarios.tpl replace sizeof()
+    vars
+  * modules/usuarios.mod.php: remove sizeof() and add quota sorter
+  * classes/ldap.class.php: don't call max-control --get in every
+    user/computer, read from cache or symlinks from TFTPBOOT
+  * Add programer to start/reboot/stop aulas via WOL
+  * add initial version of programer CLI
+  * remove ldap2.class.php
+  * replace split() => preg_split()
+  * Add quota date in ver_usuarios.tpl
+  * complete programer class and actions
+  * classes/permisos.class.php: fine tunning
+  * complete programer classes and methods and add logrotate.d config
+  * classes/ldap.class.php modules/boot.mod.php modules/power.mod.php
+    templates/power_aulas.tpl templates/power_equipos.tpl
+    templates/ver_usuarios.tpl: allow to do actions in multiple
+    equipos/aulas
+  * validate XHTML 1.0 Transitional//EN
+  * Add 'Instaladores' group, issue #40
+
+ -- root <root@max-server>  Fri, 07 Jan 2011 18:51:38 +0100
+
 max-control (0.9.30) max; urgency=low
 
   * Don't install classes/ldap2.php
