@@ -320,6 +320,8 @@ class USER extends BASE {
             // quitar de administradores
             $ldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
             $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
+            $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
+            $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
             return;
         }
         elseif ($role == 'tic') {
@@ -329,6 +331,7 @@ class USER extends BASE {
             // meter en administradores
             $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
             $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
+            $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
             return;
         }
         elseif ($role == 'teacher') {
@@ -338,13 +341,17 @@ class USER extends BASE {
             // quitar de administradores
             $ldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
             $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
+            $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
+            $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
             return;
         }
         elseif ($role == 'admin') {
             // quitar de profesores
             $ldap->delUserFromGroup($this->uid, LDAP_OU_TEACHERS);
+            // quitar de TICS
+            $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
             
-            //quitar de profesores
+            //quitar de aulas
             $aulas=$ldap->get_aulas();
             foreach ($aulas as $aula){
                 $aula->delMember($this->uid);
@@ -353,6 +360,7 @@ class USER extends BASE {
             // debe estar en el grupo Domain Administrator y Administrator
             $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
             $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
+            $ldap->addUserToGroup($this->uid, LDAP_OU_INSTALLATORS);
             return;
         }
     }
@@ -2041,7 +2049,8 @@ class LDAP {
                  ($attrs['sambaGroupType'][0] == 2) &&
                  ($attrs['gidNumber'][0] >= 2000) ) {
                  
-                    if (!$include_system && ($attrs['cn'][0] == TEACHERS || $attrs['cn'][0] == TICS)) {
+                    if (!$include_system && 
+                         ($attrs['cn'][0] == TEACHERS || $attrs['cn'][0] == TICS || $attrs['cn'][0] == INSTALLATORS)) {
                         continue;
                     }
                 $groups[]=new GROUP($attrs);
