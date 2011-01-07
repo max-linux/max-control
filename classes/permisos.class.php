@@ -134,14 +134,27 @@ class Permisos {
         unset($_SESSION['is_teacher']);
         $_SESSION['is_teacher']=$this->is_teacher();
         
-        if($_SESSION['is_tic'])
+        if($_SESSION['is_tic']) {
             $_SESSION['role']='tic';
-        elseif ($_SESSION['is_admin'])
+            $_SESSION['is_admin']=False;
+            $_SESSION['is_teacher']=False;
+        }
+        elseif ($_SESSION['is_admin']) {
             $_SESSION['role']='admin';
-        elseif($_SESSION['is_teacher'])
+            $_SESSION['is_teacher']=False;
+            $_SESSION['is_tic']=False;
+        }
+        elseif($_SESSION['is_teacher']) {
             $_SESSION['role']='teacher';
-        else
+            $_SESSION['is_tic']=False;
+            $_SESSION['is_admin']=False;
+        }
+        else {
             $_SESSION['role']='';
+            $_SESSION['is_tic']=False;
+            $_SESSION['is_admin']=False;
+            $_SESSION['is_teacher']=False;
+        }
         
         $_SESSION['info']='';
         $_SESSION['error']='';
