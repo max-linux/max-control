@@ -24,7 +24,7 @@ if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quot
     HOME="/home/samba"
 
 if not os.path.isfile(HOME + "/aquota.user") and not os.path.isfile(HOME + "/quota.user"):
-    #print " * No quotas found"
+    print >> sys.stderr," * No quotas found"
     sys.exit(0)
 
 
@@ -62,7 +62,7 @@ def getQuota(user, used=False):
     if used:
         column=1
     size=0
-    cmd="edquota -u %s -f %s 2>/dev/null"%(user, HOME)
+    cmd="/usr/sbin/edquota -u %s -f %s 2>/dev/null"%(user, HOME)
     p = Popen(cmd, shell=True, bufsize=0, stdout=PIPE, stderr=STDOUT, close_fds=True)
     stdout = p.stdout
     for line in stdout.readlines():
