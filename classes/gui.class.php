@@ -34,9 +34,9 @@ class Gui
         
         if (DEBUG) {
             $this->smarty->assign('DEBUG', "1");
-            $this->smarty->debugging=true;
+            /*$this->smarty->debugging=true;
             $this->smarty->debug_tpl='debug.tpl';
-            $this->smarty->debug_output="html";
+            $this->smarty->debug_output="html";*/
             $this->smarty->error_reporting=true;
         }
         $this->smarty->assign('baseurl', $site["basedir"] );
@@ -176,9 +176,9 @@ class Gui
         if (DEBUG) {
             $n->assign('DEBUG', "1");
             $n->debugging=true;
-            $n->debug_tpl='debug.tpl';
-            $n->debug_output="html";
-            $n->error_reporting=false;
+            /*$n->debug_tpl='debug.tpl';
+            $n->debug_output="html";*/
+            $n->error_reporting=true;
         }
         
         return $n->fetch($tpl);
