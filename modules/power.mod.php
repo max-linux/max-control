@@ -218,7 +218,31 @@ function backharddi($module, $action, $subaction) {
     $gui->add( $gui->load_from_template("backharddi.tpl", $data) );
 }
 
-function equipomultiple_preguntar($module, $action, $subaction){
+function equipomultiple_preguntar($module, $action, $subaction) {
+    global $gui, $url;
+    $computers=leer_datos('computers');
+    $computersarray=preg_split('/,/', leer_datos('computers'));
+    
+    $gui->debuga($computers);
+    if( ! isset($computers[0]) ) {
+        $gui->session_error("No se han seleccionado equipos.");
+        $url->ir($module, "equipos");
+    }
+    
+    $faction=leer_datos('faction');
+    if ( $faction == '' ) {
+        $gui->session_error("Accion desconocida.");
+        $url->ir($module, "equipos");
+    }
+
+    $data=array("computers" => $computers, 
+                "computersarray" => $computersarray,
+                "faction" => $faction,
+                "urlaction"=>$url->create_url($module, 'equipomultiple_preguntardo'));
+    $gui->add( $gui->load_from_template("power_equiposmultiple_do.tpl", $data) );
+}
+
+function equipomultiple_preguntardo($module, $action, $subaction){
     global $gui, $url;
     $gui->debuga($_POST);
     $computers=preg_split('/,/', leer_datos('computers'));
@@ -253,7 +277,31 @@ function equipomultiple_preguntar($module, $action, $subaction){
         $url->ir($module, "equipos");
 }
 
-function aulamultiple_preguntar($module, $action, $subaction){
+function aulamultiple_preguntar($module, $action, $subaction) {
+    global $gui, $url;
+    $aulas=leer_datos('aulas');
+    $aulasarray=preg_split('/,/', leer_datos('aulas'));
+    
+    $gui->debuga($aulas);
+    if( ! isset($aulas[0]) ) {
+        $gui->session_error("No se han seleccionado aulas.");
+        $url->ir($module, "aulas");
+    }
+    
+    $faction=leer_datos('faction');
+    if ( $faction == '' ) {
+        $gui->session_error("Accion desconocida.");
+        $url->ir($module, "aulas");
+    }
+
+    $data=array("aulas" => $aulas, 
+                "aulasarray" => $aulasarray,
+                "faction" => $faction,
+                "urlaction"=>$url->create_url($module, 'aulamultiple_preguntardo'));
+    $gui->add( $gui->load_from_template("power_aulasmultiple_do.tpl", $data) );
+}
+
+function aulamultiple_preguntardo($module, $action, $subaction){
     global $gui, $url;
     $gui->debuga($_POST);
     $aulas=preg_split('/,/', leer_datos('aulas'));
@@ -296,7 +344,9 @@ switch($action) {
     case "backharddi":       backharddi($module, $action, $subaction); break;
     
     case "equipomultiple_preguntar": equipomultiple_preguntar($module, $action, $subaction); break;
+    case "equipomultiple_preguntardo": equipomultiple_preguntardo($module, $action, $subaction); break;
     case "aulamultiple_preguntar": aulamultiple_preguntar($module, $action, $subaction); break;
+    case "aulamultiple_preguntardo": aulamultiple_preguntardo($module, $action, $subaction); break;
     
     
     default: $gui->session_error("Accion desconocida '$action' en modulo $module");
