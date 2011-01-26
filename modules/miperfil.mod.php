@@ -75,8 +75,18 @@ if ($active_action == "guardar") {
         }
     }
     
+    sanitize($_POST, array('uid' => 'str',
+                           'cn'=>'plain',
+                           'sn' => 'plain',
+                           'description' => 'plain'));
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $usuario->set($_POST);
-    $res=$usuario->save( array('cn', 'sn') );
+    
+    if( $usuario->description == '' ) {
+        $usuario->description=array();
+        $usuario->ldapdata['description']=array();
+    }
+    $res=$usuario->save( array('cn', 'sn', 'description') );
     
     if ($res)
         $gui->session_info("Datos guardados correctamente");

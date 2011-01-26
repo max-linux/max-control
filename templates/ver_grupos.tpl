@@ -35,7 +35,12 @@
     <tbody> 
       {foreach from=$groups key=k item=u}
       <tr class='border' id="group-{$u->attr('cn')}"> 
+        {if $u->attr('description') != ''}
+        <td class='tcenter'><acronym title='{$u->attr('description')}'><span>{$u->attr('cn')}</span></acronym></td>
+        {else}
         <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
+        {/if}
+        
         <td class='tcenter'><span>
                         {$u->attr('numUsers')}
                         <a href="{$urlmiembros}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>

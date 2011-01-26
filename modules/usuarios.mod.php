@@ -180,8 +180,19 @@ function guardar($module, $action, $subaction) {
         $url->ir($module, "ver");
     }
     
+    sanitize($_POST, array('uid' => 'str',
+                           'cn'=>'plain',
+                           'sn' => 'plain',
+                           'description' => 'plain',
+                           'loginShell' => 'plain',
+                           'role' => 'role'));
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $usuario->set($_POST);
-    $res=$usuario->save( array('cn', 'sn', 'loginShell') );
+    if( $usuario->description == '' ) {
+        $usuario->description=array();
+        $usuario->ldapdata['description']=array();
+    }
+    $res=$usuario->save( array('cn', 'sn', 'loginShell', 'description') );
     
     if ($res)
         $gui->session_info("Datos guardados correctamente");
@@ -241,7 +252,7 @@ function deletemultipledo($module, $action, $subaction) {
             $gui->session_error(" El usuario '$username' no existe.");
         }
         if( ! $permisos->is_admin() && $user->get_role() == 'admin') {
-            $gui->session_error("Usuario '$username' no borrado, se necesita ser administrador para borrar Administradores.");
+            $gui->session_error("Usuario '$username' no borrado, se necesita ser Administrador para borrar Administradores.");
             continue;
         }
         if (! $permisos->is_admin() && $username == $_SESSION["username"]) {
