@@ -34,6 +34,15 @@ class Permisos {
         }
     }
     
+    function get_humanrole() {
+        switch($_SESSION['role']) {
+            case "admin": return "Administrador"; break;
+            case "tic": return "Coordinador TIC"; break;
+            case "teacher": return "Profesor"; break;
+            case "": return "Alumno"; break;
+        }
+    }
+    
     function get_rol() {
         if ( ! $this->is_connected() ) return '';
         
