@@ -206,10 +206,27 @@ function guardar($module, $action, $subaction){
     
     $equipo=$equipos[0];
     $gui->debuga($_POST);
+    /*
+    Array
+    (
+        [macAddress] => 08:00:27:fc:4f:4
+        [ipHostNumber] => 192.168.1.14
+        [bootFile] => 
+        [sambaProfilePath] => aula primaria 2
+        [Editar] => Guardar
+        [hostname] => pc4
+    )
+    */
+    sanitize($_POST, array('sambaProfilePath' => 'str',
+                           'ipHostNumber'=>'plain',
+                           'ipNetmaskNumber' => 'plain',
+                           'macAddress' => 'plain',
+                           'bootFile' => 'plain',
+                           'hostname' => 'plain'));
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $equipo->set($_POST);
     $res=$equipo->save( array('sambaProfilePath', 
                          'ipHostNumber', 
-                         'ipNetmaskNumber', 
                          'ipNetmaskNumber', 
                          'macAddress', 
                          'bootFile') );

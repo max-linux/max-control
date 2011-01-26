@@ -30,7 +30,12 @@
     <tbody> 
       {foreach from=$aulas item=u}
       <tr class='border' id="{$u->safecn()}"> 
-        <td class='tcenter'><span>{$u->cn}</span></td> 
+        {if $u->attr('description') != ''}
+        <td class='tcenter'><acronym title='{$u->attr('description')}'><span>{$u->cn}</span></acronym></td>
+        {else}
+        <td class='tcenter'><span>{$u->cn}</span></td>
+        {/if}
+         
         <td class='tcenter'><span>
                         {$u->get_num_users()} 
                         <a href="{$urlprofesores}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>

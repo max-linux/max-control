@@ -73,7 +73,11 @@
     <tbody> 
       {foreach from=$usuarios key=k item=u}
       <tr class='border' id="user-{$u->attr('uid')}"> 
+        {if $u->attr('description') != ''}
+        <td class='tcenter'><acronym title='{$u->attr('description')}'><span>{$u->attr('uid')}</span></acronym></td>
+        {else}
         <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
+        {/if}
         <td class='tcenter'><span>{$u->attr('cn')} {$u->attr('sn')}</span></td> 
         <td class='tcenter'><span>
             {if $u->get_role() == 'teacher'}Profesor{/if}

@@ -489,6 +489,11 @@ class USER extends BASE {
         if ( ! $r )
             return false;
         
+        if ($this->description == ''){
+            $this->description=array();
+            $this->ldapdata['description']=array();
+        }
+        
         $other=array('loginShell', 'description');
         $this->save( $other );
         
@@ -1284,9 +1289,15 @@ class AULA extends BASE {
         
         $gui->debuga($this->show());
         
+        if ($this->description == ''){
+            $this->description=array();
+            $this->ldapdata['description']=array();
+        }
+        
         $init=array(
             "cn" => $this->cn,
             "gidNumber" => $this->gidNumber,
+            "description" => $this->description,
             "objectClass" => array('posixGroup'),
                     );
         $gui->debuga($init);
@@ -1523,12 +1534,18 @@ class GROUP extends BASE {
             $ldap->disconnect();
             return false;
         }
-        
+
+        if ($this->description == ''){
+            $this->description=array();
+            $this->ldapdata['description']=array();
+        }
+
         $init=array(
             "displayName" => $this->displayName,
             "gidNumber" => $this->gidNumber,
             "sambaSID" => $this->sambaSID,
             "sambaGroupType" => $this->sambaGroupType,
+            "description" => $this->description,
             #"memberUID" => $this->memberUid,
             "objectClass" => array('posixGroup', 'sambaGroupMapping', 'eboxGroup'),
                     );

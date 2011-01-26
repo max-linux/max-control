@@ -18,6 +18,13 @@
         </td>
     </tr>
 
+    <tr> 
+        <td class='tright'><span class="ftitle">Comentario:</span></td>
+        <td>
+            <input type='text' class='inputText' name='description' id='description' value="{$u->attr('description')}" /> 
+        </td>
+    </tr>
+
     <tr>
         <td class='tright'><span class='ftitle'>Rol (permisos):</span></td> 
         <td> 

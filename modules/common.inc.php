@@ -176,6 +176,15 @@ function sanitizeOne($var, $type) {
         case 'trim_urle': // trim string, url decoded
         $var = urldecode ( trim ( $var ) );
         break;
+        
+        case 'role': // admin, tic, teacher or empty
+            switch ( $var ) {
+                case "admin":   $var='admin'; break;
+                case "tic":     $var='tic'; break;
+                case "teacher": $var='teacher'; break;
+                default:        $var=''; break;
+            }
+        break;
     }
     return $var;
 }
