@@ -62,7 +62,7 @@ def getQuota(user, used=False):
     if used:
         column=1
     size=0
-    cmd="/usr/sbin/edquota -u %s -f %s 2>/dev/null"%(user, HOME)
+    cmd="/usr/sbin/edquota -u %s -f %s "%(user, HOME)
     p = Popen(cmd, shell=True, bufsize=0, stdout=PIPE, stderr=STDOUT, close_fds=True)
     stdout = p.stdout
     for line in stdout.readlines():
