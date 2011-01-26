@@ -76,14 +76,15 @@ if ($active_action == "guardar") {
     }
     
     $usuario->set($_POST);
-    $res=$usuario->save( array('cn') );
+    $res=$usuario->save( array('cn', 'sn') );
     
     if ($res)
         $gui->session_info("Datos guardados correctamente");
     else
         $gui->session_error("Error guardando datos, por favor inténtelo de nuevo.");
     
-    $url->ir($module, "");
+    if(! DEBUG)
+        $url->ir($module, "editar");
 }
 
 
