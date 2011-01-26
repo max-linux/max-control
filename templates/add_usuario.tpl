@@ -1,7 +1,7 @@
 <h3>Añadir usuario</h3>
 
 
-<form action='{$urlform}' method='post' onsubmit="return checkpass(); return false;"> 
+<form action='{$urlform}' method='post' onsubmit="return checkpass();"> 
     <table class='formTable'> 
         <tr> 
             <td class='tright'><span class="ftitle">Nombre de usuario:</span></td> 
@@ -26,7 +26,10 @@
 
         <tr> 
             <td class='tright'><span class='ftitle'>Contraseña:</span></td> 
-            <td><input type='password' class='inputText' name='password' id='password' autocomplete="off"/></td> 
+            <td>
+                <input type='password' class='inputText' name='password' id='password' autocomplete="off"/> 
+                <span class="error" style="display:none;" id='nullpassword'>Las contraseñas no pueden estar vacías</span>
+            </td>
         </tr>
 
         <tr>
@@ -49,7 +52,9 @@
                     <option value=''>Alumno</option> 
                     <option value='teacher'>Profesor</option> 
                     <option value='tic'>Coordinador TIC</option> 
+                    {if $permisos->is_admin() }
                     <option value='admin'>Administrador</option> 
+                    {/if}
                 </select> 
             </td> 
         </tr>
@@ -75,6 +80,7 @@
 
 <script type="text/javascript">
     var ajaxurl="{$baseurl}/index.php?ajax=1";
+    var valid=false;
 </script>
 
 {literal}
@@ -96,24 +102,33 @@ function useduid(uid) {
         if (data == 'used') {
             $('#usernotvalid')[0].style.display='';
             $('#uservalid')[0].style.display='none';
-            return false;
+            valid=false;
         }
         else if (data == 'invalid') {
             $('#userinvalid')[0].style.display='';
             $('#uservalid')[0].style.display='none';
-            return false;
+            valid=false;
         }
         else if (data == 'free') {
             $('#usernotvalid')[0].style.display='none';
             $('#uservalid')[0].style.display='';
+            valid=true;
         }
         else {
             alert("Respuesta desconocida: \n'" + data + "'");
+            valid=false;
         }
       }
     });
 }
 function checkpass() {
+    if ( ! valid ) {
+        return false;
+    }
+    if ($('#password')[0].value == '' ) {
+        $('#nullpassword')[0].style.display='';
+        return false;
+    }
     if ( $('#password')[0].value !=  $('#repassword')[0].value) {
         $('#badpassword')[0].style.display='';
         return false;

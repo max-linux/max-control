@@ -107,8 +107,14 @@ function ver($module, $action, $subaction) {
 }
 
 function editar($module, $action, $subaction){
-    global $gui, $url;
+    global $gui, $url,$permisos;
     $username=$url->get("subaction");
+    
+    if (!$permisos->is_admin() && $username == $_SESSION["username"]) {
+        $gui->session_error("Sólo los Administradores pueden editar su propia cuenta.");
+        $url->ir($module, "ver");
+    }
+    
     $ldap=new LDAP();
     $user=$ldap->get_user($username);
     
@@ -117,18 +123,24 @@ function editar($module, $action, $subaction){
         $url->ir($module, "ver");
     }
     
+    if( ! $permisos->is_admin() && $user->get_role() == 'admin') {
+        $gui->session_error("Sólo los Administradores pueden editar cuentas de Administradores.");
+        $url->ir($module, "ver");
+    }
+    
     $urlform=$url->create_url($module, 'guardar');
     
     $data=array("username"=>$username, 
                 "u"=>$user,
                 "urlform"=>$urlform,
+                "permisos"=> $permisos,
                 "action" => "Editar");
     
     $gui->add( $gui->load_from_template("editar_usuario.tpl", $data ) );
 }
 
 function guardar($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url,$permisos;
     /* role:
     *        empty => alumno
     *        teacher => Profesor
@@ -149,11 +161,24 @@ function guardar($module, $action, $subaction) {
         )
     */
     $useruid=leer_datos('uid');
+    if ($permisos->is_tic() && $useruid == $_SESSION["username"]) {
+        $gui->session_error("Un Coordinador TIC no puede editar su propia cuenta");
+        $url->ir($module, "ver");
+    }
     $ldap=new LDAP();
     
     //$gui->debug("<pre>".print_r($ldap->additionalPasswords('test', 'test'), true)."</pre>");
     
     $usuario=$ldap->get_user($useruid);
+    if( ! $permisos->is_admin() && $usuario->get_role() == 'admin') {
+        $gui->session_error("Sólo los Administradores pueden editar cuentas de Administradores.");
+        $url->ir($module, "ver");
+    }
+    
+    if( !$permisos->is_admin() && leer_datos('role') == 'admin') {
+        $gui->session_error("Sólo los Administradores pueden elevar permisos a administrador.");
+        $url->ir($module, "ver");
+    }
     
     $usuario->set($_POST);
     $res=$usuario->save( array('cn', 'sn', 'loginShell') );
@@ -163,7 +188,7 @@ function guardar($module, $action, $subaction) {
     else
         $gui->session_error("Error guardando datos, por favor inténtelo de nuevo.");
     
-    // guardar grupo
+    // guardar rol/grupo
     $usuario->set_role(leer_datos('role'));
     
     // guardar contraseña
@@ -181,42 +206,6 @@ function guardar($module, $action, $subaction) {
         $url->ir($module, "ver");
 }
 
-/*
-function delete($module, $action, $subaction) {
-    global $gui, $url;
-    $user=leer_datos('subaction');
-    $data=array("user" => $user,
-                "urlform"=>$url->create_url($module, 'deletedo', $user));
-    
-    $gui->add( $gui->load_from_template("del_usuario.tpl", $data) );
-}
-
-function deletedo($module, $action, $subaction) {
-    global $gui, $url;
-    $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
-    $username=leer_datos('username');
-    $deleteprofile=leer_datos('deleteprofile'); // 1 o vacio 
-
-    if ($username == '') {
-        $gui->session_error("No se pudo encontrar el usuario '$username'");
-        $url->ir($module, "ver");
-    }
-
-    $ldap=new LDAP();
-    $user=$ldap->get_user($username);
-    if ( ! $user ){
-        $gui->session_error(" El usuario '$username' no existe.");
-        $url->ir($module, "ver");
-    }
-    
-    if ( $user->delUser($deleteprofile) )
-        $gui->session_info("Usuario '$username' borrado.");
-    
-    if(! DEBUG)
-        $url->ir($module, "ver");
-}
-*/
-
 function deletemultiple($module, $action, $subaction) {
     global $gui, $url;
     $users=leer_datos('usernames');
@@ -233,7 +222,7 @@ function deletemultiple($module, $action, $subaction) {
 }
 
 function deletemultipledo($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url,$permisos;
     $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
     $usernames=leer_datos('usernames');
     $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
@@ -251,6 +240,14 @@ function deletemultipledo($module, $action, $subaction) {
         if ( ! $user ){
             $gui->session_error(" El usuario '$username' no existe.");
         }
+        if( ! $permisos->is_admin() && $user->get_role() == 'admin') {
+            $gui->session_error("Usuario '$username' no borrado, se necesita ser administrador para borrar Administradores.");
+            continue;
+        }
+        if (! $permisos->is_admin() && $username == $_SESSION["username"]) {
+            $gui->session_error("Usuario '$username' no borrado, sólo los Administradores pueden borrar su propia cuenta.");
+            continue;
+        }
         if ( $user->delUser($deleteprofile) )
             $gui->session_info("Usuario '$username' borrado.");
     }
@@ -259,20 +256,21 @@ function deletemultipledo($module, $action, $subaction) {
 }
 
 function add($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url, $permisos;
     $user=new USER();
     $url=new URLHandler();
     $urlform=$url->create_url($module, 'guardarnuevo');
     
     $data=array("u"=>$user,
                 "urlform"=>$urlform,
+                "permisos"=> $permisos,
                 "action" => "Editar");
     
     $gui->add( $gui->load_from_template("add_usuario.tpl", $data ) );
 }
 
 function guardarnuevo($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url,$permisos;
     /* role:
     *        empty => alumno
     *        teacher => Profesor
@@ -293,7 +291,10 @@ function guardarnuevo($module, $action, $subaction) {
             [add] => Añadir
         )
     */
-    
+    if( !$permisos->is_admin() && leer_datos('role') == 'admin') {
+        $gui->session_error("Sólo los Administradores pueden crear Administradores.");
+        $url->ir($module, "ver");
+    }
     // comprobar contraseñas
     if ( leer_datos('password') != leer_datos('repassword') ) {
         $gui->session_error("Las contraseñas no coinciden.");

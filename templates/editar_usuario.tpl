@@ -3,7 +3,7 @@
 <h3>Editando usuario  <span class='stitle'>{$username}</span></h3> 
  
 
- <form action='{$urlform}' method='post' onsubmit="return checkpass(); return false;"> 
+ <form action='{$urlform}' method='post' onsubmit="return checkpass();"> 
     <table class='formTable'> 
     <tr> 
         <td class='tright'><span class="ftitle">Nombre:</span></td>
@@ -25,7 +25,9 @@
                 <option value='' {if $u->get_role() == ''}selected='selected'{/if}>Alumno</option> 
                 <option value='teacher' {if $u->get_role() == 'teacher'}selected='selected'{/if}>Profesor</option> 
                 <option value='tic' {if $u->get_role() == 'tic'}selected='selected'{/if}>Coordinador TIC</option> 
+                {if $permisos->is_admin() }
                 <option value='admin' {if $u->get_role() == 'admin'}selected='selected'{/if}>Administrador</option> 
+                {/if}
             </select> 
         </td> 
     <tr>
