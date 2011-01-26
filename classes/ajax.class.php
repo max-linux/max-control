@@ -86,8 +86,8 @@ class Ajax {
 
     function process( $data ) {
         global $permisos;
-        if( ! $permisos->is_admin() )
-            return $this->invalid("Acceso denegado");
+        if( ! ($permisos->is_admin() || $permisos->is_tic()) )
+            return $this->invalid("Acceso denegado, solo Administradores y Coordinadores TIC.");
         
         if ( ! isset($data['accion']) ) {
             return $this->invalid();
