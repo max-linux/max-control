@@ -78,6 +78,7 @@ $nav = new Navigator();
 if (isset($gui) && isset($_SESSION["user"]) ){
   $gui->assign("logout", True );
   $gui->assign("user", $_SESSION["user"] );
+  $gui->assign("role", $permisos->get_humanrole() );
   $gui->assign("logout_url", $nav->url->create_url("login", "logout") );
 }
 elseif ( isset($gui) ) {

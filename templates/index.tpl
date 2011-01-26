@@ -25,7 +25,8 @@
 </div> 
 
 <div id="hmenu"> 
-  <a id="m" href="{$logout_url}">Salir de sesión</a> 
+  
+  <a id="m" href="{$logout_url}"><small>{$role}</small><br/>Salir de sesión</a> 
 </div> 
 
 <h3>Panel de control de Servidor de Centro</h3>
