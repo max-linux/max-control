@@ -176,8 +176,8 @@ class Gui
         if (DEBUG) {
             $n->assign('DEBUG', "1");
             $n->debugging=true;
-            /*$n->debug_tpl='debug.tpl';
-            $n->debug_output="html";*/
+            $n->debug_tpl='debug.tpl';
+            $n->debug_output="html";
             $n->error_reporting=true;
         }
         
