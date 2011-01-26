@@ -1,3 +1,26 @@
+max-control (1.0.6) max; urgency=low
+
+  [ Mario Izquierdo (mariodebian) ]
+  * classes/gui.class.php: disable smarty debug template
+  * modules/power.mod.php: ask before doing actions, close #50
+  * classes/ajax.class.php: allow admin||tics to call ajax methods
+  * templates/miperfil.tpl modules/miperfil.mod.php: Allow to change
+    Apellidos in miperfil
+  * www/index.php www/css/style.css classes/permisos.class.php
+    templates/index.tpl: show role in logout button
+  * classes/gui.class.php: enable debug template in sublayout
+  * modules/usuarios.mod.php templates/add_aula.tpl
+    templates/add_group.tpl templates/add_usuario.tpl
+    templates/editar_usuario.tpl: validate forms and limit TIC actions
+    when add/edit/delete users
+  * sanitize $_POST, save and show description, onot allow TICS to
+    change to ADMIN or create/edit/delete ADMINs, validate forms, refs
+    #36, #37
+  * re-set quota when change role, and recache (in background) when
+    change user roles
+
+ -- root <root@max-server>  Wed, 26 Jan 2011 17:51:11 +0100
+
 max-control (1.0.5) max; urgency=low
 
   * Fix tipo: Eneceder => Encender close #52
