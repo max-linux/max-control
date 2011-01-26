@@ -295,6 +295,24 @@ class USER extends BASE {
         return $this->get_role() == $role;
     }
     
+    function reQuota(){
+        /*
+        Call max-control 
+        */
+        global $gui;
+        $ldap=new LDAP();
+        $cmd='sudo '.MAXCONTROL.' requota '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1';
+        $gui->debug("reQuota(cmd='$cmd')");
+        exec($cmd, &$output);
+        
+        $gui->debuga($output);
+        
+        /* launch rechache in background */
+        $cmd='sudo '.MAXCONTROL.' recache > /dev/null 2>&1 &';
+        $gui->debug($cmd);
+        pclose(popen($cmd, "r"));
+    }
+    
     function set_role($role) {
         global $gui;
         $gui->debug("USER:set_role('$role')");
@@ -322,6 +340,7 @@ class USER extends BASE {
             $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
             $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
             $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
+            $this->reQuota();
             return;
         }
         elseif ($role == 'tic') {
@@ -332,6 +351,7 @@ class USER extends BASE {
             $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
             $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
             $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
+            $this->reQuota();
             return;
         }
         elseif ($role == 'teacher') {
@@ -343,6 +363,7 @@ class USER extends BASE {
             $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
             $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
             $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
+            $this->reQuota();
             return;
         }
         elseif ($role == 'admin') {
@@ -361,6 +382,7 @@ class USER extends BASE {
             $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
             $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
             $ldap->addUserToGroup($this->uid, LDAP_OU_INSTALLATORS);
+            $this->reQuota();
             return;
         }
     }

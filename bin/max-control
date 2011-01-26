@@ -40,6 +40,33 @@ if [ "$1" = "createhome" ]; then
   exit 0
 fi
 
+if [ "$1" = "requota" ]; then
+  NEWUSER=$2
+  QUOTA=$3
+  if id "$NEWUSER" 2>/dev/null | grep -q Teachers ; then
+        QUOTA=$((QUOTA*2))
+  elif id "$NEWUSER" 2>/dev/null | grep -q Administrators ; then
+        QUOTA=$((QUOTA*2))
+  fi
+  # set quota
+  #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
+  /usr/bin/edit.quotas --set --user=${NEWUSER} --size=${QUOTA}
+  exit 0
+fi
+
+if [ "$1" = "recache" ]; then
+  if [ -e /var/lib/max-control/quota.cache.php.new ]; then
+    # exit if updating quotas
+    exit 0
+  fi
+  if [ -x /usr/bin/pyoverquota ]; then
+    pyoverquota >> /var/lib/max-control/quota.cache.php.new 2>/var/log/max-control-pxe.log && \
+    mv /var/lib/max-control/quota.cache.php.new /var/lib/max-control/quota.cache.php
+  fi
+  rm -f /var/lib/max-control/quota.cache.php.new
+  exit 0
+fi
+
 if [ "$1" = "deleteprofile" ]; then
   DELUSER=$2
   [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
@@ -91,7 +118,7 @@ fi
 if [ "getdefaultquota" = "$1" ]; then
   DEF=$(grep '"userquota_size"' /var/lib/ebox/gconf/ebox/modules/samba/GeneralSettings/%gconf.xml 2>/dev/null | awk -F '"' '{print $8}')
 
-  if [ "DEF" = "" ]; then
+  if [ "$DEF" = "" ]; then
     echo 500
   else
    echo $DEF
