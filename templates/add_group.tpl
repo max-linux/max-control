@@ -1,7 +1,7 @@
 <h3>Añadir grupo</h3>
 
 
-<form action='{$urlform}' method='post'> 
+<form action='{$urlform}' method='post' onsubmit="return checkform();"> 
     <table class='formTable'> 
         <tr> 
             <td class='tright'><span class="ftitle">Nombre del grupo:</span></td> 
@@ -35,6 +35,7 @@
 
 <script type="text/javascript">
     var ajaxurl="{$baseurl}/index.php?ajax=1";
+    var valid=false;
 </script>
 
 {literal}
@@ -47,7 +48,7 @@ function usedcn(cn) {
     }
     $('#groupempty')[0].style.display='none';
     $('#groupinvalid')[0].style.display='none';
-    // ver si el usuario está ocupado
+    // ver si el grupo está ocupado
     $.ajax({
       type: "POST",
       url: ajaxurl,
@@ -56,23 +57,28 @@ function usedcn(cn) {
         if (data == 'used') {
             $('#groupnotvalid')[0].style.display='';
             $('#groupvalid')[0].style.display='none';
-            return false;
+            valid=false;
         }
         else if (data == 'invalid') {
             $('#groupinvalid')[0].style.display='';
             $('#groupvalid')[0].style.display='none';
-            return false;
+            valid=false;
         }
         else if (data == 'free') {
             $('#groupnotvalid')[0].style.display='none';
             $('#groupvalid')[0].style.display='';
-            //alert('usuario disponible');
+            valid=true;
         }
         else {
             alert('Error servicio AJAX');
+            valid=false;
         }
       }
     });
+}
+
+function checkform() {
+    return valid;
 }
 -->
 </script>
