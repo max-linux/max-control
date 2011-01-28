@@ -185,7 +185,10 @@ class BASE {
             $tmp=array();
             $tmp[$k]=$this->ldapdata[$k];
             //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
-            $r = ldap_modify($ldap->cid, $this->get_save_dn(), $tmp );
+            if (DEBUG)
+                $r = ldap_modify($ldap->cid, $this->get_save_dn(), $tmp );
+            else
+                $r = @ldap_modify($ldap->cid, $this->get_save_dn(), $tmp );
             $gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
             if ( !$r) {
                 $gui->debug( ldap_error($ldap->cid) );

@@ -110,8 +110,8 @@ function editar($module, $action, $subaction){
     global $gui, $url,$permisos;
     $username=$url->get("subaction");
     
-    if (!$permisos->is_admin() && $username == $_SESSION["username"]) {
-        $gui->session_error("Sólo los Administradores pueden editar su propia cuenta.");
+    if ($username == $_SESSION["username"]) {
+        $gui->session_error("No se puede editar la cuenta con la que se está conectado.");
         $url->ir($module, "ver");
     }
     
@@ -181,10 +181,10 @@ function guardar($module, $action, $subaction) {
     }
     
     sanitize($_POST, array('uid' => 'str',
-                           'cn'=>'plain',
-                           'sn' => 'plain',
-                           'description' => 'plain',
-                           'loginShell' => 'plain',
+                           'cn'=>'charnum',
+                           'sn' => 'charnum',
+                           'description' => 'charnum',
+                           'loginShell' => 'shell',
                            'role' => 'role'));
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $usuario->set($_POST);
