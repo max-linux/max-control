@@ -185,6 +185,25 @@ function sanitizeOne($var, $type) {
                 default:        $var=''; break;
             }
         break;
+        
+        case 'charnum': // only chars, numbers and some special
+        $var = ereg_replace("[^A-Za-z0-9.-_ áéíóúÁÉÍÓÚñÑ]", "", $var); 
+        break;
+        
+        case 'shell': // /bin/bash /bin/false
+            switch ( $var ) {
+                case "/bin/bash":   $var='/bin/bash'; break;
+                default:            $var='/bin/false'; break;
+            }
+        break;
+        
+        case 'net': // xx.xx.xx.xx
+        $var = ereg_replace("[^0-9.]", "", $var); 
+        break;
+        
+        case 'mac': // xx:xx:xx:xx:xx:xx
+        $var = ereg_replace("[^A-Za-z0-9:]", "", $var); 
+        break;
     }
     return $var;
 }

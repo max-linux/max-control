@@ -76,9 +76,9 @@ if ($active_action == "guardar") {
     }
     
     sanitize($_POST, array('uid' => 'str',
-                           'cn'=>'plain',
-                           'sn' => 'plain',
-                           'description' => 'plain'));
+                           'cn'=>'charnum',
+                           'sn' => 'charnum',
+                           'description' => 'charnum'));
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $usuario->set($_POST);
     

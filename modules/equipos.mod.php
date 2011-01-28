@@ -218,18 +218,18 @@ function guardar($module, $action, $subaction){
     )
     */
     sanitize($_POST, array('sambaProfilePath' => 'str',
-                           'ipHostNumber'=>'plain',
-                           'ipNetmaskNumber' => 'plain',
-                           'macAddress' => 'plain',
+                           'ipHostNumber'=>'net',
+                           'ipNetmaskNumber' => 'net',
+                           'macAddress' => 'mac',
                            'bootFile' => 'plain',
                            'hostname' => 'plain'));
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $equipo->set($_POST);
     $res=$equipo->save( array('sambaProfilePath', 
-                         'ipHostNumber', 
-                         'ipNetmaskNumber', 
-                         'macAddress', 
-                         'bootFile') );
+                              'ipHostNumber', 
+                              'ipNetmaskNumber', 
+                              'macAddress', 
+                              'bootFile') );
     
     if ($res) {
         $gui->session_info("Equipo guardado correctamente.");
