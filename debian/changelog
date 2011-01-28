@@ -1,3 +1,17 @@
+max-control (1.0.7) max; urgency=low
+
+  [ Mario Izquierdo (mariodebian) ]
+  * classes/ldap.class.php templates/power_equipos.tpl
+    templates/ver_equipos.tpl www/status.php: show image with host
+    status on/off, close #54
+  * classes/ldap.class.php modules/common.inc.php
+    modules/equipos.mod.php modules/miperfil.mod.php
+    modules/usuarios.mod.php: fix specialchars with news sanitize
+    filter, don't allow user to edit himself, hide ldap_modify warnings
+    if no DEBUG, sanitize IP/MAC address, close #53
+
+ -- root <root@max-server>  Fri, 28 Jan 2011 12:37:34 +0100
+
 max-control (1.0.6) max; urgency=low
 
   [ Mario Izquierdo (mariodebian) ]
