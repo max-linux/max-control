@@ -161,8 +161,8 @@ function guardar($module, $action, $subaction) {
         )
     */
     $useruid=leer_datos('uid');
-    if ($permisos->is_tic() && $useruid == $_SESSION["username"]) {
-        $gui->session_error("Un Coordinador TIC no puede editar su propia cuenta");
+    if ($useruid == $_SESSION["username"]) {
+        $gui->session_error("No se puede editar la cuenta con la que se está conectado.");
         $url->ir($module, "ver");
     }
     $ldap=new LDAP();
@@ -255,8 +255,8 @@ function deletemultipledo($module, $action, $subaction) {
             $gui->session_error("Usuario '$username' no borrado, se necesita ser Administrador para borrar Administradores.");
             continue;
         }
-        if (! $permisos->is_admin() && $username == $_SESSION["username"]) {
-            $gui->session_error("Usuario '$username' no borrado, sólo los Administradores pueden borrar su propia cuenta.");
+        if ($username == $_SESSION["username"]) {
+            $gui->session_error("Usuario '$username' no borrado, no se puede borrar la cuenta con la que se está conectado.");
             continue;
         }
         if ( $user->delUser($deleteprofile) )
@@ -316,6 +316,15 @@ function guardarnuevo($module, $action, $subaction) {
         $url->ir($module, "add");
     }
     
+    sanitize($_POST, array('uid' => 'str',
+                           'cn'=>'charnum',
+                           'sn' => 'charnum',
+                           'description' => 'charnum',
+                           'loginShell' => 'shell',
+                           'role' => 'role',
+                           'password' => 'str',
+                           'repassword' => 'str'));
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $user = new USER($_POST);
     if ( ! $user->newUser() ) 
         $url->ir($module, "add");
