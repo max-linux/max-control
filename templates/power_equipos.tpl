@@ -35,6 +35,7 @@
       <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')}</th> 
       <th class=''>Acciones</th> 
       <th class=''>Encender/Reiniciar en</th> 
+      <th class=''>Estado</th> 
       <th class=''>Múltiple
        <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/>
       </th>
@@ -58,6 +59,9 @@
             <a href="{$urlrebootwindows}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en Windows"><img src="{$baseurl}/img/windows-logo.jpg" alt="windows" /></a>
             <a href="{$urlrebootmax}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en MAX"><img src="{$baseurl}/img/linux-logo.jpg" alt="MAX" /></a>
             <a href="{$urlbackharddi}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en Backharddi-NG"><img src="{$baseurl}/img/backharddi-logo.jpg" alt="Backharddi-NG" /></a>
+        </td>
+        <td class='tcenter'> 
+            <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="estado" />
         </td>
         <td class='tcenter'> 
             <input type='checkbox' class="computeraction" name="{$u->hostname()}" id="{$u->hostname()}" onchange="javascript:oncheckboxChange();"/>

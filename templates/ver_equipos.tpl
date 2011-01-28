@@ -37,6 +37,7 @@
           </select>
       </th> 
       <th class=''>Editar</th> 
+      <th class=''>Estado</th> 
       <th class=''>Borrar <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th> 
     </tr>
     </thead>
@@ -50,6 +51,9 @@
         <td class='tcenter'><span>{$u->attr('sambaProfilePath')}</span></td>
         <td class='tcenter'> 
             <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
+        </td>
+        <td class='tcenter'> 
+            <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="estado" />
         </td>
         <td class='tcenter'> 
             <input type='checkbox' class="hostdel" name="{$u->attr('uid')}" id="{$u->attr('uid')}" onchange="javascript:oncheckboxChange();"/>

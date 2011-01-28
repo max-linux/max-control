@@ -692,6 +692,11 @@ class COMPUTER extends BASE {
         return 'uid='.$this->uid.','.LDAP_OU_COMPUTERS;
     }
     
+    function rnd() {
+        /* return a uniq HASH to pass to status.php and no cache images */
+        return md5(microtime());
+    }
+    
     function load_class_required($varname) {
         if ($varname == 'ipHost')
             return array('ipHostNumber' => $this->ldapdata['ipHostNumber']);
