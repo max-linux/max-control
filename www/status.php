@@ -68,11 +68,11 @@ if ( ! isset($equipo[0]->uid) ) {
 if (! $equipo[0]->exe->is_alive() ) {
     /* ping failed*/
     $gui->debug("APAGADO");
-    header("Location: $schema://$host/$path/img/error.png");
+    header("Location: $schema://$host/$path/img/status_poweroff.png");
     mdie();
 }
 $gui->debug("ENCENDIDO");
-header("Location: $schema://$host/$path/img/apply.gif");
+header("Location: $schema://$host/$path/img/status_ok.png");
 
 
 
