@@ -1,3 +1,11 @@
+max-control (1.0.8) max; urgency=low
+
+  * modules/usuarios.mod.php: sanitize new user, and don't allow to
+    save/delete self profile, rel #53
+  * New action and status icons, thanks to roberto.mengibar
+
+ -- root <root@max-server>  Mon, 31 Jan 2011 11:19:59 +0100
+
 max-control (1.0.7) max; urgency=low
 
   [ Mario Izquierdo (mariodebian) ]
