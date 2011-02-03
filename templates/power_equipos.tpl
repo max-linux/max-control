@@ -61,7 +61,7 @@
             <a href="{$urlbackharddi}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en Backharddi-NG"><img src="{$baseurl}/img/backharddi.png" alt="Backharddi-NG" /></a>
         </td>
         <td class='tcenter'> 
-            <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="estado" />
+            <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="calculando..." />
         </td>
         <td class='tcenter'> 
             <input type='checkbox' class="computeraction" name="{$u->hostname()}" id="{$u->hostname()}" onchange="javascript:oncheckboxChange();"/>
