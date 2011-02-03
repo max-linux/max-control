@@ -1,3 +1,13 @@
+max-control (1.0.9) max; urgency=low
+
+  * modules/equipos.mod.php conf.inc.php conf.inc.php.example
+    conf.inc.php.init: only allow Administrator to enter equipos module
+    close: #55
+  * templates/power_equipos.tpl templates/ver_equipos.tpl: change alt
+    text
+
+ -- root <root@max-server>  Thu, 03 Feb 2011 16:08:04 +0100
+
 max-control (1.0.8) max; urgency=low
 
   * modules/usuarios.mod.php: sanitize new user, and don't allow to
