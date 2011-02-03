@@ -26,8 +26,8 @@ if ( ! $permisos->is_connected() ) {
     $url->ir("","");
 }
 
-if ( ! ( $permisos->is_admin() || $permisos->is_tic() ) ) {
-    $gui->session_error("Sólo pueden acceder al módulo de equipos los administradores o coordinadores TIC.");
+if ( ! $permisos->is_admin() ) {
+    $gui->session_error("Sólo pueden acceder al módulo de equipos los Administradores.");
     $url->ir("","");
 }
 /*************************************************/
@@ -35,19 +35,18 @@ if ( ! ( $permisos->is_admin() || $permisos->is_tic() ) ) {
 
 $module_actions=array(
         "ver" => "Ver equipos",
-        "aulas" => "Ver aulas",
-);
-
+        "aulas" => "Ver aulas");
 
 
 /*************************************************/
 
-if ($action == "") {
+if ($action == "")
     $url->ir($module, "ver");
-}
+
 
 function ver($module, $action, $subaction) {
-    global $gui, $url;
+    global $gui, $url, $permisos;
+    
     $button=leer_datos('button');
     $gui->debug("button='$button'");
     
@@ -93,7 +92,8 @@ function ver($module, $action, $subaction) {
 }
 
 function editar($module, $action, $subaction){
-    global $gui, $url;
+    global $gui, $url, $permisos;
+    
     $hostname=$url->get("subaction");
     $ldap=new LDAP();
     $equipo=$ldap->get_computers($hostname.'$');
@@ -151,10 +151,7 @@ function purgewinsdo($module, $action, $subaction){
 
 function borrar($module, $action, $subaction){
     global $gui, $url, $permisos;
-    if ( $permisos->is_tic() ) {
-        $gui->session_error("Los Coordinadores TIC no pueden borrar equipos.");
-        $url->ir($module, "ver");
-    }
+    
     $equipos=leer_datos("hostnames");
     $equiposarray=preg_split("/,/", $equipos);
     $data=array(
@@ -167,10 +164,7 @@ function borrar($module, $action, $subaction){
 
 function borrardo($module, $action, $subaction){
     global $gui, $url, $permisos;
-    if ( $permisos->is_tic() ) {
-        $gui->session_error("Los Coordinadores TIC no pueden borrar equipos.");
-        $url->ir($module, "ver");
-    }
+    
     $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
     $equipos=leer_datos('equipos');
     
@@ -197,7 +191,8 @@ function borrardo($module, $action, $subaction){
 }
 
 function guardar($module, $action, $subaction){
-    global $gui, $url;
+    global $gui, $url, $permisos;
+    
     $hostname=leer_datos('hostname');
     $ldap=new LDAP();
     $equipos=$ldap->get_computers($hostname.'$');
@@ -355,10 +350,7 @@ function aulasguardar($module, $action, $subaction){
 /****************************************************/
 function aulasequipos($module, $action, $subaction){
     global $gui, $url, $permisos;
-    if ( $permisos->is_tic() ) {
-        $gui->session_error("Los Coordinadores TIC no pueden añadir o quitar equipos de aulas.");
-        $url->ir($module, "aulas");
-    }
+    
     $aula=leer_datos('args');
     $ldap=new LDAP();
     $all=$ldap->get_computers_in_and_not_aula($aula);
@@ -376,10 +368,7 @@ function aulasequipos($module, $action, $subaction){
 
 function equiposguardar($module, $action, $subaction){
     global $gui, $url, $permisos;
-    if ( $permisos->is_tic() ) {
-        $gui->session_error("Los Coordinadores TIC no pueden añadir o quitar equipos de aulas.");
-        $url->ir($module, "aulas");
-    }
+    
     $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
     
     /* Add computer
@@ -457,10 +446,7 @@ function equiposguardar($module, $action, $subaction){
 
 function aulasnueva($module, $action, $subaction){
     global $gui, $url, $permisos;
-    if ( $permisos->is_tic() ) {
-        $gui->session_error("Los Coordinadores TIC no pueden añadir aulas.");
-        $url->ir($module, "aulas");
-    }
+    
     $group=new GROUP();
     $url=new URLHandler();
     $urlform=$url->create_url($module, $action, 'aulaguardar');
@@ -474,10 +460,7 @@ function aulasnueva($module, $action, $subaction){
 
 function aulasaulaguardar($module, $action, $subaction){
     global $gui, $url, $permisos;
-    if ( $permisos->is_tic() ) {
-        $gui->session_error("Los Coordinadores TIC no pueden añadir aulas.");
-        $url->ir($module, "aulas");
-    }
+    
     $gui->debuga($_POST);
     /*
     Array
@@ -503,10 +486,7 @@ function aulasaulaguardar($module, $action, $subaction){
 
 function aulasborrar($module, $action, $subaction){
     global $gui, $url, $permisos;
-    if ( $permisos->is_tic() ) {
-        $gui->session_error("Los Coordinadores TIC no pueden borrar aulas.");
-        $url->ir($module, "aulas");
-    }
+    
     $aula=leer_datos('args');
     $urlform=$url->create_url($module, $action, 'aulaborrar');
     $data=array("aula" => $aula,
@@ -517,10 +497,7 @@ function aulasborrar($module, $action, $subaction){
 
 function aulasborrardo($module, $action, $subaction){
     global $gui, $url, $permisos;
-    if ( $permisos->is_tic() ) {
-        $gui->session_error("Los Coordinadores TIC no pueden borrar aulas.");
-        $url->ir($module, "aulas");
-    }
+    
     $gui->debug( "<pre>".print_r($_POST, true)."</pre>" );
     /*
     Array
