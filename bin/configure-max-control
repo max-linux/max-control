@@ -30,6 +30,9 @@ if [ "$CONFIGURE" = "1" ]; then
 
     [ ! -e /var/lib/max-control/programer.ini ] && touch /var/lib/max-control/programer.ini
     chown www-data:www-data /var/lib/max-control/programer.ini
+    # create empty log and chown www-data, fix #56
+    touch /var/log/max-control-programer.log
+    chown www-data:www-data /var/log/max-control-programer.log
 
     if [ -e /home/samba/netlogon/domain.txt ]; then
         chmod 644 /home/samba/netlogon/domain.txt
