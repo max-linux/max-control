@@ -1,3 +1,12 @@
+max-control (1.0.10) max; urgency=low
+
+  * Allow Coordinadores TIC to edit teachers in aulas, rel #55
+  * Don't show backharddi icon to teachers, close #51
+  * Create empty /var/log/max-control-programer.log, close #56
+  * Only allow Administradores to boot with backharddi , rel #51
+
+ -- root <root@max-server>  Mon, 14 Feb 2011 12:37:02 +0100
+
 max-control (1.0.9) max; urgency=low
 
   * modules/equipos.mod.php conf.inc.php conf.inc.php.example
