@@ -18,12 +18,10 @@ class GUI {
             fwrite(STDERR, "D: ".print_r($txt, true)." \n");
     }
     function debuga($txt) {
-        if($txt == '') return;
-        if (DEBUG)
-            fwrite(STDERR, "D: ".print_r($txt, true)." \n");
+        $this->debug($txt);
     }
     function session_info($txt) {
-        $this->debug("SESSION INFO: ".$txt);
+        $this->info("SESSION INFO: ".$txt);
     }
     function session_error($txt) {
         $this->debug("SESSION ERROR:".$txt);
