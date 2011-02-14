@@ -38,7 +38,6 @@ if ( $permisos->get_rol() == '' ) {
 $module_actions=array(
         "aulas" => "Aulas",
         "equipos" => "Equipos",
-        #"backharddi" => "Backharddi-NG",
 );
 
 global $multiple_actions;
@@ -47,14 +46,17 @@ $multiple_actions=array("poweroff" =>         "Apagar seleccionados",
                         "wakeonlan" =>        "Encender seleccionados",
                         "rebootwindows" =>    "Reiniciar en Windows los seleccionados",
                         "rebootmax" =>        "Reiniciar en MAX los seleccionados",
-                        "rebootbackharddi" => "Reiniciar en Backharddi los seleccionados",
+                        #"rebootbackharddi" => "Reiniciar en Backharddi los seleccionados",
                         );
 
+if ( ! $permisos->is_teacher() ) {
+    $multiple_actions["rebootbackharddi"]="Reiniciar en Backharddi los seleccionados";
+}
 
 /*************************************************/
 
 function aulas($module, $action, $subaction) {
-    global $gui, $url, $multiple_actions;
+    global $gui, $url, $multiple_actions, $permisos;
     // mostrar lista de aulas
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -67,9 +69,15 @@ function aulas($module, $action, $subaction) {
     $aulas=$pager->getItems();
     $pager->sortfilter="(cn|cachednumcomputers)";
     
+    $mode='admin';
+    if ( $permisos->is_teacher() ) {
+        $mode='teacher';
+    }
+    
     $data=array("aulas" => $aulas, 
                 "filter" => $filter,
                 "urlform" => $urlform,
+                "mode" => $mode,
                 "urlpoweroff"=>$url->create_url($module, 'aula_preguntar', 'poweroff'),
                 "urlreboot"=>$url->create_url($module, 'aula_preguntar', 'reboot'),
                 "urlrebootwindows"=>$url->create_url($module, 'aula_preguntar', 'rebootwindows'),
@@ -131,7 +139,7 @@ function aulado($module, $action, $subaction) {
 }
 
 function equipos($module, $action, $subaction) {
-    global $gui, $url, $multiple_actions;
+    global $gui, $url, $multiple_actions, $permisos;
     // mostrar lista de equipos
     $ldap=new LDAP();
     $filter=leer_datos('Filter');
@@ -144,9 +152,15 @@ function equipos($module, $action, $subaction) {
     $equipos=$pager->getItems();
     $pager->sortfilter="(uid|ipHostNumber|macAddress|sambaProfilePath)";
     
+    $mode='admin';
+    if ( $permisos->is_teacher() ) {
+        $mode='teacher';
+    }
+    
     $data=array("equipos" => $equipos, 
                 "filter" => $filter,
                 "urlform" => $urlform,
+                "mode" => $mode,
                 "urlpoweroff"=>$url->create_url($module, 'equipo_preguntar', 'poweroff'),
                 "urlreboot"=>$url->create_url($module, 'equipo_preguntar', 'reboot'),
                 "urlrebootwindows"=>$url->create_url($module, 'equipo_preguntar', 'rebootwindows'),
@@ -196,7 +210,7 @@ function docomputer($module, $action, $subaction) {
         $computer->action($subaction, $computer->macAddress);
     }
     // si es backharddi redirigir a un iframe
-    if ( $permisos->is_admin() && ($subaction == 'rebootbackharddi') ) {
+    if ( ! $permisos->is_teacher() && ($subaction == 'rebootbackharddi') ) {
         $url->ir($module, "backharddi");
     }
     
@@ -208,8 +222,8 @@ function docomputer($module, $action, $subaction) {
 
 function backharddi($module, $action, $subaction) {
     global $gui, $url, $permisos;
-    if ( ! $permisos->is_admin() ) {
-        $gui->session_error("Sólo pueden acceder al clonado los administradores.");
+    if ( ! $permisos->is_teacher() ) {
+        $gui->session_error("Sólo pueden acceder al clonado los Administradores y Coordinadores TIC.");
         $url->ir($module,"");
     }
     //$gui->debuga($_SERVER);
