@@ -46,10 +46,9 @@ $multiple_actions=array("poweroff" =>         "Apagar seleccionados",
                         "wakeonlan" =>        "Encender seleccionados",
                         "rebootwindows" =>    "Reiniciar en Windows los seleccionados",
                         "rebootmax" =>        "Reiniciar en MAX los seleccionados",
-                        #"rebootbackharddi" => "Reiniciar en Backharddi los seleccionados",
                         );
 
-if ( ! $permisos->is_teacher() ) {
+if ( $permisos->is_admin() ) {
     $multiple_actions["rebootbackharddi"]="Reiniciar en Backharddi los seleccionados";
 }
 
@@ -70,8 +69,8 @@ function aulas($module, $action, $subaction) {
     $pager->sortfilter="(cn|cachednumcomputers)";
     
     $mode='admin';
-    if ( $permisos->is_teacher() ) {
-        $mode='teacher';
+    if ( ! $permisos->is_admin() ) {
+        $mode='';
     }
     
     $data=array("aulas" => $aulas, 
@@ -153,8 +152,8 @@ function equipos($module, $action, $subaction) {
     $pager->sortfilter="(uid|ipHostNumber|macAddress|sambaProfilePath)";
     
     $mode='admin';
-    if ( $permisos->is_teacher() ) {
-        $mode='teacher';
+    if ( ! $permisos->is_admin() ) {
+        $mode='';
     }
     
     $data=array("equipos" => $equipos, 
@@ -210,7 +209,7 @@ function docomputer($module, $action, $subaction) {
         $computer->action($subaction, $computer->macAddress);
     }
     // si es backharddi redirigir a un iframe
-    if ( ! $permisos->is_teacher() && ($subaction == 'rebootbackharddi') ) {
+    if ( $permisos->is_admin() && ($subaction == 'rebootbackharddi') ) {
         $url->ir($module, "backharddi");
     }
     
@@ -222,8 +221,8 @@ function docomputer($module, $action, $subaction) {
 
 function backharddi($module, $action, $subaction) {
     global $gui, $url, $permisos;
-    if ( ! $permisos->is_teacher() ) {
-        $gui->session_error("Sólo pueden acceder al clonado los Administradores y Coordinadores TIC.");
+    if ( ! $permisos->is_admin() ) {
+        $gui->session_error("Sólo pueden acceder al clonado los Administradores.");
         $url->ir($module,"");
     }
     //$gui->debuga($_SERVER);
