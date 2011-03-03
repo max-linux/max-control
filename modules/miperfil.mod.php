@@ -68,7 +68,7 @@ if ($active_action == "guardar") {
         $new2=leer_datos('newpwd2');
         if ($new != $new2) {
             $gui->session_error("Las contraseñas no coinciden");
-            $url->ir($module, "editar");
+            $url->ir($active_module, "editar");
         }
         else {
             $usuario->update_password($new, $usuario->uid);
@@ -94,7 +94,7 @@ if ($active_action == "guardar") {
         $gui->session_error("Error guardando datos, por favor inténtelo de nuevo.");
     
     if(! DEBUG)
-        $url->ir($module, "editar");
+        $url->ir($active_module, "editar");
 }
 
 
