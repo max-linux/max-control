@@ -1,3 +1,9 @@
+max-control (1.0.11) max; urgency=low
+
+  * modules/miperfil.mod.php: fix redirect params, close #59
+
+ -- root <root@max-server>  Thu, 03 Mar 2011 15:01:57 +0100
+
 max-control (1.0.10) max; urgency=low
 
   * Allow Coordinadores TIC to edit teachers in aulas, rel #55
