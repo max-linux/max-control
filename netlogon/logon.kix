@@ -56,8 +56,8 @@ IF $ntversion >= "6.0"
     IF NOT EXIST ("$VOL\Documentos")
         Shell "cmd /c mkdir $VOL\Documentos"
         Shell "cmd /c rmdir /q /s %USERPROFILE%\Documents"
-        WriteValue($FolderRedirect, "Personal", "$VOL\Documentos", "REG_SZ")
     ENDIF
+        WriteValue($FolderRedirect, "Personal", "$VOL\Documentos", "REG_SZ")
 
     ;esto va en el perfil no es necesario meterlo en Z:
     ;$ = WriteValue($FolderRedirect, "AppData", "$VOL\.winsettings\appdata", "REG_SZ")
@@ -66,37 +66,37 @@ IF $ntversion >= "6.0"
     IF NOT EXIST ("$VOL\Escritorio")
         Shell "cmd /c mkdir $VOL\Escritorio"
         Shell "cmd /c rmdir /q /s %USERPROFILE%\Desktop"
-        WriteValue($FolderRedirect, "Desktop", "$VOL\Escritorio", "REG_SZ")
     ENDIF
+        WriteValue($FolderRedirect, "Desktop", "$VOL\Escritorio", "REG_SZ")
 
     IF NOT EXIST ("$VOL\Musica")
         Shell "cmd /c mkdir $VOL\Musica"
         Shell "cmd /c rmdir /q /s %USERPROFILE%\Music"
-        WriteValue($FolderRedirect, "My Music", "$VOL\Musica", "REG_SZ")
     ENDIF
+        WriteValue($FolderRedirect, "My Music", "$VOL\Musica", "REG_SZ")
 
     IF NOT EXIST ("$VOL\Imagenes")
         Shell "cmd /c mkdir $VOL\Imagenes"
         Shell "cmd /c rmdir /q /s %USERPROFILE%\Pictures"
-        WriteValue($FolderRedirect, "My Pictures", "$VOL\Imagenes", "REG_SZ")
     ENDIF
+        WriteValue($FolderRedirect, "My Pictures", "$VOL\Imagenes", "REG_SZ")
 
     IF NOT EXIST ("$VOL\Videos")
         Shell "cmd /c mkdir $VOL\Videos"
         Shell "cmd /c rmdir /q /s %USERPROFILE%\Videos"
-        WriteValue($FolderRedirect, "My Video", "$VOL\Videos", "REG_SZ")
     ENDIF
+        WriteValue($FolderRedirect, "My Video", "$VOL\Videos", "REG_SZ")
 
     IF NOT EXIST ("$VOL\Descargas")
         Shell "cmd /c mkdir $VOL\Descargas"
         Shell "cmd /c rmdir /q /s %USERPROFILE%\Downloads"
-        WriteValue($FolderRedirect, "{374DE290-123F-4565-9164-39C4925E467B}", "$VOL\Descargas", "REG_SZ")
     ENDIF
+        WriteValue($FolderRedirect, "{374DE290-123F-4565-9164-39C4925E467B}", "$VOL\Descargas", "REG_SZ")
 
     IF NOT EXIST ("$VOL\Plantillas")
         Shell "cmd /c mkdir $VOL\Plantillas"
-        WriteValue($FolderRedirect, "Templates", "$VOL\Plantillas", "REG_SZ")
     ENDIF
+        WriteValue($FolderRedirect, "Templates", "$VOL\Plantillas", "REG_SZ")
 
 
     ; pagina de inicio
