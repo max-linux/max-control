@@ -142,11 +142,15 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 #$exe=new WINEXE('192.168.1.148');
 #$exe->fork('rebootwindows');
 
-$computers=$ldap->get_computers_from_aula('aula primaria 2');
-$gui->debuga($computers);
-foreach($computers as $computer) {
-    $computer->empty_attr( 'sambaProfilePath' );
-}
+#$computers=$ldap->get_computers_from_aula('aula primaria 2');
+#$gui->debuga($computers);
+#foreach($computers as $computer) {
+#    $computer->empty_attr( 'sambaProfilePath' );
+#}
 
+$exe=new WINEXE('winxp3');
+#echo $exe->reboot($exe->mac);
+$exe->init();
+echo $exe->windowsexe("ipconfig");
 
 ?>
