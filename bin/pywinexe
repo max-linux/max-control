@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+
+DEFAULT_TIMEOUT=5
+
+import subprocess, datetime, os, time, signal, sys
+
+
+def timeout_cmd(cmd, timeout=DEFAULT_TIMEOUT):
+    start = datetime.datetime.now()
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, bufsize=0)
+    while process.poll() is None:
+        time.sleep(0.2)
+        now = datetime.datetime.now()
+        if (now - start).seconds> timeout:
+            os.kill(process.pid, signal.SIGKILL)
+            os.waitpid(-1, os.WNOHANG)
+            print "RETURN -1"
+            print "TIMEOUT"
+            return False
+    
+    #stdout, stderr = process.communicate()
+    #print "stdout ",stdout
+    #print "stderr ",stderr
+    print "RETURN %s"%process.returncode
+    print "STDOUT ".join(process.stdout.readlines())
+    return True
+
+
+#
+# winexe -U DOMINIO/user%password --interactive=0 //192.168.x.x 'command'
+#
+
+cmd=['winexe']
+
+# append all args except first
+for arg in sys.argv[1:]:
+  cmd.append(arg)
+
+timeout_cmd(cmd)
