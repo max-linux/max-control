@@ -1,5 +1,6 @@
 apache-control.conf   etc/apache2/conf.d/
 bin/winexe            usr/bin/
+bin/pywinexe          usr/bin/
 bin/max-control       usr/bin/
 bin/pywakeonlan       usr/bin/
 bin/pygenlogonshares  usr/bin/

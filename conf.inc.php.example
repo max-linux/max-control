@@ -47,7 +47,7 @@ define("LDAP_BINDDN", 'uid='.LDAP_ADMIN.','.LDAP_OU_USERS);
 define("LDAP_BINDPW", LDAP_PASS);
 
 // ruta al comando winexe
-define("WINEXE", "/usr/bin/winexe");
+define("WINEXE", "/usr/bin/pywinexe");
 
 // ruta al comando max-control
 define("MAXCONTROL", "/usr/bin/max-control");

@@ -31,7 +31,7 @@ define("INSTALLATORS", "Instaladores");
 define("LDAP_OU_INSTALLATORS", "cn=Instaladores,ou=Groups,dc=max-server");
 
 // ruta al comando winexe
-define("WINEXE", "/usr/bin/winexe");
+define("WINEXE", "/usr/bin/pywinexe");
 
 // ruta al comando max-control
 define("MAXCONTROL", "/usr/bin/max-control");

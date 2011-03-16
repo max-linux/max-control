@@ -24,6 +24,11 @@ class WINEXE {
     var $mac='';
     var $hostname='';
     var $alive=false;
+    var $return_code=-1;
+    var $output=array();
+    var $timeout=False;
+    var $stderr=array();
+    var $msg='';
     
     
     function WINEXE($ip='') {
@@ -48,14 +53,71 @@ class WINEXE {
         $this->initialized=true;
     }
     
+    function process_output($out) {
+        global $gui;
+        $this->return_code=-1;
+        $this->output=array();
+        $this->stderr=array();
+        $this->timeout=False;
+        foreach ($out as $line){
+            //$gui->debug("process_output:".print_r($line, true));
+            if ( preg_match('/RETURN/', $line) ) {
+                $tmp=preg_split('/\s/', $line);
+                $this->return_code=$tmp[1];
+            }
+            elseif ( preg_match('/STDOUT/', $line) ) {
+                $tmp=preg_split('/STDOUT /', $line);
+                $this->output[]=$tmp[1];
+            }
+            elseif ( preg_match('/TIMEOUT/', $line) ) {
+                $this->timeout=True;
+            }
+            else {
+                if ($line != '') {
+                    $this->stderr[]=$line;
+                }
+            }
+        }
+        
+        $gui->debug("process_output: return_code=".print_r($this->return_code, true));
+        $gui->debug("process_output: timeout=".$this->timeout);
+        $gui->debug("process_output: output=<pre>".print_r($this->output, true)."</pre>");
+        $gui->debug("process_output: stderr=<pre>".print_r($this->stderr, true)."</pre>");
+        
+        if ( $this->timeout ) {
+            $gui->session_error("Tiempo de espera agotado al ejecutar comando en '".$this->hostname."'");
+            return;
+        }
+        elseif ($this->return_code != '0') {
+            $gui->session_error("Error ejecutando comando en '".$this->hostname."', código devuelto: ".$this->return_code);
+            $gui->session_error("<pre>");
+            foreach($this->stderr as $line) {
+                $gui->session_error($line);
+            }
+            $gui->session_error("</pre>\n<br/><br/>");
+            return;
+        }
+        else {
+            $gui->debug("process_output: ejecución correcta, imprimiendo msg OK");
+            $gui->session_info($this->msg);
+        }
+    }
+    
     function windowsexe( $targetcmd ) {
         global $gui;
         if ( ! $this->initialized )
             $this->init();
+        
+        if ($this->ip == '') {
+            $this->return_code=-1;
+            $this->stderr="ERROR, can't resolve hostname";
+            $gui->session_error("Error resolviendo IP del equipo '".$this->hostname."'");
+            return False;
+        }
         $cmd=$this->basecmd . "'". $targetcmd ."'";
         $gui->debug("WINEXE:windowsexe cmd=".$cmd);
         exec($cmd, &$output);
-        $gui->debug("<pre>OUTPUT:".print_r($output, true)."</pre>");
+        $this->process_output($output);
         return $output;
     }
     
@@ -84,6 +146,7 @@ class WINEXE {
         // try to authenticate with username root, password secretpassword
         if( ! ssh2_auth_password($con, LDAP_ADMIN, LDAP_PASS) ) {
             $gui->debug("WINEXE:linuxexe() fail: unable to authenticate");
+            $gui->session_error("Error ejecutando comando en '".$this->hostname."', fallo de autenticación.");
             return false;
         }
         
@@ -93,6 +156,7 @@ class WINEXE {
         $gui->debug("WINEXE:linuxexe(".$this->ip.") cmd='$targetcmd'");
         if ( ! ($stream = ssh2_exec($con, $targetcmd)) ) {
             $gui->debug("WINEXE:linuxexe()fail: unable to execute command");
+            $gui->session_error("Error ejecutando comando en '".$this->hostname."', no se pudo ejecutar el comando.");
             return false;
         }
         
@@ -103,6 +167,7 @@ class WINEXE {
             $data .= $buf;
         }
         fclose($stream);
+        $gui->session_info($this->msg);
         return preg_split("#\\n#i",$data);
     }
     
@@ -214,11 +279,12 @@ class WINEXE {
     function poweroff( $mac ) {
         global $gui;
         if ( ! $this->is_alive() ) {
-            $gui->session_error("No se puede apagar '".$this->hostname."', el equipo está apagado");
+            $gui->session_error("No se puede apagar '".$this->hostname."', el equipo no responde.");
             return false;
         }
         
-        $gui->session_info("Equipo '".$this->hostname."' apagado.");
+        //$gui->session_info("Equipo '".$this->hostname."' apagado.");
+        $this->msg="Equipo '".$this->hostname."' apagado.";
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -s -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Apagado remoto desde max-control"');
         else {
@@ -229,10 +295,11 @@ class WINEXE {
     function reboot( $mac ) {
         global $gui;
         if ( ! $this->is_alive() ) {
-            $gui->session_error("No se puede reiniciar '".$this->hostname."', el equipo está apagado");
+            $gui->session_error("No se puede reiniciar '".$this->hostname."', el equipo no responde.");
             return false;
         }
-        $gui->session_info("Equipo '".$this->hostname."' reiniciado.");
+        //$gui->session_info("Equipo '".$this->hostname."' reiniciado.");
+        $this->msg="Equipo '".$this->hostname."' reiniciado.";
         if (! $this->isLinux() )
             return $this->windowsexe('shutdown -r -t '.POWEROFF_REBOOT_TIMEOUT.' -c "Reinicio remoto desde max-control"');
         else {
