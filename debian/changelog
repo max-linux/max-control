@@ -1,3 +1,9 @@
+max-control (1.0.13) max; urgency=low
+
+  * Add pywinexe script to call winexe with a 5 seconds timeout, close #63
+
+ -- root <root@max-server>  Wed, 16 Mar 2011 16:56:36 +0100
+
 max-control (1.0.12) max; urgency=low
 
   * Actualización ficheros netlogon 07032011, close #60
