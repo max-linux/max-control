@@ -96,7 +96,7 @@ define("PXELINUXCFG", "/var/lib/tftpboot/pxelinux.cfg/");
 // compartir ISOS
 define("ISOS_PATH", "/home/samba/shares/isos/");
 
-define("FORK_ACTIONS", True);
+define("FORK_ACTIONS", False);
 //define("FORK_LOGFILE", "/tmp/actions.log");
 define("FORK_LOGFILE", "/dev/null");
 
