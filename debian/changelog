@@ -1,3 +1,11 @@
+max-control (1.0.14) max; urgency=low
+
+  * conf.inc.php: Use FORK_ACTIONS=False
+  * modules/usuarios.mod.php: save password before sanitize(POST), 
+    close #64
+
+ -- root <root@max-server>  Fri, 18 Mar 2011 14:58:26 +0100
+
 max-control (1.0.13) max; urgency=low
 
   * Add pywinexe script to call winexe with a 5 seconds timeout, close #63
