@@ -180,6 +180,18 @@ function guardar($module, $action, $subaction) {
         $url->ir($module, "ver");
     }
     
+    // guardar contraseña
+    $new=leer_datos('newpwd');
+    if ( $new != '') {
+        $new2=leer_datos('newpwd2');
+        if ($new != $new2) {
+            $gui->session_error("Las contraseñas no coinciden");
+        }
+        else {
+            $usuario->update_password($new, $usuario->uid);
+        }
+    }
+    
     sanitize($_POST, array('uid' => 'str',
                            'cn'=>'charnum',
                            'sn' => 'charnum',
@@ -202,17 +214,6 @@ function guardar($module, $action, $subaction) {
     // guardar rol/grupo
     $usuario->set_role(leer_datos('role'));
     
-    // guardar contraseña
-    $new=leer_datos('newpwd');
-    if ( $new != '') {
-        $new2=leer_datos('newpwd2');
-        if ($new != $new2) {
-            $gui->session_error("Las contraseñas no coinciden");
-        }
-        else {
-            $usuario->update_password($new, $usuario->uid);
-        }
-    }
     if(! DEBUG)
         $url->ir($module, "ver");
 }
