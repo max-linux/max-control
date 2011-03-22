@@ -20,7 +20,7 @@ Description: Small PHP web based app to admin LDAP data from Zentyal
 
 Package: zentyal-max-control
 Architecture: all
-Depends: zentyal, zentyal-network, max-control
+Depends: zentyal, zentyal-network, zentyal-office, max-control
 Description: Zentyal - MAX Control
  Zentyal Platform is an open source small business server that can act as
  a Gateway, a Unified Threat Manager, an Office Server, an Infrastructure
