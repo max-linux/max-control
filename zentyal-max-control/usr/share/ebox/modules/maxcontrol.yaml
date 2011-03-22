@@ -1,0 +1,13 @@
+class: 'EBox::MaxControl'
+
+depends:
+    - network
+    - dhcp
+    - samba
+    - users
+
+enabledepends:
+    - network
+    - dhcp
+    - samba
+    - users

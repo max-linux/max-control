@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 
+cp debian/control.ebox debian/control
 VERSION=$(dpkg-parsechangelog | awk '/^Version/ {print $2}')
 
 
@@ -13,3 +14,4 @@ VERSION=$(dpkg-parsechangelog | awk '/^Version/ {print $2}')
 
 
 fakeroot debian/rules clean
+rm -f debian/control
