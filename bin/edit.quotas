@@ -6,15 +6,21 @@ import os
 import sys
 from subprocess import Popen, PIPE, STDOUT
 import getopt
+import commands
 
 os.environ['LC_ALL']="C"
 os.environ['EDITOR']="/bin/cat"
 
 HOME="/home"
-REMOTE="/dev/nbd0"
+REMOTE=commands.getoutput("df /home/samba 2>/dev/null | awk '/dev/ {print $1}'")
+if REMOTE == "":
+    REMOTE="/dev/nbd0"
 
 if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quota.user"):
     HOME="/home/samba"
+
+if os.path.isfile("/aquota.user") or os.path.isfile("/quota.user"):
+    HOME="/"
 
 if not os.path.isfile(HOME + "/aquota.user") and not os.path.isfile(HOME + "/quota.user"):
     print "no quotas found"
