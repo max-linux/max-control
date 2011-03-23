@@ -19,7 +19,6 @@ sub _create
     my $class = shift;
     my $self = $class->SUPER::_create(name => 'maxcontrol',
                       printableName => 'MAX Control',
-						domain => 'ebox-maxcontrol',
                       @_);
     bless($self, $class);
     return $self;

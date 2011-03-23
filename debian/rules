@@ -14,6 +14,7 @@ binary-install/max-control:: test
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ssh-test.php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/test*php
 
+	grep -q zentyal debian/control && rm -f $(CURDIR)/debian/max-control/etc/cron.d/clamav-freshclam
 
 test:
 	# check for PHP syntax errors

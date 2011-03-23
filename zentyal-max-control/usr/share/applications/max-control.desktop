@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=MAX Control
+Comment=Lanza el navegador con el panel de control MAX Control
+Exec=firefox http://localhost/control
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=max
+Categories=Application;Internet;Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;
+StartupWMClass=Firefox
+StartupNotify=true
