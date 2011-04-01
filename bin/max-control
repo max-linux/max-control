@@ -119,7 +119,7 @@ if [ "getdefaultquota" = "$1" ]; then
   DEF=$(grep '"userquota_size"' /var/lib/ebox/gconf/ebox/modules/samba/GeneralSettings/%gconf.xml 2>/dev/null | awk -F '"' '{print $8}')
 
   if [ "$DEF" = "" ]; then
-    echo 500
+    echo 100
   else
    echo $DEF
   fi
