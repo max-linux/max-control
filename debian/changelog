@@ -1,3 +1,16 @@
+max-control (1.0.15) max; urgency=low
+
+  * allow to build EBox/Zentyal modules
+  * Add python in max-control depends
+  * zentyal-max-control: add depend on zentyal-office
+  * fix zentyal paths, provide tftpd-hpa, add EducaMadrid colors and icon, and add launcher in Internet menu
+  * bin/edit.quotas bin/pyoverquota: don't hardcode nbd0 or /home/samba for quotas dir
+  * bin/max-control: Set default quota to 1000MB
+  * bin/max-control: Set default quota to 1000MB
+  * zentyal: divert smb.conf to include /etc/samba/max-control.conf
+
+ -- Mario Izquierdo (mariodebian) <mariodebian@gmail.com>  Fri, 01 Apr 2011 18:09:41 +0200
+
 max-control (1.0.14) max; urgency=low
 
   * conf.inc.php: Use FORK_ACTIONS=False
