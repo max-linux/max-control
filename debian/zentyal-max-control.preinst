@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# divert samba Zentyal STUB
+if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
+    dpkg-divert --package zentyal-max-control \
+		--add --rename \
+		--divert /usr/share/zentyal/stubs/samba/smb.conf.mas.zentyal \
+			 /usr/share/zentyal/stubs/samba/smb.conf.mas
+fi
+
+
+# if not include before divert call Zentyal to regen smb.conf
+if ! grep -q 'max-control' /etc/samba/smb.conf; then
+    echo " * Configurando SAMBA con max-control ..."
+    touch /etc/samba/max-control.conf
+    /usr/share/zentyal/initial-setup samba
+    dpkg-trigger --no-wait zentyal-core
+    /etc/init.d/zentyal samba restart
+fi
+
+
+
+
+#DEBHELPER#
