@@ -9,7 +9,7 @@ if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" ]; then
     if grep -q 'max-control' /etc/samba/smb.conf; then
         echo " * Desconfigurando SAMBA con max-control ..."
         /usr/share/zentyal/initial-setup samba
-        dpkg-trigger --no-wait zentyal-core
+        /etc/init.d/zentyal samba restart
     fi
 fi
 
