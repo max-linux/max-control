@@ -14,7 +14,6 @@ if ! grep -q 'max-control' /etc/samba/smb.conf; then
     echo " * Configurando SAMBA con max-control ..."
     touch /etc/samba/max-control.conf
     /usr/share/zentyal/initial-setup samba
-    dpkg-trigger --no-wait zentyal-core
     /etc/init.d/zentyal samba restart
 fi
 
