@@ -1,3 +1,9 @@
+max-control (1.0.16) karmic; urgency=low
+
+  * Update GroupPolicy.zip and delete obsolete files (close #71)
+
+ -- root <root@max-server>  Mon, 09 May 2011 11:45:06 +0200
+
 max-control (1.0.15) max; urgency=low
 
   * allow to build EBox/Zentyal modules
