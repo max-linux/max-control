@@ -1,3 +1,10 @@
+max-control (1.0.17) max; urgency=low
+
+  * debian/rules: Don't fail if building eBox packages
+  * bin/pyoverquota: search quotas in /home/samba after /, close #83
+
+ -- root <root@max-server>  Thu, 19 May 2011 11:29:01 +0200
+
 max-control (1.0.16) karmic; urgency=low
 
   * Update GroupPolicy.zip and delete obsolete files (close #71)
