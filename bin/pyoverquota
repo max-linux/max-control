@@ -16,23 +16,26 @@ HOME="/home"
 REMOTE=commands.getoutput("df /home/samba 2>/dev/null | awk '/dev/ {print $1}'")
 if REMOTE == "":
     REMOTE="/dev/nbd0"
+
 CONF="/etc/max-control/conf.inc.php"
 LIMIT=float(80) #percent
 
 if not os.path.isfile(CONF):
-    #print " * No existe el archivo %s"%CONF
+    print >> sys.stderr," * No existe el archivo %s"%CONF
     sys.exit(0)
-
-if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quota.user"):
-    HOME="/home/samba"
 
 if os.path.isfile("/aquota.user") or os.path.isfile("/quota.user"):
     HOME="/"
+
+if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quota.user"):
+    HOME="/home/samba"
 
 if not os.path.isfile(HOME + "/aquota.user") and not os.path.isfile(HOME + "/quota.user"):
     print >> sys.stderr," * No quotas found"
     sys.exit(0)
 
+
+#print >> sys.stderr," REMOTE=%s HOME quota=%s"%(REMOTE, HOME)
 
 def read_conf(varname):
     f=open(CONF, 'r')
