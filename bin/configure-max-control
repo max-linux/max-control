@@ -17,6 +17,15 @@ if [ "$(pidof slapd)" = "" ]; then
   CONFIGURE=0
 fi
 
+
+if ! grep -q ebox /etc/ldap.conf ; then
+  echo " * WARNING: /etc/ldap.conf not configured for EBox/Zentyal"
+  CONFIGURE=0
+fi
+
+
+
+
 if [ "$CONFIGURE" = "1" ]; then
 
     # create conf.inc.php from LDAP data 
