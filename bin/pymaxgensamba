@@ -180,6 +180,8 @@ def reloadSamba():
 smb=loadFile(SMB_CONF)
 for key in TO_ADD:
     smb[key]=TO_ADD[key]
+    if key in ['homes', 'profiles']:
+        continue
     # FIXME isos owned by teachers
     result=commands.getstatusoutput("max-control createshared '%s' 'Teachers'"%key)
     #print "createshared ",key, " = " ,result
