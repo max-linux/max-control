@@ -10,7 +10,6 @@ SHARED_DIR="/home/samba/groups/"
 
 
 
-
 def read_conf(varname):
     f=open(CONF, 'r')
     data=f.readlines()
@@ -25,6 +24,12 @@ def read_conf(varname):
     return ''
 
 CONF="/etc/max-control/conf.inc.php"
+
+if not os.path.isfile(CONF):
+    print >> sys.stderr," * pygenlogonshares: No config file yet"
+    sys.exit(0)
+
+
 GROUPS=read_conf('LDAP_OU_GROUPS')
 DOMAIN=read_conf('LDAP_DOMAIN')
 
