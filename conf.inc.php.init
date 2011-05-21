@@ -9,27 +9,6 @@ define("DEBUG", False);
 // otros datos del dominio
 define("LDAP_HOSTNAME", "127.0.0.1");
 
-// entidades organizativas del dominio
-// para EBOX estas son las que se usan por defecto
-define("LDAP_OU_COMPUTERS", "ou=Computers,dc=max-server");
-define("LDAP_OU_USERS", "ou=Users,dc=max-server");
-define("LDAP_OU_GROUPS", "ou=Groups,dc=max-server");
-
-// Domain Admins
-define("LDAP_OU_DADMINS", "cn=Domain Admins,ou=Groups,dc=max-server");
-
-// Administrators
-define("LDAP_OU_ADMINS", "cn=Administrators,ou=Groups,dc=max-server");
-
-// si no existe crearlo con EBOX
-define("TEACHERS", "Teachers");
-define("LDAP_OU_TEACHERS", "cn=Teachers,ou=Groups,dc=max-server");
-define("LDAP_OU_DUSERS", "cn=Domain Users,ou=Groups,dc=max-server");
-define("TICS", "CoordinadoresTIC");
-define("LDAP_OU_TICS", "cn=CoordinadoresTIC,ou=Groups,dc=max-server");
-define("INSTALLATORS", "Instaladores");
-define("LDAP_OU_INSTALLATORS", "cn=Instaladores,ou=Groups,dc=max-server");
-
 // ruta al comando winexe
 define("WINEXE", "/usr/bin/pywinexe");
 
