@@ -1,7 +1,7 @@
 <?php
 /*  generate default config  */
 
-include('conf.inc.php.init');
+
 include('modules/common.inc.php');
 
 class GUI {
@@ -21,10 +21,6 @@ class GUI {
     }
 }
 
-$gui = new GUI();
-
-include("classes/ldap.class.php");
-
 $LDAP_BASEDN=readLDAPFile('/etc/ldap.conf', 'base');
 define('LDAP_BASEDN', $LDAP_BASEDN);
 $LDAP_BINDDN=readLDAPFile('/etc/ldap.conf', 'rootbinddn');
@@ -33,6 +29,31 @@ $LDAP_BINDPW=file_get_contents('/etc/ldap.secret');
 define('LDAP_BINDPW', $LDAP_BINDPW);
 
 
+include('conf.inc.php.init');
+// entidades organizativas del dominio
+// para EBOX estas son las que se usan por defecto
+define("LDAP_OU_COMPUTERS", "ou=Computers,$LDAP_BASEDN");
+define("LDAP_OU_USERS", "ou=Users,$LDAP_BASEDN");
+define("LDAP_OU_GROUPS", "ou=Groups,$LDAP_BASEDN");
+
+// Domain Admins
+define("LDAP_OU_DADMINS", "cn=Domain Admins,ou=Groups,$LDAP_BASEDN");
+
+// Administrators
+define("LDAP_OU_ADMINS", "cn=Administrators,ou=Groups,$LDAP_BASEDN");
+
+// si no existe crearlo con EBOX
+define("TEACHERS", "Teachers");
+define("LDAP_OU_TEACHERS", "cn=Teachers,ou=Groups,$LDAP_BASEDN");
+define("LDAP_OU_DUSERS", "cn=Domain Users,ou=Groups,$LDAP_BASEDN");
+define("TICS", "CoordinadoresTIC");
+define("LDAP_OU_TICS", "cn=CoordinadoresTIC,ou=Groups,$LDAP_BASEDN");
+define("INSTALLATORS", "Instaladores");
+define("LDAP_OU_INSTALLATORS", "cn=Instaladores,ou=Groups,$LDAP_BASEDN");
+
+
+$gui = new GUI();
+include("classes/ldap.class.php");
 
 /* usuario creado por max-control */
 define('LDAP_ADMIN', '$LDAP_ADMIN');
@@ -155,6 +176,30 @@ define('LDAP_PASS', '$LDAP_PASS');
 define('LDAP_BASEDN', '$LDAP_BASEDN');
 
 define('CONFIGURED', True);
+
+
+/********************************************/
+// entidades organizativas del dominio
+// para EBOX estas son las que se usan por defecto
+define('LDAP_OU_COMPUTERS', 'ou=Computers,$LDAP_BASEDN');
+define('LDAP_OU_USERS', 'ou=Users,$LDAP_BASEDN');
+define('LDAP_OU_GROUPS', 'ou=Groups,$LDAP_BASEDN');
+
+// Domain Admins
+define('LDAP_OU_DADMINS', 'cn=Domain Admins,ou=Groups,$LDAP_BASEDN');
+
+// Administrators
+define('LDAP_OU_ADMINS', 'cn=Administrators,ou=Groups,$LDAP_BASEDN');
+
+// si no existe crearlo con EBOX
+define('TEACHERS', 'Teachers');
+define('LDAP_OU_TEACHERS', 'cn=Teachers,ou=Groups,$LDAP_BASEDN');
+define('LDAP_OU_DUSERS', 'cn=Domain Users,ou=Groups,$LDAP_BASEDN');
+define('TICS', 'CoordinadoresTIC');
+define('LDAP_OU_TICS', 'cn=CoordinadoresTIC,ou=Groups,$LDAP_BASEDN');
+define('INSTALLATORS', 'Instaladores');
+define('LDAP_OU_INSTALLATORS', 'cn=Instaladores,ou=Groups,$LDAP_BASEDN');
+
 
 $extra
 ?>";
