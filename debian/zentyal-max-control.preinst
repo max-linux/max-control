@@ -14,10 +14,12 @@ if ! grep -q 'max-control' /etc/samba/smb.conf; then
     echo " * Configurando SAMBA con max-control ..."
     touch /etc/samba/max-control.conf
     /usr/share/zentyal/initial-setup samba
-    /etc/init.d/zentyal samba restart
+    [ -e /proc/cmdline ] && ! grep -q debian-installer /proc/cmdline && /etc/init.d/zentyal samba restart
 fi
 
 
 
 
 #DEBHELPER#
+
+exit 0

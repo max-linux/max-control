@@ -70,3 +70,5 @@ fi
 #fi
 
 #DEBHELPER#
+
+exit 0
