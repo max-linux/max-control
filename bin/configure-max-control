@@ -54,6 +54,12 @@ if [ "$CONFIGURE" = "1" ]; then
     echo " * Updating /etc/samba/max-control.conf"
     /usr/bin/pymaxgensamba
 
+    # atftpd use /srv/tftp
+    if [ -d /srv/tftp ]; then
+        rmdir /srv/tftp
+        ln -s /var/lib/tftpboot /srv/tftp
+    fi
+
     # create PXE files
     /usr/bin/max-control pxe --genpxelinux
 
