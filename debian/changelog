@@ -1,3 +1,26 @@
+max-control (1.0.17.6) max; urgency=low
+
+  * bin/configure-max-control: link /srv/tftp => /var/lib/tftpboot
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Mon, 23 May 2011 16:46:23 +0200
+
+max-control (1.0.17.5) max; urgency=low
+
+  * bin/pymaxgensamba: don't create homes or profiles folder in shared
+  * bin/pygenlogonshares: don't run if max-control config file is
+    missing
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Sat, 21 May 2011 13:37:18 +0200
+
+max-control (1.0.17.4) max; urgency=low
+
+  * conf.inc.php.init init.php: allow BASEDN != max-server
+  * bin/configure-max-control: don't run if /etc/ldap.conf is not
+    configured for EBox/Zentyal
+  * exit with 0 status in all postinst/preinst/postrm
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Sat, 21 May 2011 12:01:33 +0200
+
 max-control (1.0.17) max; urgency=low
 
   * debian/rules: Don't fail if building eBox packages
