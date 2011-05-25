@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# called from /etc/apt/apt.conf.d/92update-max-zentyal
+#
+
+echo "Procesando disparadores para max-zentyal ..."
+
+UPDATE_GRUB=0
+
+if [ -e /etc/default/grub ]; then
+  if ! grep -q "MaX-Servidor" /etc/default/grub 2>/dev/null; then
+    echo '' >> /etc/default/grub
+    echo 'GRUB_DISTRIBUTOR="MaX-Servidor"' >> /etc/default/grub
+    UPDATE_GRUB=1
+  fi
+
+  if [ "$UPDATE_GRUB" = "1" ]; then
+    if [ -x "`which update-grub 2>/dev/null`" ] && [ -e /boot/grub/grub.cfg ]; then
+      update-grub
+    fi
+  fi
+fi # end of [ -e /etc/default/grub ]
+
+
+# force to not dist upgrades
+if [ -f /etc/update-manager/release-upgrades ]; then
+  if ! grep -q "^Prompt=never" /etc/update-manager/release-upgrades 2>/dev/null; then
+    echo " * Desactivando actualizaciones a nuevas versiones ..."
+    sed -i -s 's/Prompt=.*/Prompt=never/g' /etc/update-manager/release-upgrades
+  fi
+fi
+
+
+# delete dropbear hook
+if [ -f /usr/share/initramfs-tools/hooks/dropbear ]; then
+  rm -f /usr/share/initramfs-tools/hooks/dropbear
+  [ -x /usr/sbin/update-initramfs ] && update-initramfs -u
+fi
+
+
+## configure SSH to not allow danger logins
+#if [ -f /etc/ssh/sshd_config ]; then
+#  if ! grep -q "# MAX" /etc/ssh/sshd_config ; then
+#    cat << EOF >> /etc/ssh/sshd_config
+#
+## ******** no borrar este comentario ******
+## MAX
+## deshabilitar contraseñas conocidas
+## para activar el login cambiar la contraseña
+## del usuario que se quiera habilitar y eliminar
+## su nombre de la siguiente línea
+##
+##
+#DenyUsers madrid alumno profesor
+#EOF
+#  # restart ssh service
+#  restart ssh || true
+#  fi
+#fi
+
+
+
+exit 0
