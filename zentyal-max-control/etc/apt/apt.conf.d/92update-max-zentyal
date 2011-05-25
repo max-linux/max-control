@@ -1,0 +1,2 @@
+// Run some scripts in postinst
+DPkg::Post-Invoke {"/usr/sbin/max-zentyal-update-post-inst || true";};

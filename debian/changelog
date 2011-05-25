@@ -1,3 +1,11 @@
+max-control (1.0.17.7) max; urgency=low
+
+  * Add /usr/sbin/max-zentyal-update-post-inst
+    /etc/apt/apt.conf.d/92update-max-zentyal
+    to force MaX-Servidor to GRUB titles 
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Wed, 25 May 2011 15:25:41 +0200
+
 max-control (1.0.17.6) max; urgency=low
 
   * bin/configure-max-control: link /srv/tftp => /var/lib/tftpboot
