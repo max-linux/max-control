@@ -9,217 +9,200 @@ PROFILES_DIR="/home/samba/profiles/"
 GROUPS_DIR="/home/samba/groups/"
 SHARED_DIR="/home/samba/shares/"
 
-if [ "$1" = "createhome" ]; then
-  # username
-  NEWUSER=$2
-  # quota in MB
-  QUOTA=$3
-  mkdir $HOMES_DIR/${NEWUSER}
-  chown ${NEWUSER}:Domain\ Users ${HOMES_DIR}/${NEWUSER}
-  chmod 701 ${HOMES_DIR}/${NEWUSER}
 
-  # profile
-  mkdir ${PROFILES_DIR}/${NEWUSER}
-  chown ${NEWUSER}:Domain\ Users ${PROFILES_DIR}/${NEWUSER}
-  chmod 701 ${PROFILES_DIR}/${NEWUSER}
+case $1 in
+    createhome)
+        # username
+        NEWUSER=$2
+        # quota in MB
+        QUOTA=$3
+        mkdir -p "$HOMES_DIR/${NEWUSER}"
+        chown ${NEWUSER}:Domain\ Users "${HOMES_DIR}/${NEWUSER}"
+        chmod 701 "${HOMES_DIR}/${NEWUSER}"
 
-  mkdir ${PROFILES_DIR}/${NEWUSER}.V2
-  chown ${NEWUSER}:Domain\ Users ${PROFILES_DIR}/${NEWUSER}.V2
-  chmod 701 ${PROFILES_DIR}/${NEWUSER}.V2
+        # profile
+        mkdir -p "${PROFILES_DIR}/${NEWUSER}"
+        chown ${NEWUSER}:Domain\ Users "${PROFILES_DIR}/${NEWUSER}"
+        chmod 701 "${PROFILES_DIR}/${NEWUSER}"
 
-  if id "$NEWUSER" 2>/dev/null | grep -q Teachers ; then
-        QUOTA=$((QUOTA*2))
-  elif id "$NEWUSER" 2>/dev/null | grep -q Administrators ; then
-        QUOTA=$((QUOTA*2))
-  fi
-  
+        mkdir -p "${PROFILES_DIR}/${NEWUSER}.V2"
+        chown ${NEWUSER}:Domain\ Users "${PROFILES_DIR}/${NEWUSER}.V2"
+        chmod 701 "${PROFILES_DIR}/${NEWUSER}.V2"
 
-  # set quota
-  #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
-  /usr/bin/edit.quotas --set --user=${NEWUSER} --size=${QUOTA}
-  exit 0
-fi
-
-if [ "$1" = "requota" ]; then
-  NEWUSER=$2
-  QUOTA=$3
-  if id "$NEWUSER" 2>/dev/null | grep -q Teachers ; then
-        QUOTA=$((QUOTA*2))
-  elif id "$NEWUSER" 2>/dev/null | grep -q Administrators ; then
-        QUOTA=$((QUOTA*2))
-  fi
-  # set quota
-  #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
-  /usr/bin/edit.quotas --set --user=${NEWUSER} --size=${QUOTA}
-  exit 0
-fi
-
-if [ "$1" = "recache" ]; then
-  if [ -e /var/lib/max-control/quota.cache.php.new ]; then
-    # exit if updating quotas
-    exit 0
-  fi
-  if [ -x /usr/bin/pyoverquota ]; then
-    pyoverquota >> /var/lib/max-control/quota.cache.php.new 2>/var/log/max-control-pxe.log && \
-    mv /var/lib/max-control/quota.cache.php.new /var/lib/max-control/quota.cache.php
-  fi
-  rm -f /var/lib/max-control/quota.cache.php.new
-  exit 0
-fi
-
-if [ "$1" = "deleteprofile" ]; then
-  DELUSER=$2
-  [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
-  rm -rf $HOMES_DIR/${DELUSER}
-  rm -rf $PROFILES_DIR/${DELUSER}
-  rm -rf $PROFILES_DIR/${DELUSER}.V2
-  echo "ok"
-  exit 0
-fi
-
-if [ "$1" = "resetprofile" ]; then
-  DELUSER=$2
-  [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
-  rm -rf $HOMES_DIR/${DELUSER}/* $HOMES_DIR/${DELUSER}/.* 2>/dev/null
-  rm -rf $PROFILES_DIR/${DELUSER}/* $PROFILES_DIR/${DELUSER}/.* 2>/dev/null
-  rm -rf $PROFILES_DIR/${DELUSER}.V2/* $PROFILES_DIR/${DELUSER}.V2/.* 2>/dev/null
-  
-  # arreglar permisos
-  chown ${DELUSER}:Domain\ Users ${HOMES_DIR}/${DELUSER}
-  chmod 701 ${HOMES_DIR}/${DELUSER}
-  chown ${DELUSER}:Domain\ Users ${PROFILES_DIR}/${DELUSER}
-  chmod 701 ${PROFILES_DIR}/${DELUSER}
-  chown ${DELUSER}:Domain\ Users ${PROFILES_DIR}/${DELUSER}.V2
-  chmod 701 ${PROFILES_DIR}/${DELUSER}.V2
-  exit 0
-fi
-############################################################################
-
-if [ "$1" = "addgroup" ]; then
-  ADDGROUP=$2
-  [ "${ADDGROUP}" = "" ] && ( echo "nonexists"; exit 1)
-  mkdir -p "${GROUPS_DIR}/${ADDGROUP}"
-  chown root:${ADDGROUP} "${GROUPS_DIR}/${ADDGROUP}"
-  chmod +t "${GROUPS_DIR}/${ADDGROUP}"
-  chmod g+w "${GROUPS_DIR}/${ADDGROUP}"
-  echo "ok"
-  exit 0
-fi
-
-if [ "$1" = "deletegroup" ]; then
-  DELGROUP=$2
-  [ "${DELGROUP}" = "" ] && ( echo "nonexists"; exit 1)
-  rm -rf $GROUPS_DIR/${DELGROUP}
-  echo "ok"
-  exit 0
-fi
-
-############################################################################
-if [ "getdefaultquota" = "$1" ]; then
-  DEF=$(grep '"userquota_size"' /var/lib/ebox/gconf/ebox/modules/samba/GeneralSettings/%gconf.xml 2>/dev/null | awk -F '"' '{print $8}')
-
-  if [ "$DEF" = "" ]; then
-    echo 1000
-  else
-   echo $DEF
-  fi
-  exit 0
-fi
-
-if [ "getquota" = "$1" ]; then
-  /usr/bin/edit.quotas --getused --user=$2  
-  exit 0
-fi
+        if id "$NEWUSER" 2>/dev/null | grep -q Teachers ; then
+            QUOTA=$((QUOTA*2))
+        elif id "$NEWUSER" 2>/dev/null | grep -q Administrators ; then
+            QUOTA=$((QUOTA*2))
+        fi
 
 
-############################################################################
+        # set quota
+        #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
+        /usr/bin/edit.quotas --set --user=${NEWUSER} --size=${QUOTA}
+        exit 0
+        ;;
+################################################################################
+    requota)
+        NEWUSER=$2
+        QUOTA=$3
+        if id "$NEWUSER" 2>/dev/null | grep -q -e Teachers -e Administrators; then
+            QUOTA=$((QUOTA*2))
+        fi
+        # set quota
+        #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
+        /usr/bin/edit.quotas --set --user=${NEWUSER} --size=${QUOTA}
+        exit 0
+        ;;
+################################################################################
+    recache)
+        if [ -e /var/lib/max-control/quota.cache.php.new ]; then
+            # exit if updating quotas
+            exit 0
+        fi
+        if [ -x /usr/bin/pyoverquota ]; then
+            pyoverquota >> /var/lib/max-control/quota.cache.php.new 2>/var/log/max-control-pxe.log && \
+            mv /var/lib/max-control/quota.cache.php.new /var/lib/max-control/quota.cache.php
+        fi
+        rm -f /var/lib/max-control/quota.cache.php.new
+        exit 0
+        ;;
+################################################################################
+    deleteprofile)
+        DELUSER=$2
+        [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
+        rm -rf "$HOMES_DIR/${DELUSER}"
+        rm -rf "$PROFILES_DIR/${DELUSER}"
+        rm -rf "$PROFILES_DIR/${DELUSER}.V2"
+        echo "ok"
+        exit 0
+        ;;
+################################################################################
+    resetprofile)
+        DELUSER=$2
+        [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
+        rm -rf $HOMES_DIR/${DELUSER}/* $HOMES_DIR/${DELUSER}/.* 2>/dev/null
+        rm -rf $PROFILES_DIR/${DELUSER}/* $PROFILES_DIR/${DELUSER}/.* 2>/dev/null
+        rm -rf $PROFILES_DIR/${DELUSER}.V2/* $PROFILES_DIR/${DELUSER}.V2/.* 2>/dev/null
 
-if [ "$1" = "getdomainsid" ]; then
-  net getdomainsid
-  exit 0
-fi
+        # arreglar permisos
+        chown ${DELUSER}:Domain\ Users "${HOMES_DIR}/${DELUSER}"
+        chmod 701 ${HOMES_DIR}/${DELUSER}
+        chown ${DELUSER}:Domain\ Users "${PROFILES_DIR}/${DELUSER}"
+        chmod 701 ${PROFILES_DIR}/${DELUSER}
+        chown ${DELUSER}:Domain\ Users "${PROFILES_DIR}/${DELUSER}.V2"
+        chmod 701 "${PROFILES_DIR}/${DELUSER}.V2"
+        exit 0
+        ;;
+################################################################################
+    addgroup)
+        ADDGROUP=$2
+        [ "${ADDGROUP}" = "" ] && ( echo "nonexists"; exit 1)
+        mkdir -p "${GROUPS_DIR}/${ADDGROUP}"
+        chown root:${ADDGROUP} "${GROUPS_DIR}/${ADDGROUP}"
+        chmod +t "${GROUPS_DIR}/${ADDGROUP}"
+        chmod g+w "${GROUPS_DIR}/${ADDGROUP}"
+        echo "ok"
+        exit 0
+        ;;
+################################################################################
+    deletegroup)
+        DELGROUP=$2
+        [ "${DELGROUP}" = "" ] && ( echo "nonexists"; exit 1)
+        rm -rf $GROUPS_DIR/${DELGROUP}
+        echo "ok"
+        exit 0
+        ;;
+################################################################################
+    getdefaultquota)
+        DEF=$(grep '"userquota_size"' /var/lib/ebox/gconf/ebox/modules/samba/GeneralSettings/%gconf.xml 2>/dev/null | awk -F '"' '{print $8}')
 
-
-############################################################################
-
-
-if [ "$1" = "genlogonshares" ]; then
-  #pygenlogonshares 'ou=Groups,dc=max-server'
-  pygenlogonshares > /home/samba/netlogon/shares.kix
-  unix2dos /home/samba/netlogon/shares.kix
-  echo "ok"
-  exit 0
-fi
-
-############################################################################
-
-if [ "$1" = "gensamba" ]; then
-  rm -f /etc/samba/max-control.conf
-  pymaxgensamba
-  echo "ok"
-  exit 0
-fi
-
-
-############################################################################
-if [ "$1" = "pxe" ]; then
-  args=$@
-  ARGS=${args##pxe}
-  pyboot ${ARGS}
-  exit 0
-fi
-
-
-############################################################################
-if [ "$1" = "isos" ]; then
-  args=$@
-  ARGS=${args##isos}
-  pyisos ${ARGS}
-  exit 0
-fi
-
-############################################################################
-
-if [ "$1" = "delcomputer" ]; then
-  smbpasswd -x "$2" 2>&1
-  exit 0
-fi
-
-############################################################################
-
-if [ "$1" = "reloadsamba" ]; then
-  if testparm -s /etc/samba/smb.conf >/dev/null 2>&1; then
-    PIDS=$(pidof smbd)
-    for pid in $PIDS; do
-        kill -1 $pid
-    done
-    exit 0
-  else
-    exit 1
-  fi
-fi
-
-if [ "$1" = "createshared" ]; then
-  ADDGROUP=$2
-  GROUP=$3
-  [ "${ADDGROUP}" = "" ] && ( echo "nonexists"; exit 1)
-  mkdir -p "${SHARED_DIR}/${ADDGROUP}"
-  chown root:$GROUP "${SHARED_DIR}/${ADDGROUP}"
-  chmod 0775 "${SHARED_DIR}/${ADDGROUP}"
-  echo "ok"
-  exit 0
-fi
-
-
-############################################################################
-if [ "$1" = "purgewins" ]; then
-  /etc/init.d/ebox samba stop
-  rm -f /var/lib/samba/wins.tdb /var/lib/samba/wins.dat
-  /etc/init.d/ebox samba start
-  exit 0
-fi
+        if [ "$DEF" = "" ]; then
+            echo 1000
+        else
+            echo $DEF
+        fi
+        exit 0
+        ;;
+################################################################################
+    getquota)
+        /usr/bin/edit.quotas --getused --user=$2  
+        exit 0
+        ;;
+################################################################################
+    getdomainsid)
+        net getdomainsid
+        exit 0
+        ;;
+################################################################################
+    genlogonshares)
+        #pygenlogonshares 'ou=Groups,dc=max-server'
+        pygenlogonshares > /home/samba/netlogon/shares.kix
+        unix2dos /home/samba/netlogon/shares.kix >/dev/null 2>&1
+        echo "ok"
+        exit 0
+        ;;
+################################################################################
+    gensamba)
+        rm -f /etc/samba/max-control.conf
+        pymaxgensamba
+        echo "ok"
+        exit 0
+        ;;
+################################################################################
+    pxe)
+        args=$@
+        ARGS=${args##pxe}
+        pyboot ${ARGS}
+        exit 0
+        ;;
+################################################################################
+    isos)
+        args=$@
+        ARGS=${args##isos}
+        pyisos ${ARGS}
+        exit 0
+        ;;
+################################################################################
+    delcomputer)
+        smbpasswd -x "$2" 2>&1
+        exit 0
+        ;;
+################################################################################
+    reloadsamba)
+        if testparm -s /etc/samba/smb.conf >/dev/null 2>&1; then
+            PIDS=$(pidof smbd)
+            for pid in $PIDS; do
+                kill -1 $pid
+            done
+            exit 0
+        else
+            exit 1
+        fi
+        ;;
+################################################################################
+    createshared)
+        ADDGROUP=$2
+        GROUP=$3
+        [ "${ADDGROUP}" = "" ] && ( echo "nonexists"; exit 1)
+        mkdir -p "${SHARED_DIR}/${ADDGROUP}"
+        chown root:$GROUP "${SHARED_DIR}/${ADDGROUP}"
+        chmod 0775 "${SHARED_DIR}/${ADDGROUP}"
+        echo "ok"
+        exit 0
+        ;;
+################################################################################
+    purgewins)
+        /etc/init.d/ebox samba stop
+        rm -f /var/lib/samba/wins.tdb /var/lib/samba/wins.dat
+        /etc/init.d/ebox samba start
+        exit 0
+        ;;
+################################################################################
+    *)
+        echo "unknow_action"
+        exit 0
+    ;;
+esac
 
 
 
-echo "unknow_action '$1'"
-exit 0
