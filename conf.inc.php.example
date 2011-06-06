@@ -2,6 +2,7 @@
 
 // aparecerán cajas con información útil para errores.
 define("DEBUG", False);
+define("VERSION", "__VERSION__");
 
 // poner en True cuando se hayan editado todos los valores
 define("CONFIGURED", False);

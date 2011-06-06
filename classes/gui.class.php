@@ -105,6 +105,12 @@ class Gui
             $_SESSION['error']='';
         }
 
+        if (defined('VERSION') ) {
+            $this->smarty->assign('max_control_version', VERSION );
+        }
+        else {
+            $this->smarty->assign('max_control_version', "DESCONOCIDA" );
+        }
         $this->smarty->assign("content", $this->get_content());
         $this->smarty->display($this->main_template);
     }

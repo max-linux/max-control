@@ -3,6 +3,7 @@
 // aparecerán cajas con información útil para errores.
 define("DEBUG", False);
 
+define("VERSION", "__VERSION__");
 
 /*********** a partir de aqui puede que ya no hay aque editar nada ********/
 
