@@ -608,7 +608,7 @@ class USER extends BASE {
                 $maxsize=$quotaArray[$this->uid]['maxsize'];
                 $percent=$quotaArray[$this->uid]['percent'];
                 
-                return "<span style='color:$color'>$size MB / $maxsize MB ($percent)</span> <acronym title='Cache de cuota generado el $quotaTime'>?</acronym>";
+                return "<span style='color:$color'>$size MB / $maxsize MB ($percent)</span>";
             }
             else {
                 exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);

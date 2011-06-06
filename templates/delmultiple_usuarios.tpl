@@ -1,8 +1,16 @@
+{if $action =='delete'}
 <h2>Borrar usuarios</h2>
+{elseif $action =='clean'}
+<h2>Limpiar perfiles</h2>
+{/if}
 
 <form action='{$urlform}' method='post'> 
     <div class="warning">
-     <h2>Se van a borrar los siguientes usuarios:
+     {if $action =='delete'}
+        <h2>Se van a borrar los siguientes usuarios:
+     {elseif $action =='clean'}
+        <h2>Se van a limpiar los perfiles y archivos personales de los siguientes usuarios:
+     {/if}
         <ul>
         {foreach from=$usersarray item=k}
             <li>{$k}</li>
@@ -10,13 +18,16 @@
         </ul>
      </h2>
      
-     <h4>Esta operación no se puede deshacer</h4>
+     <h1>Esta operación no se puede deshacer</h1>
      <br/><br/>
      
      <input type='hidden' name='usernames' value='{$users}' />
+     <input type='hidden' name='action' value='{$action}' />
      
-    <input type='checkbox' class='inputText' name='deleteprofile' value='1' checked/>
-    Borrar también su perfil y todos sus datos
+     {if $action =='delete'}
+       <input type='checkbox' class='inputText' name='deleteprofile' value='1' checked/>
+       Borrar también su perfil y todos sus datos
+     {/if}
      <input class='inputButton' type='submit' name='confirm' value="Confirmar" alt="Confirmar" />
     </div>
 </form>

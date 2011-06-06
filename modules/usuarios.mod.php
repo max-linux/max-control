@@ -221,12 +221,19 @@ function guardar($module, $action, $subaction) {
 function deletemultiple($module, $action, $subaction) {
     global $gui, $url;
     $users=leer_datos('usernames');
+    $action=leer_datos('action');
     if( ! $users) {
         $gui->session_error("No se han seleccionado usuarios");
         $url->ir($module, "ver");
     }
+    if( !($action == 'clean' || $action == 'delete') ) {
+        $gui->session_error("No se han seleccionado una acción");
+        $url->ir($module, "ver");
+    }
+    
     $usersarray=preg_split('/,/', $users);
     $data=array("users" => $users,
+                "action" => $action,
                 "usersarray"=>$usersarray,
                 "urlform"=>$url->create_url($module, 'deletemultipledo'));
     
@@ -237,10 +244,15 @@ function deletemultipledo($module, $action, $subaction) {
     global $gui, $url,$permisos;
     $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
     $usernames=leer_datos('usernames');
+    $action=leer_datos('action');
     $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
 
     if ($usernames == '') {
         $gui->session_error("No se han seleccionado usuarios: '$usernames'");
+        $url->ir($module, "ver");
+    }
+    if( !($action == 'clean' || $action == 'delete') ) {
+        $gui->session_error("No se han seleccionado una acción");
         $url->ir($module, "ver");
     }
 
@@ -256,12 +268,21 @@ function deletemultipledo($module, $action, $subaction) {
             $gui->session_error("Usuario '$username' no borrado, se necesita ser Administrador para borrar Administradores.");
             continue;
         }
-        if ($username == $_SESSION["username"]) {
+        if ($username == $_SESSION["username"] && $action == 'delete') {
             $gui->session_error("Usuario '$username' no borrado, no se puede borrar la cuenta con la que se está conectado.");
             continue;
         }
-        if ( $user->delUser($deleteprofile) )
-            $gui->session_info("Usuario '$username' borrado.");
+        if ($action == 'delete') {
+            if ( $user->delUser($deleteprofile) )
+                $gui->session_info("Usuario '$username' borrado.");
+        }
+        elseif ($action == 'clean') {
+            if ( $user->resetProfile() )
+                $gui->session_info("Perfil del usuario '$username' borrado.");
+        }
+        else {
+            $gui->session_error("Acción no válida ($action).");
+        }
     }
     if(! DEBUG)
         $url->ir($module, "ver");
