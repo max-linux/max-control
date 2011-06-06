@@ -3,7 +3,6 @@
     Los siguientes usuarios han superado el {$overQuotaLimit}% de la cuota máxima:
     <ul>
     {foreach from=$overQuota key=k item=u}
-        {* $overQuota[]=array('uid'=>'test', 'size'=>3, 'maxsize'=> 2000, 'percent'=>'0.16%'); *}
         <li>
             <a href="{$urleditar}/{$u.uid}">{$u.uid}</a>
             Usado {$u.size} MB de {$u.maxsize} MB ({$u.percent})
@@ -12,7 +11,7 @@
     {/foreach}
     </ul>
     <span style="float:right;">
-        <a href="javascript:$('#overQuotaDiv')[0].style.display='none';">ocultar</a>
+        <a href="javascript:void()" onclick="javascript:$('#overQuotaDiv')[0].style.display='none'">ocultar</a>
     </span>
     <br/>
 </div>
@@ -31,8 +30,12 @@
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
           <input type='submit' name='button' value="Añadir usuario" title="Añadir usuario" />
           <input type='hidden' name='role' id="role" value='{$role}' />
-          <input style="display:none;float:right;" type='button' name='btnDelete' id='btnDelete' 
-           value="Borrar seleccionados" title="Borrar seleccionados" onclick="javascript:deleteSelected();"/>
+           
+           <select style="display:none;float:right;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
+            <option value=''>Seleccionar acción...</option>
+            <option value='delete'>&nbsp;&nbsp;&nbsp;&nbsp;Borrar seleccionados</option>
+            <option value='clean'>&nbsp;&nbsp;&nbsp;&nbsp;Limpiar perfil</option>
+           </select>
         </form>
         
         </td> 
@@ -41,6 +44,7 @@
 
 <form id="formdeletemultipleuser" name="formdeletemultipleuser" action="{$urlformmultiple}" method="post">
     <input type='hidden' name='usernames' id="usernames" value='' />
+    <input type='hidden' name='action' id="action" value='' />
 </form>
 
 <table class='dataTable'> 
@@ -65,7 +69,7 @@
          {/if}
         {$pager->getSortIcons('usedSize')}</th> 
       <th class=''>Editar</th> 
-      <th class=''>Borrar <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
+      <th class=''>Acciones <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th>
       </tr>
     </thead>
  
@@ -89,9 +93,6 @@
         <td class='tcenter'> 
             <a href="{$urleditar}/{$u->attr('uid')}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
         </td>
-        {*<td class='tcenter'> 
-            <a href="{$urlborrar}/{$u->attr('uid')}"><img src="{$baseurl}/img/delete.gif" alt="borrar" /></a>
-        </td>*}
         <td class='tcenter'> 
             <input type='checkbox' class="userdel" name="{$u->attr('uid')}" id="{$u->attr('uid')}" onchange="javascript:oncheckboxChange();"/>
         </td>
@@ -121,12 +122,28 @@ function oncheckboxChange() {
         }
     });
     if(multiple)
-        $('#btnDelete')[0].style.display='';
+        $('#selAction')[0].style.display='';
     else
-        $('#btnDelete')[0].style.display='none';
+        $('#selAction')[0].style.display='none';
 }
 
-function deleteSelected(){
+function enableAll(obj){
+    $.each($('.userdel'), function(i) { 
+        $('.userdel')[i].checked=obj.checked;
+    });
+    if(obj.checked)
+        $('#selAction')[0].style.display='';
+    else
+        $('#selAction')[0].style.display='none';
+}
+
+function rolFilter(obj) {
+    $('#role')[0].value=obj.value;
+    document.forms.formuser.submit();
+}
+
+function actionSelected(){
+    
     var toDelete=new Array();
     $.each($('.userdel'), function(i) { 
         if ($('.userdel')[i].checked) {
@@ -135,22 +152,10 @@ function deleteSelected(){
         }
     });
     $('#usernames')[0].value=toDelete;
+    
+    var action = $('#selAction').val();
+    $('#action')[0].value=action;
     $('#formdeletemultipleuser')[0].submit();
-}
-
-function enableAll(obj){
-    $.each($('.userdel'), function(i) { 
-        $('.userdel')[i].checked=obj.checked;
-    });
-    if(obj.checked)
-        $('#btnDelete')[0].style.display='';
-    else
-        $('#btnDelete')[0].style.display='none';
-}
-
-function rolFilter(obj) {
-    $('#role')[0].value=obj.value;
-    document.forms.formuser.submit();
 }
 -->
 </script>
