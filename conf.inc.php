@@ -11,43 +11,47 @@ define('LDAP_BINDPW', 'GzxovzAANdxoPux9');
 
 /* usuario creado por max-control */
 define('LDAP_ADMIN', 'max-control');
-define('LDAP_PASS', 'eZzKPcgeyrY');
+define('LDAP_PASS', 'cNa4UL7AjHb');
 
 define('LDAP_BASEDN', 'dc=max-server');
 
 define('CONFIGURED', True);
 
 
+/********************************************/
+// entidades organizativas del dominio
+// para EBOX estas son las que se usan por defecto
+define('LDAP_OU_COMPUTERS', 'ou=Computers,dc=max-server');
+define('LDAP_OU_USERS', 'ou=Users,dc=max-server');
+define('LDAP_OU_GROUPS', 'ou=Groups,dc=max-server');
+
+// Domain Admins
+define('LDAP_OU_DADMINS', 'cn=Domain Admins,ou=Groups,dc=max-server');
+
+// Administrators
+define('LDAP_OU_ADMINS', 'cn=Administrators,ou=Groups,dc=max-server');
+
+// si no existe crearlo con EBOX
+define('TEACHERS', 'Teachers');
+define('LDAP_OU_TEACHERS', 'cn=Teachers,ou=Groups,dc=max-server');
+define('LDAP_OU_DUSERS', 'cn=Domain Users,ou=Groups,dc=max-server');
+define('TICS', 'CoordinadoresTIC');
+define('LDAP_OU_TICS', 'cn=CoordinadoresTIC,ou=Groups,dc=max-server');
+define('INSTALLATORS', 'Instaladores');
+define('LDAP_OU_INSTALLATORS', 'cn=Instaladores,ou=Groups,dc=max-server');
+
+
+
 
 // aparecerán cajas con información útil para errores.
 define("DEBUG", True);
 
+define("VERSION", "1.0.17.7");
 
 /*********** a partir de aqui puede que ya no hay aque editar nada ********/
 
 // otros datos del dominio
 define("LDAP_HOSTNAME", "127.0.0.1");
-
-// entidades organizativas del dominio
-// para EBOX estas son las que se usan por defecto
-define("LDAP_OU_COMPUTERS", "ou=Computers,dc=max-server");
-define("LDAP_OU_USERS", "ou=Users,dc=max-server");
-define("LDAP_OU_GROUPS", "ou=Groups,dc=max-server");
-
-// Domain Admins
-define("LDAP_OU_DADMINS", "cn=Domain Admins,ou=Groups,dc=max-server");
-
-// Administrators
-define("LDAP_OU_ADMINS", "cn=Administrators,ou=Groups,dc=max-server");
-
-// si no existe crearlo con EBOX
-define("TEACHERS", "Teachers");
-define("LDAP_OU_TEACHERS", "cn=Teachers,ou=Groups,dc=max-server");
-define("LDAP_OU_DUSERS", "cn=Domain Users,ou=Groups,dc=max-server");
-define("TICS", "CoordinadoresTIC");
-define("LDAP_OU_TICS", "cn=CoordinadoresTIC,ou=Groups,dc=max-server");
-define("INSTALLATORS", "Instaladores");
-define("LDAP_OU_INSTALLATORS", "cn=Instaladores,ou=Groups,dc=max-server");
 
 // ruta al comando winexe
 define("WINEXE", "/usr/bin/pywinexe");
@@ -96,7 +100,7 @@ define("PXELINUXCFG", "/var/lib/tftpboot/pxelinux.cfg/");
 // compartir ISOS
 define("ISOS_PATH", "/home/samba/shares/isos/");
 
-define("FORK_ACTIONS", False);
+define("FORK_ACTIONS", True);
 //define("FORK_LOGFILE", "/tmp/actions.log");
 define("FORK_LOGFILE", "/dev/null");
 
