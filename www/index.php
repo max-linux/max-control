@@ -94,6 +94,9 @@ elseif ( isset($gui) ) {
 if (isset($gui)) {
     $gui->debug("Session cache=" .  ini_get("session.gc_maxlifetime") );
     $gui->debug("Memory  limit=" .  ini_get("memory_limit") );
+    if (defined('VERSION') ) {
+        $gui->debug("VERSION=".VERSION);
+    }
     $gui->debug("QUERY_STRING=".$_SERVER['QUERY_STRING']);
     $gui->debug_array($_POST, "index.php POST");
     $gui->debug_array($_GET, "index.php GET");

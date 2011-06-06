@@ -2,6 +2,8 @@
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 
+VERSION=$(shell dpkg-parsechangelog 2>/dev/null | awk '/^Version/ {print $$2}')
+
 DEB_UPDATE_RCD_PARAMS := "start 99 2 3 4 5 . stop 40 0 1 6 ."
 #DEB_DH_INSTALLINIT_ARGS := "--no-start"
 
@@ -16,6 +18,10 @@ binary-install/max-control:: test
 
 	grep -q zentyal debian/control && rm -f $(CURDIR)/debian/max-control/etc/cron.d/clamav-freshclam || true
 
+	# replace __VERSION__ with VERSION
+	sed -i -e 's/__VERSION__/$(VERSION)/g' $(CURDIR)/debian/max-control/usr/share/max-control/conf.inc.php.init
+	sed -i -e 's/__VERSION__/$(VERSION)/g' $(CURDIR)/debian/max-control/usr/share/max-control/conf.inc.php.example
+
 test:
 	# check for PHP syntax errors
 	@for f in $(shell find debian/max-control -type f -name "*php"); do \
@@ -24,3 +30,6 @@ test:
 			php -l $$f || exit 1; \
 		fi; \
 	done
+
+version:
+	@echo "VERSION=$(VERSION)"

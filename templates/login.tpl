@@ -49,14 +49,6 @@
     </div> 
 </center> 
 
-{if isset($debug) }
-<!-- debug -->
-<div id="aviso">
-   <div class="center bold">CONSOLA DE DEPURACIÓN</div>
-   {$debug}
-</div>
-<!-- fin debug -->
-{/if}
 
 <div id="footer">
   <div id='site-bottom'>
@@ -68,8 +60,17 @@
             <img width='132' height='43' alt='EducaMadrid' src='{$baseurl}/img/educamadrid.png'>
         </a>
     </div>
-    <p class='copyright-notice'><strong>EducaMadrid</strong> - 2010  - Consejería de Educación, Comunidad de Madrid</p>
+    <p class='copyright-notice'><strong>EducaMadrid</strong> - 2011  - Consejería de Educación, Comunidad de Madrid, max-control versión: {$max_control_version}</p>
   </div>
 </div>
+
+{if isset($debug) }
+<!-- debug -->
+<div id="aviso">
+   <div class="center bold">CONSOLA DE DEPURACIÓN</div>
+   {$debug}
+</div>
+<!-- fin debug -->
+{/if}
 </body> 
 </html>
