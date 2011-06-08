@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 # Wake-On-LAN
 #
 # Copyright (C) 2002 by Micro Systems Marc Balmer

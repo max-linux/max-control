@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 import os
 import sys
@@ -117,7 +118,7 @@ class MyConfigObj (ConfigObj):
             val,
             self._decode_element(comment))
 
-def newGroupShare(groupname):
+def newGroupShare(groupname, readonly):
     """
     [grupoprueba]
      comment = "grupoprueba share directory"
@@ -138,6 +139,11 @@ def newGroupShare(groupname):
      recycle: excludedir = /tmp|/var/tmp
      recycle: directory_mode = 0700
     """
+    #
+    # readonly (for puppils) is read from st_mode
+    #    * 17405 readonly false
+    #    * 17401 readonly true
+    #
     share={
             "comment": "compartido por %s"%groupname,
             "path": os.path.join(SHARED_DIR, groupname),
@@ -153,6 +159,9 @@ def newGroupShare(groupname):
             "read only": "no",
             "browseable": "yes",
           }
+    if readonly == 1:
+        print " * Group %s readonly for puppils."%groupname
+        share["write list"]=['@"Domain Admins"', '@"Teachers"']
     return share
 
 
@@ -189,7 +198,8 @@ for key in TO_ADD:
     # FIXME isos owned by teachers
     result=commands.getstatusoutput("max-control createshared '%s' 'Teachers'"%key)
     #print "createshared ",key, " = " ,result
-    print " * Create shared", key
+    if key not in NOT_VALID_KEYS:
+        print " * Create shared", key
 
 # delete not needed dir
 os.system("rm -rf %s/homes" %SHARED_DIR)
@@ -203,8 +213,16 @@ for group in ALL_GROUPS:
     # if exists check permisos
     groupdir=os.path.join(SHARED_DIR, group)
     if os.path.isdir(groupdir):
-        smb[group]=newGroupShare(group)
-        result=commands.getstatusoutput("max-control addgroup '%s'"%group)
+        #
+        # readonly (for puppils) is read from st_mode
+        #    * 17405 readonly false
+        #    * 17401 readonly true
+        #
+        readonly=0
+        if os.stat(groupdir).st_mode == 17401:
+            readonly=1
+        smb[group]=newGroupShare(group, readonly)
+        result=commands.getstatusoutput("max-control addgroup '%s' '%s'"%(group, readonly))
         #print "addgroup ", group, " = " ,result
         print " * Add group", group
 
