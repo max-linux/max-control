@@ -96,13 +96,30 @@ case $1 in
 ################################################################################
     addgroup)
         ADDGROUP=$2
+        READONLY=$3
         [ "${ADDGROUP}" = "" ] && ( echo "nonexists"; exit 1)
         mkdir -p "${GROUPS_DIR}/${ADDGROUP}"
         chown root:${ADDGROUP} "${GROUPS_DIR}/${ADDGROUP}"
         chmod +t "${GROUPS_DIR}/${ADDGROUP}"
         chmod g+w "${GROUPS_DIR}/${ADDGROUP}"
+        [ "$READONLY" = "1" ] && chmod o-r "${GROUPS_DIR}/${ADDGROUP}"
         echo "ok"
         exit 0
+        ;;
+################################################################################
+    isreadonly)
+        # $2 is groupname
+        # readonly (for puppils) is read from st_mode
+        #    * 17405 readonly 0
+        #    * 17401 readonly 1
+        #
+        ST_MODE=$(python -c 'import os,sys; print os.stat(sys.argv[1]).st_mode' "${GROUPS_DIR}/${2}" 2>&1)
+        if [ "$ST_MODE" = "17401" ]; then
+            echo "1"
+        else
+            echo "0"
+        fi
+        exit
         ;;
 ################################################################################
     deletegroup)
@@ -144,7 +161,7 @@ case $1 in
 ################################################################################
     gensamba)
         rm -f /etc/samba/max-control.conf
-        pymaxgensamba
+        pymaxgensamba 2>&1
         echo "ok"
         exit 0
         ;;

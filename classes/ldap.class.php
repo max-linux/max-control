@@ -1569,7 +1569,7 @@ class GROUP extends BASE {
     */
     }
     
-    function newGroup($createshared, $grouptype=2) {
+    function newGroup($createshared, $readonly, $grouptype=2) {
         global $gui;
         
         $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
@@ -1627,7 +1627,7 @@ class GROUP extends BASE {
         }
         
         if ($createshared == '1') {
-            $ldap->addGroupProfile($this->cn);
+            $ldap->addGroupProfile($this->cn, $readonly);
             $ldap->genSamba();
         }
         
@@ -2418,10 +2418,10 @@ class LDAP {
         return $output[0];
     }
 
-    function addGroupProfile($group) {
+    function addGroupProfile($group, $readonly=0) {
         global $gui;
-        exec("sudo ".MAXCONTROL." addgroup '$group'", &$output);
-        $gui->debug("LDAP:addGroupProfile($group)<pre>".print_r($output, true)."</pre>");
+        exec("sudo ".MAXCONTROL." addgroup '$group' '$readonly'", &$output);
+        $gui->debug("LDAP:addGroupProfile($group, $readonly)<pre>".print_r($output, true)."</pre>");
         return $output[0];
     }
 

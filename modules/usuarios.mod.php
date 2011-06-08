@@ -577,6 +577,7 @@ function groupsavenew($module, $action, $subaction) {
         [cn] => aaaa
         [description] => aaaaa
         [createshared] => 1
+        [readonly] => 1
         [add] => Añadir
     )
     */
@@ -586,8 +587,9 @@ function groupsavenew($module, $action, $subaction) {
     }
     
     $createshared=leer_datos('createshared');
+    $readonly=leer_datos('readonly');
     $group=new GROUP($_POST);
-    if ( $group->newGroup($createshared) )
+    if ( $group->newGroup($createshared, $readonly) )
         $gui->session_info("Grupo '".$group->cn."' añadido correctamente.");
     
     if(! DEBUG)

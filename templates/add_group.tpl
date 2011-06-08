@@ -21,8 +21,13 @@
 
         <tr> 
             <td class='tright'><span class='ftitle'>Crear recurso compartido:</span></td> 
-            <td><input type='checkbox' class='inputText' name='createshared' value='1' /> (podrán acceder a él los usuarios añadidos a este grupo)</td> 
+            <td><input type='checkbox' class='inputText' name='createshared' value='1' checked='true' /> (podrán acceder a él los usuarios añadidos a este grupo)</td> 
         </tr> 
+
+        <tr>
+            <td class='tright'><span class='ftitle'>Sólo lectura para alumnos:</span></td> 
+            <td><input type='checkbox' class='inputText' name='readonly' value='1' /> (Los alumnos sólo podrán leer archivos, no podrán ni escribir ni borrar)</td> 
+        </tr>
 
         <tr> 
             <td></td> 
