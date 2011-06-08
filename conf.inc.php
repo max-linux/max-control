@@ -46,7 +46,7 @@ define('LDAP_OU_INSTALLATORS', 'cn=Instaladores,ou=Groups,dc=max-server');
 // aparecerán cajas con información útil para errores.
 define("DEBUG", True);
 
-define("VERSION", "1.0.17.7");
+define("VERSION", "GIT");
 
 /*********** a partir de aqui puede que ya no hay aque editar nada ********/
 

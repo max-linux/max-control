@@ -1,14 +1,14 @@
-{if $action =='delete'}
+{if $faction =='delete'}
 <h2>Borrar usuarios</h2>
-{elseif $action =='clean'}
+{elseif $faction =='clean'}
 <h2>Limpiar perfiles</h2>
 {/if}
 
 <form action='{$urlform}' method='post'> 
     <div class="warning">
-     {if $action =='delete'}
+     {if $faction =='delete'}
         <h2>Se van a borrar los siguientes usuarios:
-     {elseif $action =='clean'}
+     {elseif $faction =='clean'}
         <h2>Se van a limpiar los perfiles y archivos personales de los siguientes usuarios:
      {/if}
         <ul>
@@ -18,13 +18,13 @@
         </ul>
      </h2>
      
-     <h1>Esta operación no se puede deshacer</h1>
+     <h1>ATENCIÓN:</h1> <h4>Esta operación no se puede deshacer, se borrarán todos los archivos personales de los usuarios seleccionados.</h4>
      <br/><br/>
      
      <input type='hidden' name='usernames' value='{$users}' />
-     <input type='hidden' name='action' value='{$action}' />
+     <input type='hidden' name='faction' value='{$faction}' />
      
-     {if $action =='delete'}
+     {if $faction =='delete'}
        <input type='checkbox' class='inputText' name='deleteprofile' value='1' checked/>
        Borrar también su perfil y todos sus datos
      {/if}

@@ -10,8 +10,14 @@
           <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
           <input type='submit' name='button' value="Buscar" title="Buscar" /> 
           <input type='submit' name='button' value="Añadir grupo" title="Añadir grupo" />
-          <input style="display:none;float:right;" type='button' name='btnDelete' id='btnDelete' 
-           value="Borrar seleccionados" title="Borrar seleccionados" onclick="javascript:deleteSelected();"/>
+          {*<input style="display:none;float:right;" type='button' name='btnDelete' id='btnDelete' 
+           value="Borrar seleccionados" title="Borrar seleccionados" onclick="javascript:deleteSelected();"/>*}
+          <select style="display:none;float:right;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
+            <option value=''>Seleccionar acción...</option>
+            <option value='delete'>&nbsp;&nbsp;&nbsp;&nbsp;Borrar grupos</option>
+            <option value='deletemembers'>&nbsp;&nbsp;&nbsp;&nbsp;Borrar grupos y sus miembros</option>
+            <option value='clean'>&nbsp;&nbsp;&nbsp;&nbsp;Limpiar perfiles de usuarios de los grupos</option>
+           </select>
         </form>
         
         </td> 
@@ -20,6 +26,7 @@
 
 <form id="formdeletemultiplegroup" name="formdeletemultiplegroup" action="{$urlborrar}" method="post">
     <input type='hidden' name='groupnames' id="groupnames" value='' />
+    <input type='hidden' name='faction' id="faction" value='' />
 </form>
 
 <table class='dataTable'> 
@@ -27,7 +34,7 @@
       <tr>
       <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>Miembros {$pager->getSortIcons('numUsers')}</th>
-      <th class=''>Borrar <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th> 
+      <th class=''>Acciones <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th> 
       </tr>
     </thead>
  
@@ -48,6 +55,7 @@
         </td> 
         <td class='tcenter'> 
             {*<a href="{$urlborrar}/{$u->cn}"><img src="{$baseurl}/img/delete.gif" alt="borrar" /></a>*}
+            <a href="{$urleditar}/{$u->cn}" title='Renombrar grupo'><img src="{$baseurl}/img/edit-table.gif" alt="renombrar" /></a>
             <input type='checkbox' class="groupdel" name="{$u->attr('cn')}" id="{$u->attr('cn')}" onchange="javascript:oncheckboxChange();"/>
         </td>
       </tr>
@@ -76,9 +84,9 @@ function oncheckboxChange() {
         }
     });
     if(multiple)
-        $('#btnDelete')[0].style.display='';
+        $('#selAction')[0].style.display='';
     else
-        $('#btnDelete')[0].style.display='none';
+        $('#selAction')[0].style.display='none';
 }
 
 function deleteSelected(){
@@ -98,11 +106,27 @@ function enableAll(obj){
         $('.groupdel')[i].checked=obj.checked;
     });
     if(obj.checked)
-        $('#btnDelete')[0].style.display='';
+        $('#selAction')[0].style.display='';
     else
-        $('#btnDelete')[0].style.display='none';
+        $('#selAction')[0].style.display='none';
 }
 
+function actionSelected(){
+    
+        var toDelete=new Array();
+    $.each($('.groupdel'), function(i) { 
+        if ($('.groupdel')[i].checked) {
+            toDelete.push($('.groupdel')[i].id);
+            multiple=true;
+        }
+    });
+    $('#groupnames')[0].value=toDelete;
+    
+    
+    var faction = $('#selAction').val();
+    $('#faction')[0].value=faction;
+    $('#formdeletemultiplegroup')[0].submit();
+}
 -->
 </script>
 {/literal}

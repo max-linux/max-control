@@ -29,8 +29,8 @@ $action=$url->get("action");
 $subaction=$url->get("subaction");
 
 $module_actions=array(
-        "aula" => "Por aulas",
-        "equipo" => "Por equipos",
+        "aula" => "Aulas",
+        "equipo" => "Equipos",
 );
 
 function refresh($module, $action, $subaction) {
