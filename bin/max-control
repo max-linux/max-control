@@ -198,6 +198,23 @@ case $1 in
         exit 0
         ;;
 ################################################################################
+    renamegroup)
+        # $2 is oldname
+        # $3 is newname
+        if [ -d "$GROUPS_DIR/$3" ]; then
+            echo "new exists"
+            exit 0
+        elif [ -d "$GROUPS_DIR/$2" ]; then
+            mv "$GROUPS_DIR/$2" "$GROUPS_DIR/$3"
+            rm -f /etc/samba/max-control.conf
+            pymaxgensamba >/dev/null 2>&1
+            echo "ok"
+            exit 0
+        fi
+        echo "no changes"
+        exit 0
+        ;;
+################################################################################
     *)
         echo "unknow_action"
         exit 0

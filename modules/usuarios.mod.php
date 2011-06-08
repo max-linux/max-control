@@ -35,8 +35,8 @@ if ( ! ( $permisos->is_admin() || $permisos->is_tic() ) ) {
 
 
 $module_actions=array(
-        "ver" => "Ver usuarios",
-        "grupos" => "Ver grupos"
+        "ver" => "Usuarios",
+        "grupos" => "Grupos"
 );
 
 
@@ -221,19 +221,20 @@ function guardar($module, $action, $subaction) {
 function deletemultiple($module, $action, $subaction) {
     global $gui, $url;
     $users=leer_datos('usernames');
-    $action=leer_datos('action');
+    $faction=leer_datos('faction');
     if( ! $users) {
         $gui->session_error("No se han seleccionado usuarios");
         $url->ir($module, "ver");
     }
-    if( !($action == 'clean' || $action == 'delete') ) {
-        $gui->session_error("No se han seleccionado una acción");
-        $url->ir($module, "ver");
+    if( !($faction == 'clean' || $faction == 'delete') ) {
+        $gui->session_error("No se ha seleccionado una acción");
+        if (! DEBUG)
+            $url->ir($module, "ver");
     }
     
     $usersarray=preg_split('/,/', $users);
     $data=array("users" => $users,
-                "action" => $action,
+                "faction" => $faction,
                 "usersarray"=>$usersarray,
                 "urlform"=>$url->create_url($module, 'deletemultipledo'));
     
@@ -244,15 +245,15 @@ function deletemultipledo($module, $action, $subaction) {
     global $gui, $url,$permisos;
     $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
     $usernames=leer_datos('usernames');
-    $action=leer_datos('action');
+    $faction=leer_datos('faction');
     $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
 
     if ($usernames == '') {
         $gui->session_error("No se han seleccionado usuarios: '$usernames'");
         $url->ir($module, "ver");
     }
-    if( !($action == 'clean' || $action == 'delete') ) {
-        $gui->session_error("No se han seleccionado una acción");
+    if( !($faction == 'clean' || $faction == 'delete') ) {
+        $gui->session_error("No se ha seleccionado una acción");
         $url->ir($module, "ver");
     }
 
@@ -268,20 +269,20 @@ function deletemultipledo($module, $action, $subaction) {
             $gui->session_error("Usuario '$username' no borrado, se necesita ser Administrador para borrar Administradores.");
             continue;
         }
-        if ($username == $_SESSION["username"] && $action == 'delete') {
+        if ($username == $_SESSION["username"] && $faction == 'delete') {
             $gui->session_error("Usuario '$username' no borrado, no se puede borrar la cuenta con la que se está conectado.");
             continue;
         }
-        if ($action == 'delete') {
+        if ($faction == 'delete') {
             if ( $user->delUser($deleteprofile) )
                 $gui->session_info("Usuario '$username' borrado.");
         }
-        elseif ($action == 'clean') {
+        elseif ($faction == 'clean') {
             if ( $user->resetProfile() )
                 $gui->session_info("Perfil del usuario '$username' borrado.");
         }
         else {
-            $gui->session_error("Acción no válida ($action).");
+            $gui->session_error("Acción no válida ($faction).");
         }
     }
     if(! DEBUG)
@@ -468,9 +469,17 @@ function groupdelete($module, $action, $subaction) {
     global $gui, $url;
     $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
     $groups=leer_datos("groupnames");
+    $faction=leer_datos("faction");
     $groupsarray=preg_split('/,/', $groups);
+    $ldap= new LDAP();
+    $members=array();
+    foreach($groupsarray as $gr) {
+        $groupobj=$ldap->get_groups($gr);
+        $members[$gr]=$groupobj[0];
+    }
     $data=array("groups" => $groups,
-                "groupsarray" => $groupsarray,
+                "faction" => $faction,
+                "groupsarray" => $members,
                 "urlform"=>$url->create_url($module, 'groupdeletedo', $groups));
     
     $gui->add( $gui->load_from_template("del_group.tpl", $data) );
@@ -489,12 +498,18 @@ function groupdeletedo($module, $action, $subaction) {
     */
     
     $groups=leer_datos('groups');
+    $faction=leer_datos("faction");
     $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
 
     if ($groups == '') {
         $gui->session_error("No se han seleccionado grupos");
         $url->ir($module, "grupos");
     }
+    if( !($faction == 'clean' || $faction == 'delete' || $faction == 'deletemembers') ) {
+        $gui->session_error("No se ha seleccionado una acción");
+        $url->ir($module, "grupos");
+    }
+    
     $groupsarray=preg_split('/,/', $groups);
     $ldap=new LDAP();
     foreach($groupsarray as $group) {
@@ -503,8 +518,37 @@ function groupdeletedo($module, $action, $subaction) {
             $gui->session_error(" El grupo '$group' no existe.");
             continue;
         }
-        if ( $todelete[0]->delGroup($deleteprofile) )
-            $gui->session_info("Grupo '$group' borrado.");
+        if ($faction == 'delete') {
+            if ( $todelete[0]->delGroup($deleteprofile) )
+                $gui->session_info("Grupo '$group' borrado.");
+        }
+        elseif($faction == 'deletemembers') {
+            /* borrar usuarios uno a uno */
+            $users=$todelete[0]->get_users();
+            foreach($users as $username) {
+                $user=$ldap->get_user($username);
+                if ($username == $_SESSION["username"]) {
+                    $gui->session_error("Usuario '$username' del grupo '$group' no borrado, no se puede borrar la cuenta con la que se está conectado.");
+                    continue;
+                }
+                if ( $user->delUser($deleteprofile) )
+                    $gui->session_info("Usuario '$username' del grupo '$group', borrado.");
+            }
+            /* borrar grupo */
+            if ( $todelete[0]->delGroup($deleteprofile) )
+                $gui->session_info("Grupo '$group' borrado.");
+        }
+        elseif($faction == 'clean') {
+            $users=$todelete[0]->get_users();
+            foreach($users as $username) {
+                $user=$ldap->get_user($username);
+                if ( $user->resetProfile() )
+                    $gui->session_info("Perfil del usuario '$username' del grupo '$group', borrado.");
+            }
+        }
+        else {
+            $gui->session_error("Acción no válida ($faction) en grupo $group.");
+        }
     }
     if(! DEBUG)
         $url->ir($module, "grupos");
@@ -582,9 +626,34 @@ function resetprofiledo ($module, $action, $subaction) {
 }
 
 
+function groupeditar ($module, $action, $subaction) {
+    global $url, $gui;
+    $group=$subaction;
+    $data=array("group" => $group,
+                "urlform"=>$url->create_url($module, 'groupeditsave', $group));
+    $gui->add( $gui->load_from_template("groupedit.tpl", $data) );
+}
 
+function groupeditsave ($module, $action, $subaction) {
+    global $url, $gui;
 
-
+    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+    $group=leer_datos('group');
+    $newgroup=leer_datos('cn');
+    
+    if ( $group == '') {
+        $gui->session_error("Grupo incorrecto");
+        $url->ir($module, "grupos");
+    }
+    
+    $ldap=new LDAP();
+    $groupobj=$ldap->get_groups($group);
+    $groupobj[0]->renameGroup($newgroup);
+    
+    
+    if(! DEBUG)
+        $url->ir($module, "grupos");
+}
 
 
 /*****************************************************************************/
@@ -616,6 +685,8 @@ switch($action) {
     case "groupdeletedo": groupdeletedo($module, $action, $subaction); break; /* borrar grupo */
     case "groupadd": groupadd($module, $action, $subaction); break; /* formulario nuevo grupo */
     case "groupsavenew": groupsavenew($module, $action, $subaction); break; /* formulario nuevo grupo */
+    case "groupeditar": groupeditar($module, $action, $subaction); break; /* renombrar grupo */
+    case "groupeditsave": groupeditsave($module, $action, $subaction); break; /* guardar nuevo nombre de grupo */
     
     
     default: $gui->session_error("Accion desconocida '$action' en modulo usuarios");

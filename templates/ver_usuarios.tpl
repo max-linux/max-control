@@ -44,7 +44,7 @@
 
 <form id="formdeletemultipleuser" name="formdeletemultipleuser" action="{$urlformmultiple}" method="post">
     <input type='hidden' name='usernames' id="usernames" value='' />
-    <input type='hidden' name='action' id="action" value='' />
+    <input type='hidden' name='faction' id="faction" value='' />
 </form>
 
 <table class='dataTable'> 
@@ -153,8 +153,8 @@ function actionSelected(){
     });
     $('#usernames')[0].value=toDelete;
     
-    var action = $('#selAction').val();
-    $('#action')[0].value=action;
+    var faction = $('#selAction').val();
+    $('#faction')[0].value=faction;
     $('#formdeletemultipleuser')[0].submit();
 }
 -->

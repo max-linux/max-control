@@ -27,6 +27,10 @@ SHARED_DIR="/home/samba/groups/"
 """
 
 TO_ADD={'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/', 'ea support':'yes', 'store dos attributes':'yes'},
+        'ebox-internal-backups':{'browseable':'no'},
+        'ebox-quarantine':{'browseable':'no'},
+        'print$':{'browseable':'no'},
+        'global':{'full_audit:success':'none', 'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename'},
         'profiles': {'ea support':'yes', 'store dos attributes':'yes'},
         'isos': {'comment': 'Archivos ISO', 
                'path': '/home/samba/shares/isos',
@@ -37,8 +41,8 @@ TO_ADD={'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/', 'ea s
                'read list': '@"__USERS__"',
                'admin users': '@"Domain Admins"',
                'guest ok': 'yes',
-               'read only': 'No', 
-               'browseable': 'No', 
+               'read only': 'no', 
+               'browseable': 'no', 
                'force create mode': '0664', 
                'force directory mode': '0775',
                }
@@ -122,15 +126,15 @@ def newGroupShare(groupname):
      force group = "grupoprueba"
      force create mode = 0660
      force directory mode = 0660
-     printable = No
-     read only = No
-     browseable = Yes
+     printable = no
+     read only = no
+     browseable = yes
     # FIXME: Removed for samba 3.4.3, add again when a new version fixes it
     #% my $objects = 'full_audit';
      vfs objects =  recycle
-     recycle: versions = Yes
+     recycle: versions = yes
      recycle: repository = RecycleBin
-     recycle: keeptree = Yes
+     recycle: keeptree = yes
      recycle: excludedir = /tmp|/var/tmp
      recycle: directory_mode = 0700
     """
@@ -145,9 +149,9 @@ def newGroupShare(groupname):
             "admin users": '@"Domain Admins"',
             "force create mode":"0660",
             "force directory mode": "0770",
-            "printable": "No",
-            "read only": "No",
-            "browseable": "Yes",
+            "printable": "no",
+            "read only": "no",
+            "browseable": "yes",
           }
     return share
 
@@ -195,11 +199,11 @@ for group in ALL_GROUPS:
     if group in NOT_VALID_KEYS:
         # no create special sections
         continue
-    smb[group]=newGroupShare(group)
     
     # if exists check permisos
     groupdir=os.path.join(SHARED_DIR, group)
     if os.path.isdir(groupdir):
+        smb[group]=newGroupShare(group)
         result=commands.getstatusoutput("max-control addgroup '%s'"%group)
         #print "addgroup ", group, " = " ,result
         print " * Add group", group

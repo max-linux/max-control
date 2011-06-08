@@ -30,14 +30,14 @@ if ( ! $permisos->is_connected() ) {
 
 if ( $permisos->is_admin() ) {
     $module_actions=array(
-        "ver" => "Ver equipos",
-        "aulas" => "Ver aulas");
+        "aulas" => "Aulas",
+        "ver" => "Equipos");
     if ($action == "")
-        $url->ir($module, "ver");
+        $url->ir($module, "aulas");
 }
 elseif ( $permisos->is_tic() ) {
     $module_actions=array(
-        "aulas" => "Ver aulas");
+        "aulas" => "Aulas");
     if ($action == "")
         $url->ir($module, "aulas");
 }

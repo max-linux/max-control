@@ -1155,8 +1155,22 @@ class AULA extends BASE {
     function get_num_users() {
         //global $gui;
         //$gui->debug("get_num_users() aula=".$this->cn . "<pre>".print_r($this->ldapdata['memberUid'], true)."</pre>");
-        if ( isset($this->ldapdata['memberUid']) )
-            return $this->ldapdata['memberUid']['count'];
+        //if ( isset($this->ldapdata['memberUid']) )
+        //    return $this->ldapdata['memberUid']['count'];
+        //return 0;
+        $i=0;
+        if ( isset($this->ldapdata['memberUid']) ) {
+            $ldap=new LDAP();
+            unset($this->ldapdata['memberUid']['count']);
+            foreach($this->ldapdata['memberUid'] as $username) {
+                $user=$ldap->user_exists($username);
+                if ($user) {
+                    $i++;
+                }
+            }
+            $ldap->disconnect();
+            return $i;
+        }
         return 0;
     }
     
@@ -1167,8 +1181,15 @@ class AULA extends BASE {
     function get_users() {
         $users=array();
         if ( isset($this->ldapdata['memberUid']) ) {
-            $users=$this->ldapdata['memberUid'];
-            unset ($users['count']);
+            $ldap=new LDAP();
+            unset($this->ldapdata['memberUid']['count']);
+            foreach($this->ldapdata['memberUid'] as $username) {
+                $user=$ldap->user_exists($username);
+                if ($user) {
+                    $users[]=$username;
+                }
+            }
+            $ldap->disconnect();
         }
         return $users;
     }
@@ -1421,18 +1442,34 @@ class GROUP extends BASE {
     }
     
     function get_num_users() {
-        //global $gui;
-        //$gui->debug("get_num_users() aula=".$this->cn . "<pre>".print_r($this->ldapdata['memberUid'], true)."</pre>");
-        if ( isset($this->ldapdata['memberUid']) )
-            return $this->ldapdata['memberUid']['count'];
+        $i=0;
+        if ( isset($this->ldapdata['memberUid']) ) {
+            $ldap=new LDAP();
+            unset($this->ldapdata['memberUid']['count']);
+            foreach($this->ldapdata['memberUid'] as $username) {
+                $user=$ldap->user_exists($username);
+                if ($user) {
+                    $i++;
+                }
+            }
+            $ldap->disconnect();
+            return $i;
+        }
         return 0;
     }
     
     function get_users() {
         $users=array();
         if ( isset($this->ldapdata['memberUid']) ) {
-            $users=$this->ldapdata['memberUid'];
-            unset ($users['count']);
+            $ldap=new LDAP();
+            unset($this->ldapdata['memberUid']['count']);
+            foreach($this->ldapdata['memberUid'] as $username) {
+                $user=$ldap->user_exists($username);
+                if ($user) {
+                    $users[]=$username;
+                }
+            }
+            $ldap->disconnect();
         }
         return $users;
     }
@@ -1600,6 +1637,62 @@ class GROUP extends BASE {
         
         return true;
     }
+    
+    
+    function renameGroup($newname) {
+        global $gui;
+        /*
+        [cn] => grupo3
+        [description] => 
+        [displayName] => grupo3
+        [gidNumber] => 2009
+        [objectClass] => Array
+            (
+                [count] => 3
+                [0] => posixGroup
+                [1] => sambaGroupMapping
+                [2] => eboxGroup
+            )
+
+        [sambaSID] => S-1-5-21-3818554400-921237426-3143208535-5019
+        [memberUid] => 
+        [sambaGroupType] => 2
+        [numUsers] => 0
+        */
+        $oldname=$this->cn;
+        $this->displayName=$newname;
+        $this->save( array('displayName') );
+        //$gui->debuga($this);
+        
+        $full_old_dn= "cn=".$this->cn.",".LDAP_OU_GROUPS;
+        $new_rdn= "cn=$newname";
+        
+        $gui->debug("OLD=$full_old_dn NEW=$new_rdn");
+        
+        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $r=ldap_rename( $ldap->cid, $full_old_dn, $new_rdn, NULL, TRUE);
+        if ( ! $r ) {
+            $gui->session_error("No se pudo renombrar el grupo '$oldname'</br>Error:".ldap_error($ldap->cid));
+            $ldap->disconnect();
+            return false;
+        }
+        $ldap->disconnect();
+        $gui->session_info("Grupo '$oldname' renombrado a '$newname'.");
+        
+        /* rename shared folder if exists */
+        exec("sudo ".MAXCONTROL." renamegroup '$oldname' '$newname' 2>&1", &$output);
+        $gui->debug("GROUP:renameGroup('$oldname' '$newname')<pre>".print_r($output, true)."</pre>");
+        
+        if ($output[0] == 'ok')
+            $gui->session_info("Carpeta compartida renombrada para el grupo '$oldname' a '$newname'.");
+        elseif ($output[0] == 'new exists')
+            $gui->session_error("La carpeta compartida '$newname' existe.");
+        elseif ($output[0] == 'no changes')
+            $gui->session_info("El grupo '$newname' no tiene carpeta compartida.");
+        else
+            $gui->session_info("Error desconocido al renombrar recurso compartido.<br/><pre>".print_r($output, true)."</pre>");
+        return true;
+    }
 }
 
 class ISO extends BASE{
@@ -1715,6 +1808,24 @@ class LDAP {
         
         $user = new USER($found);
         return $user;
+    }
+
+    function user_exists($uid) {
+        global $gui;
+        
+        if ( ! $this->connect() )
+            return false;
+        $filter = "(&(objectClass=posixAccount)(uid=$uid))";
+        if (! ($search=ldap_search($this->cid, LDAP_OU_USERS, $filter))) {
+            $this->error="Error: búsqueda incorrecta.\n".ldap_error($this->cid);
+            return false;
+        }
+        $number_returned = ldap_count_entries($this->cid, $search);
+        if ($number_returned != 1) {
+            return false;
+        }
+        
+        return true;
     }
 
     function get_user_uids($group=LDAP_OU_USERS) {
