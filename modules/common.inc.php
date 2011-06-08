@@ -326,4 +326,26 @@ function checkIP($ip) {
     $fIP = long2ip($cIP);
     return $fIP;
 }
+
+
+function test_string($uid) {
+    /* comprobar no espacios, empiece por letra y no caracteres raros */
+    $re='/(^[A-Za-z])([A-Za-z0-9-._]+)$/';
+    
+    /* si cumple la anterior no tiene que tener caracteres no ASCII */
+    $noascii='~[^\x00-\x7F]~u';
+    if ( preg_match($re, $uid) ) {
+        if ( preg_match($noascii, $uid)) {
+            //echo "no ascii<br/>";
+            return false;
+        }
+        //echo "ok<br/>";
+        return true;
+    }
+    //echo "mal formato<br/>";
+    return false;
+}
+
+
+
 ?>

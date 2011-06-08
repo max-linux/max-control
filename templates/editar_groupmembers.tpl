@@ -63,7 +63,8 @@
 </tbody> 
 </table>
 
-
+{*
 {if $DEBUG}
 {debug}
 {/if}
+*}
