@@ -123,7 +123,7 @@ $site["private_modules_admin"]=array(
         "equipos" => "Aulas y Equipos",
         "isos" => "Distribuir ISOS",
         "power" => "Apagado y reinicio",
-        "boot" => "Programar arranque equipos",
+        "boot" => "Programar arranque",
         );
 
 $site["private_modules_tic"]=array(
@@ -132,7 +132,7 @@ $site["private_modules_tic"]=array(
         "equipos" => "Aulas y Profesores",
         "isos" => "Distribuir ISOS",
         "power" => "Apagado y reinicio",
-        "boot" => "Programar arranque equipos",
+        "boot" => "Programar arranque",
         );
 
 $site["private_modules_teacher"]=array(
