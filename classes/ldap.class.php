@@ -236,6 +236,7 @@ class USER extends BASE {
     var $sambaSID='';
     
     /* passwords */
+    var $plainPassword='';
     var $userPassword='';
     var $eboxSha1Password='';
     var $eboxMd5Password='';
@@ -303,6 +304,12 @@ class USER extends BASE {
         Call max-control 
         */
         global $gui;
+        if ( $this->plainPassword != '' ){
+            /* don't run reQuota in importing a lot of users */
+            $gui->debug("reQuota disabled");
+            return;
+        }
+        
         $ldap=new LDAP();
         $cmd='sudo '.MAXCONTROL.' requota '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1';
         $gui->debug("reQuota(cmd='$cmd')");
@@ -420,6 +427,11 @@ class USER extends BASE {
             return false;
         }
         
+        $password=$this->plainPassword;
+        if($password == '') {
+            $password=leer_datos('password');
+        }
+        
         //$this->cn=$this->uid. " ".$this->sn;
         
         $this->uidNumber=$ldap->lastUID() +1;
@@ -436,7 +448,7 @@ class USER extends BASE {
         $this->sambaProfilePath=SAMBA_PROFILES . $this->uid;
         
         $this->objectClass = array('inetOrgPerson', 'posixAccount', 'passwordHolder', 'sambaSamAccount');
-        $additionalPasswords=$ldap->additionalPasswords(leer_datos('password') , $this->uid, $samba=true);
+        $additionalPasswords=$ldap->additionalPasswords($password , $this->uid, $samba=true);
         $this->set( $additionalPasswords );
         
         $this->sambaPwdLastSet=time();
@@ -450,13 +462,13 @@ class USER extends BASE {
             "uidNumber" => $this->uidNumber,
             "gidNumber" => $this->gidNumber,
             "homeDirectory" => $this->homeDirectory,
-            "userPassword" => "{SHA}".base64_encode(sha1(leer_datos('password'), TRUE)),
+            "userPassword" => "{SHA}".base64_encode(sha1($password, TRUE)),
             "objectClass" => array('inetOrgPerson', 'posixAccount'),
                     );
-        $gui->debuga($init);
+        //$gui->debuga($init);
         $r=ldap_add($ldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
         
-        $gui->debug(ldap_error($ldap->cid));
+        //$gui->debug(ldap_error($ldap->cid));
         
         
         if ( ! $r ) {
@@ -464,21 +476,21 @@ class USER extends BASE {
             return false;
         }
         
-        $gui->debug("INIT DONE save rest");
+        //$gui->debug("INIT DONE save rest");
         $this->ldapdata=$data;
         
         // save passwords
         $init=array(
             "objectClass" => array('inetOrgPerson', 'posixAccount', 'passwordHolder'),
                     );
-        $init=array_merge($init, $ldap->additionalPasswords(leer_datos('password') , $this->uid, $samba=false));
-        $gui->debuga($init);
+        $init=array_merge($init, $ldap->additionalPasswords($password , $this->uid, $samba=false));
+        //$gui->debuga($init);
         $r=ldap_modify($ldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
         
         $gui->debug(ldap_error($ldap->cid));
         if ( ! $r )
             return false;
-        $gui->debug("PASSWORDS DONE save rest");
+        //$gui->debug("PASSWORDS DONE save rest");
         
         
         // save SAMBA attributes
@@ -507,10 +519,10 @@ class USER extends BASE {
             "sambaProfilePath" => $this->sambaProfilePath,
             "sambaSID" => $this->sambaSID,
                     );
-        $gui->debuga($init);
+        //$gui->debuga($init);
         $r=ldap_modify($ldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
         
-        $gui->debug(ldap_error($ldap->cid));
+        //$gui->debug(ldap_error($ldap->cid));
         if ( ! $r )
             return false;
         
@@ -532,7 +544,7 @@ class USER extends BASE {
         exec('sudo '.MAXCONTROL.' createhome '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1', &$output);
         $gui->debuga($output);
         
-        $gui->session_info("Usuario añadido correctamente.");
+        $gui->session_info("Usuario '".$this->uid."' añadido correctamente.");
         return true;
     }
     
@@ -1372,7 +1384,7 @@ class AULA extends BASE {
         $gui->debuga($init);
         $r=ldap_modify($ldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
         
-        $gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+        //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
         if ( ! $r ) {
             $gui->session_error("No se pudieron modificar los atributos del grupo '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
             $ldap->disconnect();
@@ -1595,7 +1607,7 @@ class GROUP extends BASE {
         $gui->debuga($init);
         $r=ldap_add($ldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
         
-        $gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+        //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
         if ( ! $r ) {
             $gui->session_error("No se pudo añadir el grupo '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
             $ldap->disconnect();
@@ -1619,7 +1631,7 @@ class GROUP extends BASE {
         $gui->debuga($init);
         $r=ldap_modify($ldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
         
-        $gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+        //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
         if ( ! $r ) {
             $gui->session_error("No se pudieron modificar los atributos del grupo '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
             $ldap->disconnect();
@@ -1832,7 +1844,7 @@ class LDAP {
         global $gui;
         $uids=array();
         $users=$this->get_users($filter='', $group=$group);
-        $gui->debuga($users);
+        //$gui->debuga($users);
         foreach($users as $user) {
             $uids[]=$user->uid;
         }
