@@ -346,6 +346,9 @@ function test_string($uid) {
     return false;
 }
 
-
+function backharddi_installed() {
+    /* return True/False if this file is found /boot/linux-backharddi-ng */
+    return file_exists ( '/boot/linux-backharddi-ng' );
+}
 
 ?>

@@ -48,7 +48,7 @@ $multiple_actions=array("poweroff" =>         "Apagar seleccionados",
                         "rebootmax" =>        "Reiniciar en MAX los seleccionados",
                         );
 
-if ( $permisos->is_admin() ) {
+if ( $permisos->is_admin() && backharddi_installed() ) {
     $multiple_actions["rebootbackharddi"]="Reiniciar en Backharddi los seleccionados";
 }
 
@@ -77,6 +77,7 @@ function aulas($module, $action, $subaction) {
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "mode" => $mode,
+                "backharddi_installed" => backharddi_installed(),
                 "urlpoweroff"=>$url->create_url($module, 'aula_preguntar', 'poweroff'),
                 "urlreboot"=>$url->create_url($module, 'aula_preguntar', 'reboot'),
                 "urlrebootwindows"=>$url->create_url($module, 'aula_preguntar', 'rebootwindows'),
@@ -160,6 +161,7 @@ function equipos($module, $action, $subaction) {
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "mode" => $mode,
+                "backharddi_installed" => backharddi_installed(),
                 "urlpoweroff"=>$url->create_url($module, 'equipo_preguntar', 'poweroff'),
                 "urlreboot"=>$url->create_url($module, 'equipo_preguntar', 'reboot'),
                 "urlrebootwindows"=>$url->create_url($module, 'equipo_preguntar', 'rebootwindows'),

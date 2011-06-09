@@ -2550,9 +2550,16 @@ class LDAP {
     }
 
     function getBootMenus($aula=False) {
+        global $gui;
         $menus=array();
         foreach (glob(PXELINUXCFG ."*.menu") as $filename) {
-            //echo "$filename size " . filesize($filename) . "\n";
+            $gui->debug("$filename size " . filesize($filename). " ".basename($filename, '.menu'));
+            if( ! backharddi_installed() && 
+                  (basename($filename, '.menu') == 'backharddi-ng-text' || 
+                   basename($filename, '.menu') == 'backharddi-ng') ) {
+                $gui->debug("$filename continue NO BACKHARDDI-NG");
+                continue;
+            }
             $menus[basename($filename, '.menu')]=$this->readMenu($filename);
         }
         if ($aula)
