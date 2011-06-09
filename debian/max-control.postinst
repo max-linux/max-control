@@ -44,6 +44,10 @@ EOF
        cp $fname /var/lib/tftpboot/pxelinux.cfg/
    done
 
+   if [ -d /usr/share/zentyal/ ]; then
+      rm -f /var/lib/tftpboot/pxelinux.cfg/backharddi*
+   fi
+
 
    # enable mod_rewrite
    [ -x /usr/sbin/a2enmod ] && a2enmod rewrite
