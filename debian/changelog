@@ -1,3 +1,21 @@
+max-control (1.1.0) max; urgency=low
+
+  * bin/max-control: rewrite using case instead of if
+  * Add package VERSION on bottom of web panel
+  * update devel config file
+  * Multiple delete and clean of users, close #86
+  * Groups, delete groups or groups and members or clean profiles, allow
+    o rename a group, close #87
+  * Change 'Programar arranque equipos' => 'Programar arranque', rel #85
+  * Add option to share the group folder in readonly for puppils, write
+    for teachers, close #88
+  * first version of CSV user importer, close #89, rel #85
+  * bin/max-control: change default quota to 2000 MB
+  * hide/delete backharddi-ng TFTP menus
+  * Hide backharddi buttons and options in select if not installed
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es> Thu, 09 Jun 2011 15:54:11 +0200
+
 max-control (1.0.17.7) max; urgency=low
 
   * Add /usr/sbin/max-zentyal-update-post-inst
