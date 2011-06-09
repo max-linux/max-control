@@ -134,7 +134,7 @@ case $1 in
         DEF=$(grep '"userquota_size"' /var/lib/ebox/gconf/ebox/modules/samba/GeneralSettings/%gconf.xml 2>/dev/null | awk -F '"' '{print $8}')
 
         if [ "$DEF" = "" ]; then
-            echo 1000
+            echo 2000
         else
             echo $DEF
         fi
