@@ -22,13 +22,15 @@ El órden de los campos es el siguiente:
     <li>Id. de usuario (login)</li>
     <li>Grupo</li>
 </ul>
-<br/><br/>
 
 El rol por defecto para todos los usuarios importados es <b>alumno</b>, y la contraseña es <b>cmadrid</b>
 <br/><br/>
 
 
 El identificador de usuario y el grupo no puede tener espacios, caracteres raros y debe empezar por una letra.
+<br/><br/>
+
+La importación necesita entre uno y tres segundos por usuario y se ejcuta en segundo plano, se podrá ver el progreso y los usuarios creados durante el tiempo que dure la importación.
 </div>
 
 

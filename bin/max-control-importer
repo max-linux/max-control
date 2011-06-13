@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-cd /home/madrid/max-control
-# cd /usr/share/max-control
+#cd /home2/madrid/max-control
+cd /usr/share/max-control
 
 # See ionice(1)
 if [ -x /usr/bin/ionice ] &&
