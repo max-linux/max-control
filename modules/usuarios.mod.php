@@ -663,7 +663,8 @@ function importar ($module, $action, $subaction) {
     
     $importer=new Importer();
     if ($importer->isRunning()) {
-        $data=array("urlform"=>$url->create_url($module, 'importdelete'),
+        $data=array("urldelete"=>$url->create_url($module, 'importdelete'),
+                    "urlstop"=>$url->create_url($module, 'importstop'),
                     "status" => $importer->status(),
                     );
         $gui->add( $gui->load_from_template("importer_running.tpl", $data) );
@@ -723,6 +724,13 @@ function importdelete ($module, $action, $subaction) {
     $url->ir($module, "importar");
 }
 
+function importstop ($module, $action, $subaction) {
+    global $url, $gui;
+    
+    $importer=new Importer();
+    $importer->stop();
+    $url->ir($module, "importar");
+}
 
 //$gui->session_info("Accion '$action' en modulo '$module'");
 switch($action) {
@@ -754,6 +762,7 @@ switch($action) {
     case "importar": importar($module, $action, $subaction); break; /* importar desde CSV */
     case "importdo": importdo($module, $action, $subaction); break; /* importar desde CSV */
     case "importdelete": importdelete($module, $action, $subaction); break; /* importar desde CSV */
+    case "importstop": importstop($module, $action, $subaction); break; /* importar desde CSV */
     
     
     default: $gui->session_error("Accion desconocida '$action' en modulo usuarios");
