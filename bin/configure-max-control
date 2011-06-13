@@ -55,8 +55,8 @@ if [ "$CONFIGURE" = "1" ]; then
     /usr/bin/pymaxgensamba
 
     # atftpd use /srv/tftp
-    if [ -d /srv/tftp ]; then
-        rmdir /srv/tftp
+    if [ ! -L /srv/tftp ]; then
+        rmdir /srv/tftp >/dev/null 2>&1|| true
         ln -s /var/lib/tftpboot /srv/tftp
     fi
 
