@@ -72,13 +72,13 @@ class Importer {
         fwrite($fh, serialize($users));
         fclose($fh);
         
-        unlink(IMPORTER_DIR . "/status.php");
+        removeFileIfExists(IMPORTER_DIR . "/status.php");
         $this->writeStatus($number=$i, $done=0, $result='');
         //$gui->session_info("En proceso de importación $i cuentas de usuario...");
         
         /* fork process in background */
-        $cmd.="max-control-importer >> ".FORK_LOGFILE." 2>&1 &";
-        //$cmd.="max-control-importer >> /tmp/importer.log 2>&1 &";
+        $cmd="max-control-importer >> ".FORK_LOGFILE." 2>&1 &";
+        //$cmd="max-control-importer >> /tmp/importer.log 2>&1 &";
         pclose(popen($cmd, "r"));
     }
 
@@ -102,6 +102,11 @@ class Importer {
 
     function delete() {
         removeFileIfExists(IMPORTER_DIR . "/status.php");
+        removeFileIfExists(IMPORTER_DIR . "/pending.txt");
+        removeFileIfExists(IMPORTER_DIR . "/importer.lock");
+    }
+
+    function stop() {
         removeFileIfExists(IMPORTER_DIR . "/pending.txt");
         removeFileIfExists(IMPORTER_DIR . "/importer.lock");
     }

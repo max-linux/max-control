@@ -15,6 +15,8 @@ class Gui
     function Gui() {
         $this->content="";
         $this->init_smarty();
+        $this->info="";
+        $this->error="";
     }
     
     

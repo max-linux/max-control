@@ -3,11 +3,18 @@
 
 <div class='note'>
 
+<div id="stop" style="width:120px;float:right;">
+    <form action='{$urlstop}' method='post'> 
+    <input type="submit" value="Detener importación"/>
+    </form>
+</div>
+
 <ul style="font-size:18px;">
     <li>Fecha y hora de importación: {$status.date}</li>
     <li>Número total de cuentas a importar: <span id="total">{$status.number}</span></li>
     <li>Número de cuentas ya importadas: <span id="done">{$status.done}</span></li>
 </ul>
+
 <div id="progress_bar">
     <div class="percent" id="percentValue">0%</div>
     <div style="height: 20px; width: 680px; margin: 5px 0; background-color: #d49292; -moz-border-radius: 5px; border-radius: 5px">
@@ -18,8 +25,8 @@
 
 <div class="warning" id="finished" style="display:none;width: 625px;">
 <h2>Terminado</h2>
-<form action='{$urlform}' method='post' onsubmit="return checkpass();"> 
-Para hacer una nueva importación pulse en <input type="submit" value="Borrar información de importación" onclick="javascript:delete_import();"/>
+<form action='{$urldelete}' method='post'> 
+Para hacer una nueva importación pulse en <input type="submit" value="Borrar información de importación"/>
 </form>
 </div>
 
@@ -38,7 +45,6 @@ Para hacer una nueva importación pulse en <input type="submit" value="Borrar in
 
 <script type="text/javascript">
     var ajaxurl="{$baseurl}/index.php?ajax=1";
-    var valid=false;
     var percent=0;
 </script>
 
@@ -47,7 +53,7 @@ Para hacer una nueva importación pulse en <input type="submit" value="Borrar in
 <!--
 $(document).ready(function() {
     update_progressbar();
-    setInterval('update_progressbar()', 2000);
+    setInterval('update_progressbar()', 1000);
 });
 
 function update_progressbar() {
@@ -69,9 +75,9 @@ function update_progressbar() {
           if(percent > 99) {
             $('#finished')[0].style.display='';
             $('#title')[0].innerHTML="Importador finalizado";
+            $('#stop')[0].style.display='none';
           }
           
-          //console.log(data.info);
           $('#info_messages')[0].innerHTML=data.info;
           $('#error_messages')[0].innerHTML=data.error;
           if (data.info != '') {
