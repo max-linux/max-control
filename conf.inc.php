@@ -3,15 +3,15 @@
 
 
 /* domain (net getdomainsid) */
-define('LDAP_DOMAIN', 'EBOX');
+define('LDAP_DOMAIN', 'MADRID');
 
 /* ldap admin from /etc/ldap.conf and /etc/ldap.secret */
 define('LDAP_BINDDN', 'cn=ebox,dc=max-server');
-define('LDAP_BINDPW', 'GzxovzAANdxoPux9');
+define('LDAP_BINDPW', 'lOpxioGK0TS+aIKD');
 
 /* usuario creado por max-control */
 define('LDAP_ADMIN', 'max-control');
-define('LDAP_PASS', 'cNa4UL7AjHb');
+define('LDAP_PASS', '66eNO8-uuTe');
 
 define('LDAP_BASEDN', 'dc=max-server');
 
@@ -46,7 +46,7 @@ define('LDAP_OU_INSTALLATORS', 'cn=Instaladores,ou=Groups,dc=max-server');
 // aparecerán cajas con información útil para errores.
 define("DEBUG", True);
 
-define("VERSION", "GIT");
+define("VERSION", "__GIT__");
 
 /*********** a partir de aqui puede que ya no hay aque editar nada ********/
 
@@ -114,6 +114,7 @@ define("OVERQUOTA_LIMIT", "80");
 
 /* file to read/write programer events */
 define("PROGRAMER_INI", "/var/lib/max-control/programer.ini");
+define("IMPORTER_DIR", "/var/lib/max-control/importer/");
 
 $site["public_modules"]=array();
 

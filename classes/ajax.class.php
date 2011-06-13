@@ -84,6 +84,16 @@ class Ajax {
             $this->output="used";
     }
 
+    function importprogress() {
+        $importer = new Importer();
+        $status=$importer->status();
+        if (! $importer->needToRun() ) {
+            /* if no pending.txt set 100% */
+            $status['done']=$status['number'];
+        }
+        $this->output=json_encode($status);
+    }
+
     function process( $data ) {
         global $permisos;
         if( ! ($permisos->is_admin() || $permisos->is_tic()) )
@@ -99,6 +109,7 @@ class Ajax {
             case "useduid": $this->useduid($data['uid']); break;
             case "usedcn": $this->usedcn($data['cn']); break;
             case "usedaula": $this->usedaula($data['cn']); break;
+            case "importprogress": $this->importprogress(); break;
             default: $this->invalid();
         }
     }
