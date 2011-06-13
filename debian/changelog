@@ -14,7 +14,7 @@ max-control (1.1.0) max; urgency=low
   * hide/delete backharddi-ng TFTP menus
   * Hide backharddi buttons and options in select if not installed
 
- -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es> Thu, 09 Jun 2011 15:54:11 +0200
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Thu, 09 Jun 2011 15:54:11 +0200
 
 max-control (1.0.17.7) max; urgency=low
 
