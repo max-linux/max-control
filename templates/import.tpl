@@ -3,7 +3,7 @@
 
 <div class='help'>
 Para importar una lista grande de usuarios se necesita esa lista en formato CSV
-que se puede generar desde una hoja de cálculo (Excel, OpenOffice Calc).
+que se puede generar desde una hoja de cálculo (Excel u OpenOffice Calc).
 <br/>
 
 Puede descargar un archivo plantilla desde aquí:
@@ -16,22 +16,19 @@ Como separadores use la coma "," y como delimitador de texto las comillas dobles
 <br/><br/>
 El órden de los campos es el siguiente:
 <ul>
-    <li>usuario</li>
-    <li>contraseña</li>
+    <li>Código de centro</li>
     <li>Nombre</li>
     <li>Apellidos</li>
-    <li>Comentario</li>
+    <li>Id. de usuario (login)</li>
     <li>Grupo</li>
 </ul>
 <br/><br/>
 
-El rol por defecto para todos los usuarios importados es <b>alumno</b>.
-
-El script se ejecutará durante un máximo de 2 minutos, el alta de cada usuario 
-necesita entre 2 y 3 segundos, por lo que se recomienda importar en lotes de 60 en 60 como máximo.
+El rol por defecto para todos los usuarios importados es <b>alumno</b>, y la contraseña es <b>cmadrid</b>
 <br/><br/>
 
-El identificador de usuario no puede tener espacios, caracteres raros y debe empezar por una letra.
+
+El identificador de usuario y el grupo no puede tener espacios, caracteres raros y debe empezar por una letra.
 </div>
 
 

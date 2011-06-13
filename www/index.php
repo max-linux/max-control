@@ -35,6 +35,7 @@ include($path . '/classes/permisos.class.php');
 include($path . '/classes/ldap.class.php');
 include($path . '/classes/pager.class.php');
 include($path . '/classes/programer.class.php');
+include($path . '/classes/importer.class.php');
 include($path . '/classes/winexe.class.php');
 
 
