@@ -544,7 +544,7 @@ class USER extends BASE {
         exec('sudo '.MAXCONTROL.' createhome '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1', &$output);
         $gui->debuga($output);
         
-        $gui->session_info("Usuario '".$this->uid."' añadido correctamente.");
+        $gui->session_info("Usuario '".$this->uid."' creado correctamente.");
         return true;
     }
     
@@ -1499,6 +1499,11 @@ class GROUP extends BASE {
             $this->ldapdata['memberUid']=array();
         }
         $members=$this->ldapdata['memberUid'];
+        if ( in_array($username, $this->ldapdata['memberUid']) ) {
+            // user is in group
+            $gui->debug("newMember(user=$username, group=".$this->cn.") user is in group, not adding" );
+            return true;
+        }
         $members[]=$username;
         unset($members['count']);
         $gui->debuga($members);

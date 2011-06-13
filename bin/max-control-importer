@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+cd /home/madrid/max-control
+# cd /usr/share/max-control
+
+# See ionice(1)
+if [ -x /usr/bin/ionice ] &&
+    /usr/bin/ionice -c3 true 2>/dev/null; then
+    IONICE="/usr/bin/ionice -c3"
+fi
+
+
+
+while [ -e /var/lib/max-control/importer/pending.txt ]; do
+
+    $IONICE php importer.php
+    echo "----------------------------- esperando 1 segundo ----------------------------"
+    sleep 1
+
+done
+
+
+
+
+echo "----------------------------- fin de max-control-importer ----------------------------"

@@ -43,6 +43,11 @@ if [ "$CONFIGURE" = "1" ]; then
     touch /var/log/max-control-programer.log
     chown www-data:www-data /var/log/max-control-programer.log
 
+
+    [ ! -e /var/lib/max-control/importer ] && mkdir -p /var/lib/max-control/importer
+    chown www-data:www-data /var/lib/max-control/importer
+
+
     if [ -e /home/samba/netlogon/domain.txt ]; then
         chmod 644 /home/samba/netlogon/domain.txt
         unix2dos /home/samba/netlogon/domain.txt

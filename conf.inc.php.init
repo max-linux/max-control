@@ -71,6 +71,7 @@ define("OVERQUOTA_LIMIT", "80");
 
 /* file to read/write programer events */
 define("PROGRAMER_INI", "/var/lib/max-control/programer.ini");
+define("IMPORTER_DIR", "/var/lib/max-control/importer/");
 
 $site["public_modules"]=array();
 
