@@ -660,15 +660,22 @@ function groupeditsave ($module, $action, $subaction) {
 
 function importar ($module, $action, $subaction) {
     global $url, $gui;
-    $data=array("urlform"=>$url->create_url($module, 'importdo'));
-    $gui->add( $gui->load_from_template("import.tpl", $data) );
+    
+    $importer=new Importer();
+    if ($importer->isRunning()) {
+        $data=array("urlform"=>$url->create_url($module, 'importdelete'),
+                    "status" => $importer->status(),
+                    );
+        $gui->add( $gui->load_from_template("importer_running.tpl", $data) );
+    }
+    else {
+        $data=array("urlform"=>$url->create_url($module, 'importdo'));
+        $gui->add( $gui->load_from_template("import.tpl", $data) );
+    }
 }
 
 function importdo ($module, $action, $subaction) {
     global $url, $gui;
-    
-    set_time_limit(120);
-    
     //$gui->debuga($_POST);
     //$gui->debuga($_FILES);
     /*
@@ -691,7 +698,7 @@ function importdo ($module, $action, $subaction) {
             $url->ir($module, "importar");
     }
     elseif ($ftmp['type'] != 'text/csv') {
-        $gui->session_error("El formato de archivo no es text/csv");
+        $gui->session_error("El formato de archivo no es CSV (valores separados por comas)");
         if(! DEBUG)
             $url->ir($module, "importar");
     }
@@ -701,100 +708,20 @@ function importdo ($module, $action, $subaction) {
             $url->ir($module, "importar");
     }
     else {
-        $ldap=new LDAP();
-        $newusers=array();
-        /* leer archivo */
-        $data = file_get_contents($ftmp['tmp_name']);
-        $convert = explode("\n", $data);
-        $gui->session_info("Se han encontrado ".sizeof($convert)." líneas en el archivo CSV.");
-        if ( sizeof($convert) > 60 ) {
-            $gui->session_info("Sólo se importarán los 60 primeros (que no existan).");
-        }
-        $i=0;
-        foreach($convert as $line) {
-            if ($i > 60) break;
-            if ($line == '') continue;
-            $userdata=explode(",", $line);
-            if($userdata[0] == '"usuario"') continue;
-            if(sizeof($userdata) != 6) {
-                $gui->session_error("Línea no contiene 6 campos =&gt; '$line' ");
-                continue;
-            }
-            if( test_string($userdata[0]) ) {
-                $gui->session_error("El identificador de usuario '".$userdata[0]."' contiene caracteres no ASCII.");
-                continue;
-            }
-            //$gui->debuga($userdata);
-            /*
-            El órden de los campos es el siguiente:
-            usuario, contraseña, Nombre, Apellidos, Comentario, Grupo
-            */
-            $newuser=array('uid'           => $userdata[0],
-                           'plainPassword' => str_replace('"', "", $userdata[1]),
-                           'cn'            => $userdata[2],
-                           'sn'            => $userdata[3],
-                           'description'   => $userdata[4],
-                           'group'         => $userdata[5],
-                           'loginShell'    => '/bin/false',
-                           'role'          => '');
-            sanitize($newuser, array('uid' => 'charnum',
-                                   'cn'=>'charnum',
-                                   'sn' => 'charnum',
-                                   'description' => 'charnum',
-                                   'loginShell' => 'shell',
-                                   'role' => 'role',
-                                   'plainPassword' => 'str',
-                                   'group' => 'charnum'));
-            if ($newuser['cn'] == '') {
-                $newuser['cn']=' ';
-            }
-            if ($newuser['sn'] == '') {
-                $newuser['sn']=' ';
-            }
-            //$gui->debuga($newuser);
-            
-            $user = new USER($newuser);
-            if ( $user->newUser() ) {
-                $i++;
-                if ($newuser['group'] != '') {
-                    $groups=$ldap->get_group($newuser['group']);
-                    if (! $groups ) {
-                        /* crear el grupo si no existe */
-                        $groupdata=array('cn' => $newuser['group'],
-                                         'description' => $newuser['group'],
-                                         'createshared' => '1',
-                                         'readonly' => '1');
-                        $group=new GROUP($groupdata);
-                        if ( $group->newGroup('1', '0') )
-                            $gui->session_info("Grupo '".$group->cn."' creado correctamente.");
-                        
-                        
-                    }
-                    $groups=$ldap->get_groups($newuser['group']);
-                    //$gui->debug("<pre>" . print_r($groups,true) . "GRUPO</pre>");
-                    if ( $groups[0] && $groups[0]->newMember($newuser['uid']) )
-                            $gui->session_info("Usuario '".$newuser['uid']."' añadido al grupo '".$newuser['group']."'.");
-                    else
-                        $gui->session_error("No se ha podido añadir al usuario '".$newuser['uid']."' al grupo '".$newuser['group']."'.");
-                    
-                }
-            }
-            /*else {
-                $gui->session_error("No se ha podido añadir al usuario '".$newuser['uid']."'.");
-            }*/
-            $gui->debug("Creando usuarios: " . time_end() );
-        } /* foreach */
-        
-        /* hacer recache */
-        $cmd='sudo '.MAXCONTROL.' recache > /dev/null 2>&1 &';
-        $gui->debug($cmd);
-        pclose(popen($cmd, "r"));
-        $gui->session_info("<h3>Importadas $i cuentas en ".number_format(time_end(), 3, ',', '')." segundos.</h3>");
-    } /* else */
+        $importer=new Importer($ftmp['tmp_name']);
+        $importer->saveImport();
+    }
+    $url->ir($module, "importar");
 }
 /*****************************************************************************/
 
-
+function importdelete ($module, $action, $subaction) {
+    global $url, $gui;
+    
+    $importer=new Importer();
+    $importer->delete();
+    $url->ir($module, "importar");
+}
 
 
 //$gui->session_info("Accion '$action' en modulo '$module'");
@@ -826,6 +753,7 @@ switch($action) {
     
     case "importar": importar($module, $action, $subaction); break; /* importar desde CSV */
     case "importdo": importdo($module, $action, $subaction); break; /* importar desde CSV */
+    case "importdelete": importdelete($module, $action, $subaction); break; /* importar desde CSV */
     
     
     default: $gui->session_error("Accion desconocida '$action' en modulo usuarios");
