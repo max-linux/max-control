@@ -255,7 +255,7 @@ class CronProgramer {
                 }
             }
         } /* foreach $this->config */
-        $ldap->disconnect();
+        $ldap->disconnect('PROGRAMER::doJobs()');
         unset($ldap);
     }
     

@@ -57,7 +57,7 @@ if ( $permisos->is_admin() && backharddi_installed() ) {
 function aulas($module, $action, $subaction) {
     global $gui, $url, $multiple_actions, $permisos;
     // mostrar lista de aulas
-    $ldap=new LDAP();
+    global $ldap;
     $filter=leer_datos('Filter');
     $aulas=$ldap->get_aulas($filter);
     
@@ -94,7 +94,7 @@ function aula_preguntar($module, $action, $subaction) {
     global $gui, $url;
     $aula=leer_datos('args');
     
-    $ldap = new LDAP();
+    global $ldap;
     $computers=$ldap->get_computers_from_aula($aula);
     
     $urlaction=$url->create_url($module, 'do', "$subaction/$aula");
@@ -109,7 +109,7 @@ function aula_preguntar($module, $action, $subaction) {
 function aulado($module, $action, $subaction) {
     global $gui, $url;
     $aula=leer_datos('args');
-    $ldap = new LDAP();
+    global $ldap;
     
     /* ver si el profesor tiene permiso en el aula */
     $aulas=$ldap->get_aulas($aula);
@@ -141,7 +141,7 @@ function aulado($module, $action, $subaction) {
 function equipos($module, $action, $subaction) {
     global $gui, $url, $multiple_actions, $permisos;
     // mostrar lista de equipos
-    $ldap=new LDAP();
+    global $ldap;
     $filter=leer_datos('Filter');
     $equipos=$ldap->get_computers( $filter );
     
@@ -179,7 +179,7 @@ function equipo_preguntar($module, $action, $subaction) {
     // 
     $equipo=leer_datos('args');
     
-    $ldap = new LDAP();
+    global $ldap;
     $computers=$ldap->get_computers( $equipo . '$' );
     
     $urlaction=$url->create_url($module, 'docomputer', "$subaction/$equipo");
@@ -196,7 +196,7 @@ function docomputer($module, $action, $subaction) {
     // 
     $equipo=leer_datos('args');
     
-    $ldap = new LDAP();
+    global $ldap;
     $computers=$ldap->get_computers( $equipo . '$' );
     
     if ( ! $computers[0]->teacher_in_computer() ) {
@@ -273,7 +273,7 @@ function equipomultiple_preguntardo($module, $action, $subaction){
         $url->ir($module, "equipos");
     }
     
-    $ldap = new LDAP();
+    global $ldap;
     $counter=0;
     foreach( $computers as $hostname) {
         $computer=$ldap->get_computers( $hostname . '$' );
@@ -332,7 +332,7 @@ function aulamultiple_preguntardo($module, $action, $subaction){
         $url->ir($module, "aulas");
     }
     
-    $ldap = new LDAP();
+    global $ldap;
     $counter=0;
     foreach($aulas as $aula) {
         $computers=$ldap->get_computers_from_aula($aula);
