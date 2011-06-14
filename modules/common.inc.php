@@ -187,7 +187,7 @@ function sanitizeOne($var, $type) {
         break;
         
         case 'charnum': // only chars, numbers and some special
-        $var = ereg_replace("[^A-Za-z0-9.-_ áéíóúÁÉÍÓÚñÑ]", "", $var); 
+        $var = preg_replace("/[^A-Za-z0-9.-_ áéíóúÁÉÍÓÚñÑ]/","", $var); 
         break;
         
         case 'shell': // /bin/bash /bin/false
@@ -198,11 +198,11 @@ function sanitizeOne($var, $type) {
         break;
         
         case 'net': // xx.xx.xx.xx
-        $var = ereg_replace("[^0-9.]", "", $var); 
+        $var = preg_replace("/[^0-9.]/","", $var); 
         break;
         
         case 'mac': // xx:xx:xx:xx:xx:xx
-        $var = ereg_replace("[^A-Za-z0-9:]", "", $var); 
+        $var = preg_replace("/[^A-Za-z0-9:]/","", $var); 
         break;
     }
     return $var;
