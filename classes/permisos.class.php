@@ -63,7 +63,7 @@ class Permisos {
             return $_SESSION['is_admin'];
         }
         
-        $ldap = new LDAP();
+        global $ldap;
         if ( ! $ldap->connect() ) {
             $gui->debug("permisos::is_admin() Usuario o contraseña incorrecta");
             $result=false;
@@ -75,7 +75,6 @@ class Permisos {
         else {
             $result=true;
         }
-        $ldap->disconnect();
         if($result)
             return true;
         return false;
@@ -92,7 +91,7 @@ class Permisos {
             return $_SESSION['is_teacher'];
         }
         
-        $ldap = new LDAP();
+        global $ldap;
         $teachers=$ldap->get_teachers_uids();
         if ( in_array($_SESSION["username"], $teachers) )
             return True;
@@ -110,7 +109,7 @@ class Permisos {
             return $_SESSION['is_tic'];
         }
         
-        $ldap = new LDAP();
+        global $ldap;
         $tics=$ldap->get_tics_uids();
         if ( in_array($_SESSION["username"], $tics) )
             return True;
@@ -168,7 +167,7 @@ class Permisos {
         $_SESSION['info']='';
         $_SESSION['error']='';
         
-        $ldap->disconnect();
+        $ldap->disconnect('PERMISOS::conectar()');
         
         return true;
     }

@@ -18,7 +18,7 @@ class Importer {
         global $gui;
         $this->fname=$fname;
         $this->defaultPassword='cmadrid';
-        $this->maxImport=2;
+        $this->maxImport=5;
         return;
     }
     
@@ -78,7 +78,8 @@ class Importer {
         
         /* fork process in background */
         $cmd="max-control-importer >> ".FORK_LOGFILE." 2>&1 &";
-        //$cmd="max-control-importer >> /tmp/importer.log 2>&1 &";
+        if(DEBUG)
+            $cmd="max-control-importer DEBUG >> ".FORK_LOGFILE." 2>&1 &";
         pclose(popen($cmd, "r"));
     }
 
@@ -170,6 +171,23 @@ class Importer {
         return false;
     }
 
+    function finishedDate() {
+        if (file_exists(IMPORTER_DIR . "/status.php")) {
+            return date ('d-m-Y H:i:s', filemtime(IMPORTER_DIR . "/status.php"));
+        }
+        return 0;
+    }
+
+    function timeNeeded() {
+        global $gui;
+        if ( ! file_exists ( IMPORTER_DIR . "/status.php" ) ) {
+            return 0;
+        }
+        include(IMPORTER_DIR . "/status.php" );
+        $gui->debug("inicio='".$this->finishedDate()."' fin='".$importer['date']."'");
+        return date_diff2($importer['date'], $this->finishedDate());
+    }
+
     function doImport() {
         if ( ! $this->needToRun() ) {
             return;
@@ -186,7 +204,7 @@ class Importer {
         //$gui->debuga($users);
         
         $i=0;
-        $ldap=new LDAP();
+        global $ldap;
         foreach($users as $newuser) {
             $user = new USER($newuser);
             if ( $ldap->get_user($newuser['uid']) ) {
@@ -196,7 +214,7 @@ class Importer {
             }
             elseif ( $user->newUser() ) {
                 $i++;
-                $this->_createGroup($newuser['group']);
+                $this->_createGroup($newuser['group'], $ldap);
             } /* end of user->newUser() */
             else {
                 $gui->session_error("Error al crear usuario '".$newuser['uid']."'.");
@@ -216,7 +234,6 @@ class Importer {
             if ($i >= $this->maxImport) break;
             
         } /* foreach */
-        $ldap->disconnect();
         $this->unlock();
         if ($i >0) {
             $this->writeStatus($number=0, $done=$i, $result='');
@@ -241,11 +258,12 @@ class Importer {
         }
     }
 
-    function _createGroup($groupname) {
+    function _createGroup($groupname, $ldap=NULL) {
         if ( $groupname == '' )
             return;
         global $gui;
-        $ldap=new LDAP();
+        if (!$ldap)
+            $ldap=new LDAP();
         $groups=$ldap->get_group($groupname);
         if (! $groups ) {
             /* crear el grupo si no existe */
@@ -257,7 +275,6 @@ class Importer {
             if ( $group->newGroup('1', '0') )
                 $gui->session_info("Grupo '".$group->cn."' creado correctamente.");
         }
-        $ldap->disconnect();
     }
 }
 ?>

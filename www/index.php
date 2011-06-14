@@ -55,6 +55,9 @@ $gui= new Gui();
 global $url;
 $url= new URLHandler();
 
+global $ldap;
+$ldap = new LDAP();
+
 // ver si es peticion ajax
 $ajaxurl=new URLHandler();
 if ( $ajaxurl->get("ajax") == "1" ) {
@@ -102,6 +105,7 @@ if (isset($gui)) {
     $gui->debug_array($_POST, "index.php POST");
     $gui->debug_array($_GET, "index.php GET");
     $gui->debug("Tiempo de ejecución: " . time_end() );
+    $ldap->disconnect($txt='global');
     $gui->render();
 }
 

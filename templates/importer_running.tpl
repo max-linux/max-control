@@ -1,6 +1,7 @@
 
 <h2 id="title">Importador en proceso</h2>
 
+
 <div class='note'>
 
 <div id="stop" style="width:120px;float:right;">
@@ -11,6 +12,7 @@
 
 <ul style="font-size:18px;">
     <li>Fecha y hora de importación: {$status.date}</li>
+    <li id="doneDate" style="display:none;">Fecha y hora de finalización: &nbsp;<span id="doneDateValue"></span></li>
     <li>Número total de cuentas a importar: <span id="total">{$status.number}</span></li>
     <li>Número de cuentas ya importadas: <span id="done">{$status.done}</span></li>
 </ul>
@@ -53,7 +55,7 @@ Para hacer una nueva importación pulse en <input type="submit" value="Borrar in
 <!--
 $(document).ready(function() {
     update_progressbar();
-    setInterval('update_progressbar()', 1000);
+    setInterval('update_progressbar()', 1500);
 });
 
 function update_progressbar() {
@@ -76,6 +78,10 @@ function update_progressbar() {
             $('#finished')[0].style.display='';
             $('#title')[0].innerHTML="Importador finalizado";
             $('#stop')[0].style.display='none';
+            $('#doneDate')[0].style.display='';
+            $('#doneDateValue')[0].innerHTML=data.doneDateValue;
+            if(data.timeNeeded)
+                $('#doneDateValue')[0].innerHTML+=" <small>("+data.timeNeeded+")</small>";
           }
           
           $('#info_messages')[0].innerHTML=data.info;

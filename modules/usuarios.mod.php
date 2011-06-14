@@ -61,7 +61,7 @@ function ver($module, $action, $subaction) {
         $url->ir($module, "add");
     }
     
-    $ldap=new LDAP();
+    global $ldap;
     
     /* get_users($filter='*', $group=LDAP_OU_USERS, $ignore="max-control", $role='') */
     $usuarios=$ldap->get_users( leer_datos('Filter'),
@@ -116,7 +116,7 @@ function editar($module, $action, $subaction){
         $url->ir($module, "ver");
     }
     
-    $ldap=new LDAP();
+    global $ldap;
     $user=$ldap->get_user($username);
     
     if( ! $user ){
@@ -166,7 +166,7 @@ function guardar($module, $action, $subaction) {
         $gui->session_error("No se puede editar la cuenta con la que se está conectado.");
         $url->ir($module, "ver");
     }
-    $ldap=new LDAP();
+    global $ldap;
     
     //$gui->debug("<pre>".print_r($ldap->additionalPasswords('test', 'test'), true)."</pre>");
     
@@ -258,7 +258,7 @@ function deletemultipledo($module, $action, $subaction) {
         $url->ir($module, "ver");
     }
 
-    $ldap=new LDAP();
+    global $ldap;
     $users=preg_split('/,/', $usernames);
     $gui->debuga($users);
     foreach($users as $username) {
@@ -368,7 +368,7 @@ function groups($module, $action, $subaction) {
     
     $filter=leer_datos('Filter');
     
-    $ldap=new LDAP();
+    global $ldap;
     $groups=$ldap->get_groups($filter, $include_system=false);
     
     
@@ -393,7 +393,7 @@ function groups($module, $action, $subaction) {
 function groupmembers($module, $action, $subaction) {
     global $gui, $url;
     $group= $subaction;
-    $ldap=new LDAP();
+    global $ldap;
     $members=$ldap->get_members_in_and_not_group($group);
     $urlform=$url->create_url($module, 'groupmembersguardar', $group );
     $data=array("group"=>$group, 
@@ -438,7 +438,7 @@ function groupmembersguardar($module, $action, $subaction) {
     $gui->debug("<hr><br>delusers ");
     $gui->debuga($delusers);
     
-    $ldap= new LDAP();
+    global $ldap;
     
     if ( count($addusers) > 0 ) {
         $groups=$ldap->get_groups($group);
@@ -472,7 +472,7 @@ function groupdelete($module, $action, $subaction) {
     $groups=leer_datos("groupnames");
     $faction=leer_datos("faction");
     $groupsarray=preg_split('/,/', $groups);
-    $ldap= new LDAP();
+    global $ldap;
     $members=array();
     foreach($groupsarray as $gr) {
         $groupobj=$ldap->get_groups($gr);
@@ -512,7 +512,7 @@ function groupdeletedo($module, $action, $subaction) {
     }
     
     $groupsarray=preg_split('/,/', $groups);
-    $ldap=new LDAP();
+    global $ldap;
     foreach($groupsarray as $group) {
         $todelete=$ldap->get_groups($group);
         if ( ! $todelete[0] ){
@@ -617,7 +617,7 @@ function resetprofiledo ($module, $action, $subaction) {
         $url->ir($module, "ver");
     }
     
-    $ldap=new LDAP();
+    global $ldap;
     $user=$ldap->get_user($username);
     //$gui->debuga($user);
     
@@ -649,7 +649,7 @@ function groupeditsave ($module, $action, $subaction) {
         $url->ir($module, "grupos");
     }
     
-    $ldap=new LDAP();
+    global $ldap;
     $groupobj=$ldap->get_groups($group);
     $groupobj[0]->renameGroup($newgroup);
     
