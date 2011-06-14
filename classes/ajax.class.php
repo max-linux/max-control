@@ -51,7 +51,7 @@ class Ajax {
             $this->output = "invalid";
             return;
         }
-        $ldap=new LDAP();
+        global $ldap;
         if ( ! $ldap->get_user($uid) )
             $this->output="free";
         else
@@ -63,7 +63,7 @@ class Ajax {
             $this->output = "invalid";
             return;
         }
-        $ldap=new LDAP();
+        global $ldap;
         if ( ! $ldap->get_group($cn) )
             $this->output="free";
         else
@@ -75,7 +75,7 @@ class Ajax {
             $this->output = "invalid";
             return;
         }
-        $ldap=new LDAP();
+        global $ldap;
         $aula=$ldap->get_aula($cn);
         
         if ( $cn != $aula->cn )
@@ -90,6 +90,10 @@ class Ajax {
         if (! $importer->needToRun() ) {
             /* if no pending.txt set 100% */
             $status['done']=$status['number'];
+        }
+        if( $status['done'] == $status['number'] ) {
+            $status['doneDateValue']=$importer->finishedDate();
+            $status['timeNeeded']=$importer->timeNeeded();
         }
         $this->output=json_encode($status);
     }

@@ -39,7 +39,7 @@ if ($url->get("action") == "") {
 
 if ($active_action == "editar") {
     $username=$_SESSION['username'];
-    $ldap=new LDAP();
+    global $ldap;
     $user=$ldap->get_user($username);
     
     $urlform=$url->create_url($active_module, 'guardar');
@@ -57,7 +57,7 @@ if ($active_action == "editar") {
 
 if ($active_action == "guardar") {
     $username=$_SESSION['username'];
-    $ldap=new LDAP();
+    global $ldap;
     $usuario=$ldap->get_user($username);
     
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");

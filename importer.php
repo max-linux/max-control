@@ -40,6 +40,8 @@ $gui = new GUI();
 include("classes/ldap.class.php");
 include("classes/importer.class.php");
 
+global $ldap;
+$ldap = new LDAP();
 
 $importer = new Importer();
 $importer->doImport();

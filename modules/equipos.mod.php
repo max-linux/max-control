@@ -76,7 +76,7 @@ function ver($module, $action, $subaction) {
     $filter=leer_datos('Filter');
     $aula=leer_datos('aula');
     // mostrar lista de equipos
-    $ldap=new LDAP();
+    global $ldap;
     
     if ($aula != '')
         $equipos=$ldap->get_computers_from_aula($aula);
@@ -114,7 +114,7 @@ function editar($module, $action, $subaction){
     }
     
     $hostname=$url->get("subaction");
-    $ldap=new LDAP();
+    global $ldap;
     $equipo=$ldap->get_computers($hostname.'$');
     
     if( ! $equipo ){
@@ -143,7 +143,7 @@ function update($module, $action, $subaction){
 
 function updatedo($module, $action, $subaction){
     global $gui, $url;
-    $ldap=new LDAP();
+    global $ldap;
     $equipos=$ldap->get_computers();
     foreach($equipos as $equipo) {
         $equipo->getMACIP();
@@ -159,7 +159,7 @@ function purgewins($module, $action, $subaction){
 
 function purgewinsdo($module, $action, $subaction){
     global $gui, $url;
-    $ldap=new LDAP();
+    global $ldap;
     $ldap->purgeWINS();
     $gui->session_info("Cache WINS borrada.");
     if(! DEBUG)
@@ -202,7 +202,7 @@ function borrardo($module, $action, $subaction){
         $url->ir($module, "ver");
     }
     
-    $ldap=new LDAP();
+    global $ldap;
     $equiposarray=preg_split('/,/', $equipos);
     $gui->debuga($equiposarray);
     foreach($equiposarray as $equipo) {
@@ -228,7 +228,7 @@ function guardar($module, $action, $subaction){
     }
     
     $hostname=leer_datos('hostname');
-    $ldap=new LDAP();
+    global $ldap;
     $equipos=$ldap->get_computers($hostname.'$');
     if ( ! isset($equipos[0]) )
         $url->ir($module, "ver");
@@ -285,7 +285,7 @@ function veraulas($module, $action, $subaction){
     $filter=leer_datos('Filter');
     
     // mostrar lista de aulas
-    $ldap=new LDAP();
+    global $ldap;
     $filter=leer_datos('Filter');
     $aulas=$ldap->get_aulas($filter);
     $urlform=$url->create_url($module, $action);
@@ -314,7 +314,7 @@ function veraulas($module, $action, $subaction){
 function aulasmiembros($module, $action, $subaction){
     global $gui, $url;
     $aula=leer_datos('args');
-    $ldap=new LDAP();
+    global $ldap;
     $miembros=$ldap->get_teacher_from_aula($aula);
     $gui->debuga($miembros);
     
@@ -357,7 +357,7 @@ function aulasguardar($module, $action, $subaction){
     $gui->debug("<hr><br>delusers ");
     $gui->debuga($delusers);
     
-    $ldap= new LDAP();
+    global $ldap;
     
     if ( count($addusers) > 0 ) {
         $aula=$ldap->get_aula($editaaula);
@@ -396,7 +396,7 @@ function aulasequipos($module, $action, $subaction){
     }
     
     $aula=leer_datos('args');
-    $ldap=new LDAP();
+    global $ldap;
     $all=$ldap->get_computers_in_and_not_aula($aula);
     
     $gui->debuga($all);
@@ -446,7 +446,7 @@ function equiposguardar($module, $action, $subaction){
     $gui->debug("<hr><br>delcomputers ");
     $gui->debuga($delcomputers);
     
-    $ldap=new LDAP();
+    global $ldap;
 
 
     if ( count($addcomputers) > 0 ) {
@@ -582,7 +582,7 @@ function aulasborrardo($module, $action, $subaction){
         $url->ir($module, "aulas");
     }
 
-    $ldap=new LDAP();
+    global $ldap;
     $aulas=$ldap->get_aula($aula);
     
     $gui->debug( "<pre>". print_r($aulas, true) . "</pre>" );

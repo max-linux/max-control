@@ -49,7 +49,7 @@ function ver($module, $action, $subaction) {
     }
     
     // mostrar lista de equipos
-    $ldap=new LDAP();
+    global $ldap;
     $filter=leer_datos('Filter');
     
     $isos=$ldap->getISOS($filter);
@@ -66,7 +66,7 @@ function montar($module, $action, $subaction) {
     global $gui, $url;
     
     // mostrar lista de equipos
-    $ldap=new LDAP();
+    global $ldap;
     $iso=$subaction;
     
     $isos=$ldap->getISOS($iso);
@@ -91,7 +91,7 @@ function mountdo($module, $action, $subaction) {
     global $gui, $url;
     
     $iso=leer_datos('iso');
-    $ldap=new LDAP();
+    global $ldap;
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     /*
     Array
@@ -163,7 +163,7 @@ function desmontar($module, $action, $subaction) {
     global $gui, $url;
     
     // mostrar lista de equipos
-    $ldap=new LDAP();
+    global $ldap;
     
     $aulas=$ldap->get_aulas();
     $equipos=$ldap->get_computers();
@@ -182,7 +182,7 @@ function desmontar($module, $action, $subaction) {
 function umountdo($module, $action, $subaction) {
     global $gui, $url;
     
-    $ldap=new LDAP();
+    global $ldap;
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     /*
     Array

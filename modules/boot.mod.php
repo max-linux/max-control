@@ -67,7 +67,7 @@ function equipo($module, $action, $subaction) {
     }
     
     // mostrar lista de equipos con macAddress
-    $ldap=new LDAP();
+    global $ldap;
     $filter=leer_datos('Filter');
     
     $equipos=$ldap->get_computers( $filter );
@@ -89,7 +89,7 @@ function equipo($module, $action, $subaction) {
 
 function editarequipo($module, $action, $subaction) {
     global $gui, $url;
-    $ldap=new LDAP();
+    global $ldap;
     $equipos=$ldap->get_computers($subaction.'$');
     //$gui->debuga($equipos);
     if ( count($equipos) != 1 ) {
@@ -114,7 +114,7 @@ function editarequipo($module, $action, $subaction) {
 function editarequipodo($module, $action, $subaction) {
     global $gui, $url;
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
-    $ldap=new LDAP();
+    global $ldap;
     $hostname=leer_datos('hostname');
     $equipos=$ldap->get_computers($hostname.'$');
     $boot=leer_datos('boot');
@@ -153,7 +153,7 @@ function aula($module, $action, $subaction) {
     
     
     // mostrar lista de aulas
-    $ldap=new LDAP();
+    global $ldap;
     $filter=leer_datos('Filter');
     $aulas=$ldap->get_aulas($filter);
     //$gui->debuga($aulas);
@@ -178,7 +178,7 @@ function aula($module, $action, $subaction) {
 
 function editaaula($module, $action, $subaction) {
     global $gui, $url;
-    $ldap=new LDAP();
+    global $ldap;
     $aulas=$ldap->get_aulas(leer_datos('args'));
     //$gui->debuga($aulas);
     if ( count($aulas) != 1 ) {
@@ -201,7 +201,7 @@ function editaaula($module, $action, $subaction) {
 
 function editaaulado($module, $action, $subaction) {
     global $gui, $url;
-    $ldap=new LDAP();
+    global $ldap;
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $aulas=$ldap->get_aulas(leer_datos('aula'));
     $boot=leer_datos('boot');
@@ -232,7 +232,7 @@ function editaaulado($module, $action, $subaction) {
 
 function programaaula($module, $action, $subaction) {
     global $gui, $url;
-    $ldap=new LDAP();
+    global $ldap;
     $aulas=$ldap->get_aulas($subaction);
     //$gui->debuga($aulas);
     if ( count($aulas) != 1 ) {
@@ -258,7 +258,7 @@ function programaaula($module, $action, $subaction) {
 
 function programaaulado($module, $action, $subaction) {
     global $gui, $url;
-    $ldap=new LDAP();
+    global $ldap;
     //$gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $aula=leer_datos('safecn');
     $faction=leer_datos('faction');

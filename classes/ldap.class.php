@@ -130,7 +130,7 @@ class BASE {
         //$gui->debug("======================================================");
 
         // connect with privileges
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $save_ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         
         
@@ -161,7 +161,7 @@ class BASE {
                 //$gui->debug("ldap::BASE::save() objectClass loop add $v\n<br/><pre>".print_r($obj, true)."</pre>");
                 
                 //save
-                $r = ldap_modify($ldap->cid, $this->get_save_dn(), $obj );
+                $r = ldap_modify($save_ldap->cid, $this->get_save_dn(), $obj );
                 if ($r)
                     $this->ldapdata['objectClass'][]=$v;
                 else
@@ -184,36 +184,36 @@ class BASE {
             
             $tmp=array();
             $tmp[$k]=$this->ldapdata[$k];
-            //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+            //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."\nRESULT=".ldap_error($save_ldap->cid)."</pre>");
             if (DEBUG)
-                $r = ldap_modify($ldap->cid, $this->get_save_dn(), $tmp );
+                $r = ldap_modify($save_ldap->cid, $this->get_save_dn(), $tmp );
             else
-                $r = @ldap_modify($ldap->cid, $this->get_save_dn(), $tmp );
-            $gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+                $r = @ldap_modify($save_ldap->cid, $this->get_save_dn(), $tmp );
+            $gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."\nRESULT=".ldap_error($save_ldap->cid)."</pre>");
             if ( !$r) {
-                $gui->debug( ldap_error($ldap->cid) );
+                $gui->debug( ldap_error($save_ldap->cid) );
                 $saveok=false;
             }
         }
-        $ldap->disconnect();
+        $save_ldap->disconnect('BASE::save()');
         return $saveok;
     }
     
     function empty_attr( $attr ) {
         global $gui;
         $saveok=true;
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $empty_ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         // to empty an attribute set empty array()
         $tmp=array( $attr => array() );
         
-        $r = ldap_modify($ldap->cid, $this->get_save_dn(), $tmp );
-        $gui->debug("BASE:empty_attr() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."\RESULT=".ldap_error($ldap->cid)."</pre>");
+        $r = ldap_modify($empty_ldap->cid, $this->get_save_dn(), $tmp );
+        $gui->debug("BASE:empty_attr() dn=".$this->get_save_dn()." data=<pre>".print_r($tmp, true)."\RESULT=".ldap_error($empty_ldap->cid)."</pre>");
         if (! $r)
             $saveok=false;
         
         
-        $ldap->disconnect();
+        $empty_ldap->disconnect('BASE::empty_attr()');
         return $saveok;
     }
 }
@@ -277,7 +277,8 @@ class USER extends BASE {
         if ($this->role != 'unset')
             return $this->role;
         
-        $ldap=new LDAP();
+        /* Can't use global $ldap here */
+        $ldap = new LDAP();
         if ( $ldap->is_tic($this->uid)) {
             $this->role="tic";
         }
@@ -290,6 +291,7 @@ class USER extends BASE {
         else {
             $this->role="";
         }
+        //$ldap->disconnect('USER:get_role()');
         return $this->role;
     }
     
@@ -310,7 +312,7 @@ class USER extends BASE {
             return;
         }
         
-        $ldap=new LDAP();
+        global $ldap;
         $cmd='sudo '.MAXCONTROL.' requota '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1';
         $gui->debug("reQuota(cmd='$cmd')");
         exec($cmd, &$output);
@@ -326,10 +328,10 @@ class USER extends BASE {
     function set_role($role) {
         global $gui;
         $gui->debug("USER:set_role('$role')");
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $sldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         // add to Domain Users
-        $ldap->addUserToGroup($this->uid, LDAP_OU_DUSERS);
+        $sldap->addUserToGroup($this->uid, LDAP_OU_DUSERS);
         
         
         if ($role == '') {
@@ -337,61 +339,61 @@ class USER extends BASE {
             // debe estar en el grupo Domain Users y __USERS__
             
             //quitar de profesores
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_TEACHERS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_TEACHERS);
             
             
             //quitar de las aulas
-            $aulas=$ldap->get_aulas();
+            $aulas=$sldap->get_aulas();
             foreach ($aulas as $aula){
                 $aula->delMember($this->uid);
             }
             // quitar de administradores
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
             $this->reQuota();
             return;
         }
         elseif ($role == 'tic') {
             // debe estar en el grupo LDAP_OU_TIC Domain Users y __USERS__
-            $ldap->addUserToGroup($this->uid, LDAP_OU_TICS);
+            $sldap->addUserToGroup($this->uid, LDAP_OU_TICS);
             
             // meter en administradores
-            $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
-            $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
+            $sldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
+            $sldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
             $this->reQuota();
             return;
         }
         elseif ($role == 'teacher') {
             // debe estar en el grupo LDAP_OU_TEACHERS Domain Users y __USERS__
-            $ldap->addUserToGroup($this->uid, LDAP_OU_TEACHERS);
+            $sldap->addUserToGroup($this->uid, LDAP_OU_TEACHERS);
             
             // quitar de administradores
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_INSTALLATORS);
             $this->reQuota();
             return;
         }
         elseif ($role == 'admin') {
             // quitar de profesores
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_TEACHERS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_TEACHERS);
             // quitar de TICS
-            $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
+            $sldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
             
             //quitar de aulas
-            $aulas=$ldap->get_aulas();
+            $aulas=$sldap->get_aulas();
             foreach ($aulas as $aula){
                 $aula->delMember($this->uid);
             }
             
             // debe estar en el grupo Domain Administrator y Administrator
-            $ldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
-            $ldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
-            $ldap->addUserToGroup($this->uid, LDAP_OU_INSTALLATORS);
+            $sldap->addUserToGroup($this->uid, LDAP_OU_DADMINS);
+            $sldap->addUserToGroup($this->uid, LDAP_OU_ADMINS);
+            $sldap->addUserToGroup($this->uid, LDAP_OU_INSTALLATORS);
             $this->reQuota();
             return;
         }
@@ -399,20 +401,20 @@ class USER extends BASE {
     
     function update_password($new) {
         global $gui;
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
-        $newpassword=$ldap->additionalPasswords($new, $this->uid, $samba=true);
+        $uldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $newpassword=$uldap->additionalPasswords($new, $this->uid, $samba=true);
         $newpassword['userPassword']="{SHA}".base64_encode(sha1($new, TRUE));
         $gui->debuga($newpassword);
-        $r = ldap_modify($ldap->cid, $this->get_save_dn() , $newpassword );
+        $r = ldap_modify($uldap->cid, $this->get_save_dn() , $newpassword );
         
         if ($r) {
             $gui->session_info("Contraseña actualizada.");
-            $ldap->disconnect();
+            $uldap->disconnect('USER::update_password()');
             return true;
         }
         else {
-            $gui->session_error("Error cambiando contraseñas: ".ldap_error($ldap->cid));
-            $ldap->disconnect();
+            $gui->session_error("Error cambiando contraseñas: ".ldap_error($uldap->cid));
+            $uldap->disconnect('USER::update_password()');
             return false;
         }
     }
@@ -420,9 +422,9 @@ class USER extends BASE {
     function newUser() {
         global $gui;
         
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $nldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
-        if ( $ldap->get_user($this->uid) ) {
+        if ( $nldap->get_user($this->uid) ) {
             $gui->session_error("El usuario '".$this->uid."' ya existe.");
             return false;
         }
@@ -434,21 +436,21 @@ class USER extends BASE {
         
         //$this->cn=$this->uid. " ".$this->sn;
         
-        $this->uidNumber=$ldap->lastUID() +1;
-        $this->gidNumber=$ldap->getGID('__USERS__');
+        $this->uidNumber=$nldap->lastUID() +1;
+        $this->gidNumber=$nldap->getGID('__USERS__');
         
         
         $rid = (2 * $this->uidNumber) + 1000;
         
-        $this->sambaSID=$ldap->getSID()."-$rid";
-        $this->sambaPrimaryGroupSID=$ldap->getSID()."-". $ldap->getGID('Domain Users');
+        $this->sambaSID=$nldap->getSID()."-$rid";
+        $this->sambaPrimaryGroupSID=$nldap->getSID()."-". $nldap->getGID('Domain Users');
         
         $this->homeDirectory=HOMES . $this->uid;
         $this->sambaHomePath=SAMBA_HOMES . $this->uid;
         $this->sambaProfilePath=SAMBA_PROFILES . $this->uid;
         
         $this->objectClass = array('inetOrgPerson', 'posixAccount', 'passwordHolder', 'sambaSamAccount');
-        $additionalPasswords=$ldap->additionalPasswords($password , $this->uid, $samba=true);
+        $additionalPasswords=$nldap->additionalPasswords($password , $this->uid, $samba=true);
         $this->set( $additionalPasswords );
         
         $this->sambaPwdLastSet=time();
@@ -466,9 +468,9 @@ class USER extends BASE {
             "objectClass" => array('inetOrgPerson', 'posixAccount'),
                     );
         //$gui->debuga($init);
-        $r=ldap_add($ldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
+        $r=ldap_add($nldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
         
-        //$gui->debug(ldap_error($ldap->cid));
+        //$gui->debug(ldap_error($nldap->cid));
         
         
         if ( ! $r ) {
@@ -483,11 +485,11 @@ class USER extends BASE {
         $init=array(
             "objectClass" => array('inetOrgPerson', 'posixAccount', 'passwordHolder'),
                     );
-        $init=array_merge($init, $ldap->additionalPasswords($password , $this->uid, $samba=false));
+        $init=array_merge($init, $nldap->additionalPasswords($password , $this->uid, $samba=false));
         //$gui->debuga($init);
-        $r=ldap_modify($ldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
+        $r=ldap_modify($nldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
         
-        $gui->debug(ldap_error($ldap->cid));
+        $gui->debug(ldap_error($nldap->cid));
         if ( ! $r )
             return false;
         //$gui->debug("PASSWORDS DONE save rest");
@@ -520,9 +522,9 @@ class USER extends BASE {
             "sambaSID" => $this->sambaSID,
                     );
         //$gui->debuga($init);
-        $r=ldap_modify($ldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
+        $r=ldap_modify($nldap->cid, "uid=".$this->uid.",".LDAP_OU_USERS, $init);
         
-        //$gui->debug(ldap_error($ldap->cid));
+        //$gui->debug(ldap_error($nldap->cid));
         if ( ! $r )
             return false;
         
@@ -537,12 +539,15 @@ class USER extends BASE {
         //$gui->debuga($this);
         
         // añadir a domain users
-        $ldap->addUserToGroup($this->uid, LDAP_OU_DUSERS);
+        $nldap->addUserToGroup($this->uid, LDAP_OU_DUSERS);
         $this->set_role($this->role);
         
-        // crear home, profiles y aplicar quota
-        exec('sudo '.MAXCONTROL.' createhome '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1', &$output);
-        $gui->debuga($output);
+        // crear home, profiles y aplicar quota en background
+        $cmd='sudo '.MAXCONTROL.' createhome '.$this->uid.' '.$nldap->getDefaultQuota().' > /dev/null 2>&1 &';
+        $gui->debug($cmd);
+        pclose(popen($cmd, "r"));
+        
+        $nldap->disconnect('USER::newUser()');
         
         $gui->session_info("Usuario '".$this->uid."' creado correctamente.");
         return true;
@@ -557,43 +562,50 @@ class USER extends BASE {
         //     Domain Users
         //     Teachers
         
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $dldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         if ($delprofile == '1') {
-            $ldap->deleteProfile($this->uid);
+            $dldap->deleteProfile($this->uid);
         }
         
         
         // borrar de las aulas
-        $aulas=$ldap->get_aulas();
+        $aulas=$dldap->get_aulas();
         foreach($aulas as $aula) {
             $aula->delMember($this->uid);
         }
         
         // delete from Teachers
-        $ldap->delUserFromGroup($this->uid, LDAP_OU_TEACHERS);
+        $dldap->delUserFromGroup($this->uid, LDAP_OU_TEACHERS);
         
         // delete from TICS
-        $ldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
+        $dldap->delUserFromGroup($this->uid, LDAP_OU_TICS);
         
         // delete from admins
-        $ldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
-        $ldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
+        $dldap->delUserFromGroup($this->uid, LDAP_OU_ADMINS);
+        $dldap->delUserFromGroup($this->uid, LDAP_OU_DADMINS);
         
         // delete from Domain Users
-        $ldap->delUserFromGroup($this->uid, LDAP_OU_DUSERS);
+        $dldap->delUserFromGroup($this->uid, LDAP_OU_DUSERS);
         
         // borrarlo de LDAP_OU_USERS
-        $gui->debug("ldap_delete ( $ldap->cid , 'uid=".$this->uid.",".LDAP_OU_USERS ."')");
-        $r=ldap_delete ( $ldap->cid , "uid=".$this->uid.",".LDAP_OU_USERS );
+        $gui->debug("ldap_delete ( $dldap->cid , 'uid=".$this->uid.",".LDAP_OU_USERS ."')");
+        $r=ldap_delete ( $dldap->cid , "uid=".$this->uid.",".LDAP_OU_USERS );
         if ( ! $r)
             return false;
+        $dldap->disconnect('USER::delUser()');
         return true;
     }
     
     function getNumericQuota() {
+        global $quotaArray, $gui;
+        /* try to read cached quota */
+        if ( isset($quotaArray[$this->uid]) ) {
+            //$gui->debug("<h2>getNumericQuota() CACHED</h2>");
+            return $quotaArray[$this->uid]['size'];
+        }
         if (is_readable("/var/lib/max-control/quota.cache.php")) {
-            require("/var/lib/max-control/quota.cache.php");
+            include("/var/lib/max-control/quota.cache.php");
             if ( isset($quotaArray[$this->uid]) ) {
                 return $quotaArray[$this->uid]['size'];
             }
@@ -606,9 +618,24 @@ class USER extends BASE {
         if (file_exists("/etc/max-control/quota.disabled")) {
             return "<b>disabled</b>";
         }
+        global $quotaArray;
+        /* try to read cached quota */
+        if ( isset($quotaArray[$this->uid]) ) {
+            //$gui->debug("<h2>getquota() CACHED</h2>");
+            $color="black";
+            if($quotaArray[$this->uid]['overQuota'])
+                $color="red";
+            
+            $size=$quotaArray[$this->uid]['size'];
+            $maxsize=$quotaArray[$this->uid]['maxsize'];
+            $percent=$quotaArray[$this->uid]['percent'];
+            
+            return "<span style='color:$color'>$size MB / $maxsize MB ($percent)</span>";
+        }
+        
         /* read /var/lib/max-control/quota.cache.php */
         if (is_readable("/var/lib/max-control/quota.cache.php")) {
-            require("/var/lib/max-control/quota.cache.php");
+            include("/var/lib/max-control/quota.cache.php");
             
             if ( isset($quotaArray[$this->uid]) ) {
                 
@@ -957,7 +984,7 @@ class COMPUTER extends BASE {
             // if computer in aula and teacher in aula
             
             if ( isset($this->sambaProfilePath) && $this->sambaProfilePath != '' ) {
-                $ldap=new LDAP();
+                global $ldap;
                 $members=$ldap->get_teacher_from_aula($this->sambaProfilePath);
                 if ( in_array($teacher, $members['ingroup']) ) {
                     return true;
@@ -984,8 +1011,8 @@ class COMPUTER extends BASE {
         }
         
         //borrar del LDAP
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
-        $r=ldap_delete ( $ldap->cid , "uid=".$this->uid.",".LDAP_OU_COMPUTERS );
+        $dldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $r=ldap_delete ( $dldap->cid , "uid=".$this->uid.",".LDAP_OU_COMPUTERS );
         if ( ! $r)
             $result=false;
         
@@ -996,6 +1023,8 @@ class COMPUTER extends BASE {
         exec("sudo ".MAXCONTROL." delcomputer '".$this->uid."' ", &$output);
         $gui->debuga($output);
         
+        $dldap->disconnect('COMPUTER::delComputer()');
+        
         return $result;
     }
 
@@ -1003,9 +1032,9 @@ class COMPUTER extends BASE {
         /* used by create_hosts.php */
         global $gui;
         
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $nldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
-        if ( $ldap->get_computers($data['hostname'].'$') ) {
+        if ( $nldap->get_computers($data['hostname'].'$') ) {
             $gui->session_error("El equipo '".$data['hostname']."' ya existe.");
             return false;
         }
@@ -1016,14 +1045,14 @@ class COMPUTER extends BASE {
         $this->description="Computer";
         $this->displayName="Computer";
         $this->gecos="Computer";
-        $this->uidNumber=$ldap->lastUID() +1;
+        $this->uidNumber=$nldap->lastUID() +1;
         $this->gidNumber="515"; /*Domain Computers ()*/
         
         
         $rid = (2 * $this->uidNumber) + 1000;
         
-        $this->sambaSID=$ldap->getSID()."-$rid";
-        //$this->sambaPrimaryGroupSID=$ldap->getSID()."-". $ldap->getGID('Domain Users');
+        $this->sambaSID=$nldap->getSID()."-$rid";
+        //$this->sambaPrimaryGroupSID=$nldap->getSID()."-". $nldap->getGID('Domain Users');
         
         $this->homeDirectory="/dev/null";
         $this->loginShell="/bin/false";
@@ -1033,7 +1062,7 @@ class COMPUTER extends BASE {
         
         $this->objectClass = array('top', 'account', 'posixAccount', 'sambaSamAccount');
         $this->sambaNTPassword="E44AA99B52BB7604F9DC31D6298D4EFB";
-        //$additionalPasswords=$ldap->additionalPasswords(leer_datos('password') , $this->uid, $samba=true);
+        //$additionalPasswords=$nldap->additionalPasswords(leer_datos('password') , $this->uid, $samba=true);
         //$this->set( $additionalPasswords );
         
         $this->sambaPwdLastSet=time();
@@ -1056,9 +1085,9 @@ class COMPUTER extends BASE {
             "objectClass" => array('top', 'account', 'posixAccount'),
                     );
         $gui->debuga($init);
-        $r=ldap_add($ldap->cid, "uid=".$this->uid.",".LDAP_OU_COMPUTERS, $init);
+        $r=ldap_add($nldap->cid, "uid=".$this->uid.",".LDAP_OU_COMPUTERS, $init);
         
-        $gui->debug(ldap_error($ldap->cid));
+        $gui->debug(ldap_error($nldap->cid));
         
         
         if ( ! $r ) {
@@ -1097,9 +1126,9 @@ class COMPUTER extends BASE {
             "sambaSID" => $this->sambaSID,
                     );
         $gui->debuga($init);
-        $r=ldap_modify($ldap->cid, "uid=".$this->uid.",".LDAP_OU_COMPUTERS, $init);
+        $r=ldap_modify($nldap->cid, "uid=".$this->uid.",".LDAP_OU_COMPUTERS, $init);
         
-        $gui->debug(ldap_error($ldap->cid));
+        $gui->debug(ldap_error($nldap->cid));
         if ( ! $r )
             return false;
         
@@ -1125,6 +1154,8 @@ class COMPUTER extends BASE {
                          'macAddress', 
                          'bootFile') );
         
+        
+        $nldap->disconnect('COMPUTER::newComputer()');
         $gui->session_info("Equipo añadido correctamente.");
         return true;
     }
@@ -1172,7 +1203,7 @@ class AULA extends BASE {
         //return 0;
         $i=0;
         if ( isset($this->ldapdata['memberUid']) ) {
-            $ldap=new LDAP();
+            global $ldap;
             unset($this->ldapdata['memberUid']['count']);
             foreach($this->ldapdata['memberUid'] as $username) {
                 $user=$ldap->user_exists($username);
@@ -1180,7 +1211,6 @@ class AULA extends BASE {
                     $i++;
                 }
             }
-            $ldap->disconnect();
             return $i;
         }
         return 0;
@@ -1193,7 +1223,7 @@ class AULA extends BASE {
     function get_users() {
         $users=array();
         if ( isset($this->ldapdata['memberUid']) ) {
-            $ldap=new LDAP();
+            global $ldap;
             unset($this->ldapdata['memberUid']['count']);
             foreach($this->ldapdata['memberUid'] as $username) {
                 $user=$ldap->user_exists($username);
@@ -1201,7 +1231,6 @@ class AULA extends BASE {
                     $users[]=$username;
                 }
             }
-            $ldap->disconnect();
         }
         return $users;
     }
@@ -1223,7 +1252,7 @@ class AULA extends BASE {
     function get_num_computers() {
         if ( isset($this->cachednumcomputers) )
             return $this->cachednumcomputers;
-        $ldap = new LDAP();
+        global $ldap;
         $this->cachednumcomputers=count($ldap->get_macs_from_aula($this->cn));
         return $this->cachednumcomputers;
     }
@@ -1353,8 +1382,8 @@ class AULA extends BASE {
         $gui->debuga($this->show());
         
         if ($this->description == ''){
-            $this->description=array();
-            $this->ldapdata['description']=array();
+            $this->description=' ';
+            $this->ldapdata['description']=' ';
         }
         
         $init=array(
@@ -1369,7 +1398,7 @@ class AULA extends BASE {
         $gui->debug("AULA:newAula() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
         if ( ! $r ) {
             $gui->session_error("No se pudo añadir el aula '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
-            $ldap->disconnect();
+            $ldap->disconnect('AULA::newAula()');
             return false;
         }
         
@@ -1386,15 +1415,15 @@ class AULA extends BASE {
         
         //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
         if ( ! $r ) {
-            $gui->session_error("No se pudieron modificar los atributos del grupo '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
-            $ldap->disconnect();
+            $gui->session_error("No se pudieron modificar los atributos del aula '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
+            $ldap->disconnect('AULA::newAula()');
             return false;
         }
         
         $this->genPXELinux();
         $this->boot('default');
         
-        $ldap->disconnect();
+        $ldap->disconnect('AULA::newAula()');
         
         return true;
     }
@@ -1406,18 +1435,18 @@ class AULA extends BASE {
         $res=false;
         
         /* borrar aula de los equipos que pertenezcan a ella */
-        $ldap=new LDAP();
+        global $ldap;
         $computers=$ldap->get_computers_from_aula($this->cn);
         foreach($computers as $computer) {
             $computer->empty_attr( 'sambaProfilePath' );
         }
         
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $local_ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         
         // borrarlo de LDAP_OU_GROUPS
-        $gui->debug("ldap_delete ( $ldap->cid , 'cn=".$this->cn.",".LDAP_OU_GROUPS ."')");
-        $r=ldap_delete ( $ldap->cid , "cn=".$this->cn.",".LDAP_OU_GROUPS );
+        $gui->debug("ldap_delete ( $local_ldap->cid , 'cn=".$this->cn.",".LDAP_OU_GROUPS ."')");
+        $r=ldap_delete ( $local_ldap->cid , "cn=".$this->cn.",".LDAP_OU_GROUPS );
         if ( ! $r)
             $res=false;
         $res=true;
@@ -1429,7 +1458,7 @@ class AULA extends BASE {
         
         
         $this->genPXELinux();
-        
+        $local_ldap->disconnect('AULA::delAula()');
         
         return $res;
     }
@@ -1456,7 +1485,7 @@ class GROUP extends BASE {
     function get_num_users() {
         $i=0;
         if ( isset($this->ldapdata['memberUid']) ) {
-            $ldap=new LDAP();
+            global $ldap;
             unset($this->ldapdata['memberUid']['count']);
             foreach($this->ldapdata['memberUid'] as $username) {
                 $user=$ldap->user_exists($username);
@@ -1464,7 +1493,6 @@ class GROUP extends BASE {
                     $i++;
                 }
             }
-            $ldap->disconnect();
             return $i;
         }
         return 0;
@@ -1473,7 +1501,7 @@ class GROUP extends BASE {
     function get_users() {
         $users=array();
         if ( isset($this->ldapdata['memberUid']) ) {
-            $ldap=new LDAP();
+            global $ldap;
             unset($this->ldapdata['memberUid']['count']);
             foreach($this->ldapdata['memberUid'] as $username) {
                 $user=$ldap->user_exists($username);
@@ -1481,7 +1509,6 @@ class GROUP extends BASE {
                     $users[]=$username;
                 }
             }
-            $ldap->disconnect();
         }
         return $users;
     }
@@ -1510,7 +1537,7 @@ class GROUP extends BASE {
         $this->ldapdata['memberUid']=$members;
         $this->memberUid=$members;
         $res = $this->save(array('memberUid'));
-        $ldap=new LDAP();
+        global $ldap;
         $ldap->updateLogonShares();
         return $res;
     }
@@ -1537,7 +1564,7 @@ class GROUP extends BASE {
         $gui->debuga($newmembers);
         $this->ldapdata['memberUid']=$newmembers;
         $res = $this->save(array('memberUid'));
-        $ldap=new LDAP();
+        global $ldap;
         $ldap->updateLogonShares();
         return $res;
     }
@@ -1546,20 +1573,21 @@ class GROUP extends BASE {
         global $gui;
         
         
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $dldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         if ($delprofile == '1') {
-            $ldap->deleteGroupProfile($this->cn);
-            $ldap->genSamba();
+            $dldap->deleteGroupProfile($this->cn);
+            $dldap->genSamba();
         }
         
-        $ldap->updateLogonShares();
+        $dldap->updateLogonShares();
         
         // borrarlo de LDAP_OU_GROUPS
-        $gui->debug("ldap_delete ( $ldap->cid , 'cn=".$this->cn.",".LDAP_OU_GROUPS ."')");
-        $r=ldap_delete ( $ldap->cid , "cn=".$this->cn.",".LDAP_OU_GROUPS );
+        $gui->debug("ldap_delete ( $dldap->cid , 'cn=".$this->cn.",".LDAP_OU_GROUPS ."')");
+        $r=ldap_delete ( $dldap->cid , "cn=".$this->cn.",".LDAP_OU_GROUPS );
         if ( ! $r)
             return false;
+        $dldap->disconnect('GROUP::delGroup()');
         return true;
     }
     
@@ -1589,16 +1617,16 @@ class GROUP extends BASE {
     function newGroup($createshared, $readonly, $grouptype=2) {
         global $gui;
         
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $nldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
         
         $this->displayName=$this->cn;
         $this->sambaGroupType=$grouptype;
         $this->objectClass=array('posixGroup', 'sambaGroupMapping', 'eboxGroup');
         
         
-        $this->gidNumber=$ldap->lastGID() + 1 ;
+        $this->gidNumber=$nldap->lastGID() + 1 ;
         $rid= 2 * $this->gidNumber + 1001;
-        $this->sambaSID=$ldap->getSID(). "-" . $rid;
+        $this->sambaSID=$nldap->getSID(). "-" . $rid;
         
         $this->memberUid=array();
         
@@ -1610,12 +1638,12 @@ class GROUP extends BASE {
             "objectClass" => array('posixGroup'),
                     );
         $gui->debuga($init);
-        $r=ldap_add($ldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
+        $r=ldap_add($nldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
         
-        //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+        //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($nldap->cid)."</pre>");
         if ( ! $r ) {
-            $gui->session_error("No se pudo añadir el grupo '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
-            $ldap->disconnect();
+            $gui->session_error("No se pudo añadir el grupo '".$this->cn."'</br>Error:".ldap_error($nldap->cid));
+            $nldap->disconnect('GROUP::addGroup()');
             return false;
         }
 
@@ -1634,23 +1662,23 @@ class GROUP extends BASE {
             "objectClass" => array('posixGroup', 'sambaGroupMapping', 'eboxGroup'),
                     );
         $gui->debuga($init);
-        $r=ldap_modify($ldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
+        $r=ldap_modify($nldap->cid, "cn=".$this->cn.",".LDAP_OU_GROUPS, $init);
         
-        //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($ldap->cid)."</pre>");
+        //$gui->debug("BASE:save() dn=".$this->get_save_dn()." data=<pre>".print_r($init, true)."\nRESULT=".ldap_error($nldap->cid)."</pre>");
         if ( ! $r ) {
-            $gui->session_error("No se pudieron modificar los atributos del grupo '".$this->cn."'</br>Error:".ldap_error($ldap->cid));
-            $ldap->disconnect();
+            $gui->session_error("No se pudieron modificar los atributos del grupo '".$this->cn."'</br>Error:".ldap_error($nldap->cid));
+            $nldap->disconnect('GROUP::addGroup()');
             return false;
         }
         
         if ($createshared == '1') {
-            $ldap->addGroupProfile($this->cn, $readonly);
-            $ldap->genSamba();
+            $nldap->addGroupProfile($this->cn, $readonly);
+            $nldap->genSamba();
         }
         
-        $ldap->updateLogonShares();
+        $nldap->updateLogonShares();
         
-        $ldap->disconnect();
+        $nldap->disconnect('GROUP::addGroup()');
         
         return true;
     }
@@ -1686,14 +1714,14 @@ class GROUP extends BASE {
         
         $gui->debug("OLD=$full_old_dn NEW=$new_rdn");
         
-        $ldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
-        $r=ldap_rename( $ldap->cid, $full_old_dn, $new_rdn, NULL, TRUE);
+        $nldap=new LDAP($binddn=LDAP_BINDDN,$bindpw=LDAP_BINDPW);
+        $r=ldap_rename( $nldap->cid, $full_old_dn, $new_rdn, NULL, TRUE);
         if ( ! $r ) {
-            $gui->session_error("No se pudo renombrar el grupo '$oldname'</br>Error:".ldap_error($ldap->cid));
-            $ldap->disconnect();
+            $gui->session_error("No se pudo renombrar el grupo '$oldname'</br>Error:".ldap_error($nldap->cid));
+            $nldap->disconnect();
             return false;
         }
-        $ldap->disconnect();
+        $nldap->disconnect('GROUP::renameGroup()');
         $gui->session_info("Grupo '$oldname' renombrado a '$newname'.");
         
         /* rename shared folder if exists */
@@ -1796,21 +1824,22 @@ class LDAP {
             if ($ignore != "" && $attrs['uid'][0] == $ignore ) {
                 continue;
             }
+            
             $user= new USER($attrs);
             
             /* si pasamos role y si no coincide con el que pasamos, no lo añadimos */
-            if( $filterrole != '' && ! $user->is_role($filterrole) )
+            if( $filterrole != '' && ! $user->is_role($filterrole) ) {
                 continue;
+            }
             $users[]=$user;
         }
+        $gui->debug("ldap::get_users() num users ".sizeof($users));
         return $users;
     }
 
     function get_user($uid='') {
         global $gui;
         
-        if ( ! $this->connect() )
-            return false;
         
         $filter = "(&(objectClass=posixAccount)(uid=$uid))";
         if (! ($search=ldap_search($this->cid, LDAP_OU_USERS, $filter))) {
@@ -1830,8 +1859,6 @@ class LDAP {
     function user_exists($uid) {
         global $gui;
         
-        if ( ! $this->connect() )
-            return false;
         $filter = "(&(objectClass=posixAccount)(uid=$uid))";
         if (! ($search=ldap_search($this->cid, LDAP_OU_USERS, $filter))) {
             $this->error="Error: búsqueda incorrecta.\n".ldap_error($this->cid);
@@ -1928,8 +1955,6 @@ class LDAP {
     function is_admin($uid='') {
         global $gui;
         
-        if ( ! $this->connect() )
-            return false;
         
         $filter = "(cn=Administrators)";
         if (! ($search=ldap_search($this->cid, $this->basedn, $filter))) {
@@ -1961,8 +1986,7 @@ class LDAP {
 
     function get_computers($uid='') {
         global $gui;
-        if ( ! $this->connect() )
-            return false;
+        
         if ( $uid == '' )
             $uid='*';
         elseif ( preg_match('/\$$/', $uid) )
@@ -1983,8 +2007,6 @@ class LDAP {
 
     function get_computer_by_ip($ip='') {
         global $gui;
-        if ( ! $this->connect() )
-            return false;
         
         $computer=array();
         $gui->debug("ldap::get_computers() (uid='*')".LDAP_OU_COMPUTERS);
@@ -2018,8 +2040,6 @@ class LDAP {
              }
         */
         global $gui;
-        if ( ! $this->connect() )
-            return false;
         
         $aulas=array();
         $gui->debug("ldap::get_aulas() (cn='*')".LDAP_OU_GROUPS);
@@ -2053,8 +2073,7 @@ class LDAP {
 
     function get_aula($aulafilter) {
         global $gui;
-        if ( ! $this->connect() )
-            return false;
+        
         $gui->debug("ldap::get_aula() (cn='$aulafilter')".LDAP_OU_GROUPS);
         $this->search("(cn=$aulafilter)", $basedn=LDAP_OU_GROUPS);
         while($attrs = $this->fetch()) {
@@ -2108,8 +2127,6 @@ class LDAP {
 
     function get_macs_from_aula($aula) {
         global $gui;
-        if ( ! $this->connect() )
-            return false;
         
         $macs=array();
         $gui->debug("ldap::get_macs_from_aula($aula) (uid='*')".LDAP_OU_COMPUTERS);
@@ -2131,8 +2148,6 @@ class LDAP {
     
     function get_computers_from_aula($aula) {
         global $gui;
-        if ( ! $this->connect() )
-            return false;
         
         $computers=array();
         $gui->debug("ldap::get_computers_from_aula($aula) (uid='*')".LDAP_OU_COMPUTERS);
@@ -2208,8 +2223,7 @@ class LDAP {
 
     function get_groups($groupfilter='*', $include_system=false) {
         global $gui;
-        if ( ! $this->connect() )
-            return false;
+        
         if ( $groupfilter == '' )
             $groupfilter='*';
         else
@@ -2336,8 +2350,10 @@ class LDAP {
     }
     
     function getSID() {
-        global $gui;
+        /* FIXME eBox/Zentyal hardcode this */
         $sid='S-1-5-21-3818554400-921237426-3143208535';
+        return $sid;
+        /*global $gui;
         exec('sudo '.MAXCONTROL.' getdomainsid', &$output);
         //$gui->debug("<pre>".print_r($output, true)."</pre>");
         foreach($output as $line) {
@@ -2349,7 +2365,7 @@ class LDAP {
                 $sid=$words[count($words)-1];
             }
         }
-        return $sid;
+        return $sid;*/
         /*
         /usr/share/perl5/EBox/SambaLdapUser.pm
         # FIXME: Hardcore SID for testing purposes
@@ -2415,24 +2431,29 @@ class LDAP {
     }
 
     function getDefaultQuota() {
+        return DEFAULT_QUOTA;
+        /*
         global $gui;
         exec('sudo '.MAXCONTROL.' getdefaultquota', &$output);
         //$gui->debug("<pre>".print_r($output, true)."</pre>");
         return $output[0];
+        */
     }
 
     function deleteProfile($uid) {
         global $gui;
-        exec("sudo ".MAXCONTROL." deleteprofile '$uid'", &$output);
-        $gui->debug("LDAP:deleteProfile($uid)<pre>".print_r($output, true)."</pre>");
-        return $output[0];
+        /* delete profile in background */
+        $cmd="sudo ".MAXCONTROL." deleteprofile '$uid' > /dev/null 2>&1 &";
+        $gui->debug($cmd);
+        pclose(popen($cmd, "r"));
     }
 
     function deleteGroupProfile($group) {
         global $gui;
-        exec("sudo ".MAXCONTROL." deletegroup '$group'", &$output);
-        $gui->debug("LDAP:deleteGroupProfile($group)<pre>".print_r($output, true)."</pre>");
-        return $output[0];
+        /* delete profile in background */
+        $cmd="sudo ".MAXCONTROL." deletegroup '$group' > /dev/null 2>&1 &";
+        $gui->debug($cmd);
+        pclose(popen($cmd, "r"));
     }
 
     function addGroupProfile($group, $readonly=0) {
@@ -2444,9 +2465,10 @@ class LDAP {
 
     function genSamba() {
         global $gui;
-        exec("sudo ".MAXCONTROL." gensamba", &$output);
-        $gui->debug("LDAP:genSamba()<pre>".print_r($output, true)."</pre>");
-        return $output[0];
+        /* launch gensamba in background */
+        $cmd='sudo '.MAXCONTROL.' gensamba > /dev/null 2>&1 &';
+        $gui->debug($cmd);
+        pclose(popen($cmd, "r"));
     }
 
     function updateLogonShares() {
@@ -2455,9 +2477,10 @@ class LDAP {
         to be loaded by logon.kix and mount shares that user is in.
         */
         global $gui;
-        exec("sudo ".MAXCONTROL." genlogonshares", &$output);
-        $gui->debug("LDAP:updateLogonShares()<pre>".print_r($output, true)."</pre>");
-        return $output[0];
+        /* launch genlogonshares in background */
+        $cmd='sudo '.MAXCONTROL.' genlogonshares > /dev/null 2>&1 &';
+        $gui->debug($cmd);
+        pclose(popen($cmd, "r"));
     }
 
     function purgeWINS() {
@@ -2469,9 +2492,6 @@ class LDAP {
 
     function getGroupMembers($group) {
         $members=array('memberUid' => array());
-        if (!$this->connect()) {
-            return false;
-        }
         
         // search members of group
         $this->search("(cn=*)", $basedn=$group);
@@ -2602,9 +2622,6 @@ class LDAP {
             $localbasedn=$basedn;
         
         $result = array();
-        if (!$this->connect()) {
-            return(0);
-        }
         
         $this->sr = ldap_search($this->cid, $localbasedn, $filter);
         $this->error = ldap_error($this->cid);
@@ -2632,7 +2649,10 @@ class LDAP {
         $this->start = 0;
     }
 
-    function disconnect() {
+    function disconnect($txt='') {
+        global $gui;
+        //$gui->debug("<h2>ldap->disconnect() ".$this->$binddn."</h2>");
+        $gui->debug("<h4>\$ldap->disconnect('$txt')</h4>");
         ldap_close($this->cid);
     }
 }

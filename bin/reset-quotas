@@ -26,7 +26,8 @@ quotaon -p $QUOTA_PATH
 # set grace time to 0 segs
 setquota -t 0 0 -a
 
-size=$(max-control getdefaultquota)
+#size=$(max-control getdefaultquota)
+size=$(grep DEFAULT_QUOTA /etc/max-control/conf.inc.php| awk -F'"' '{print $4}')
 
 for u in /home/samba/users/*; do
 
