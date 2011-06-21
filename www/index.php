@@ -6,15 +6,14 @@ set_time_limit(30);
 session_start();
 $path=dirname(dirname(__FILE__));
 
+if ( ! is_readable($path . '/conf.inc.php') ) {
+    include($path . '/templates/no-configurado.html');
+    die();
+}
 
 // cargamos la configuracion y el modulo comun
 include($path . '/conf.inc.php');
 include($path . '/modules/common.inc.php');
-
-if ( ! CONFIGURED ) {
-    include($path . '/templates/no-configurado.html');
-    die();
-}
 
 
 $site['path']=$path;
