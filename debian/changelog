@@ -1,3 +1,12 @@
+max-control (1.1.4) max; urgency=low
+
+  * www/index.php: Show 'Not configured' if conf.inc.php is not readable
+  * templates/no-configurado.html: Update install info
+  * bin/configure-max-control: If Zentyal fail to create PDC groups (no
+    Domain Users) recall samba enable-module
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 21 Jun 2011 18:56:31 +0200
+
 max-control (1.1.3) max; urgency=low
 
   * update www/files/plantilla_usuarios.csv with new columns
