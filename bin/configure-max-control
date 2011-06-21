@@ -28,6 +28,13 @@ fi
 
 if [ "$CONFIGURE" = "1" ]; then
 
+    # populate LDAP Groups if "Domain Users" not found
+    if ! getent group | grep -q "Domain Users"; then
+        echo " * Populating LDAP PDC groups...."
+        sudo -u ebox /usr/share/zentyal-samba/enable-module >/dev/null 2>&1
+    fi
+
+
     # create conf.inc.php from LDAP data 
     # (create max-control user or update-password)
 
