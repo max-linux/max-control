@@ -1,3 +1,11 @@
+max-control (1.1.7) max; urgency=low
+
+  * /usr/share/zentyal/stubs/captiveportal/ldap.conf.mas: fix typo
+  * Add /etc/zentyal/hooks/captiveportal.postservice, open server 80
+    port bypass Captive Portal
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Fri, 08 Jul 2011 18:15:31 +0200
+
 max-control (1.1.6) max; urgency=low
 
   * www/css/login.css: round corners in login div
