@@ -1,4 +1,4 @@
-%args>
+<%args>
     $ldap_url
     $bindstring
 </%args>
