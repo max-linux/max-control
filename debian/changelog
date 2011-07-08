@@ -1,3 +1,10 @@
+max-control (1.1.5) max; urgency=low
+
+  * bin/configure-max-control: Populate PDC in Zentyal or EBox
+  * Update importador, rel #89
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Fri, 08 Jul 2011 14:10:06 +0200
+
 max-control (1.1.4) max; urgency=low
 
   * www/index.php: Show 'Not configured' if conf.inc.php is not readable
