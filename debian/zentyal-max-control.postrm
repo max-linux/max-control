@@ -1,11 +1,24 @@
 #!/bin/sh
 
-# remove divert samba Zentyal STUB
-if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" ]; then
+zentyal_remove_divert() {
     dpkg-divert --package zentyal-max-control \
 		--remove --rename \
-		--divert /usr/share/zentyal/stubs/samba/smb.conf.mas.zentyal \
-			 /usr/share/zentyal/stubs/samba/smb.conf.mas
+		--divert ${1}.zentyal \
+			 ${1}
+}
+
+
+
+# remove divert samba Zentyal STUB
+if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" ]; then
+    zentyal_remove_divert /usr/share/zentyal/stubs/samba/smb.conf.mas
+
+    # zentyal-captiveportal
+    zentyal_remove_divert /usr/share/zentyal/www/images/title-login.png
+    zentyal_remove_divert /usr/share/zentyal/templates/captiveportal/login.mas
+    zentyal_remove_divert /usr/share/zentyal/templates/captiveportal/popupLaunch.mas
+    zentyal_remove_divert /usr/share/zentyal/templates/captiveportal/popup.mas
+
     if grep -q 'max-control' /etc/samba/smb.conf; then
         echo " * Desconfigurando SAMBA con max-control ..."
         /usr/share/zentyal/initial-setup samba
