@@ -361,8 +361,8 @@ function parse_valid($txt) {
     $orig=$txt;
     
     $txt=remove_accent($txt);
-    $txt=preg_replace('/\W/', '', $txt);
-    
+    $txt=preg_replace('/\W-/', '', $txt);
+    $txt=preg_replace('/"/', '', $txt);
     return $txt;
 }
 

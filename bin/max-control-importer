@@ -3,8 +3,8 @@
 cd /usr/share/max-control
 
 if [ "$1" = "DEBUG" ]; then
-  [ -d /home2/madrid/max-control ] && cd /home2/madrid/max-control
   [ -d /home/madrid/max-control ] && cd /home/madrid/max-control
+  [ -d /home2/madrid/max-control ] && cd /home2/madrid/max-control
 fi
 
 # See ionice(1)

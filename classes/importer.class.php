@@ -5,13 +5,23 @@
 *
 *
 *   FORMAT:
-*       * Código del Centro
-*       * Nombre
-*       * Apellidos
-*       * Id usuario (uid, login)
-*       * Grupo
+*        Nombre
+*        Apellidos
+*        Id. de usuario (login)
+*        Centro (no se tiene en cuenta)
+*        Clase (grupo) distinto de "-"
+*        Tipo (alumno, profesor...) "emStudent" "emTeacher"
+*
 *
 */
+/* "Nombre","Apellidos","uid","centro","clase","tipo" */
+define('IMPORT_NAME', 0);
+define('IMPORT_SURNAME', 1);
+define('IMPORT_UID', 2);
+define('IMPORT_CENTER', 3); /* not needed */
+define('IMPORT_GROUP', 4); /* empty group if == "-" */
+define('IMPORT_ROLE', 5); /* "emStudent" "emTeacher" */
+
 
 class Importer {
     function Importer($fname=NULL) {
@@ -29,30 +39,50 @@ class Importer {
         $lines = explode("\n", $data);
         $users=array();
         $i=0;
+        $alumnos=0;
+        $profesores=0;
         foreach($lines as $line) {
             if ($line == '') continue;
             //$userdata=explode(",", $line);
             $userdata=preg_split('/;|,/', $line);
             
-            if(sizeof($userdata) != 5) {
-                $gui->session_error("Línea no contiene 5 campos =&gt; '$line' ");
+            if(sizeof($userdata) != 6) {
+                //$gui->session_error("Línea no contiene 6 campos =&gt; '$line' ");
                 continue;
             }
-            if($userdata[1] == '"Nombre"' || $userdata[1] == 'Nombre') continue;
+            if($userdata[IMPORT_NAME] == '"Nombre"' || $userdata[IMPORT_SURNAME] == 'Apellidos') continue;
             
-            if( test_string($userdata[3]) ) {
-                $gui->session_error("El identificador de usuario '".$userdata[3]."' contiene caracteres no ASCII.");
+            if( test_string($userdata[IMPORT_UID]) ) {
+                $gui->session_error("El identificador de usuario '".$userdata[IMPORT_UID]."' contiene caracteres no ASCII.");
                 continue;
             }
             
-            $tmp=array('uid'           => $userdata[3],
+            $usergroup=parse_valid($userdata[IMPORT_GROUP]);
+            if( $usergroup == "-" || $usergroup == "_" ) {
+                $usergroup='';
+            }
+            if ( preg_match('/^[0-9]/', $usergroup) ) {
+                /* empieza por numero */
+                $usergroup="g_$usergroup";
+            }
+            /***************************************************/
+            $userrole=$text = preg_replace( "{\s+}", '', parse_valid($userdata[IMPORT_ROLE]));
+            if($userrole == 'emTeacher') {
+                $userrole='teacher';
+                $profesores++;
+            }
+            else {
+                $userrole=""; /* alumno vacío */
+                $alumnos++;
+            }
+            $tmp=array('uid'           => $userdata[IMPORT_UID],
                        'plainPassword' => $this->defaultPassword,
-                       'cn'            => $userdata[1],
-                       'sn'            => $userdata[2],
-                       'description'   => $userdata[1] . ' '. $userdata[2],
-                       'group'         => parse_valid($userdata[4]),
+                       'cn'            => $userdata[IMPORT_NAME],
+                       'sn'            => $userdata[IMPORT_SURNAME],
+                       'description'   => $userdata[IMPORT_NAME] . ' '. $userdata[IMPORT_SURNAME],
+                       'group'         => $usergroup,
                        'loginShell'    => '/bin/false',
-                       'role'          => '');
+                       'role'          => $userrole);
             sanitize($tmp, array('uid' => 'charnum',
                                  'cn'=>'charnum',
                                  'sn' => 'charnum',
@@ -74,12 +104,12 @@ class Importer {
         
         removeFileIfExists(IMPORTER_DIR . "/status.php");
         $this->writeStatus($number=$i, $done=0, $result='');
-        //$gui->session_info("En proceso de importación $i cuentas de usuario...");
+        $gui->session_info("En proceso de importación de $i cuentas de usuario ($alumnos alumnos, $profesores profesores)...");
         
         /* fork process in background */
         $cmd="max-control-importer >> ".FORK_LOGFILE." 2>&1 &";
         if(DEBUG)
-            $cmd="max-control-importer DEBUG >> ".FORK_LOGFILE." 2>&1 &";
+            $cmd="max-control-importer DEBUG >> /tmp/importer.log 2>&1 &";
         pclose(popen($cmd, "r"));
     }
 
@@ -220,15 +250,16 @@ class Importer {
                 $gui->session_error("Error al crear usuario '".$newuser['uid']."'.");
             }
             
-            /* añadir usuario a grupo */
-            $groups=$ldap->get_groups($newuser['group']);
-            if ( $groups[0] && $groups[0]->newMember($newuser['uid']) ) {
-                    $gui->session_info("Usuario '".$newuser['uid']."' añadido al grupo '".$newuser['group']."'.</br>");
+            if($newuser['group'] != '') {
+                /* añadir usuario a grupo */
+                $groups=$ldap->get_groups($newuser['group']);
+                if ( $groups[0] && $groups[0]->newMember($newuser['uid']) ) {
+                        $gui->session_info("Usuario '".$newuser['uid']."' añadido al grupo '".$newuser['group']."'.</br>");
+                }
+                else {
+                    $gui->session_error("No se ha podido añadir al usuario '".$newuser['uid']."' al grupo '".$newuser['group']."'.");
+                }
             }
-            else {
-                $gui->session_error("No se ha podido añadir al usuario '".$newuser['uid']."' al grupo '".$newuser['group']."'.");
-            }
-            
             
             /* salir si en el bucle hemos creado mas de X usuarios */
             if ($i >= $this->maxImport) break;
