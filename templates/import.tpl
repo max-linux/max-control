@@ -16,21 +16,23 @@ Como separadores use la coma "," y como delimitador de texto las comillas dobles
 <br/><br/>
 El órden de los campos es el siguiente:
 <ul>
-    <li>Código de centro</li>
     <li>Nombre</li>
     <li>Apellidos</li>
     <li>Id. de usuario (login)</li>
-    <li>Grupo</li>
+    <li>Centro (no se tiene en cuenta)</li>
+    <li>Clase (grupo)</li>
+    <li>Tipo (alumno, profesor...)</li>
 </ul>
 
-El rol por defecto para todos los usuarios importados es <b>alumno</b>, y la contraseña es <b>cmadrid</b>
+
+La contraseña por defecto para todos los usuarios es <b>cmadrid</b>
 <br/><br/>
 
 
-El identificador de usuario y el grupo no puede tener espacios, caracteres raros y debe empezar por una letra.
+El identificador de usuario y el grupo no puede tener espacios, caracteres raros y debe empezar por una letra (si el grupo empieza por número se añadirá <b>g_</b> al principio.
 <br/><br/>
 
-La importación necesita entre uno y tres segundos por usuario y se ejcuta en segundo plano, se podrá ver el progreso y los usuarios creados durante el tiempo que dure la importación.
+La importación necesita entre uno y tres segundos por usuario y se ejcuta en segundo plano, se podrá ver el progreso y los usuarios creados durante el tiempo que dure la importación o una vez que haya terminado.
 </div>
 
 

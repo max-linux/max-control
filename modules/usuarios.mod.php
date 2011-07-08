@@ -703,7 +703,7 @@ function importdo ($module, $action, $subaction) {
         if(! DEBUG)
             $url->ir($module, "importar");
     }
-    elseif ($ftmp['size'] > 50000) {
+    elseif ($ftmp['size'] > 75000) {
         $gui->session_error("El archivo es demasiado grande, haga la importación en más pasos.");
         if (! DEBUG)
             $url->ir($module, "importar");
