@@ -7,7 +7,7 @@ use EBox::Gettext;
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Zentyal</title>
+  <title>Portal cautivo</title>
   <meta http-equiv=Content-Type content="text/html; charset=utf-8" />
   <link href="/dynamic-data/css/captiveportal.css" type="text/css" rel="stylesheet" />
   <script type="text/javascript">
@@ -19,7 +19,7 @@ use EBox::Gettext;
 <body onload="launch()">
    <div id='login'>
      <div id='loginin' style="text-align: center; padding: 15px">
-       <img src="/data/images/title-login.png" alt="Zentyal Logo" id="logo" style="float: none; margin: 0 auto; display: block"/>
+       <img src="/data/images/title-login.png" alt="EducaMadrid Logo" id="logo" style="float: none; margin: 0 auto; display: block"/>
        <div style="padding: 15px">
          Se ha registrado correctamente. Si el navegador no ha mostrado un popup, pulse <a href='javascript:launch();'>aquí</a> para abrilo manualmente.
          <!-- <% __x('You have logged in successfully. If your web browser blocked the popup click {hbeg}here{hend} and allow it.',
@@ -28,7 +28,9 @@ use EBox::Gettext;
      </div>
    </div>
 
-  <div id="footer"><% __x("Created by {href}", href => "<a href='http://www.zentyal.com/'>eBox Technologies</a>") %></div>
+  <div id="footer">
+    Portal cautivo para <a href="http://educa.madrid.org/">EducaMadrid</a> creado por <a href="http://www.zentyal.com/">eBox Technologies S.L.</a>
+  </div>
 </body>
 </html>
 

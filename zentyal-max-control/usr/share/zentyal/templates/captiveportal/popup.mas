@@ -7,7 +7,7 @@ use EBox::Gettext;
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Zentyal</title>
+  <title>Portal Cautivo</title>
   <meta http-equiv=Content-Type content="text/html; charset=utf-8" />
   <meta http-equiv="refresh" content="15" />
   <link href="/dynamic-data/css/captiveportal.css" type="text/css" rel="stylesheet" />
@@ -36,7 +36,7 @@ use EBox::Gettext;
 <body style="margin: 0">
    <div id='login' style="margin: 5px; width: auto">
      <div id='loginin' style="text-align: center; padding: 15px">
-       <img src="/data/images/title-login.png" alt="Zentyal Logo" id="logo" style="float: none; margin: 0 auto; display: block"/>
+       <img src="/data/images/title-login.png" alt="EducaMadrid Logo" id="logo" style="float: none; margin: 0 auto; display: block"/>
        <div style="padding: 15px">
          <!-- <% __('Keep this window open while using your Internet connection.') %> -->
          Mantenga esta ventana abierta, mientras use la conexión a Internet.

@@ -19,6 +19,7 @@ if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
     zentyal_add_divert /usr/share/zentyal/templates/captiveportal/login.mas
     zentyal_add_divert /usr/share/zentyal/templates/captiveportal/popupLaunch.mas
     zentyal_add_divert /usr/share/zentyal/templates/captiveportal/popup.mas
+    zentyal_add_divert /usr/share/zentyal/stubs/captiveportal/ldap.conf.mas
 fi
 
 

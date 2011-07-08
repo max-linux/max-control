@@ -6,7 +6,7 @@
 use EBox::Gettext;
 </%init>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>Zentyal</TITLE>
+<html xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>Portal Cautivo</TITLE>
 <meta http-equiv=Content-Type content="text/html; charset=utf-8">
 <link href="/dynamic-data/css/captiveportal.css" type="text/css" rel="stylesheet" />
 <script src="/data/js/common.js" type="text/javascript">//</SCRIPT>
@@ -16,7 +16,7 @@ use EBox::Gettext;
 <center>
 	<div id='login'>
 	<div id='loginin'>
-	<img src="/data/images/title-login.png" alt="Zentyal Logo" id="logo" style="padding-top: 20px"/>
+	<img src="/data/images/title-login.png" alt="EducaMadrid Logo" id="logo" style="padding-top: 20px"/>
 %		if(length($reason)){
 			<div id='reason'><% $reason %></div>
 %		}
@@ -54,8 +54,8 @@ use EBox::Gettext;
 	</div>
 	</div>
 </center>
-<div id="footer"><% __x("Created by {href}",
-                         href => "<a href='http://www.zentyal.com/'>eBox Technologies</a>") %>
+<div id="footer">
+    Portal cautivo para <a href="http://educa.madrid.org/">EducaMadrid</a> creado por <a href="http://www.zentyal.com/">eBox Technologies S.L.</a>
 </div>
 <script src="/data/js/help.js" type=text/javascript>//</SCRIPT>
 </body>
