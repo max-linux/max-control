@@ -5,6 +5,11 @@
     min-width: inherit;
 }
 
+#loginin {
+    border-radius: 20px;
+    -moz-border-radius: 20px;
+}
+
 #reason {
     text-align: left;
     font-weight: normal;

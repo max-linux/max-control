@@ -1,12 +1,27 @@
 #!/bin/sh
 
-# divert samba Zentyal STUB
-if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
+zentyal_add_divert() {
     dpkg-divert --package zentyal-max-control \
 		--add --rename \
-		--divert /usr/share/zentyal/stubs/samba/smb.conf.mas.zentyal \
-			 /usr/share/zentyal/stubs/samba/smb.conf.mas
+		--divert ${1}.zentyal \
+			 ${1}
+}
+
+
+
+# divert samba Zentyal STUB
+if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
+    # SAMBA smb.conf to include /etc/samba/max-control.conf
+    zentyal_add_divert /usr/share/zentyal/stubs/samba/smb.conf.mas
+
+    # zentyal-captiveportal
+    zentyal_add_divert /usr/share/zentyal/www/images/title-login.png
+    zentyal_add_divert /usr/share/zentyal/templates/captiveportal/login.mas
+    zentyal_add_divert /usr/share/zentyal/templates/captiveportal/popupLaunch.mas
+    zentyal_add_divert /usr/share/zentyal/templates/captiveportal/popup.mas
 fi
+
+
 
 
 # if not include before divert call Zentyal to regen smb.conf
