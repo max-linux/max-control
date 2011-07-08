@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+#
+#  Open server port 80 when Captive Portal is enabled
+#
+#
+#exec >> /tmp/captiveportal.log 2>&1
+exec >> /dev/null 2>&1
+
+if [ "$1" -eq "1" ]; then
+  # check for icaptive chain
+  if iptables -L icaptive -nv >/dev/null 2>&1; then
+
+    # delete OLD NAT captive rules
+    for n in $(iptables -t nat -L captive --line-numbers -nv| \
+               grep "max-control"| sort -nr| awk '{print $1}'); do
+        iptables -t nat -D captive $n
+    done
+
+    # delete OLD icaptive rules
+    for n in $(iptables -L icaptive --line-numbers -nv| \
+               grep "max-control"| sort -nr| awk '{print $1}'); do
+        iptables -D icaptive $n
+   done
+
+
+   # add RETURN
+   for IP in $(ip a| awk '/inet / {print $2}'| \
+               grep -v 127| awk -F"/" '{print $1}'); do
+       iptables        -I icaptive -p tcp --dport 80 \
+                       --destination $IP \
+                       -m comment --comment "max-control" -j RETURN
+       iptables -t nat -I  captive -p tcp --dport 80 \
+                       --destination $IP \
+                       -m comment --comment "max-control" -j RETURN
+   done
+
+   iptables       -L icaptive --line-numbers -nv
+   iptables -t nat -L captive --line-numbers -nv
+  fi
+fi
+
+
+
+
+
+exit 0
