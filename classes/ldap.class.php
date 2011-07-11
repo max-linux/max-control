@@ -1750,6 +1750,8 @@ class ISO extends BASE{
     }
     
     function init(){
+        $this->volumeid = $this->ldapdata['volumeid'];
+        $this->size = $this->ldapdata['size'];
         return;
     }
 
