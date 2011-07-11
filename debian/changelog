@@ -1,3 +1,12 @@
+max-control (1.1.9) max; urgency=low
+
+  * bin/configure-max-control debian/max-control.postinst: hide unix2dos
+    output
+  * classes/ldap.class.php: return 2000 if no uid/gid found
+  * call newGroup() with 2 params
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Mon, 11 Jul 2011 22:17:10 +0200
+
 max-control (1.1.8) max; urgency=low
 
   * classes/importer.class.php: don't start if no users to import
