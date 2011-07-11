@@ -96,6 +96,10 @@ class Importer {
             $i++;
         }
         
+        if($i < 1 ) {
+            $gui->session_error("No se encontraron datos en el archivo para importar.");
+            return;
+        }
         
         /* save file in IMPORTER_DIR */
         $fh = fopen(IMPORTER_DIR . "/pending.txt", 'w');
