@@ -110,7 +110,7 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 #$gui->debuga($teachers);
 #if ( count($teachers) < 1 ) {
 #    $group = new GROUP( array('cn' => 'Teachers' ) );
-#    $group->newGroup('');
+#    $group->newGroup('0', '0');
 #}
 #else {
 #    $gui->debug("El grupo Teachers existe");

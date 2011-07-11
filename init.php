@@ -79,7 +79,8 @@ $ldap=new LDAP();
 $teachers=$ldap->get_groups(TEACHERS, $include_system=true);
 if ( ! isset($teachers[0]) ) {
     $group = new GROUP( array('cn' => TEACHERS ) );
-    $group->newGroup('');
+    /* newGroup($createshared, $readonly, $grouptype=2) */
+    $group->newGroup('0', '0');
     $group->description="Profesores no-borrar";
     $group->ldapdata['description']="Profesores no-borrar";
     $group->save( array('description') );
@@ -96,7 +97,8 @@ else {
 $tics=$ldap->get_groups(TICS, $include_system=true);
 if ( ! isset($tics[0]) ) {
     $group = new GROUP( array('cn' => TICS ) );
-    $group->newGroup('');
+    /* newGroup($createshared, $readonly, $grouptype=2) */
+    $group->newGroup('0', '0');
     $group->description="Coordinadores TIC no-borrar";
     $group->ldapdata['description']="Coordinadores TIC no-borrar";
     $group->save( array('description') );
@@ -113,7 +115,8 @@ else {
 $installators=$ldap->get_groups(INSTALLATORS, $include_system=true);
 if ( ! isset($installators[0]) ) {
     $group = new GROUP( array('cn' => INSTALLATORS ) );
-    $group->newGroup('');
+    /* newGroup($createshared, $readonly, $grouptype=2) */
+    $group->newGroup('0', '0');
     $group->description="Instaladores no-borrar";
     $group->ldapdata['description']="Instaladores no-borrar";
     $group->save( array('description') );
