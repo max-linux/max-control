@@ -67,7 +67,7 @@ function create_group($groupname, $i) {
                     "description"=> "descrip $i",
                     "createshared" => "0");
     $group=new GROUP($newgroup);
-    if ( $group->newGroup("0") )
+    if ( $group->newGroup('0', '0') )
         echo "Grupo '$groupname' creado\n";
     else
         echo "No se pudo crear el grupo '$groupname'\n";

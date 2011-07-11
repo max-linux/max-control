@@ -307,6 +307,7 @@ class Importer {
                              'createshared' => '1',
                              'readonly' => '1');
             $group=new GROUP($groupdata);
+            /* newGroup($createshared, $readonly, $grouptype=2) */
             if ( $group->newGroup('1', '0') )
                 $gui->session_info("Grupo '".$group->cn."' creado correctamente.");
         }
