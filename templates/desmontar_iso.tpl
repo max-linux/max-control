@@ -51,8 +51,8 @@
     </table> 
 </form> 
 
-
+{*
 {if $DEBUG}
 {debug}
 {/if}
-
+*}

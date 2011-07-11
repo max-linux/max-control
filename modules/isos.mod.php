@@ -53,12 +53,18 @@ function ver($module, $action, $subaction) {
     $filter=leer_datos('Filter');
     
     $isos=$ldap->getISOS($filter);
+    //$gui->debuga($isos);
+    $aulas=$ldap->get_aulas();
+    $equipos=$ldap->get_computers();
     
-    $data=array("isos" => $isos, 
+    $data=array("isos" => $isos,
+                "aulas" => $aulas,
+                "computers"=> $equipos,
                 "numisos" => sizeof($isos),
-                "filter" => $filter, 
-                "urlform" => $url->create_url($module, $action), 
-                "urlmontar"=>$url->create_url($module,'montar'));
+                "filter" => $filter,
+                "urlform" => $url->create_url($module, $action),
+                "urlmount"=>$url->create_url($module, 'mountdo'),
+                );
     $gui->add( $gui->load_from_template("ver_isos.tpl", $data) );
 }
 
