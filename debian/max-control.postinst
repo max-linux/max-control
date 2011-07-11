@@ -21,15 +21,15 @@ EOF
        for fname in $(find /usr/share/max-control/netlogon/ -type f);do
            cp "$fname" /home/samba/netlogon/
        done
-       unix2dos /home/samba/netlogon/logon.bat
-       unix2dos /home/samba/netlogon/mount.bat
-       unix2dos /home/samba/netlogon/logon.kix
-       unix2dos /home/samba/netlogon/winvista.win7.win2008.registry.fix.bat
-       unix2dos /home/samba/netlogon/prepara_unir_dominio.bat
-       unix2dos /home/samba/netlogon/README.txt
+       unix2dos /home/samba/netlogon/logon.bat >/dev/null 2>&1
+       unix2dos /home/samba/netlogon/mount.bat >/dev/null 2>&1
+       unix2dos /home/samba/netlogon/logon.kix >/dev/null 2>&1
+       unix2dos /home/samba/netlogon/winvista.win7.win2008.registry.fix.bat >/dev/null 2>&1
+       unix2dos /home/samba/netlogon/prepara_unir_dominio.bat >/dev/null 2>&1
+       unix2dos /home/samba/netlogon/README.txt >/dev/null 2>&1
 
        pygenlogonshares > /home/samba/netlogon/shares.kix
-       unix2dos /home/samba/netlogon/shares.kix
+       unix2dos /home/samba/netlogon/shares.kix >/dev/null 2>&1
 
        chown root:root /home/samba/netlogon/*
        chmod 644 /home/samba/netlogon/*
