@@ -2280,6 +2280,9 @@ class LDAP {
             //$gui->debug("uid=".$attrs['uid'][0]." uidNumber=".$attrs['uidNumber'][0]);
             $uidNumbers[]=$attrs['uidNumber'][0];
         }
+        if (sizeof($uidNumbers) < 1)
+            return 2000;
+
         //$gui->debuga($uidNumbers);
         $gui->debug("LDAP:lastUID() =".max($uidNumbers));
         
@@ -2303,6 +2306,9 @@ class LDAP {
             //$gui->debug("uid=".$attrs['cn'][0]." uidNumber=".$attrs['gidNumber'][0]);
             $gidNumbers[]=$attrs['gidNumber'][0];
         }
+        if (sizeof($gidNumbers) < 1)
+            return 2000;
+
         //$gui->debuga($gidNumbers);
         $gui->debug("LDAP:lastGID() =".max($gidNumbers));
         
