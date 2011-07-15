@@ -1,3 +1,9 @@
+max-control (1.1.10) max; urgency=low
+
+  * Update diverts with new captive portal
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Fri, 15 Jul 2011 11:44:10 +0200
+
 max-control (1.1.9) max; urgency=low
 
   * bin/configure-max-control debian/max-control.postinst: hide unix2dos
