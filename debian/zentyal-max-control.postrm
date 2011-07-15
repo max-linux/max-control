@@ -2,9 +2,7 @@
 
 zentyal_remove_divert() {
     dpkg-divert --package zentyal-max-control \
-		--remove --rename \
-		--divert ${1}.zentyal \
-			 ${1}
+                --rename --remove "${1}"
 }
 
 
