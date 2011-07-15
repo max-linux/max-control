@@ -1,0 +1,29 @@
+#!/bin/sh
+
+
+
+
+if [ "$1" = "configure" ]; then
+    if ! grep -q icaptive /etc/zentyal/hooks/firewall.postservice >/dev/null 2>&1; then
+        cat /etc/zentyal/hooks/captiveportal.postservice > /etc/zentyal/hooks/firewall.postservice
+    fi
+
+    # if not include before divert call Zentyal to regen smb.conf
+    if ! grep -q 'max-control' /etc/samba/smb.conf; then
+        echo " * Configurando SAMBA con max-control ..."
+        touch /etc/samba/max-control.conf
+        /usr/share/zentyal/initial-setup samba
+        [ -e /proc/cmdline ] && ! grep -q debian-installer /proc/cmdline && /etc/init.d/zentyal samba restart
+    fi
+fi
+
+
+
+
+
+
+
+
+#DEBHELPER#
+
+exit 0
