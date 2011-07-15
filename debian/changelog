@@ -1,3 +1,9 @@
+max-control (1.1.11) max; urgency=low
+
+  * Fix remove diverts, fix firewall.postservice script
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Fri, 15 Jul 2011 12:04:15 +0200
+
 max-control (1.1.10) max; urgency=low
 
   * Update diverts with new captive portal
