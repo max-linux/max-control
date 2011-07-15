@@ -18,7 +18,7 @@ if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" ]; then
     zentyal_remove_divert /usr/share/zentyal/templates/captiveportal/login.mas
     zentyal_remove_divert /usr/share/zentyal/templates/captiveportal/popupLaunch.mas
     zentyal_remove_divert /usr/share/zentyal/templates/captiveportal/popup.mas
-    zentyal_remove_divert /usr/share/zentyal/stubs/captiveportal/ldap.conf.mas
+    zentyal_remove_divert /etc/zentyal/hooks/firewall.postservice
 
 
     if grep -q 'max-control' /etc/samba/smb.conf; then
