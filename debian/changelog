@@ -1,3 +1,9 @@
+max-control (1.1.12) max; urgency=low
+
+  * Update samba/smb.conf.mas in zentyal-max-control
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Wed, 20 Jul 2011 12:59:30 +0200
+
 max-control (1.1.11) max; urgency=low
 
   * Fix remove diverts, fix firewall.postservice script
