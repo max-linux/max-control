@@ -63,8 +63,8 @@ define('LDAP_PASS', '$LDAP_PASS');
 
 exec("net getdomainsid | grep domain", &$output);
 $parts = preg_split ("/\s+/", $output[0]);
-$LDAP_DOMAIN=$parts[3];
-define('LDAP_DOMAIN', $LDAP_DOMAIN);
+$LDAP_DOMAIN=preg_replace('/"/', '', $parts[3]);
+define('LDAP_DOMAIN', "$LDAP_DOMAIN");
 
 $LDAP_ADMIN='max-control';
 $LDAP_PASS=createPassword();
