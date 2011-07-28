@@ -1,3 +1,9 @@
+max-control (1.1.14) max; urgency=low
+
+  * update smb.conf.mas from last zentyal-samba package
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Thu, 28 Jul 2011 11:12:30 +0200
+
 max-control (1.1.13) max; urgency=low
 
   * init.php: fix LDAP_DOMAIN parser
