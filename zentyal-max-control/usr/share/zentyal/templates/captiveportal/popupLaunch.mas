@@ -17,16 +17,14 @@ use EBox::Gettext;
   </script>
 </head>
 <body onload="launch()">
-   <div id='login'>
-     <div id='loginin' style="text-align: center; padding: 15px">
+  <center>
+   <div id='login' class="popuplaunch">
        <img src="/data/images/title-login.png" alt="EducaMadrid Logo" id="logo" style="float: none; margin: 0 auto; display: block"/>
        <div style="padding: 15px">
          Se ha registrado correctamente. Si el navegador no ha mostrado un popup, pulse <a href='javascript:launch();'>aquí</a> para abrilo manualmente.
-         <!-- <% __x('You have logged in successfully. If your web browser blocked the popup click {hbeg}here{hend} and allow it.',
-                hbeg => "<a href='javascript:launch()'>", hend => "</a>") %> -->
        </div>
      </div>
-   </div>
+  </center>
 
   <div id="footer">
     Portal cautivo para <a href="http://educa.madrid.org/">EducaMadrid</a> creado por <a href="http://www.zentyal.com/">eBox Technologies S.L.</a>
