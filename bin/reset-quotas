@@ -5,6 +5,10 @@ if [ -f $(grep home /proc/mounts | awk '{print $2}')/aquota.user ] || [ -f $(gre
   QUOTA_PATH=$(grep home /proc/mounts | awk '{print $2}')
 fi
 
+if [ -f /aquota.user ] || [ -f /quota.user ]; then
+  QUOTA_PATH="/"
+fi
+
 if [ "$QUOTA_PATH" = "" ]; then
   echo " * /home or /home/samba not mounted"
   exit 0
@@ -12,16 +16,22 @@ fi
 
 echo " * Disabling quotas on $QUOTA_PATH"
 
-quotaoff $QUOTA_PATH
-rm -f $QUOTA_PATH/*quota.*
-touch $QUOTA_PATH/quota.user $QUOTA_PATH/quota.group
-#quotacheck -vug $QUOTA_PATH/ 
-quotacheck -vug $QUOTA_PATH/ >/dev/null 2>&1
+if [ -x /etc/init.d/quota ]; then
+  /etc/init.d/quota stop
+  /etc/init.d/quota start
+else
+  quotaoff $QUOTA_PATH
+  rm -f $QUOTA_PATH/*quota.*
+  touch $QUOTA_PATH/aquota.group $QUOTA_PATH/aquota.user
+  #touch $QUOTA_PATH/quota.user $QUOTA_PATH/quota.group
+  #quotacheck -vug $QUOTA_PATH/ 
+  quotacheck -vug $QUOTA_PATH/ >/dev/null 2>&1
 
-echo " * Enabling quotas on $QUOTA_PATH"
-quotaon $QUOTA_PATH
+  echo " * Enabling quotas on $QUOTA_PATH"
+  quotaon $QUOTA_PATH
 
-quotaon -p $QUOTA_PATH
+  quotaon -p $QUOTA_PATH
+fi
 
 # set grace time to 0 segs
 setquota -t 0 0 -a
@@ -54,3 +64,5 @@ for u in /home/samba/users/*; do
   fi
 
 done
+
+/usr/bin/pyoverquota > /var/lib/max-control/quota.cache.php &
