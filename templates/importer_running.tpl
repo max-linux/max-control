@@ -14,7 +14,9 @@
     <li>Fecha y hora de importación: {$status.date}</li>
     <li id="doneDate" style="display:none;">Fecha y hora de finalización: &nbsp;<span id="doneDateValue"></span></li>
     <li>Número total de cuentas a importar: <span id="total">{$status.number}</span></li>
-    <li>Número de cuentas ya importadas: <span id="done">{$status.done}</span></li>
+    <li style="display:none;">Número de cuentas importadas: <span id="done">{$status.done}</span></li>
+    <li>Número de cuentas importadas con éxito: <span id="doneok">{$status.done}</span></li>
+    <li id="doneFailedli" style="display:none;">Número de cuentas no importadas: <span id="donefailed">0</span></li>
 </ul>
 
 <div id="progress_bar">
@@ -67,9 +69,15 @@ function update_progressbar() {
       success: function(data) {
           percent=parseInt(data.done/$('#total')[0].innerHTML*100);
           $('#done')[0].innerHTML=data.done;
+          $('#doneok')[0].innerHTML=data.ok;
+          $('#donefailed')[0].innerHTML=data.failed;
+          if(data.failed > 0 ) {
+            $('#doneFailedli')[0].style.display='';
+          }
           if(percent > 100) {
             percent=100;
             $('#done')[0].innerHTML=$('#total')[0].innerHTML;
+            $('#doneok')[0].innerHTML=data.ok;
           }
           $('#percentValue')[0].innerHTML=percent + "%";
           $('#progressValue')[0].style.width=percent + "%";

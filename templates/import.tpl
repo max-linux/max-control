@@ -4,15 +4,13 @@
 <div class='help'>
 Para importar una lista grande de usuarios se necesita esa lista en formato CSV
 que se puede generar desde una hoja de cálculo (Excel u OpenOffice/LibreOffice Calc).
-<br/>
+<br/><br/>
 
 El Coordinador TIC desde la página de gestión de EducaMadrid, puede generar este archivo, 
 no hay que crearlo de cero.
-<br/>
-
-Puede descargar un archivo plantilla desde aquí:
 <br/><br/>
 
+Puede descargar un archivo plantilla desde aquí:
 <a href="{$baseurl}/files/plantilla_usuarios.csv">Plantilla usuarios (formato CSV)</a>
 <br/><br/>
 
