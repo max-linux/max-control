@@ -350,8 +350,10 @@ function guardarnuevo($module, $action, $subaction) {
                            'repassword' => 'str'));
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $user = new USER($_POST);
-    if ( ! $user->newUser() ) 
+    if ( ! $user->newUser() )  {
+        $gui->session_error("No se ha podido añadir el usuario, compruebe todos los campos.");
         $url->ir($module, "add");
+    }
     
     if(! DEBUG)
         $url->ir($module, "ver");
