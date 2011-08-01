@@ -18,7 +18,8 @@ fi
 while [ -e /var/lib/max-control/importer/pending.txt ]; do
 
     $IONICE php importer.php
-    echo "----------------------------- esperando 1 segundo ----------------------------"
+    echo "-------------------------------------------------------------------------------"
+    #echo "----------------------------- esperando 1 segundo ----------------------------"
     #sleep 1
 
 done
