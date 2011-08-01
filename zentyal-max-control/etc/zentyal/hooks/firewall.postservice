@@ -7,6 +7,8 @@
 #exec >> /tmp/captiveportal.log 2>&1
 exec >> /dev/null 2>&1
 
+PORTS="80 443"
+
 if [ "$1" -eq "1" ]; then
   # check for icaptive chain
   if iptables -L icaptive -nv >/dev/null 2>&1; then
@@ -27,12 +29,14 @@ if [ "$1" -eq "1" ]; then
    # add RETURN
    for IP in $(ip a| awk '/inet / {print $2}'| \
                grep -v 127| awk -F"/" '{print $1}'); do
-       iptables        -I icaptive -p tcp --dport 80 \
+       for PORT in $PORTS; do
+           iptables        -I icaptive -p tcp --dport $PORT \
                        --destination $IP \
                        -m comment --comment "max-control" -j RETURN
-       iptables -t nat -I  captive -p tcp --dport 80 \
+           iptables -t nat -I  captive -p tcp --dport $PORT \
                        --destination $IP \
                        -m comment --comment "max-control" -j RETURN
+       done
    done
 
    iptables       -L icaptive --line-numbers -nv
