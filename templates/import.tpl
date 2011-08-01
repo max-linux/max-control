@@ -3,7 +3,11 @@
 
 <div class='help'>
 Para importar una lista grande de usuarios se necesita esa lista en formato CSV
-que se puede generar desde una hoja de cálculo (Excel u OpenOffice Calc).
+que se puede generar desde una hoja de cálculo (Excel u OpenOffice/LibreOffice Calc).
+<br/>
+
+El Coordinador TIC desde la página de gestión de EducaMadrid, puede generar este archivo, 
+no hay que crearlo de cero.
 <br/>
 
 Puede descargar un archivo plantilla desde aquí:
@@ -32,7 +36,7 @@ La contraseña por defecto para todos los usuarios es <b>cmadrid</b>
 El identificador de usuario y el grupo no puede tener espacios, caracteres raros y debe empezar por una letra (si el grupo empieza por número se añadirá <b>g_</b> al principio.
 <br/><br/>
 
-La importación necesita entre uno y tres segundos por usuario y se ejcuta en segundo plano, se podrá ver el progreso y los usuarios creados durante el tiempo que dure la importación o una vez que haya terminado.
+La importación necesita entre uno y tres segundos por usuario y se ejecuta en segundo plano, se podrá ver el progreso y los usuarios creados durante el tiempo que dure la importación o una vez que haya terminado un resumen.
 </div>
 
 
