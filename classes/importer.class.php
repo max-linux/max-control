@@ -1,4 +1,6 @@
 <?php
+if(DEBUG)
+    error_reporting(E_ALL);
 /*
 *
 *   Import users (and groups) from a CSV file
@@ -84,9 +86,9 @@ class Importer {
                        'loginShell'    => '/bin/false',
                        'role'          => $userrole);
             sanitize($tmp, array('uid' => 'charnum',
-                                 'cn'=>'charnum',
-                                 'sn' => 'charnum',
-                                 'description' => 'charnum',
+                                 'cn'=>'cnsn',
+                                 'sn' => 'cnsn',
+                                 'description' => 'cnsn',
                                  'loginShell' => 'shell',
                                  'role' => 'role',
                                  'plainPassword' => 'str',
@@ -153,23 +155,30 @@ class Importer {
         }
     }
 
-    function writeStatus($number=0, $done=0, $result='') {
+    function writeStatus($number=0, $done=0, $result='', $failed=0) {
         global $gui;
         
         if ( file_exists ( IMPORTER_DIR . "/status.php" ) ) {
             include(IMPORTER_DIR . "/status.php" );
             $now=$importer['date'];
             $number=$importer['number'];
+            $ok=$importer['ok']+$done;
             $done=$importer['done']+$done;
-            $info=$importer['info'].$gui->info;
-            $error=$importer['error'].$gui->error;
+            /*$info=$importer['info'].$gui->info;
+            $error=$importer['error'].$gui->error;*/
+            $info=$gui->info;
+            $error=$gui->error;
+            $failed=$importer['failed']+$failed;
         }
         else {
+            /* new file default values */
             $now=date('d-m-Y H:i:s');
             $info=$gui->info;
             $error=$gui->error;
+            $ok=0;
+            $failed=0;
         }
-        $gui->debug(" ********* writeStatus()  now=$now number=$number done=$done");
+        $gui->debug(" ********* writeStatus()  now=$now number=$number done=$done failed=$failed");
         
         $fh = fopen(IMPORTER_DIR . "/status.php", 'w');
         $status="<?php
@@ -181,6 +190,8 @@ class Importer {
 \$importer['result']=\"$result\";
 \$importer['info']=\"$info\";
 \$importer['error']=\"$error\";
+\$importer['failed']=\"$failed\";
+\$importer['ok']=\"$ok\";
 
 ?>
 ";
@@ -230,6 +241,11 @@ class Importer {
         if ($this->isLocked()) return;
         $this->lock();
         
+        include(IMPORTER_DIR . "/status.php" );
+        if ( $importer['number'] < 20 ) {
+            $this->maxImport=1;
+        }
+        
         global $gui;
         $gui->debug("readImport() init ");
         
@@ -237,12 +253,19 @@ class Importer {
         $users=unserialize($raw);
         //$gui->debuga($users);
         
+        if ( file_exists ( IMPORTER_DIR . "/status.php" ) ) {
+            include(IMPORTER_DIR . "/status.php" );
+            $gui->error=$importer['error'];
+            $gui->info=$importer['info'];
+        }
+        
+        
         $i=0;
+        $failed=0;
         global $ldap;
         foreach($users as $newuser) {
             $user = new USER($newuser);
             if ( $ldap->get_user($newuser['uid']) ) {
-                //$i++;
                 //$gui->session_error("El usuario '".$newuser['uid']."' ya existe.");
                 continue;
             }
@@ -251,7 +274,12 @@ class Importer {
                 $this->_createGroup($newuser['group'], $ldap);
             } /* end of user->newUser() */
             else {
-                $gui->session_error("Error al crear usuario '".$newuser['uid']."'.");
+                $gui->debug(preg_match( '/'.$newuser['uid'].'/', $gui->error));
+                if( ! preg_match( '/'.$newuser['uid'].'/', $gui->error) ) {
+                    $gui->session_error("Error al crear usuario '".$newuser['uid']."' =&gt; " . $user->errortxt);
+                    $failed++;
+                }
+                continue;
             }
             
             if($newuser['group'] != '') {
@@ -271,7 +299,7 @@ class Importer {
         } /* foreach */
         $this->unlock();
         if ($i >0) {
-            $this->writeStatus($number=0, $done=$i, $result='');
+            $this->writeStatus($number=0, $done=$i, $result='', $failed=$failed);
         }
         else {
             /* delete pending.txt */
