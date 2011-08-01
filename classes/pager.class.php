@@ -1,5 +1,6 @@
 <?php
-
+if(DEBUG)
+    error_reporting(E_ALL);
 
 class PAGER {
     function PAGER($items, $baseurl, $skip, $args='', $sort=NULL) {

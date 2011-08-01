@@ -1,4 +1,6 @@
 <?php
+if(DEBUG)
+    error_reporting(E_ALL);
 
 class URLHandler {
 
