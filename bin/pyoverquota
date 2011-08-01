@@ -126,6 +126,7 @@ print """<?php
 $quotaTime="%s";
 $overQuota=array();
 $quotaArray=array();
+global $quotaArray, $overQuota, $quotaTime;
 
 """%(time.asctime(), LIMIT, time.strftime("%d/%m/%Y %H:%M:%S", time.localtime()))
 generateOverQuotas()
