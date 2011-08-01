@@ -24,8 +24,7 @@ class ModuleLoader
             $this->start_module($thismodule);
         }
         else{
-            
-            $gui->alert("ERROR: sección $thismodule no encontrada.<br/>Compruebe que escribió bien la dirección.");
+            //$gui->alert("ERROR: sección $thismodule no encontrada.<br/>Compruebe que escribió bien la dirección.");
             $gui->debug("ERROR: sección $thismodule no encontrada.<br/>Compruebe que escribió bien la dirección.");
         }
     }
