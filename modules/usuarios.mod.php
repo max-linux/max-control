@@ -526,8 +526,13 @@ function groupdeletedo($module, $action, $subaction) {
                 $gui->session_info("Grupo '$group' borrado.");
         }
         elseif($faction == 'deletemembers') {
-            /* borrar usuarios uno a uno */
             $users=$todelete[0]->get_users();
+            
+            /* borrar grupo */
+            if ( $todelete[0]->delGroup($deleteprofile) )
+                $gui->session_info("Grupo '$group' borrado.");
+            
+            /* borrar usuarios uno a uno */
             foreach($users as $username) {
                 $user=$ldap->get_user($username);
                 if ($username == $_SESSION["username"]) {
@@ -537,9 +542,6 @@ function groupdeletedo($module, $action, $subaction) {
                 if ( $user->delUser($deleteprofile) )
                     $gui->session_info("Usuario '$username' del grupo '$group', borrado.");
             }
-            /* borrar grupo */
-            if ( $todelete[0]->delGroup($deleteprofile) )
-                $gui->session_info("Grupo '$group' borrado.");
         }
         elseif($faction == 'clean') {
             $users=$todelete[0]->get_users();
