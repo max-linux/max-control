@@ -64,6 +64,8 @@
 </table>
 
 
+{*
 {if $DEBUG}
 {debug}
 {/if}
+*}
