@@ -1,5 +1,6 @@
 <?php
-
+if(DEBUG)
+    error_reporting(E_ALL);
 /*
 
 dc=max-server
@@ -45,6 +46,7 @@ global $sort_opts;
 
 class BASE {
     var $ldapdata=array();
+    var $errortxt='';
     
     function BASE(array $parameter = array()) {
         $this->set($parameter);
@@ -474,7 +476,8 @@ class USER extends BASE {
         
         
         if ( ! $r ) {
-            $gui->session_error("No se ha podido añadir el usuario, compruebe todos los campos.");
+            //$gui->session_error("No se ha podido añadir el usuario, compruebe todos los campos.");
+            $this->errortxt=ldap_error($nldap->cid);
             return false;
         }
         
