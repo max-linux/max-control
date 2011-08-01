@@ -187,7 +187,11 @@ function sanitizeOne($var, $type) {
         break;
         
         case 'charnum': // only chars, numbers and some special
-        $var = preg_replace("/[^A-Za-z0-9.-_ áéíóúÁÉÍÓÚñÑüÜ]/","", $var); 
+        $var = preg_replace("/[^A-Za-z0-9.-_ áéíóúÁÉÍÓÚñÑ]/","", $var); 
+        break;
+        
+        case 'cnsn': // only chars, numbers and some special
+        $var = preg_replace("/[^A-Za-z0-9.-_ áéíóúÁÉÍÓÚñÑüÜçÇ]/","", $var); 
         break;
         
         case 'shell': // /bin/bash /bin/false
