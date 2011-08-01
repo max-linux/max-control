@@ -477,6 +477,7 @@ class USER extends BASE {
         
         if ( ! $r ) {
             //$gui->session_error("No se ha podido añadir el usuario, compruebe todos los campos.");
+            $gui->debuga($init);
             $this->errortxt=ldap_error($nldap->cid);
             return false;
         }
@@ -571,11 +572,12 @@ class USER extends BASE {
             $dldap->deleteProfile($this->uid);
         }
         
-        
-        // borrar de las aulas
-        $aulas=$dldap->get_aulas();
-        foreach($aulas as $aula) {
-            $aula->delMember($this->uid);
+        if( $dldap->is_teacher($this->uid) ) {
+            // borrar de las aulas
+            $aulas=$dldap->get_aulas();
+            foreach($aulas as $aula) {
+                $aula->delMember($this->uid);
+            }
         }
         
         // delete from Teachers
@@ -1769,6 +1771,7 @@ class LDAP {
         var $cid = 0; // LDAP Server Connection ID
         var $bid = 0; // LDAP Server Bind ID
         var $error = "";
+        var $cachedAdmins=NULL;
 
     function LDAP($binddn = "", $bindpw = "", $hostname = LDAP_HOSTNAME) {
         
@@ -1949,10 +1952,11 @@ class LDAP {
 
 
     function is_teacher($uid='') {
+        //global $gui;
         $teachers=$this->get_teachers_uids();
-        foreach ($teachers as $teacher) {
-            if ( $uid == $teacher )
-                return true;
+        //$gui->debuga($teachers);
+        if ( in_array($uid, $teachers) ) {
+            return true;
         }
         return false;
     }
@@ -1960,6 +1964,13 @@ class LDAP {
     function is_admin($uid='') {
         global $gui;
         
+        if($this->cachedAdmins) {
+            if ( in_array($uid, $this->cachedAdmins) ) {
+                return true;
+            }
+            return false;
+        }
+        $this->cachedAdmins=array();
         
         $filter = "(cn=Administrators)";
         if (! ($search=ldap_search($this->cid, $this->basedn, $filter))) {
@@ -1977,9 +1988,9 @@ class LDAP {
         //$gui->debug("<pre>".print_r($attrs, true)." </pre><br>\n");
         
         if ( array_key_exists("memberUid", $attrs) ) {
-            $members=$attrs["memberUid"];
+            $this->cachedAdmins=$attrs["memberUid"];
             //$gui->debug("<pre>".print_r($members, true)." </pre><br>\n");
-            if ( in_array($uid, $members) ) {
+            if ( in_array($uid, $this->cachedAdmins) ) {
                 //$gui->debug("ldap::is_admin() user $uid is admin");
                 return true;
             }
@@ -2027,7 +2038,7 @@ class LDAP {
         return $computer;
     }
 
-    function get_aulas($aula='') {
+    function get_aulas($aula='*') {
         /*
         sambaGroupType
         > #ifndef USE_UINT_ENUMS
@@ -2046,9 +2057,14 @@ class LDAP {
         */
         global $gui;
         
+        if ( $aula == '' )
+            $aula='*';
+        else
+            $uid="$aula";
+        
         $aulas=array();
-        $gui->debug("ldap::get_aulas() (cn='*')".LDAP_OU_GROUPS);
-        $this->search("(cn=*)", $basedn=LDAP_OU_GROUPS);
+        $gui->debug("ldap::get_aulas() (cn='$aula')".LDAP_OU_GROUPS);
+        $this->search("(cn=$aula)", $basedn=LDAP_OU_GROUPS);
         
         while($attrs = $this->fetch()) {
             //$gui->debug("<pre>".print_r($attrs, true)."</pre>");
@@ -2261,12 +2277,13 @@ class LDAP {
         global $gui;
         $allusers=$this->get_user_uids($group=LDAP_OU_USERS);
         $group=$this->get_groups($groupfilter);
+        $users=$group[0]->get_users();
         
         $all=array('ingroup'=>array(), 'outgroup'=>array());
         
         foreach($allusers as $e) {
             $found=false;
-            if ( in_array($e, $group[0]->get_users() ) )
+            if ( in_array($e, $users ) )
                 $all['ingroup'][]=$e;
             
             else
@@ -2452,10 +2469,10 @@ class LDAP {
     }
 
     function deleteProfile($uid) {
-        global $gui;
+        //global $gui;
         /* delete profile in background */
         $cmd="sudo ".MAXCONTROL." deleteprofile '$uid' > /dev/null 2>&1 &";
-        $gui->debug($cmd);
+        //$gui->debug($cmd);
         pclose(popen($cmd, "r"));
     }
 
@@ -2551,7 +2568,7 @@ class LDAP {
             return true;
         }
         
-        $gui->debuga($oldmembers);
+        //$gui->debuga($oldmembers);
         
         $newmembers=array('memberUid'=>array());
         foreach($oldmembers['memberUid'] as $m) {
@@ -2559,7 +2576,7 @@ class LDAP {
                 $newmembers['memberUid'][]=$m;
             }
         }
-        $gui->debuga($newmembers);
+        //$gui->debuga($newmembers);
         
         // save new members
         $r = ldap_modify($this->cid, $group, $newmembers );
