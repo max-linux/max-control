@@ -1,3 +1,33 @@
+max-control (1.1.17) max; urgency=low
+
+  * Add perl scripts to retrieve Interla IP address (not used yet)
+  * zentyal-max-control.postinst: restart firewall
+  * Change olcSizeLimit: 500 => olcSizeLimit: 2500 in ldap schemas, <500
+    users bug
+  * Add error_reporting(E_ALL) in all classes header
+  * modules/common.inc.php: Add ü and Ü in charnum sanitize filter
+  * bin/reset-quotas: Use / for quotas if no home and reset quotas with
+    /etc/init.d/quota if avalaible
+  * bin/max-control-importer: disable sleep 1 second
+  * classes/ldap.class.php: Add error_reporting(E_ALL) and don't show
+    error when user is not created, return false
+  * modules/usuarios.mod.php: Add error message when newUser() return
+    false
+  * templates/importer_running.tpl templates/import.tpl
+    classes/importer.class.php: improve importer speed and show
+    done/failed data, rel #89
+  * bin/pyoverquota: Use global vars
+  * bin/max-control-importer: don't print wait message
+  * classes/module.class.php: dont use gui->alert
+  * modules/common.inc.php: New sanitize mode 'cnsn' with ú or ç
+  * disable smarty debug in templates
+  * modules/usuarios.mod.php: delete group before users
+  * classes/ldap.class.php: improve speed in some functions with cached
+    vars
+  * www/test4.php: test is_teacher LDAP method
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Mon, 01 Aug 2011 19:42:26 +0200
+
 max-control (1.1.16) max; urgency=low
 
   * zentyal-max-control/etc/zentyal/hooks Add 443 port to open Zentyal
