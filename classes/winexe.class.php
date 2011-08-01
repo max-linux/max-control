@@ -1,4 +1,6 @@
 <?php
+if(DEBUG)
+    error_reporting(E_ALL);
 /*
 *  1.- Instalación del servicio
 *     1.1.- Entrar al Windows como administrador del dominio
