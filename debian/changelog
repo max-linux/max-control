@@ -1,3 +1,11 @@
+max-control (1.1.16) max; urgency=low
+
+  * zentyal-max-control/etc/zentyal/hooks Add 443 port to open Zentyal
+    in captiveportal
+  * templates/import.tpl: Add info about generating CVS file
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Mon, 01 Aug 2011 12:38:00 +0200
+
 max-control (1.1.15) unstable; urgency=low
 
   * update zentyal-captiveportal templates from 2.1.8
