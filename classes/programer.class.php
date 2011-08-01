@@ -1,5 +1,6 @@
 <?php
-
+if(DEBUG)
+    error_reporting(E_ALL);
 
 class Programer {
     function Programer($aula=NULL) {
