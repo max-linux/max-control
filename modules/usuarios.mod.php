@@ -697,12 +697,22 @@ function importdo ($module, $action, $subaction) {
                 [size] => 66
     */
     $ftmp=$_FILES['importfile'];
+    $info=pathinfo($ftmp['name']);
+    /*
+    Array
+    (
+        [dirname] => .
+        [basename] => plantilla_usuarios.csv
+        [extension] => csv
+        [filename] => plantilla_usuarios
+    )
+    */
     if ($ftmp['tmp_name'] == '') {
         $gui->session_error("No se ha seleccionado ningún archivo.");
         if(! DEBUG)
             $url->ir($module, "importar");
     }
-    elseif ($ftmp['type'] != 'text/csv') {
+    elseif ($info['extension'] != 'csv') {
         $gui->session_error("El formato de archivo no es CSV (valores separados por comas)");
         if(! DEBUG)
             $url->ir($module, "importar");
