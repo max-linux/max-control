@@ -1,3 +1,11 @@
+max-control (1.1.18) max; urgency=low
+
+  * modules/usuarios.mod.php: Change MIME detection of CSV file with
+    file extension
+  * Update netlogon/fondos-iconos.zip, close #95
+
+ -- Mario Izquierdo (mariodebian) <mariodebian@gmail.com>  Wed, 03 Aug 2011 17:26:12 +0200
+
 max-control (1.1.17) max; urgency=low
 
   * Add perl scripts to retrieve Interla IP address (not used yet)
