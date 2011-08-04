@@ -1,3 +1,10 @@
+max-control (1.1.19) max; urgency=low
+
+  * classes/ldap.class.php: fix get_aulas filter
+  * Update netlogon/logon.kix and netlogon/AulaVirtual.zip, close #96
+
+ -- Mario Izquierdo (mariodebian) <mariodebian@gmail.com>  Thu, 04 Aug 2011 15:12:12 +0200
+
 max-control (1.1.18) max; urgency=low
 
   * modules/usuarios.mod.php: Change MIME detection of CSV file with
