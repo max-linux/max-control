@@ -2038,7 +2038,7 @@ class LDAP {
         return $computer;
     }
 
-    function get_aulas($aula='*') {
+    function get_aulas($aula='') {
         /*
         sambaGroupType
         > #ifndef USE_UINT_ENUMS
@@ -2057,14 +2057,9 @@ class LDAP {
         */
         global $gui;
         
-        if ( $aula == '' )
-            $aula='*';
-        else
-            $uid="$aula";
-        
         $aulas=array();
-        $gui->debug("ldap::get_aulas() (cn='$aula')".LDAP_OU_GROUPS);
-        $this->search("(cn=$aula)", $basedn=LDAP_OU_GROUPS);
+        $gui->debug("ldap::get_aulas() (cn='*')".LDAP_OU_GROUPS);
+        $this->search("(cn=*)", $basedn=LDAP_OU_GROUPS);
         
         while($attrs = $this->fetch()) {
             //$gui->debug("<pre>".print_r($attrs, true)."</pre>");
