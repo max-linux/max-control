@@ -161,7 +161,7 @@ ENDIF
 
 
 ; descomprimir zip con enlaces del escritorio
-IF NOT EXIST ("$VOL\Escritorio\Programas")
+IF NOT EXIST ("$VOL\Escritorio\.escritorio")
   use w: /d
   use w: "@lserver\netlogon"
   Shell '%comSpec% /c w:\unzip -o w:\AulaVirtual.zip -d $VOL\Escritorio'
