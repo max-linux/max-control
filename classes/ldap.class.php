@@ -2069,7 +2069,7 @@ class LDAP {
         while($attrs = $this->fetch()) {
             //$gui->debug("<pre>".print_r($attrs, true)."</pre>");
             if ( isset($attrs['sambaGroupType']) && ($attrs['sambaGroupType'][0] == 9) ) {
-                if ($aula == '') {
+                if ($aula == '' || $aula == '*') {
                     //$aulas[]=$attrs['cn'][0];
                     $aulas[]=new AULA($attrs);
                     $gui->debug("ldap::get_aulas() ADD aula='".$attrs['cn'][0]."'");
