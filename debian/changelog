@@ -1,3 +1,13 @@
+max-control (1.1.20) max; urgency=low
+
+  * classes/ldap.class.php: revert
+    96c5937e141c4e536ce6957b0f8845e553c4a91e for get_aulas()
+  * ignore debian/control
+  * Update LDAP templates (add include quota.ldif)
+  * Update smb.conf.mas with new var prefix
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 30 Aug 2011 11:58:01 +0200
+
 max-control (1.1.19) max; urgency=low
 
   * classes/ldap.class.php: fix get_aulas filter
