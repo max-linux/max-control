@@ -1,3 +1,10 @@
+max-control (1.1.21) max; urgency=low
+
+  * Use default.theme (with dpkg-divert) to change Zentyal colors
+  * Update captive portal templates (remove /zentyal prefix)
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 30 Aug 2011 12:17:28 +0200
+
 max-control (1.1.20) max; urgency=low
 
   * classes/ldap.class.php: revert
