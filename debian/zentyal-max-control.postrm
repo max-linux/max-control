@@ -12,6 +12,7 @@ if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" ]; then
     zentyal_remove_divert /usr/share/zentyal/stubs/samba/smb.conf.mas
 
     # zentyal-captiveportal
+    zentyal_remove_divert /usr/share/zentyal/www/default.theme
     zentyal_remove_divert /usr/share/zentyal/www/images/title-login.png
     zentyal_remove_divert /usr/share/zentyal/templates/captiveportal/login.mas
     zentyal_remove_divert /usr/share/zentyal/templates/captiveportal/popupLaunch.mas
