@@ -15,6 +15,7 @@ if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
     zentyal_add_divert /usr/share/zentyal/stubs/samba/smb.conf.mas
 
     # zentyal-captiveportal
+    zentyal_add_divert /usr/share/zentyal/www/default.theme
     zentyal_add_divert /usr/share/zentyal/www/images/title-login.png
     zentyal_add_divert /usr/share/zentyal/templates/captiveportal/login.mas
     zentyal_add_divert /usr/share/zentyal/templates/captiveportal/popupLaunch.mas
