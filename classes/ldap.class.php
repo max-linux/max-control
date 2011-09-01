@@ -1257,7 +1257,8 @@ class AULA extends BASE {
     function get_num_computers() {
         if ( isset($this->cachednumcomputers) )
             return $this->cachednumcomputers;
-        global $ldap;
+        /* don't use global LDAP here */
+        $ldap=new LDAP();
         $this->cachednumcomputers=count($ldap->get_macs_from_aula($this->cn));
         return $this->cachednumcomputers;
     }
@@ -1490,7 +1491,8 @@ class GROUP extends BASE {
     function get_num_users() {
         $i=0;
         if ( isset($this->ldapdata['memberUid']) ) {
-            global $ldap;
+            /* don't use global LDAP here */
+            $ldap = new LDAP();
             unset($this->ldapdata['memberUid']['count']);
             foreach($this->ldapdata['memberUid'] as $username) {
                 $user=$ldap->user_exists($username);
@@ -1772,6 +1774,7 @@ class LDAP {
         var $bid = 0; // LDAP Server Bind ID
         var $error = "";
         var $cachedAdmins=NULL;
+        var $cachedUIDs=NULL;
 
     function LDAP($binddn = "", $bindpw = "", $hostname = LDAP_HOSTNAME) {
         
@@ -1867,6 +1870,12 @@ class LDAP {
     function user_exists($uid) {
         global $gui;
         
+        if($this->cachedUIDs == NULL) {
+            $this->cachedUIDs=$this->get_user_uids();
+            
+        }
+        return in_array($uid, $this->cachedUIDs);
+        /*
         $filter = "(&(objectClass=posixAccount)(uid=$uid))";
         if (! ($search=ldap_search($this->cid, LDAP_OU_USERS, $filter))) {
             $this->error="Error: búsqueda incorrecta.\n".ldap_error($this->cid);
@@ -1878,6 +1887,7 @@ class LDAP {
         }
         
         return true;
+        */
     }
 
     function get_user_uids($group=LDAP_OU_USERS) {
