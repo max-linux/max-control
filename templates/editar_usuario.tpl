@@ -101,8 +101,8 @@ function resetProfile(username) {
 </script>
 {/literal}
 
-
+{*
 {if $DEBUG}
 {debug}
 {/if}
-
+*}
