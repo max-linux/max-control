@@ -1260,6 +1260,7 @@ class AULA extends BASE {
         /* don't use global LDAP here */
         $ldap=new LDAP();
         $this->cachednumcomputers=count($ldap->get_macs_from_aula($this->cn));
+        $ldap->disconnect("AULA::get_num_computers() from init()");
         return $this->cachednumcomputers;
     }
     
@@ -1500,6 +1501,7 @@ class GROUP extends BASE {
                     $i++;
                 }
             }
+            $ldap->disconnect("GROUP::get_num_users() from init()");
             return $i;
         }
         return 0;
