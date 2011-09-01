@@ -40,7 +40,7 @@ define('LDAP_PASS', '$LDAP_PASS');
 
 
 
-exec("net getdomainsid | grep domain", &$output);
+exec("net getdomainsid | grep domain", $output);
 $parts = preg_split ("/\s+/", $output[0]);
 $LDAP_DOMAIN=$parts[3];
 define('LDAP_DOMAIN', $LDAP_DOMAIN);

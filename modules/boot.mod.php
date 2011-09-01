@@ -36,7 +36,7 @@ $module_actions=array(
 function refresh($module, $action, $subaction) {
     global $gui, $url;
     $gui->debug("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1");
-    exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", &$output);
+    exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", $output);
     if ( ! isset($output[0]) )
         $gui->session_info("Actualizados aulas y equipos para arranque PXE.");
     else
@@ -48,7 +48,7 @@ function refresh($module, $action, $subaction) {
 function clean($module, $action, $subaction) {
     global $gui, $url;
     $gui->debug("sudo ".MAXCONTROL." pxe --clean 2>&1");
-    exec("sudo ".MAXCONTROL." pxe --clean 2>&1", &$output);
+    exec("sudo ".MAXCONTROL." pxe --clean 2>&1", $output);
     refresh($module, $action, $subaction);
     if(! DEBUG)
         $url->ir($module, "");
