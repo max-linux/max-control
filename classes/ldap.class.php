@@ -2058,7 +2058,8 @@ class LDAP {
         global $gui;
         
         $aulas=array();
-        $gui->debug("ldap::get_aulas() (cn='*')".LDAP_OU_GROUPS);
+        $aulasname=array();
+        $gui->debug("ldap::get_aulas(aula='$aula') (cn='*')".LDAP_OU_GROUPS);
         $this->search("(cn=*)", $basedn=LDAP_OU_GROUPS);
         
         while($attrs = $this->fetch()) {
@@ -2066,7 +2067,8 @@ class LDAP {
             if ( isset($attrs['sambaGroupType']) && ($attrs['sambaGroupType'][0] == 9) ) {
                 if ($aula == '' || $aula == '*') {
                     //$aulas[]=$attrs['cn'][0];
-                    $aulas[]=new AULA($attrs);
+                    //$aulas[]=new AULA($attrs);
+                    $aulasname[]=$attrs['cn'][0];
                     $gui->debug("ldap::get_aulas() ADD aula='".$attrs['cn'][0]."'");
                 }
                 else {
@@ -2074,7 +2076,8 @@ class LDAP {
                     $aula=str_replace('*', '', $aula);
                     if (preg_match("/$aula/i", $attrs['cn'][0])) {
                         //$aulas[]=$attrs['cn'][0];
-                        $aulas[]=new AULA($attrs);
+                        //$aulas[]=new AULA($attrs);
+                        $aulasname=$attrs['cn'][0];
                         $gui->debug("ldap::get_aulas() ADD '$aula' match '".$attrs['cn'][0]."'");
                     }
                     else {
@@ -2083,7 +2086,10 @@ class LDAP {
                 }
             }
         }
-        
+        //$gui->debuga($aulasname);
+        foreach($aulasname as $cn) {
+            $aulas[]=$this->get_aula($cn);
+        }
         return $aulas;
     }
 
@@ -2653,12 +2659,15 @@ class LDAP {
     }
     
     function fetch() {
+        //global $gui;
         $att=null;
         if ($this->start == 0) {
             $this->start = 1;
+            //$gui->debug("FIRST entry");
             $this->re = ldap_first_entry($this->cid, $this->sr);
         } 
         else {
+            //$gui->debug("NO FIRTS");
             $this->re = ldap_next_entry($this->cid, $this->re);
         }
         if ($this->re) {
@@ -2675,6 +2684,9 @@ class LDAP {
     function disconnect($txt='') {
         global $gui;
         //$gui->debug("<h2>ldap->disconnect() ".$this->$binddn."</h2>");
+        if($this->error != '' && $this->error != 'Success') {
+            $gui->debug("LDAP::error ". $this->error);
+        }
         $gui->debug("<h4>\$ldap->disconnect('$txt')</h4>");
         ldap_close($this->cid);
     }
