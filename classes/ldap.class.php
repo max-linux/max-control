@@ -2068,7 +2068,6 @@ class LDAP {
         global $gui;
         
         $aulas=array();
-        $aulasname=array();
         $gui->debug("ldap::get_aulas(aula='$aula') (cn='*')".LDAP_OU_GROUPS);
         $this->search("(cn=*)", $basedn=LDAP_OU_GROUPS);
         
@@ -2077,8 +2076,7 @@ class LDAP {
             if ( isset($attrs['sambaGroupType']) && ($attrs['sambaGroupType'][0] == 9) ) {
                 if ($aula == '' || $aula == '*') {
                     //$aulas[]=$attrs['cn'][0];
-                    //$aulas[]=new AULA($attrs);
-                    $aulasname[]=$attrs['cn'][0];
+                    $aulas[]=new AULA($attrs);
                     $gui->debug("ldap::get_aulas() ADD aula='".$attrs['cn'][0]."'");
                 }
                 else {
@@ -2086,8 +2084,7 @@ class LDAP {
                     $aula=str_replace('*', '', $aula);
                     if (preg_match("/$aula/i", $attrs['cn'][0])) {
                         //$aulas[]=$attrs['cn'][0];
-                        //$aulas[]=new AULA($attrs);
-                        $aulasname=$attrs['cn'][0];
+                        $aulas[]=new AULA($attrs);
                         $gui->debug("ldap::get_aulas() ADD '$aula' match '".$attrs['cn'][0]."'");
                     }
                     else {
@@ -2095,10 +2092,6 @@ class LDAP {
                     }
                 }
             }
-        }
-        //$gui->debuga($aulasname);
-        foreach($aulasname as $cn) {
-            $aulas[]=$this->get_aula($cn);
         }
         return $aulas;
     }
