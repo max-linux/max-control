@@ -317,7 +317,7 @@ class USER extends BASE {
         global $ldap;
         $cmd='sudo '.MAXCONTROL.' requota '.$this->uid.' '.$ldap->getDefaultQuota().' 2>&1';
         $gui->debug("reQuota(cmd='$cmd')");
-        exec($cmd, &$output);
+        exec($cmd, $output);
         
         $gui->debuga($output);
         
@@ -655,12 +655,12 @@ class USER extends BASE {
                 return "<span style='color:$color'>$size MB / $maxsize MB ($percent)</span>";
             }
             else {
-                exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);
+                exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", $output);
                 return $output[0];
             }
         }
         else {
-            exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", &$output);
+            exec("sudo ".MAXCONTROL." getquota '".$this->uid."' 2>&1", $output);
             //$gui->debug("<pre>getquota(".$this->uid.")".print_r($output, true)."</pre>");
             return $output[0];
         }
@@ -669,7 +669,7 @@ class USER extends BASE {
     function resetProfile() {
         global $gui;
         
-        exec("sudo ".MAXCONTROL." resetprofile '".$this->uid."' 2>&1", &$output);
+        exec("sudo ".MAXCONTROL." resetprofile '".$this->uid."' 2>&1", $output);
         $gui->debug("<pre>resetProfile(".$this->uid.") output=".print_r($output, true)."</pre>");
         return true;
     }
@@ -808,7 +808,7 @@ class COMPUTER extends BASE {
                 // cambiar MAC a windows.menu
                 // python bin/pyboot --cronadd --boot=windows --mac=08:00:27:96:0D:E6
                 $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=windows --mac=$mac 2>&1");
-                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=windows --mac=$mac 2>&1", &$output);
+                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=windows --mac=$mac 2>&1", $output);
                 $gui->debuga($output);
                 // llamar a reiniciar
                 return $this->action('reboot', $mac);
@@ -818,7 +818,7 @@ class COMPUTER extends BASE {
                 // cambiar MAC a max-extlinux.menu
                 // python bin/pyboot --cronadd --boot=max-extlinux --mac=08:00:27:96:0D:E6
                 $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1");
-                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1", &$output);
+                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1", $output);
                 $gui->debuga($output);
                 // llamar a reiniciar
                 return $this->action('reboot', $mac);
@@ -828,7 +828,7 @@ class COMPUTER extends BASE {
                 // cambiar MAC a backharddi-ng-text.menu
                 // python bin/pyboot --cronadd --boot=backharddi-ng-text --mac=08:00:27:96:0D:E6
                 $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=backharddi-ng-text --mac=$mac 2>&1");
-                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=backharddi-ng-text --mac=$mac 2>&1", &$output);
+                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=backharddi-ng-text --mac=$mac 2>&1", $output);
                 $gui->debuga($output);
                 // llamar a reiniciar
                 return $this->action('reboot', $mac);
@@ -871,14 +871,14 @@ class COMPUTER extends BASE {
     function genPXELinux() {
         global $gui;
         //bin/max-control pxe --genpxelinux
-        exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", &$output);
+        exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", $output);
         return;
     }
     
     function cleanPXELinux() {
         global $gui;
         //bin/max-control pxe --clean
-        exec("sudo ".MAXCONTROL." pxe --clean 2>&1", &$output);
+        exec("sudo ".MAXCONTROL." pxe --clean 2>&1", $output);
         return;
     }
     
@@ -891,7 +891,7 @@ class COMPUTER extends BASE {
         
         $res = $this->save( array('bootFile') );
         
-        exec("sudo ".MAXCONTROL." pxe --delete='".$this->macAddress."' 2>&1", &$output);
+        exec("sudo ".MAXCONTROL." pxe --delete='".$this->macAddress."' 2>&1", $output);
         $gui->debuga($output);
         
         $this->genPXELinux();
@@ -939,7 +939,7 @@ class COMPUTER extends BASE {
         
         //max-control pxe --boot=max.menu --mac=08:00:27:96:0D:E6
         $gui->debug("sudo ".MAXCONTROL." pxe --boot='$conffile' --mac='$mac' ");
-        exec("sudo ".MAXCONTROL." pxe --boot='$conffile' --mac='$mac' ", &$output);
+        exec("sudo ".MAXCONTROL." pxe --boot='$conffile' --mac='$mac' ", $output);
         $gui->debug("LDAP:boot($conffile, $mac)<pre>".print_r($output, true)."</pre>");
         if ( ! isset($result[0]) ) {
             $gui->session_info("Arranque PXE de '".$this->hostname()."' actualizado.");
@@ -1011,7 +1011,7 @@ class COMPUTER extends BASE {
         if ( $this->macAddress != '') {
             $mac=$this->macAddress;
             $gui->debug("sudo ".MAXCONTROL." pxe --delete='$mac' ");
-            exec("sudo ".MAXCONTROL." pxe --delete='$mac' ", &$output);
+            exec("sudo ".MAXCONTROL." pxe --delete='$mac' ", $output);
             $gui->debug("delComputer($mac)<pre>".print_r($output, true)."</pre>");
         }
         
@@ -1025,7 +1025,7 @@ class COMPUTER extends BASE {
         
         // forzar borrado de samba
         $gui->debug("sudo ".MAXCONTROL." delcomputer '".$this->uid."' ");
-        exec("sudo ".MAXCONTROL." delcomputer '".$this->uid."' ", &$output);
+        exec("sudo ".MAXCONTROL." delcomputer '".$this->uid."' ", $output);
         $gui->debuga($output);
         
         $dldap->disconnect('COMPUTER::delComputer()');
@@ -1343,7 +1343,7 @@ class AULA extends BASE {
     function genPXELinux() {
         global $gui;
         //bin/max-control pxe --genpxelinux
-        exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", &$output);
+        exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", $output);
         return;
     }
     
@@ -1360,7 +1360,7 @@ class AULA extends BASE {
         }
         
         //max-control pxe --aula=aula_primaria_1 --boot=windows
-        exec("sudo ".MAXCONTROL." pxe --boot='$conffile' --aula='".$this->safecn()."' ", &$output);
+        exec("sudo ".MAXCONTROL." pxe --boot='$conffile' --aula='".$this->safecn()."' ", $output);
         $gui->debug("AULA:boot($conffile, ".$this->safecn().")<pre>".print_r($output, true)."</pre>");
         if ( ! isset($result[0]) ) {
             $gui->session_info("Arranque de '".$this->cn."' actualizado.");
@@ -1458,7 +1458,7 @@ class AULA extends BASE {
         
         /* remove /var/lib/tftpboot/pxelinux.cfg/$AULA$ */
         /* read all pxe of hosts and delete linked to aula */
-        exec("sudo ".MAXCONTROL." pxe --delaula='".$this->safecn()."' ", &$output);
+        exec("sudo ".MAXCONTROL." pxe --delaula='".$this->safecn()."' ", $output);
         $gui->debug("AULA:delAula(".$this->safecn().")<pre>".print_r($output, true)."</pre>");
         
         
@@ -1730,7 +1730,7 @@ class GROUP extends BASE {
         $gui->session_info("Grupo '$oldname' renombrado a '$newname'.");
         
         /* rename shared folder if exists */
-        exec("sudo ".MAXCONTROL." renamegroup '$oldname' '$newname' 2>&1", &$output);
+        exec("sudo ".MAXCONTROL." renamegroup '$oldname' '$newname' 2>&1", $output);
         $gui->debug("GROUP:renameGroup('$oldname' '$newname')<pre>".print_r($output, true)."</pre>");
         
         if ($output[0] == 'ok')
@@ -2383,7 +2383,7 @@ class LDAP {
         $sid='S-1-5-21-3818554400-921237426-3143208535';
         return $sid;
         /*global $gui;
-        exec('sudo '.MAXCONTROL.' getdomainsid', &$output);
+        exec('sudo '.MAXCONTROL.' getdomainsid', $output);
         //$gui->debug("<pre>".print_r($output, true)."</pre>");
         foreach($output as $line) {
             if (preg_match("/SID for domain/i", $line)) {
@@ -2463,7 +2463,7 @@ class LDAP {
         return DEFAULT_QUOTA;
         /*
         global $gui;
-        exec('sudo '.MAXCONTROL.' getdefaultquota', &$output);
+        exec('sudo '.MAXCONTROL.' getdefaultquota', $output);
         //$gui->debug("<pre>".print_r($output, true)."</pre>");
         return $output[0];
         */
@@ -2487,7 +2487,7 @@ class LDAP {
 
     function addGroupProfile($group, $readonly=0) {
         global $gui;
-        exec("sudo ".MAXCONTROL." addgroup '$group' '$readonly'", &$output);
+        exec("sudo ".MAXCONTROL." addgroup '$group' '$readonly'", $output);
         $gui->debug("LDAP:addGroupProfile($group, $readonly)<pre>".print_r($output, true)."</pre>");
         return $output[0];
     }
@@ -2514,7 +2514,7 @@ class LDAP {
 
     function purgeWINS() {
         global $gui;
-        exec("sudo ".MAXCONTROL." purgewins", &$output);
+        exec("sudo ".MAXCONTROL." purgewins", $output);
         $gui->debug("LDAP:purgeWINS()<pre>".print_r($output, true)."</pre>");
         return;
     }
@@ -2624,7 +2624,7 @@ class LDAP {
     function getISOS($filter='') {
         global $gui;
         $isos=array();
-        exec("sudo ".MAXCONTROL." isos --getisos", &$output);
+        exec("sudo ".MAXCONTROL." isos --getisos", $output);
         $gui->debug("LDAP:getISOS()<pre>".print_r($output, true)."</pre>");
         foreach($output as $iso) {
             /* test.iso|4.00 MB|CDROM */

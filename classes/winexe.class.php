@@ -118,7 +118,7 @@ class WINEXE {
         }
         $cmd=$this->basecmd . "'". $targetcmd ."'";
         $gui->debug("WINEXE:windowsexe cmd=".$cmd);
-        exec($cmd, &$output);
+        exec($cmd, $output);
         $this->process_output($output);
         return $output;
     }
@@ -181,7 +181,7 @@ class WINEXE {
         global $gui;
         $cmd="net lookup $hostname";
         $gui->debug("WINEXE:getIpAddress($hostname) cmd='$cmd'");
-        exec($cmd, &$output);
+        exec($cmd, $output);
         if ( isset($output[0]) ) {
             $gui->debug("WINEXE:getIpAddress($hostname)=".$output[0]);
             return $this->checkIP($output[0]);
@@ -316,7 +316,7 @@ class WINEXE {
             $mac=$this->mac;
         
         $cmd=PYWAKEONLAN . " $mac";
-        exec($cmd, &$output);
+        exec($cmd, $output);
         // $output[0] can be OK or ERROR
         $gui->debug("WINEXE:wakeonlan($mac)<pre>".print_r($output, true)."</pre>");
         if ( isset($output[0]) && ($output[0] == 'OK') ) {
