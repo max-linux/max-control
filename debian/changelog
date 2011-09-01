@@ -1,3 +1,18 @@
+max-control (1.1.22) max; urgency=low
+
+  * Fix showing only one aula
+  * FIX PHP Deprecated:  Call-time pass-by-reference
+  * templates/editar_usuario.tpl: don't show template debug
+  * classes/pager.class.php: hide debug info
+  * classes/ldap.class.php: Don't use global LDAP in
+    AULA::get_num_computers and GROUP::get_num_users, add cachedUID in
+    LDAP::user_exists
+  * Revert 2a1cac9a34ae66c306078a64f03c6ad1e537c7eb
+  * classes/ldap.class.php: disconect LDAP object in
+    GROUP::get_num_users and AULA::get_num_computers
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Thu, 01 Sep 2011 13:29:40 +0200
+
 max-control (1.1.21) max; urgency=low
 
   * Use default.theme (with dpkg-divert) to change Zentyal colors
