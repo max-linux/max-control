@@ -58,10 +58,11 @@ class PAGER {
                 $this->args.="&amp;$argname=$argvalue";
             }
         }
+        /*
         $gui->debug("<pre>PAGER number=".$this->number." max=".PAGER_LIMIT." baseurl=$this->baseurl <br/>
         skip=".$this->skip." <br/>
         args=".$this->args." <br/>
-        sort=".print_r($this->sort,true)."</pre>");
+        sort=".print_r($this->sort,true)."</pre>");*/
     }
     
     function getHTML() {
@@ -79,7 +80,7 @@ class PAGER {
         $newargs = preg_replace("/&skip=([0-9]+)/",'',$this->args);
         $newargs = preg_replace("/&amp;skip=([0-9]+)/",'',$newargs);
         
-        $gui->debug("<pre>PAGER number=".$this->number." total_pages=$total_pages resto=$resto</pre>");
+        //$gui->debug("<pre>PAGER number=".$this->number." total_pages=$total_pages resto=$resto</pre>");
         $html="<div class='pages'>";
         
         if ( ($this->skip-PAGER_LIMIT)>= 0 ) {
@@ -124,7 +125,7 @@ class PAGER {
             array_splice($links, $int_curpage + $delta_r + 2 - $links[0]);
         }
         
-        $gui->debuga($links);
+        //$gui->debuga($links);
         
         for($i=0; $i<$total_pages; $i++) {
             $skipcount=$i*PAGER_LIMIT;
