@@ -1,3 +1,9 @@
+max-control (1.1.23) max; urgency=low
+
+  * Add progress_bar_bg_color and progress_bar_fg_color in default.theme
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Sun, 11 Sep 2011 19:58:16 +0200
+
 max-control (1.1.22) max; urgency=low
 
   * Fix showing only one aula
