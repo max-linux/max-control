@@ -4,11 +4,16 @@
 import ldap
 import os
 import sys
+import time
 
 
 
+CONF="/etc/max-control/conf.inc.php"
 SHARED_DIR="/home/samba/groups/"
-
+LAST=24 # W last share drive
+LOCK_FILE="/home/samba/netlogon/shares.kix.lock"
+MAX_WAIT=50 # 5 seconds
+num=0
 
 
 def read_conf(varname):
@@ -24,12 +29,21 @@ def read_conf(varname):
                 return line.split("'")[3]
     return ''
 
-CONF="/etc/max-control/conf.inc.php"
-
 if not os.path.isfile(CONF):
     print >> sys.stderr," * pygenlogonshares: No config file yet"
     sys.exit(0)
 
+while os.path.isfile(LOCK_FILE):
+    #sys.stderr.write(";pygenlogonshares: Esperando lock...\n")
+    if num > MAX_WAIT:
+        #sys.stderr.write(";pygenlogonshares: Esperando timeout...\n")
+        break
+    time.sleep(0.1)
+    num=num+1
+
+# create lock file
+open(LOCK_FILE, 'w').close()
+#######################################################
 
 GROUPS=read_conf('LDAP_OU_GROUPS')
 DOMAIN=read_conf('LDAP_DOMAIN')
@@ -61,7 +75,7 @@ for group in results:
     sharedgroups.append(groupname)
 
 
-LAST=24 # W
+
 
 print """;--------------------------------------------
 ;  generated file with pygenlogonshares '%s'
@@ -107,3 +121,6 @@ IF INGROUP("%s\%s")
 ENDIF
 """%(DOMAIN,group,group)
     LAST=LAST-1
+
+# delete lock file
+os.unlink(LOCK_FILE)
