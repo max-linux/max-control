@@ -1493,15 +1493,15 @@ class GROUP extends BASE {
         $i=0;
         if ( isset($this->ldapdata['memberUid']) ) {
             /* don't use global LDAP here */
-            $ldap = new LDAP();
+            $local_ldap = new LDAP();
             unset($this->ldapdata['memberUid']['count']);
             foreach($this->ldapdata['memberUid'] as $username) {
-                $user=$ldap->user_exists($username);
+                $user=$local_ldap->user_exists($username);
                 if ($user) {
                     $i++;
                 }
             }
-            $ldap->disconnect("GROUP::get_num_users() from init()");
+            $local_ldap->disconnect("GROUP::get_num_users() from init()");
             return $i;
         }
         return 0;
@@ -1715,7 +1715,10 @@ class GROUP extends BASE {
         */
         $oldname=$this->cn;
         $this->displayName=$newname;
-        $this->save( array('displayName') );
+        $this->ldapdata['displayName']=$newname;
+        $this->description=$newname;
+        $this->ldapdata['description']=$newname;
+        $this->save( array('displayName', 'description') );
         //$gui->debuga($this);
         
         $full_old_dn= "cn=".$this->cn.",".LDAP_OU_GROUPS;
@@ -1730,6 +1733,7 @@ class GROUP extends BASE {
             $nldap->disconnect();
             return false;
         }
+        $nldap->updateLogonShares();
         $nldap->disconnect('GROUP::renameGroup()');
         $gui->session_info("Grupo '$oldname' renombrado a '$newname'.");
         
@@ -2253,8 +2257,12 @@ class LDAP {
         
         if ( $groupfilter == '' )
             $groupfilter='*';
-        else
-            $groupfilter="*$groupfilter*";
+        elseif ( $groupfilter == '*' )
+            $groupfilter='*';
+        else {
+            //$groupfilter="*$groupfilter*";
+            $groupfilter="$groupfilter";
+        }
         
         $groups=array();
         $gui->debug("ldap::get_groups() (cn='$groupfilter')".LDAP_OU_GROUPS);
