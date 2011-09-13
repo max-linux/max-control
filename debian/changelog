@@ -1,3 +1,14 @@
+max-control (1.1.24) max; urgency=low
+
+  * bin/pygenlogonshares: Add LOCK file to prevent concurrent writes,
+    max timeout 5 seconds, close #97
+  * modules/usuarios.mod.php: no redirect in DEBUG
+  * classes/ldap.class.php: use local_ldap var in GROUP init, change
+    displayName and description in GROUP rename, call updateLogonShares
+    in rename too
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 13 Sep 2011 18:12:31 +0200
+
 max-control (1.1.23) max; urgency=low
 
   * Add progress_bar_bg_color and progress_bar_fg_color in default.theme
