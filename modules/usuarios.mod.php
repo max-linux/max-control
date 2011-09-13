@@ -449,7 +449,8 @@ function groupmembersguardar($module, $action, $subaction) {
             $groups[0]->newMember($adduser);
             $gui->session_info("Usuario '$adduser' añadido al grupo $group.");
         }
-        $url->ir($module, "groupmembers", $group);
+        if(! DEBUG)
+            $url->ir($module, "groupmembers", $group);
     }
     elseif ( count($delusers) > 0 ) {
         $groups=$ldap->get_groups($group);
