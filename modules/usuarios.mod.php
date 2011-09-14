@@ -540,8 +540,12 @@ function groupdeletedo($module, $action, $subaction) {
                     $gui->session_error("Usuario '$username' del grupo '$group' no borrado, no se puede borrar la cuenta con la que se está conectado.");
                     continue;
                 }
-                if ( $user->delUser($deleteprofile) )
+                if ( $user && $user->delUser($deleteprofile) ) {
                     $gui->session_info("Usuario '$username' del grupo '$group', borrado.");
+                }
+                else {
+                    $gui->session_error("Usuario '$username' no encontrado.");
+                }
             }
         }
         elseif($faction == 'clean') {
