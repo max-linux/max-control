@@ -1,3 +1,9 @@
+max-control (1.1.27) max; urgency=low
+
+  * debian/max-control.postinst: fix another wrong redirect
+
+ -- root <root@max-server>  Wed, 14 Sep 2011 15:26:53 +0200
+
 max-control (1.1.26) max; urgency=low
 
   * fix calls of pyoverquota
