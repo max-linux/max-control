@@ -12,6 +12,7 @@ CONF="/etc/max-control/conf.inc.php"
 SHARED_DIR="/home/samba/groups/"
 LAST=24 # W last share drive
 LOCK_FILE="/home/samba/netlogon/shares.kix.lock"
+DEST_FILE="/home/samba/netlogon/shares.kix"
 MAX_WAIT=50 # 5 seconds
 num=0
 
@@ -33,14 +34,16 @@ if not os.path.isfile(CONF):
     print >> sys.stderr," * pygenlogonshares: No config file yet"
     sys.exit(0)
 
+#######################################################
 while os.path.isfile(LOCK_FILE):
-    #sys.stderr.write(";pygenlogonshares: Esperando lock...\n")
+    sys.stderr.write("; pygenlogonshares[%s]: Esperando lock...\n"%os.getpid())
     if num > MAX_WAIT:
-        #sys.stderr.write(";pygenlogonshares: Esperando timeout...\n")
+        sys.stderr.write("; pygenlogonshares[%s]: Timeout...\n"%os.getpid())
         break
     time.sleep(0.1)
     num=num+1
 
+sys.stderr.write("; pygenlogonshares[%s]: Creando lock...\n"%os.getpid())
 # create lock file
 open(LOCK_FILE, 'w').close()
 #######################################################
@@ -77,7 +80,7 @@ for group in results:
 
 
 
-print """;--------------------------------------------
+txt=""";--------------------------------------------
 ;  generated file with pygenlogonshares '%s'
 ;
 ;
@@ -115,12 +118,18 @@ for group in sharedgroups:
         # no usar letras de unidad <= 10 (i)
 #        continue
 # Ahora quien limita el numero de letras que pueden ser asignadas a un usuario es $i_max
-    print """
+    txt=txt+"""
 IF INGROUP("%s\%s")
   $r = CreaUnidadDeRed ( $r, "%s" )
 ENDIF
+
 """%(DOMAIN,group,group)
     LAST=LAST-1
 
+f=open(DEST_FILE, 'w')
+f.write(txt)
+f.close()
+
+sys.stderr.write("; pygenlogonshares[%s]: Borrando lock...\n"%os.getpid())
 # delete lock file
 os.unlink(LOCK_FILE)
