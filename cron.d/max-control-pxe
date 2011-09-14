@@ -7,7 +7,7 @@ PATH=/usr/bin:/bin
 */1 *	* * * root [ -x /usr/bin/pyboot ] && /usr/bin/pyboot --cron >> /var/log/max-control-pxe.log 2>&1
 
 # cache quotas every hour
-0 */1	* * * root [ -x /usr/bin/pyoverquota ] && (pyoverquota >> /var/lib/max-control/quota.cache.php.new 2>/var/log/max-control-pxe.log && mv /var/lib/max-control/quota.cache.php.new /var/lib/max-control/quota.cache.php)
+0 */1	* * * root [ -x /usr/bin/pyoverquota ] && (pyoverquota >>/var/log/max-control-pxe.log 2>&1)
 
 
 # call programer every 10 minutes
