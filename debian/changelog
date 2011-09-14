@@ -1,3 +1,15 @@
+max-control (1.1.25) max; urgency=low
+
+  * classes/importer.class.php: allow emteacher as role
+  * bin/pygenlogonshares: Use python for write shares.kix instead of
+    bash stdout, rel #97
+  * bin/pyoverquota: Use python for write quota.cache.php instead of
+    bash stdout, rel #97
+  * bin/max-control: Redirect stdout and stderr to log file of
+    pyoverquota and pygenlogonshares, rel #97
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Wed, 14 Sep 2011 15:04:58 +0200
+
 max-control (1.1.24) max; urgency=low
 
   * bin/pygenlogonshares: Add LOCK file to prevent concurrent writes,
