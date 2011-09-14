@@ -60,10 +60,8 @@ case $1 in
             exit 0
         fi
         if [ -x /usr/bin/pyoverquota ]; then
-            pyoverquota >> /var/lib/max-control/quota.cache.php.new 2>/var/log/max-control-pxe.log && \
-            mv /var/lib/max-control/quota.cache.php.new /var/lib/max-control/quota.cache.php
+            pyoverquota >> /var/log/max-control-pxe.log 2>&1
         fi
-        rm -f /var/lib/max-control/quota.cache.php.new
         exit 0
         ;;
 ################################################################################
@@ -153,7 +151,7 @@ case $1 in
 ################################################################################
     genlogonshares)
         #pygenlogonshares 'ou=Groups,dc=max-server'
-        pygenlogonshares > /home/samba/netlogon/shares.kix
+        pygenlogonshares
         unix2dos /home/samba/netlogon/shares.kix >/dev/null 2>&1
         echo "ok"
         exit 0
