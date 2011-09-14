@@ -65,4 +65,5 @@ for u in /home/samba/users/*; do
 
 done
 
-/usr/bin/pyoverquota > /var/lib/max-control/quota.cache.php &
+echo " * Updating Quota cache in /var/lib/max-control/quota.cache.php"
+/usr/bin/pyoverquota > /dev/null 2>&1
