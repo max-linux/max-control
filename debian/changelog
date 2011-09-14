@@ -1,3 +1,9 @@
+max-control (1.1.26) max; urgency=low
+
+  * fix calls of pyoverquota
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Wed, 14 Sep 2011 15:17:13 +0200
+
 max-control (1.1.25) max; urgency=low
 
   * classes/importer.class.php: allow emteacher as role
