@@ -69,7 +69,7 @@ class Importer {
             }
             /***************************************************/
             $userrole=$text = preg_replace( "{\s+}", '', parse_valid($userdata[IMPORT_ROLE]));
-            if($userrole == 'emTeacher') {
+            if($userrole == 'emTeacher' || $userrole == 'emteacher') {
                 $userrole='teacher';
                 $profesores++;
             }
