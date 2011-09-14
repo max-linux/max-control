@@ -79,8 +79,4 @@ if [ "$CONFIGURE" = "1" ]; then
     # reset quotas
     #echo " * Reseting quotas"
     /usr/bin/reset-quotas || true
-
-    # create quotas cache
-    echo " * Updating Quota cache in /var/lib/max-control/quota.cache.php"
-    /usr/bin/pyoverquota > /var/lib/max-control/quota.cache.php &
 fi
