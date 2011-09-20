@@ -1,3 +1,11 @@
+max-control (1.1.28) unstable; urgency=low
+
+  * modules/usuarios.mod.php: Check if user object exists before
+    deleting
+  * modules/usuarios.mod.php: remove size (75KB) limit in import
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 20 Sep 2011 22:33:58 +0200
+
 max-control (1.1.27) max; urgency=low
 
   * debian/max-control.postinst: fix another wrong redirect
