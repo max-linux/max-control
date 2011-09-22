@@ -1,3 +1,13 @@
+max-control (1.1.28ubuntu1) UNRELEASED; urgency=low
+
+  [ Mario Izquierdo (mariodebian) ]
+  * Change 'Consejería de Educación' => 'Consejería de Educación y
+    empleo'
+
+  [ root ]
+
+ -- root <root@max-server>  Thu, 22 Sep 2011 15:43:04 +0200
+
 max-control (1.1.28) unstable; urgency=low
 
   * modules/usuarios.mod.php: Check if user object exists before
