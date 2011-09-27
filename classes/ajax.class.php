@@ -96,6 +96,8 @@ class Ajax {
             $status['doneDateValue']=$importer->finishedDate();
             $status['timeNeeded']=$importer->timeNeeded();
         }
+        $status['longUsernames']=$importer->getLongUsernames();
+        $status['ok']=$importer->getNumUsersImported();
         $this->output=json_encode($status);
     }
 

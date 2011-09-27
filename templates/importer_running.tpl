@@ -17,6 +17,7 @@
     <li style="display:none;">Número de cuentas importadas: <span id="done">{$status.done}</span></li>
     <li>Número de cuentas importadas con éxito: <span id="doneok">{$status.done}</span></li>
     <li id="doneFailedli" style="display:none;">Número de cuentas no importadas: <span id="donefailed">0</span></li>
+    <li id="numberLongUsernames" style="display:none;color:#f00;">Número de cuentas cuyo identificador se ha acortado: <span id="numberLongUsernames_txt">0</span></li>
 </ul>
 
 <div id="progress_bar">
@@ -32,6 +33,12 @@
 <form action='{$urldelete}' method='post'> 
 Para hacer una nueva importación pulse en <input type="submit" value="Borrar información de importación"/>
 </form>
+</div>
+
+<div class="warning" id="longusernames" style="display:none;width: 625px;">
+<h2>Usuarios con identificador de más de 20 caracteres</h2>
+<h4>Para garantizar la compatibilidad con todos los sistemas, el identificador de usuarios no puede tener más de 20 carateres, por eso se han acortado los siguientes identificadores de usuario.</h4>
+<div id="longusernames_txt" style="width: 575px;"></div>
 </div>
 
 <div id="error" style="display:none;">
@@ -55,6 +62,12 @@ Para hacer una nueva importación pulse en <input type="submit" value="Borrar in
 {literal}
 <script type="text/javascript">
 <!--
+function ObjectSize(obj) {
+  var len = obj.length ? --obj.length : -1;
+    for (var k in obj)
+      len++;
+  return len+1;
+}
 $(document).ready(function() {
     update_progressbar();
     setInterval('update_progressbar()', 1500);
@@ -99,6 +112,26 @@ function update_progressbar() {
           }
           if (data.error != '') {
             $('#error')[0].style.display='';
+          }
+          
+          var numberLongUsernames=ObjectSize(data.longUsernames);
+          if( numberLongUsernames > 0 ) {
+            //console.log(data.longUsernames);
+            $('#longusernames')[0].style.display='';
+            var txt='';
+            txt+='<table class="dataTable">';
+            txt+='<thead><tr><th style="width:50%;">Identificador original</th>';
+            txt+='<th>Identificador acortado</th></tr></thead>';
+            for (var i in data.longUsernames) {
+                //console.log(data.longUsernames[i]);
+                txt+="<tr><td>"+data.longUsernames[i][0]+"</td>";
+                txt+="<td>" +data.longUsernames[i][1]+"</td></tr>";
+            }
+            txt+='</table>';
+            $('#longusernames_txt')[0].innerHTML=txt;
+            
+            $('#numberLongUsernames')[0].style.display='';
+            $('#numberLongUsernames_txt')[0].innerHTML=numberLongUsernames;
           }
       }
     });
