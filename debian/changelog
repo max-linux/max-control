@@ -1,12 +1,12 @@
-max-control (1.1.28ubuntu1) UNRELEASED; urgency=low
+max-control (1.1.30) unstable; urgency=low
 
-  [ Mario Izquierdo (mariodebian) ]
   * Change 'Consejería de Educación' => 'Consejería de Educación y
     empleo'
+  * templates/editar_usuario.tpl: make bigger description input form
+  * Importer: limit to 20 chars (MAX_UID_LENGTH) user UID
+  * Change empleo => Empleo
 
-  [ root ]
-
- -- root <root@max-server>  Thu, 22 Sep 2011 15:43:04 +0200
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 27 Sep 2011 14:31:28 +0200
 
 max-control (1.1.28) unstable; urgency=low
 
