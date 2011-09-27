@@ -23,7 +23,7 @@ define('IMPORT_UID', 2);
 define('IMPORT_CENTER', 3); /* not needed */
 define('IMPORT_GROUP', 4); /* empty group if == "-" */
 define('IMPORT_ROLE', 5); /* "emStudent" "emTeacher" */
-
+define('MAX_UID_LENGTH', 20);
 
 class Importer {
     function Importer($fname=NULL) {
@@ -36,6 +36,19 @@ class Importer {
     
     function saveImport() {
         global $gui;
+        
+        /* Create empty long.php */
+        $fh = fopen(IMPORTER_DIR . "/long.php", 'w');
+        $txt="<?php\n/* long UIDs */\n\$longUsernames=array();\n\n";
+        fwrite($fh, $txt);
+        fclose($fh);
+        
+        /* Create empty users_imported.php */
+        $fh = fopen(IMPORTER_DIR . "/users_imported.php", 'w');
+        $txt="<?php\n/* imported UIDS */\n\$usersImported=array();\n\n";
+        fwrite($fh, $txt);
+        fclose($fh);
+        
         /* open $this->fname */
         $data = file_get_contents($this->fname);
         $lines = explode("\n", $data);
@@ -77,11 +90,18 @@ class Importer {
                 $userrole=""; /* alumno vacío */
                 $alumnos++;
             }
+            /*********** 20 chars UID limit ***************/
+            $extradata='';
+            if ( strlen($userdata[IMPORT_UID]) >= MAX_UID_LENGTH ) {
+                $olduid=sanitizeOne($userdata[IMPORT_UID], charnum);
+                $extradata=", usuario sin recortar: $olduid";
+            }
+            /**********************************************/
             $tmp=array('uid'           => $userdata[IMPORT_UID],
                        'plainPassword' => $this->defaultPassword,
                        'cn'            => $userdata[IMPORT_NAME],
                        'sn'            => $userdata[IMPORT_SURNAME],
-                       'description'   => $userdata[IMPORT_NAME] . ' '. $userdata[IMPORT_SURNAME],
+                       'description'   => $userdata[IMPORT_NAME] . ' '. $userdata[IMPORT_SURNAME].$extradata,
                        'group'         => $usergroup,
                        'loginShell'    => '/bin/false',
                        'role'          => $userrole);
@@ -136,11 +156,21 @@ class Importer {
         }
         return;
     }
+    
+    function getLongUsernames() {
+        if ( file_exists ( IMPORTER_DIR . "/long.php" ) ) {
+            include_once(IMPORTER_DIR . "/long.php" );
+            return $longUsernames;
+        }
+        return array();
+    }
 
     function delete() {
         removeFileIfExists(IMPORTER_DIR . "/status.php");
         removeFileIfExists(IMPORTER_DIR . "/pending.txt");
         removeFileIfExists(IMPORTER_DIR . "/importer.lock");
+        removeFileIfExists(IMPORTER_DIR . "/long.php");
+        removeFileIfExists(IMPORTER_DIR . "/users_imported.php");
     }
 
     function stop() {
@@ -264,12 +294,71 @@ class Importer {
         $failed=0;
         global $ldap;
         foreach($users as $newuser) {
+            
+            if ( $this->isUserImported($newuser['uid']) ) {
+                continue;
+            }
+            
+            /* user UID can't have more than 20 chars */
+            
+            if (strlen($newuser['uid']) >= MAX_UID_LENGTH) {
+                $origuid=$newuser['uid'];
+                $create=false;
+                $newuid=substr($newuser['uid'], 0, MAX_UID_LENGTH);
+                
+                if ( $this->isUserImported($newuid) ) {
+                    continue;
+                }
+                
+                if ( $ldap->get_user($newuid) ) {
+                    /* user exists */
+                    //$gui->session_error("Usuario '".$newuid."' existe, probando con números...");
+                    $newuid=substr($newuser['uid'], 0, MAX_UID_LENGTH-1);
+                    
+                    /* try 10 times to get an no exist username */
+                    for($i=0; $i<10; $i++) {
+                        //$gui->session_error("Probando usuario '".$newuid.$i."'...");
+                        if ( $this->isUserImported($newuid.$i) ) {
+                            //$gui->session_error("Usuario '".$newuid.$i."' importado, saliendo del bucle...");
+                            $create=false;
+                            break;
+                        }
+                        if ( $ldap->get_user($newuid . "$i") ) {
+                            //$gui->session_error("Usuario '".$newuid.$i."' existe, probando otro...");
+                            if($i>9) {
+                                break;
+                            }
+                        }
+                        else {
+                            //$gui->session_error("Usuario '".$newuid.$i."' NO existe, creando...");
+                            $create=true;
+                            $this->LongUID($newuser['uid'], $newuid."$i");
+                            $newuser['uid']=$newuid."$i";
+                            break;
+                        }
+                    }
+                }
+                else {
+                    $create=true;
+                    $this->LongUID($newuser['uid'], $newuid);
+                    $newuser['uid']=$newuid;
+                }
+                if( ! $create ) {
+                    continue;
+                }
+                else {
+                    
+                    $gui->session_info("Nombre largo acortado: $origuid =&gt; ".$newuser['uid']);
+                }
+            }
+            /*******************************************/
             $user = new USER($newuser);
             if ( $ldap->get_user($newuser['uid']) ) {
                 //$gui->session_error("El usuario '".$newuser['uid']."' ya existe.");
                 continue;
             }
             elseif ( $user->newUser() ) {
+                $this->userImported($newuser['uid']);
                 $i++;
                 $this->_createGroup($newuser['group'], $ldap);
             } /* end of user->newUser() */
@@ -339,6 +428,34 @@ class Importer {
             if ( $group->newGroup('1', '0') )
                 $gui->session_info("Grupo '".$group->cn."' creado correctamente.");
         }
+    }
+
+    function LongUID($uid, $newuid) {
+        file_put_contents(IMPORTER_DIR . "/long.php", "\$longUsernames['$uid']=array('$uid','$newuid');\n", FILE_APPEND | LOCK_EX);
+    }
+
+
+    function userImported($uid) {
+        file_put_contents(IMPORTER_DIR . "/users_imported.php", "\$usersImported[]='$uid';\n", FILE_APPEND | LOCK_EX);
+    }
+    
+    
+    function isUserImported($uid) {
+        if ( file_exists ( IMPORTER_DIR . "/users_imported.php" ) ) {
+            include(IMPORTER_DIR . "/users_imported.php" );
+            if( in_array($uid, $usersImported) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    function getNumUsersImported() {
+        if ( file_exists ( IMPORTER_DIR . "/users_imported.php" ) ) {
+            include(IMPORTER_DIR . "/users_imported.php" );
+            return sizeof($usersImported);
+        }
+        return 0;
     }
 }
 ?>
