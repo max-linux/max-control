@@ -1,3 +1,10 @@
+max-control (1.1.31) max; urgency=low
+
+  * classes/importer.class.php: Fix strlen(uid)==20 and 2 same 20
+    initial chars
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 27 Sep 2011 18:49:24 +0200
+
 max-control (1.1.30) unstable; urgency=low
 
   * Change 'Consejería de Educación' => 'Consejería de Educación y
