@@ -92,7 +92,7 @@ class Importer {
             }
             /*********** 20 chars UID limit ***************/
             $extradata='';
-            if ( strlen($userdata[IMPORT_UID]) >= MAX_UID_LENGTH ) {
+            if ( strlen($userdata[IMPORT_UID]) > MAX_UID_LENGTH ) {
                 $olduid=sanitizeOne($userdata[IMPORT_UID], charnum);
                 $extradata=", usuario sin recortar: $olduid";
             }
@@ -294,51 +294,63 @@ class Importer {
         $failed=0;
         global $ldap;
         foreach($users as $newuser) {
+            $origuid=$newuser['uid'];
             
-            if ( $this->isUserImported($newuser['uid']) ) {
+            if ( $this->isUserImported($origuid) ) {
+                //$gui->session_error("$i Usuario '".$origuid."' importado:continue...");
                 continue;
             }
             
-            /* user UID can't have more than 20 chars */
+            if (strlen($newuser['uid']) == MAX_UID_LENGTH) {
+                if ( $this->isUserImported($origuid) ) {
+                    //$gui->session_error("$i Usuario '".$origuid."' de 20 ya importado:continue2...");
+                    continue;
+                }
+                if ( $ldap->get_user($origuid) ) {
+                    //$gui->session_error("$i Usuario '".$origuid."' de 20 existe, añadimos 1 letra...");
+                    $newuser['uid']=$origuid."x";
+                }
+            }
             
-            if (strlen($newuser['uid']) >= MAX_UID_LENGTH) {
-                $origuid=$newuser['uid'];
+            /* user UID can't have more than 20 chars */
+            if (strlen($newuser['uid']) > MAX_UID_LENGTH) {
                 $create=false;
                 $newuid=substr($newuser['uid'], 0, MAX_UID_LENGTH);
-                
-                if ( $this->isUserImported($newuid) ) {
+                //$gui->session_error("$i Usuario '".$origuid."' de más de 20...");
+                if ( $this->isUserImported($origuid) ) {
+                    //$gui->session_error("$i Usuario '".$newuser['uid']."' importado:continue3...");
                     continue;
                 }
                 
                 if ( $ldap->get_user($newuid) ) {
                     /* user exists */
-                    //$gui->session_error("Usuario '".$newuid."' existe, probando con números...");
-                    $newuid=substr($newuser['uid'], 0, MAX_UID_LENGTH-1);
+                    //$gui->session_error("$i Usuario '".$newuid."' existe, probando con números...");
+                    $newuid=substr($origuid, 0, MAX_UID_LENGTH-1);
                     
-                    /* try 10 times to get an no exist username */
-                    for($i=0; $i<10; $i++) {
-                        //$gui->session_error("Probando usuario '".$newuid.$i."'...");
-                        if ( $this->isUserImported($newuid.$i) ) {
-                            //$gui->session_error("Usuario '".$newuid.$i."' importado, saliendo del bucle...");
+                    /* try 9 times to get an no exist username */
+                    for($j=1; $j<10; $j++) {
+                        //$gui->session_error("$i Probando usuario '".$newuid.$j."'...");
+                        if ( $this->isUserImported($origuid) ) {
+                            //$gui->session_error("Usuario '".$newuid.$j."' importado, saliendo del bucle...");
                             $create=false;
                             break;
                         }
-                        if ( $ldap->get_user($newuid . "$i") ) {
-                            //$gui->session_error("Usuario '".$newuid.$i."' existe, probando otro...");
-                            if($i>9) {
-                                break;
-                            }
-                        }
-                        else {
-                            //$gui->session_error("Usuario '".$newuid.$i."' NO existe, creando...");
+                        if ( !$ldap->get_user($newuid . "$j") ) {
+                            //$gui->session_error("$i Usuario '".$newuid.$j."' NO existe, creando...");
                             $create=true;
-                            $this->LongUID($newuser['uid'], $newuid."$i");
-                            $newuser['uid']=$newuid."$i";
+                            $this->LongUID($newuser['uid'], $newuid."$j");
+                            $newuser['uid']=$newuid."$j";
                             break;
                         }
+                        /*
+                        else {
+                            $gui->session_error("Usuario '".$newuid.$j."' existe, probando otro...");
+                        }*/
                     }
+                    //$gui->session_error("$i Fin del for(create=$create) '$newuid'...=> ".$newuser['uid']);
                 }
                 else {
+                    //$gui->session_error("$i ELSE Usuario '$newuid' no existe");
                     $create=true;
                     $this->LongUID($newuser['uid'], $newuid);
                     $newuser['uid']=$newuid;
@@ -347,18 +359,18 @@ class Importer {
                     continue;
                 }
                 else {
-                    
-                    $gui->session_info("Nombre largo acortado: $origuid =&gt; ".$newuser['uid']);
+                    $gui->session_info("Nombre largo (".strlen($origuid)."letras) acortado: $origuid =&gt; ".$newuser['uid']);
                 }
             }
             /*******************************************/
+            //$gui->session_error("MAIN Usuario '".$origuid."' ".strlen($origuid)."...");
             $user = new USER($newuser);
             if ( $ldap->get_user($newuser['uid']) ) {
                 //$gui->session_error("El usuario '".$newuser['uid']."' ya existe.");
                 continue;
             }
             elseif ( $user->newUser() ) {
-                $this->userImported($newuser['uid']);
+                $this->userImported($origuid);
                 $i++;
                 $this->_createGroup($newuser['group'], $ldap);
             } /* end of user->newUser() */
@@ -383,7 +395,10 @@ class Importer {
             }
             
             /* salir si en el bucle hemos creado mas de X usuarios */
-            if ($i >= $this->maxImport) break;
+            if ($i >= $this->maxImport) {
+                //$gui->session_error("i($i) > maxImport(".$this->maxImport.")");
+                break;
+            }
             
         } /* foreach */
         $this->unlock();
@@ -441,12 +456,15 @@ class Importer {
     
     
     function isUserImported($uid) {
+        global $gui;
         if ( file_exists ( IMPORTER_DIR . "/users_imported.php" ) ) {
             include(IMPORTER_DIR . "/users_imported.php" );
             if( in_array($uid, $usersImported) ) {
+                //$gui->session_error("isUserImported($uid)=true");
                 return true;
             }
         }
+        //$gui->session_error("isUserImported($uid)=false");
         return false;
     }
     
