@@ -30,6 +30,9 @@ El órden de los campos es el siguiente:
 La contraseña por defecto para todos los usuarios es <b>cmadrid</b>
 <br/><br/>
 
+El identificador de usuario se recortará a <b>20 caracteres</b> y los duplicados aparecerán en la ventana de errores.
+<br/><br/>
+
 
 El identificador de usuario y el grupo no puede tener espacios, caracteres raros y debe empezar por una letra (si el grupo empieza por número se añadirá <b>g_</b> al principio.
 <br/><br/>
