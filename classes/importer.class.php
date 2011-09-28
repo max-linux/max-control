@@ -304,12 +304,13 @@ class Importer {
             if (strlen($newuser['uid']) == MAX_UID_LENGTH) {
                 if ( $this->isUserImported($origuid) ) {
                     //$gui->session_error("$i Usuario '".$origuid."' de 20 ya importado:continue2...");
+                    $gui->session_error("Usuario '".$origuid."' existe, no se crearán duplicados.");
                     continue;
                 }
-                if ( $ldap->get_user($origuid) ) {
+                /*if ( $ldap->get_user($origuid) ) {
                     //$gui->session_error("$i Usuario '".$origuid."' de 20 existe, añadimos 1 letra...");
                     $newuser['uid']=$origuid."x";
-                }
+                }*/
             }
             
             /* user UID can't have more than 20 chars */
@@ -324,10 +325,12 @@ class Importer {
                 
                 if ( $ldap->get_user($newuid) ) {
                     /* user exists */
+                    $gui->session_error("Usuario acortado '$origuid' => '$newuid' ya existe.");
+                    
+                    /*
                     //$gui->session_error("$i Usuario '".$newuid."' existe, probando con números...");
                     $newuid=substr($origuid, 0, MAX_UID_LENGTH-1);
-                    
-                    /* try 9 times to get an no exist username */
+                    //try 9 times to get an no exist username
                     for($j=1; $j<10; $j++) {
                         //$gui->session_error("$i Probando usuario '".$newuid.$j."'...");
                         if ( $this->isUserImported($origuid) ) {
@@ -342,11 +345,11 @@ class Importer {
                             $newuser['uid']=$newuid."$j";
                             break;
                         }
-                        /*
-                        else {
-                            $gui->session_error("Usuario '".$newuid.$j."' existe, probando otro...");
-                        }*/
-                    }
+                        //else {
+                        //    $gui->session_error("Usuario '".$newuid.$j."' existe, probando otro...");
+                        //}
+                    }*/
+
                     //$gui->session_error("$i Fin del for(create=$create) '$newuid'...=> ".$newuser['uid']);
                 }
                 else {
@@ -359,7 +362,7 @@ class Importer {
                     continue;
                 }
                 else {
-                    $gui->session_info("Nombre largo (".strlen($origuid)."letras) acortado: $origuid =&gt; ".$newuser['uid']);
+                    $gui->session_info("Nombre largo (".strlen($origuid)."caracteres) acortado: $origuid =&gt; ".$newuser['uid']);
                 }
             }
             /*******************************************/
@@ -413,6 +416,7 @@ class Importer {
             $cmd='sudo '.MAXCONTROL.' recache > /dev/null 2>&1 &';
             $gui->debug($cmd);
             pclose(popen($cmd, "r"));
+            $this->writeStatus($number=0, $done=$i, $result='', $failed=$failed);
         }
         if ($this->checkMax()) {
             /* done > number */

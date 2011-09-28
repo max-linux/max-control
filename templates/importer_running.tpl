@@ -62,6 +62,10 @@ Para hacer una nueva importación pulse en <input type="submit" value="Borrar in
 {literal}
 <script type="text/javascript">
 <!--
+var timer=null;
+function stopAjaxRequest() {
+    setTimeout("clearInterval("+timer+")",2000);
+}
 function ObjectSize(obj) {
   var len = obj.length ? --obj.length : -1;
     for (var k in obj)
@@ -70,7 +74,7 @@ function ObjectSize(obj) {
 }
 $(document).ready(function() {
     update_progressbar();
-    setInterval('update_progressbar()', 1500);
+    timer=setInterval('update_progressbar()', 1500);
 });
 
 function update_progressbar() {
@@ -103,6 +107,9 @@ function update_progressbar() {
             $('#doneDateValue')[0].innerHTML=data.doneDateValue;
             if(data.timeNeeded)
                 $('#doneDateValue')[0].innerHTML+=" <small>("+data.timeNeeded+")</small>";
+            /* stop timer */
+            //clearTimeout(timer);
+            stopAjaxRequest();
           }
           
           $('#info_messages')[0].innerHTML=data.info;
