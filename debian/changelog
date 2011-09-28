@@ -1,3 +1,10 @@
+max-control (1.1.32) max; urgency=low
+
+  * Disable uid + index creation, show error message, instead, and add
+    timer stop in AJAX request
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Wed, 28 Sep 2011 12:29:55 +0200
+
 max-control (1.1.31) max; urgency=low
 
   * classes/importer.class.php: Fix strlen(uid)==20 and 2 same 20
