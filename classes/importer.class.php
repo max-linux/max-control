@@ -325,7 +325,9 @@ class Importer {
                 
                 if ( $ldap->get_user($newuid) ) {
                     /* user exists */
-                    $gui->session_error("Usuario acortado '$origuid' => '$newuid' ya existe.");
+                    if( ! preg_match( '/'.$origuid.'/', $gui->error) ) {
+                        $gui->session_error("Usuario acortado '$origuid' => '$newuid' ya existe.");
+                    }
                     
                     /*
                     //$gui->session_error("$i Usuario '".$newuid."' existe, probando con números...");
