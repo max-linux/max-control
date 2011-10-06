@@ -1,3 +1,11 @@
+max-control (1.1.33) max; urgency=low
+
+  * classes/importer.class.php: Only show duplicate error one time
+  * templates/import.tpl: Show a message with 20 cut UID
+  * Fix LDAP::get_aulas() returning same preffix, close #107
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Thu, 06 Oct 2011 15:40:35 +0200
+
 max-control (1.1.32) max; urgency=low
 
   * Disable uid + index creation, show error message, instead, and add
