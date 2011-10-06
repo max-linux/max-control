@@ -1,7 +1,7 @@
 <?php
 /*  generate default config  */
 
-include('conf.inc.php.init');
+include('/etc/max-control/conf.inc.php');
 include('modules/common.inc.php');
 
 class GUI {
@@ -26,25 +26,28 @@ $gui = new GUI();
 include("classes/ldap.class.php");
 include("classes/winexe.class.php");
 
+/*
 $LDAP_BASEDN=readLDAPFile('/etc/ldap.conf', 'base');
 define('LDAP_BASEDN', $LDAP_BASEDN);
 $LDAP_BINDDN=readLDAPFile('/etc/ldap.conf', 'rootbinddn');
 define('LDAP_BINDDN', $LDAP_BINDDN);
 $LDAP_BINDPW=file_get_contents('/etc/ldap.secret');
 define('LDAP_BINDPW', $LDAP_BINDPW);
-
+*/
 
 
 /* usuario creado por max-control */
+/*
 define('LDAP_ADMIN', '$LDAP_ADMIN');
 define('LDAP_PASS', '$LDAP_PASS');
+*/
 
-
-
+/*
 exec("net getdomainsid | grep domain", $output);
 $parts = preg_split ("/\s+/", $output[0]);
 $LDAP_DOMAIN=$parts[3];
 define('LDAP_DOMAIN', $LDAP_DOMAIN);
+*/
 
 $LDAP_ADMIN='max-control';
 $LDAP_PASS=createPassword();
@@ -67,7 +70,7 @@ function create_host($hostname, $i) {
 }
 
 $prefix="pc";
-for($i=1; $i<50; $i++) {
+for($i=1; $i<10; $i++) {
     create_host("$prefix$i", $i);
 }
 die("fin\n");
