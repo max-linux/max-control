@@ -155,7 +155,9 @@ function aula($module, $action, $subaction) {
     // mostrar lista de aulas
     global $ldap;
     $filter=leer_datos('Filter');
-    $aulas=$ldap->get_aulas($filter);
+    $filtertxt='';
+    if($filter != '') $filtertxt="*$filter*";
+    $aulas=$ldap->get_aulas($filtertxt);
     //$gui->debuga($aulas);
     $urlform=$url->create_url($module, $action);
     
@@ -183,7 +185,7 @@ function editaaula($module, $action, $subaction) {
     //$gui->debuga($aulas);
     if ( count($aulas) != 1 ) {
         $gui->session_error("Aula '".leer_datos('args')."' no encontrada.");
-        $url->ir($module, "aula");
+        if(!DEBUG) $url->ir($module, "aula");
     }
     
     $tipos=$ldap->getBootMenus($aula=False);
@@ -237,7 +239,7 @@ function programaaula($module, $action, $subaction) {
     //$gui->debuga($aulas);
     if ( count($aulas) != 1 ) {
         $gui->session_error("Aula '$subaction' no encontrada.");
-        $url->ir($module, "aula");
+        if(!DEBUG) $url->ir($module, "aula");
     }
     
     $tipos=$ldap->getBootMenus($aula=False);

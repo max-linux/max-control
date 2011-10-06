@@ -59,7 +59,10 @@ function aulas($module, $action, $subaction) {
     // mostrar lista de aulas
     global $ldap;
     $filter=leer_datos('Filter');
-    $aulas=$ldap->get_aulas($filter);
+    $filter=leer_datos('Filter');
+    $filtertxt='';
+    if($filter != '') $filtertxt="*$filter*";
+    $aulas=$ldap->get_aulas($filtertxt);
     
     $urlform=$url->create_url($module, $action);
     

@@ -2080,21 +2080,31 @@ class LDAP {
         while($attrs = $this->fetch()) {
             //$gui->debug("<pre>".print_r($attrs, true)."</pre>");
             if ( isset($attrs['sambaGroupType']) && ($attrs['sambaGroupType'][0] == 9) ) {
+                $gui->debuga("filter='$aula' found=".$attrs['cn'][0]);
                 if ($aula == '' || $aula == '*') {
                     //$aulas[]=$attrs['cn'][0];
                     $aulas[]=new AULA($attrs);
                     $gui->debug("ldap::get_aulas() ADD aula='".$attrs['cn'][0]."'");
                 }
                 else {
-                    // remove '*' from $aula
-                    $aula=str_replace('*', '', $aula);
-                    if (preg_match("/$aula/i", $attrs['cn'][0])) {
-                        //$aulas[]=$attrs['cn'][0];
-                        $aulas[]=new AULA($attrs);
-                        $gui->debug("ldap::get_aulas() ADD '$aula' match '".$attrs['cn'][0]."'");
+                    if ( strpos($aula, '*') === false ) {
+                        /* return exact aula */
+                        if ( $aula == $attrs['cn'][0]) {
+                            $aulas[]=new AULA($attrs);
+                            $gui->debug("ldap::get_aulas() ADD exact '$aula' '".$attrs['cn'][0]."'");
+                        }
                     }
                     else {
-                        $gui->debug("ldap::get_aulas() '$aula' don't match '".$attrs['cn'][0]."'");
+                        // remove '*' from $aula
+                        $aulatxt=str_replace('*', '', $aula);
+                        if (preg_match("/$aulatxt/i", $attrs['cn'][0])) {
+                            //$aulas[]=$attrs['cn'][0];
+                            $aulas[]=new AULA($attrs);
+                            $gui->debug("ldap::get_aulas() ADD '$aula' pattern match '".$attrs['cn'][0]."'");
+                        }
+                        else {
+                            $gui->debug("ldap::get_aulas() '$aula' don't match '".$attrs['cn'][0]."'");
+                        }
                     }
                 }
             }
