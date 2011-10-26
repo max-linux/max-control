@@ -190,6 +190,10 @@ function sanitizeOne($var, $type) {
         $var = preg_replace("/[^A-Za-z0-9.-_ áéíóúÁÉÍÓÚñÑ]/","", $var); 
         break;
         
+        case 'uid': // only chars, numbers and some special
+        $var = preg_replace("/[^A-Za-z0-9.-_áéíóúÁÉÍÓÚñÑ]/","", $var); 
+        break;
+        
         case 'cnsn': // only chars, numbers and some special
         $var = preg_replace("/[^A-Za-z0-9.-_ áéíóúÁÉÍÓÚñÑüÜçÇ]/","", $var); 
         break;

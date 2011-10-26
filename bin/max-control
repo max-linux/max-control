@@ -9,6 +9,10 @@ PROFILES_DIR="/home/samba/profiles/"
 GROUPS_DIR="/home/samba/groups/"
 SHARED_DIR="/home/samba/shares/"
 
+echo_exit(){
+    echo $@
+    exit 1
+}
 
 case $1 in
     createhome)
@@ -17,16 +21,16 @@ case $1 in
         # quota in MB
         QUOTA=$3
         mkdir -p "$HOMES_DIR/${NEWUSER}"
-        chown ${NEWUSER}:Domain\ Users "${HOMES_DIR}/${NEWUSER}"
+        chown "${NEWUSER}":Domain\ Users "${HOMES_DIR}/${NEWUSER}"
         chmod 701 "${HOMES_DIR}/${NEWUSER}"
 
         # profile
         mkdir -p "${PROFILES_DIR}/${NEWUSER}"
-        chown ${NEWUSER}:Domain\ Users "${PROFILES_DIR}/${NEWUSER}"
+        chown "${NEWUSER}":Domain\ Users "${PROFILES_DIR}/${NEWUSER}"
         chmod 701 "${PROFILES_DIR}/${NEWUSER}"
 
         mkdir -p "${PROFILES_DIR}/${NEWUSER}.V2"
-        chown ${NEWUSER}:Domain\ Users "${PROFILES_DIR}/${NEWUSER}.V2"
+        chown "${NEWUSER}":Domain\ Users "${PROFILES_DIR}/${NEWUSER}.V2"
         chmod 701 "${PROFILES_DIR}/${NEWUSER}.V2"
 
         if id "$NEWUSER" 2>/dev/null | grep -q Teachers ; then
@@ -38,7 +42,7 @@ case $1 in
 
         # set quota
         #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
-        /usr/bin/edit.quotas --set --user=${NEWUSER} --size=${QUOTA}
+        /usr/bin/edit.quotas --set --user="${NEWUSER}" --size=${QUOTA}
         exit 0
         ;;
 ################################################################################
@@ -50,7 +54,7 @@ case $1 in
         fi
         # set quota
         #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
-        /usr/bin/edit.quotas --set --user=${NEWUSER} --size=${QUOTA}
+        /usr/bin/edit.quotas --set --user="${NEWUSER}" --size=${QUOTA}
         exit 0
         ;;
 ################################################################################
@@ -67,7 +71,7 @@ case $1 in
 ################################################################################
     deleteprofile)
         DELUSER=$2
-        [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
+        [ "${DELUSER}" = "" ] && echo_exit "nonexists"
         rm -rf "$HOMES_DIR/${DELUSER}"
         rm -rf "$PROFILES_DIR/${DELUSER}"
         rm -rf "$PROFILES_DIR/${DELUSER}.V2"
@@ -77,17 +81,16 @@ case $1 in
 ################################################################################
     resetprofile)
         DELUSER=$2
-        [ "${DELUSER}" = "" ] && ( echo "nonexists"; exit 1)
-        rm -rf $HOMES_DIR/${DELUSER}/* $HOMES_DIR/${DELUSER}/.* 2>/dev/null
-        rm -rf $PROFILES_DIR/${DELUSER}/* $PROFILES_DIR/${DELUSER}/.* 2>/dev/null
-        rm -rf $PROFILES_DIR/${DELUSER}.V2/* $PROFILES_DIR/${DELUSER}.V2/.* 2>/dev/null
+        [ "${DELUSER}" = "" ] && echo_exit "nonexists"
+        rm -rf "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
+        mkdir -p "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
 
         # arreglar permisos
-        chown ${DELUSER}:Domain\ Users "${HOMES_DIR}/${DELUSER}"
-        chmod 701 ${HOMES_DIR}/${DELUSER}
-        chown ${DELUSER}:Domain\ Users "${PROFILES_DIR}/${DELUSER}"
-        chmod 701 ${PROFILES_DIR}/${DELUSER}
-        chown ${DELUSER}:Domain\ Users "${PROFILES_DIR}/${DELUSER}.V2"
+        chown "${DELUSER}":Domain\ Users "${HOMES_DIR}/${DELUSER}"
+        chmod 701 "${HOMES_DIR}/${DELUSER}"
+        chown "${DELUSER}":Domain\ Users "${PROFILES_DIR}/${DELUSER}"
+        chmod 701 "${PROFILES_DIR}/${DELUSER}"
+        chown "${DELUSER}":Domain\ Users "${PROFILES_DIR}/${DELUSER}.V2"
         chmod 701 "${PROFILES_DIR}/${DELUSER}.V2"
         exit 0
         ;;
@@ -95,9 +98,9 @@ case $1 in
     addgroup)
         ADDGROUP=$2
         READONLY=$3
-        [ "${ADDGROUP}" = "" ] && ( echo "nonexists"; exit 1)
+        [ "${ADDGROUP}" = "" ] && echo_exit "nonexists"
         mkdir -p "${GROUPS_DIR}/${ADDGROUP}"
-        chown root:${ADDGROUP} "${GROUPS_DIR}/${ADDGROUP}"
+        chown root:"${ADDGROUP}" "${GROUPS_DIR}/${ADDGROUP}"
         chmod +t "${GROUPS_DIR}/${ADDGROUP}"
         chmod g+w "${GROUPS_DIR}/${ADDGROUP}"
         [ "$READONLY" = "1" ] && chmod o-r "${GROUPS_DIR}/${ADDGROUP}"
@@ -122,8 +125,8 @@ case $1 in
 ################################################################################
     deletegroup)
         DELGROUP=$2
-        [ "${DELGROUP}" = "" ] && ( echo "nonexists"; exit 1)
-        rm -rf $GROUPS_DIR/${DELGROUP}
+        [ "${DELGROUP}" = "" ] && echo_exit "nonexists"
+        rm -rf "$GROUPS_DIR/${DELGROUP}"
         echo "ok"
         exit 0
         ;;
@@ -198,20 +201,20 @@ case $1 in
     createshared)
         ADDGROUP=$2
         GROUP=$3
-        [ "${ADDGROUP}" = "" ] && ( echo "nonexists"; exit 1)
+        [ "${ADDGROUP}" = "" ] && echo_exit "nonexists"
         mkdir -p "${SHARED_DIR}/${ADDGROUP}"
-        chown root:$GROUP "${SHARED_DIR}/${ADDGROUP}"
+        chown root:"${ADDGROUP}" "${SHARED_DIR}/${ADDGROUP}"
         chmod 0775 "${SHARED_DIR}/${ADDGROUP}"
         echo "ok"
         exit 0
         ;;
 ################################################################################
-    purgewins)
-        /etc/init.d/ebox samba stop
-        rm -f /var/lib/samba/wins.tdb /var/lib/samba/wins.dat
-        /etc/init.d/ebox samba start
-        exit 0
-        ;;
+#    purgewins)
+#        /etc/init.d/ebox samba stop
+#        rm -f /var/lib/samba/wins.tdb /var/lib/samba/wins.dat
+#        /etc/init.d/ebox samba start
+#        exit 0
+#        ;;
 ################################################################################
     renamegroup)
         # $2 is oldname

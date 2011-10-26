@@ -67,8 +67,10 @@ class Importer {
             }
             if($userdata[IMPORT_NAME] == '"Nombre"' || $userdata[IMPORT_SURNAME] == 'Apellidos') continue;
             
-            if( test_string($userdata[IMPORT_UID]) ) {
-                $gui->session_error("El identificador de usuario '".$userdata[IMPORT_UID]."' contiene caracteres no ASCII.");
+            /* forzar quitar espacios */
+            $userdata[IMPORT_UID]=preg_replace('/\s+/','',$userdata[IMPORT_UID]);
+            if( sanitizeOne($userdata[IMPORT_UID], 'uid') != $userdata[IMPORT_UID] ) {
+                $gui->session_error("El identificador de usuario '".$userdata[IMPORT_UID]."' contiene caracteres no válidos (ASCII).");
                 continue;
             }
             
@@ -93,7 +95,7 @@ class Importer {
             /*********** 20 chars UID limit ***************/
             $extradata='';
             if ( strlen($userdata[IMPORT_UID]) > MAX_UID_LENGTH ) {
-                $olduid=sanitizeOne($userdata[IMPORT_UID], charnum);
+                $olduid=sanitizeOne($userdata[IMPORT_UID], 'uid');
                 $extradata=", usuario sin recortar: $olduid";
             }
             /**********************************************/
@@ -105,14 +107,14 @@ class Importer {
                        'group'         => $usergroup,
                        'loginShell'    => '/bin/false',
                        'role'          => $userrole);
-            sanitize($tmp, array('uid' => 'charnum',
+            sanitize($tmp, array('uid' => 'uid',
                                  'cn'=>'cnsn',
                                  'sn' => 'cnsn',
                                  'description' => 'cnsn',
                                  'loginShell' => 'shell',
                                  'role' => 'role',
                                  'plainPassword' => 'str',
-                                 'group' => 'charnum'));
+                                 'group' => 'uid'));
             $gui->debuga($tmp);
             $users[]=$tmp;
             $i++;
