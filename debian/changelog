@@ -1,3 +1,9 @@
+max-control (1.1.34) max; urgency=low
+
+  * Check for spaces in UID and ensure delete dirs with quotation marks
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Wed, 26 Oct 2011 02:24:55 +0200
+
 max-control (1.1.33) max; urgency=low
 
   * classes/importer.class.php: Only show duplicate error one time
