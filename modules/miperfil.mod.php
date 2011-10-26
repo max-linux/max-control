@@ -75,10 +75,10 @@ if ($active_action == "guardar") {
         }
     }
     
-    sanitize($_POST, array('uid' => 'str',
-                           'cn'=>'charnum',
-                           'sn' => 'charnum',
-                           'description' => 'charnum'));
+    sanitize($_POST, array('uid' => 'uid',
+                           'cn'=>'cnsn',
+                           'sn' => 'cnsn',
+                           'description' => 'cnsn'));
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $usuario->set($_POST);
     
