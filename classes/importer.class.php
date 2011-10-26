@@ -69,6 +69,7 @@ class Importer {
             
             /* forzar quitar espacios */
             $userdata[IMPORT_UID]=preg_replace('/\s+/','',$userdata[IMPORT_UID]);
+            $userdata[IMPORT_UID]=preg_replace('/"/','',$userdata[IMPORT_UID]);
             if( sanitizeOne($userdata[IMPORT_UID], 'uid') != $userdata[IMPORT_UID] ) {
                 $gui->session_error("El identificador de usuario '".$userdata[IMPORT_UID]."' contiene caracteres no válidos (ASCII).");
                 continue;
