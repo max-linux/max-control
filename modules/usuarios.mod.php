@@ -193,9 +193,9 @@ function guardar($module, $action, $subaction) {
         }
     }
     
-    sanitize($_POST, array('uid' => 'str',
-                           'cn'=>'charnum',
-                           'sn' => 'charnum',
+    sanitize($_POST, array('uid' => 'uid',
+                           'cn'=>'cnsn',
+                           'sn' => 'cnsn',
                            'description' => 'charnum',
                            'loginShell' => 'shell',
                            'role' => 'role'));
@@ -340,9 +340,9 @@ function guardarnuevo($module, $action, $subaction) {
         $url->ir($module, "add");
     }
     
-    sanitize($_POST, array('uid' => 'str',
-                           'cn'=>'charnum',
-                           'sn' => 'charnum',
+    sanitize($_POST, array('uid' => 'uid',
+                           'cn'=>'cnsn',
+                           'sn' => 'cnsn',
                            'description' => 'charnum',
                            'loginShell' => 'shell',
                            'role' => 'role',
