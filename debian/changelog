@@ -1,3 +1,9 @@
+max-control (1.1.36) max; urgency=low
+
+  * bin/configure-max-control: Don't run if SAMBA module is not enabled
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Wed, 16 Nov 2011 11:19:48 +0100
+
 max-control (1.1.35) max; urgency=low
 
   * classes/importer.class.php remove quotation before sanitizeOne
