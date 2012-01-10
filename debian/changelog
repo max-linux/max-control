@@ -1,3 +1,10 @@
+max-control (1.1.37) max; urgency=low
+
+  * templates/update_equipos.tpl: Use a bit danger message before
+    deleteing all MACS
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 10 Jan 2012 15:50:24 +0100
+
 max-control (1.1.36) max; urgency=low
 
   * bin/configure-max-control: Don't run if SAMBA module is not enabled
