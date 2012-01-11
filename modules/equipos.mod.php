@@ -146,8 +146,15 @@ function updatedo($module, $action, $subaction){
     global $ldap;
     $equipos=$ldap->get_computers();
     foreach($equipos as $equipo) {
-        $equipo->getMACIP();
+        if($equipo->macAddress == '' || $equipo->macAddress == '00:00:00:00:00:00') {
+            $equipo->getMACIP();
+        }
+        else {
+            //$gui->debuga($equipo);
+            $gui->session_info("El equipo ".$equipo->uid." ya tiene MAC registrada, no se actualiza.");
+        }
     }
+    $url->ir($module, "ver");
 }
 
 
