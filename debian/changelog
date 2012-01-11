@@ -1,3 +1,9 @@
+max-control (1.1.38) max; urgency=low
+
+  * Only update empty or null MACS
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Wed, 11 Jan 2012 11:45:57 +0100
+
 max-control (1.1.37) max; urgency=low
 
   * templates/update_equipos.tpl: Use a bit danger message before
