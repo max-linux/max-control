@@ -9,8 +9,12 @@ import commands
 from pprint import pprint
 
 CONF="/etc/max-control/conf.inc.php"
-SMB_CONF="/etc/samba/max-control.conf"
+SMB_CONF="/etc/samba/smb.conf"
 SHARED_DIR="/home/samba/groups/"
+
+if not os.path.isfile(CONF):
+    print " * No existe el archivo %s"%(CONF)
+    sys.exit(0)
 
 """
 [isos]
@@ -27,12 +31,17 @@ SHARED_DIR="/home/samba/groups/"
  force directory mode = 0775
 """
 
-TO_ADD={'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/', 'ea support':'yes', 'store dos attributes':'yes'},
-        'ebox-internal-backups':{'browseable':'no'},
-        'ebox-quarantine':{'browseable':'no'},
-        'print$':{'browseable':'no'},
-        'global':{'full_audit:success':'none', 'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename'},
-        'profiles': {'ea support':'yes', 'store dos attributes':'yes'},
+TO_EDIT={
+    'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/', 'ea support':'yes', 'store dos attributes':'yes'},
+    #'print$':{'browseable':'no'},
+    'profiles': {'ea support':'yes', 'store dos attributes':'yes'},
+    'global':{'server string': 'MAX server'},
+}
+
+TO_ADD={
+        #'ebox-internal-backups':{'browseable':'no'},
+        #'ebox-quarantine':{'browseable':'no'},qq
+        #'global':{'full_audit:success':'none', 'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename'},
         'isos': {'comment': 'Archivos ISO', 
                'path': '/home/samba/shares/isos',
                #'valid users': ['@"Teachers"', '@"__USERS__"'],
@@ -52,6 +61,7 @@ TO_ADD={'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/', 'ea s
 NOT_VALID_KEYS=['global', 'netlogon', 'profiles', 'homes', 'ebox-internal-backups', 'ebox-quarantine', 'print$', 'isos']
 HIDDEN_GROUPS=['Instaladores', 'CoordinadoresTIC']
 
+
 def read_conf(varname):
     f=open(CONF, 'r')
     data=f.readlines()
@@ -65,27 +75,21 @@ def read_conf(varname):
                 return line.split("'")[3]
     return ''
 
-
 GROUPS=read_conf('LDAP_OU_GROUPS')
 DOMAIN=read_conf('LDAP_DOMAIN')
 
-
-def getGoupsShares():
+def getGroupsShares():
     sharedgroups=[]
     l = ldap.initialize('ldap://localhost:389')
-    results = l.search_s(GROUPS,ldap.SCOPE_SUBTREE,'(cn=*)',['cn', 'memberUid', 'sambaGroupType', 'gidNumber'])
-    sharedgroups=[]
+    l.simple_bind_s(read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW"))
+    results = l.search_s(GROUPS,ldap.SCOPE_SUBTREE,'(objectclass=posixGroup)', ['cn', 'member', 'gidNumber'])
+
+    #import pprint
+    #pprint.pprint(results)
 
     for group in results:
         if "Teachers" in group[0]:
             continue
-        
-        if int(group[1]['gidNumber'][0]) < 2000:
-            continue
-        
-        if int(group[1]['sambaGroupType'][0]) != 2:
-            continue
-        
         
         groupname=group[1]['cn'][0]
         
@@ -95,7 +99,6 @@ def getGoupsShares():
 
 
 class MyConfigObj (ConfigObj):
-
     def _write_line(self, indent_string, entry, this_entry, comment):
         """Write an individual line, for the write method"""
         # NOTE: the calls to self._quote here handles non-StringType values.
@@ -109,7 +112,7 @@ class MyConfigObj (ConfigObj):
             val=val.replace("'", "")
         
         # add space before varname
-        indent_string=' '
+        indent_string='    '
         
         return '%s%s%s%s%s' % (
             indent_string,
@@ -117,6 +120,7 @@ class MyConfigObj (ConfigObj):
             self._a_to_u(' = '),
             val,
             self._decode_element(comment))
+
 
 def newGroupShare(groupname, readonly):
     """
@@ -165,32 +169,35 @@ def newGroupShare(groupname, readonly):
     return share
 
 
-def loadFile(fname):
-    smb=MyConfigObj(fname)
-    return smb
 
-def reloadSamba():
-    """
-      if testparm -s /etc/samba/smb.conf >/dev/null 2>&1; then
-        PIDS=$(pidof smbd)
-        for pid in $PIDS; do
-            kill -1 $pid
-        done
-        exit 0
-      else
-        exit 1
-      fi
-    """
-    testparm=commands.getstatusoutput('testparm -s /etc/samba/smb.conf >/dev/null 2>&1')
-    if testparm[0] != 0:
-        print "testparm error"
-        return False
-    PIDS=commands.getoutput('pidof smbd').split('\n')
-    for pid in PIDS:
-        commands.getstatusoutput("kill -1 %s"%pid)
-    return True
+# def reloadSamba():
+#     """
+#       if testparm -s /etc/samba/smb.conf >/dev/null 2>&1; then
+#         PIDS=$(pidof smbd)
+#         for pid in $PIDS; do
+#             kill -1 $pid
+#         done
+#         exit 0
+#       else
+#         exit 1
+#       fi
+#     """
+#     testparm=commands.getstatusoutput('testparm -s /etc/samba/smb.conf >/dev/null 2>&1')
+#     if testparm[0] != 0:
+#         print "testparm error"
+#         return False
+#     PIDS=commands.getoutput('pidof smbd').split('\n')
+#     for pid in PIDS:
+#         commands.getstatusoutput("kill -1 %s"%pid)
+#     return True
 
-smb=loadFile(SMB_CONF)
+smb=MyConfigObj(SMB_CONF)
+#
+for key in TO_EDIT:
+    for attr in TO_EDIT[key]:
+        #print attr, "=" ,TO_EDIT[key][attr]
+        smb[key][attr] = TO_EDIT[key][attr]
+#
 for key in TO_ADD:
     smb[key]=TO_ADD[key]
     if key in ['homes', 'profiles']:
@@ -204,7 +211,7 @@ for key in TO_ADD:
 # delete not needed dir
 os.system("rm -rf %s/homes" %SHARED_DIR)
 
-ALL_GROUPS=getGoupsShares()
+ALL_GROUPS=getGroupsShares()
 for group in ALL_GROUPS:
     if group in NOT_VALID_KEYS:
         # no create special sections
@@ -233,23 +240,30 @@ for group in HIDDEN_GROUPS:
     except:
         pass
 
+# import pprint
+# pprint.pprint(smb)
+
 smb.write()
 
 
-# test if smb.conf have include line
-f=open('/etc/samba/smb.conf', 'r')
-data=f.readlines()
-f.close()
+# # test if smb.conf have include line
+# f=open('/etc/samba/smb.conf', 'r')
+# data=f.readlines()
+# f.close()
 
-have_include=False
-for line in data:
-    if "include = /etc/samba/max-control.conf" in line:
-        have_include=True
+# have_include=False
+# for line in data:
+#     if "include = /etc/samba/max-control.conf" in line:
+#         have_include=True
 
-if not have_include:
-    f=open('/etc/samba/smb.conf', 'a')
-    f.write("\ninclude = /etc/samba/max-control.conf\n")
-    f.close()
+# if not have_include:
+#     f=open('/etc/samba/smb.conf', 'a')
+#     f.write("\ninclude = /etc/samba/max-control.conf\n")
+#     f.close()
 
+if 'SUDO_USER' in os.environ and os.environ['SUDO_USER'] == 'ebox':
+    sys.exit(0)
 
-reloadSamba()
+#print " * Restarting samba ..."
+#commands.getstatusoutput("/etc/init.d/zentyal samba restart")
+#reloadSamba()

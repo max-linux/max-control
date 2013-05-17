@@ -30,7 +30,7 @@
 <table class='dataTable'> 
     <thead> 
     <tr>
-      <th class=''>Nombre {$pager->getSortIcons('uid')}</th> 
+      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
       <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')}</th> 
       <th class=''>Acciones</th> 
@@ -47,9 +47,9 @@
       {foreach from=$equipos item=u}
       {if $u->teacher_in_computer()}
       <tr class='border' id="computer-{$u->hostname()}"> 
-        <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
+        <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
         <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
-        <td class='tcenter'><span>{$u->attr('sambaProfilePath')}</span></td>
+        <td class='tcenter'><span>{$u->get_aula()}</span></td>
         <td class='tcenter'> 
             <a href="{$urlpoweroff}/{$u->hostname()}" title="Apagar equipo {$u->hostname()}"><img src="{$baseurl}/img/poweroff.png" alt="apagar" /></a>
             <a href="{$urlreboot}/{$u->hostname()}" title="Reiniciar equipo {$u->hostname()}"><img src="{$baseurl}/img/reboot.png" alt="reiniciar" /></a>

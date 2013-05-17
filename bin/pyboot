@@ -48,42 +48,36 @@ def convertMAC(mac):
 
 def getAulas():
     l = ldap.initialize('ldap://localhost:389')
-    allaulas = l.search_s(read_conf("LDAP_OU_GROUPS"),ldap.SCOPE_SUBTREE,'(cn=*)',['cn', 'memberUid', 'sambaGroupType', 'gidNumber'])
+    l.simple_bind_s(read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW"))
+    allaulas = l.search_s(read_conf("LDAP_OU_COMPUTERS"),ldap.SCOPE_SUBTREE,'(objectclass=group)',['cn', 'member'])
     
     aulas = {}
-
     for a in allaulas:
-        if not a[1].has_key('sambaGroupType'):
-            continue
-        
-        if int(a[1]['sambaGroupType'][0]) != 9:
-            continue
         aulas[ a[1]['cn'][0] ] = []
 
     aulas['default']=[]
-    
     return aulas
+
 
 def addComputersToAulas(aulas):
     l = ldap.initialize('ldap://localhost:389')
-    allcomputers = l.search_s(read_conf("LDAP_OU_COMPUTERS"),ldap.SCOPE_SUBTREE,'(uid=*)',['cn', 'sambaProfilePath', 'macAddress'])
+    l.simple_bind_s(read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW"))
+    allcomputers = l.search_s(read_conf("LDAP_OU_COMPUTERS"),ldap.SCOPE_SUBTREE,'(objectclass=computer)',['cn', 'memberOf', 'description'])
     for c in allcomputers:
-        if not c[1].has_key('macAddress'):
+        if not c[1].has_key('description'):
             continue
-        if not c[1].has_key('sambaProfilePath'):
-            aulas['default'].append( c[1]['macAddress'][0] ) 
+
+        (ip, mac) = c[1]['description'][0].split('/')
+
+        if not c[1].has_key('memberOf'):
+            aulas['default'].append( mac ) 
             continue
-        
-        aula=c[1]['sambaProfilePath'][0]
-        if aula.strip() == '':
-            continue
-        
-        aulas[aula].append( c[1]['macAddress'][0] )
+
+        aula=c[1]['memberOf'][0].split(',')[0].replace('CN=', '')
+        aulas[aula].append(mac)
+
     #pprint (aulas)
     return (aulas)
-
-
-
 
 
 
@@ -98,7 +92,7 @@ def genPXELINUX(aulas):
         for mac in aulas[aula]:
             # don't write empty macs
             #print "mac='%s'"%mac
-            if mac.strip() == "":
+            if mac.strip() == '':
                 continue
             
             macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
@@ -207,7 +201,7 @@ def doCron():
         else:
             print "[%s] %s caducado, reseteando a '%s'"%(humanDate(), data[safemac]['mac'], data[safemac]['old'])
             # configurar MAC a que apunte a OLD
-            bootMAC(data[safemac]['old'],data[safemac]['mac'])
+            bootMAC(data[safemac]['old'], data[safemac]['mac'])
             # borrar de CRON_FILE
             del data[safemac]
     
@@ -253,8 +247,6 @@ def deleteAula(aula):
             if macfile == aula:
                 #print "rm -f %s"%pfile
                 os.unlink(pfile)
-
-
 
 
 try:

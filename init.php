@@ -61,9 +61,11 @@ define('LDAP_PASS', '$LDAP_PASS');
 
 
 
-exec("net getdomainsid | grep domain", $output);
-$parts = preg_split ("/\s+/", $output[0]);
-$LDAP_DOMAIN=preg_replace('/"/', '', $parts[3]);
+//exec("net getdomainsid | grep domain", $output);
+//$parts = preg_split ("/\s+/", $output[0]);
+//$LDAP_DOMAIN=preg_replace('/"/', '', $parts[3]);
+exec("samba-tool domain info 127.0.0.1 2>/dev/null | grep ^Domain| awk '{print \$NF}'", $output);
+$LDAP_DOMAIN=$output[0];
 define('LDAP_DOMAIN', "$LDAP_DOMAIN");
 
 $LDAP_ADMIN='max-control';

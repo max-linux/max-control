@@ -39,9 +39,13 @@ setquota -t 0 0 -a
 #size=$(max-control getdefaultquota)
 size=$(grep DEFAULT_QUOTA /etc/max-control/conf.inc.php| awk -F'"' '{print $4}')
 
-for u in /home/samba/users/*; do
+for u in /home/samba/profiles/*; do
 
   username=$(basename $u)
+
+  if [ "$username" == "dns-zentyal3" ]; then
+    continue
+  fi
 
 
   #echo " * reset quota $username"
@@ -51,14 +55,14 @@ for u in /home/samba/users/*; do
         size_teachers=$((size*2))
         echo " * Set quota for user $username (teacher) $size_teachers MB"
         edit.quotas --user=$username --size=$size_teachers --set >/dev/null 2>&1
-    elif id "$username" | grep -q Administrators ; then
+    elif id "$username" | grep -q "Domain Admins" ; then
         # doble quota para tener ISOS
         size_admins=$((size*2))
         echo " * Set quota for user $username (admins) $size_admins MB"
         edit.quotas --user=$username --size=$size_admins --set >/dev/null 2>&1
     else
         echo " * Set quota for user $username $size MB"
-	edit.quotas --user=$username --size=$size --set >/dev/null 2>&1
+	      edit.quotas --user=$username --size=$size --set >/dev/null 2>&1
     fi
     setquota -T $username 0 0 -a > /dev/null 2>&1
   fi

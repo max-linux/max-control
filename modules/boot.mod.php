@@ -11,6 +11,10 @@ global $permisos;
 global $site;
 global $module_actions;
 
+if(DEBUG) {
+    error_reporting(E_ALL);
+}
+
 $url=new URLHandler();
 
 if ( ! $permisos->is_connected() ) {
@@ -105,7 +109,7 @@ function editarequipo($module, $action, $subaction) {
     $data=array("u" => $equipos[0], 
                 "aulas" => $aulas,
                 "tipos" => $tipos,
-                "filter" => $filter, 
+                //"filter" => $filter, 
                 "urlform" => $urlform);
     
     $gui->add( $gui->load_from_template("bootequipodo.tpl", $data) );
@@ -195,7 +199,7 @@ function editaaula($module, $action, $subaction) {
     $data=array("aula" => $aulas[0],
                 "aulaboot" => $aulas[0]->getBoot(),
                 "tipos" => $tipos,
-                "filter" => $filter, 
+                //"filter" => $filter, 
                 "urlform" => $urlform);
     
     $gui->add( $gui->load_from_template("bootaulado.tpl", $data) );
@@ -251,7 +255,7 @@ function programaaula($module, $action, $subaction) {
     $data=array("aula" => $aulas[0],
                 "aulaboot" => $aulas[0]->getBoot(),
                 "tipos" => $tipos,
-                "filter" => $filter, 
+                //"filter" => $filter, 
                 "programer"=>$programer,
                 "urlform" => $urlform);
     

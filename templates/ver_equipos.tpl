@@ -46,9 +46,9 @@
     <tbody> 
       {foreach from=$equipos key=k item=u}
       <tr class='border' id="computer-{$u->hostname()}"> 
-        <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
+        <td class='tcenter'><span>{$u->attr('displayname')}</span></td> 
         <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
-        <td class='tcenter'><span>{$u->attr('sambaProfilePath')}</span></td>
+        <td class='tcenter'><span>{$u->aula}</span></td>
         <td class='tcenter'> 
             <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
         </td>
@@ -56,7 +56,7 @@
             <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="calculando..." />
         </td>
         <td class='tcenter'> 
-            <input type='checkbox' class="hostdel" name="{$u->attr('uid')}" id="{$u->attr('uid')}" onchange="javascript:oncheckboxChange();"/>
+            <input type='checkbox' class="hostdel" name="{$u->attr('displayname')}" id="{$u->attr('displayname')}" onchange="javascript:oncheckboxChange();"/>
         </td>
       </tr>
       {/foreach}

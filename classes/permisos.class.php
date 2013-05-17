@@ -122,7 +122,7 @@ class Permisos {
     function conectar($user, $pass){
         global $gui;
         global $site;
-        $userdn="uid=$user,".LDAP_OU_USERS;
+        $userdn="CN=$user,".LDAP_OU_USERS;
         $gui->debug("userdn===> $userdn");
         
         $ldap = new LDAP($binddn=$userdn, $bindpw=$pass);

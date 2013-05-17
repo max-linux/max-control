@@ -1,0 +1,12 @@
+1.- Set administrator password
+
+	samba-tool user setpassword administrator --newpassword=mario
+
+2.- Crear grupos
+
+	samba-tool group add CoordinadoresTIC --groupou=CN=Builtin --group-scope=Domain --group-type=Security --description="Coordinadores TIC"
+	samba-tool group add Teachers --groupou=CN=Builtin --group-scope=Domain --group-type=Security --description="Profesores"
+	samba-tool group add Instaladores --groupou=CN=Builtin --group-scope=Domain --group-type=Security --description="Instaladores de equipos"
+
+
+3.- Configure config.inc.php

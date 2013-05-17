@@ -1,33 +1,38 @@
 import ldap
 
-OU_USERS="ou=Users,dc=max-server"
-OU_ADMINS="cn=Administrators,ou=Groups,dc=max-server"
+OU_USERS="cn=Users,dc=madrid,dc=local"
+#OU_ADMINS="CN=Domain Admins,CN=Users,DC=madrid,DC=local"
 
 def auth(username, password):
-    DN="uid=%s,%s"%(username, OU_USERS) 
+    DN="cn=%s,%s"%(username, OU_USERS) 
     l = ldap.initialize("ldap://127.0.0.1:389") 
-    l.protocol_version = 3 
+    l.protocol_version = 3
     try:
-        l.simple_bind_s(DN, password) 
-    except ldap.INVALID_CREDENTIALS:
+        l.simple_bind_s(DN, password)
+        return "OK"
+    except ldap.INVALID_CREDENTIALS, err:
+        print "Exception=%s" % err
         l.unbind_s()
-        return False
+        return "ERROR"
     
     # is admin ???
-    result=l.search_s(OU_ADMINS,
-                      ldap.SCOPE_SUBTREE,
-                      '(cn=*)',
-                      ['memberUid'])
-    l.unbind_s()
-    for entry in result:
-        if entry[1].has_key('memberUid') and \
-           username in entry[1]['memberUid']:
-            return True
-    return False
+    # result=l.search_s("CN=Users,DC=madrid,DC=local",
+    #                   ldap.SCOPE_SUBTREE,
+    #                   '(&(objectclass=user)(CN=*))',
+    #                   #['cn', 'member', 'name', 'memberOf', 'gidNumber', 'description']
+    #                   ['cn', 'name', 'unicodePwd', 'supplementalCredentials']
+    #                   )
+    # l.unbind_s()
+    # for entry in result:
+    #     print entry
+    #     if entry[1].has_key('member') and \
+    #        username in entry[1]['member']:
+    #         return True
+    # return False
 
 
 # example
 
-print "admin      ", auth('test', 'test')
-print "bad passwd ", auth('test', 'test2')
-print "not admin  ", auth('profe1', 'profe1')
+print "admin      ", auth('Administrator', 'mario')
+#print "bad passwd ", auth('test', 'test2')
+#print "not admin  ", auth('prueba2', 'prueba2')
