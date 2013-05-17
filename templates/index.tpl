@@ -19,9 +19,11 @@
 <div id="top">
 </div> 
 <div id="header"> 
-    <a href="{$baseurl}"> 
+
+    <a style="float:left;" href="{$baseurl}"> 
     <img src="{$baseurl}/img/title.png" alt="title"/> 
     </a>
+    <h3 style="float:left;color:#FFFFFF;margin-left:50px;">Panel de control de Servidor de Centro</h3>
 </div> 
 
 <div id="hmenu"> 
@@ -29,7 +31,7 @@
   <a id="m" href="{$logout_url}"><small>{$role}</small><br/>Salir de sesión</a> 
 </div> 
 
-<h3>Panel de control de Servidor de Centro</h3>
+<!-- <h3>Panel de control de Servidor de Centro</h3> -->
 
 <!-- div menu -->
 <div id='menu'> 

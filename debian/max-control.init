@@ -21,27 +21,7 @@ case "$1" in
     start)
         echo -n "Generating PXE files: max-control"
         $PYBOOT --genpxelinux
-        echo "."	
-
-	#grep -q nbd0 /etc/fstab || exit 0
-
-	# need this in /etc/nbc-client file
-	# NBD_DEVICE[0]=/dev/nbd0
-	# NBD_TYPE[0]="f"
-	# NBD_HOST[0]="192.168.0.2"
-	# NBD_PORT[0]="1234"
-
-	# and this in /etc/fstab
-	# /dev/nbd0  /home ext3 defaults,rw,noauto,usrquota,grpquota,acl,user_xattr 0 0
-
-	# start NBD
-	#modprobe nbd
-	#grep -q /dev/nbd0 /proc/mounts || /etc/init.d/nbd-client start
-
-	#/etc/init.d/quota start
-
-	# restart samba
-	#/etc/init.d/ebox samba restart
+        echo "."
 
     ;;
 

@@ -6,6 +6,7 @@ import os
 import sys
 #import glob
 import time
+import subprocess
 from subprocess import Popen, PIPE, STDOUT
 import commands
 
@@ -14,6 +15,7 @@ os.environ['EDITOR']="/bin/cat"
 
 HOME="/home"
 REMOTE=commands.getoutput("df /home/samba 2>/dev/null | awk '/dev/ {print $1}'")
+REMOTE=commands.getoutput("/sbin/blkid "+REMOTE+" -o value| head -1 | awk '{print \"/dev/disk/by-uuid/\"$1}'")
 if REMOTE == "":
     REMOTE="/dev/nbd0"
 
@@ -23,6 +25,7 @@ LOCK_FILE="/var/lib/max-control/quota.cache.php.lock"
 DEST_FILE="/var/lib/max-control/quota.cache.php"
 MAX_WAIT=50 # 5 seconds
 num=0
+stamp = time.strftime("%d/%m/%Y %H:%M:%S", time.localtime())
 
 if not os.path.isfile(CONF):
     print >> sys.stderr," * No existe el archivo %s"%CONF
@@ -41,14 +44,14 @@ if not os.path.isfile(HOME + "/aquota.user") and not os.path.isfile(HOME + "/quo
 
 #######################################################
 while os.path.isfile(LOCK_FILE):
-    sys.stderr.write("<? /* pyoverquota[%s]: Esperando lock...*/ ?>\n"%os.getpid())
+    sys.stderr.write("<? /* [%s] pyoverquota[%s]: Esperando lock...*/ ?>\n" % (stamp, os.getpid()) )
     if num > MAX_WAIT:
-        sys.stderr.write("<? /* pyoverquota[%s]: Timeout...*/ ?>\n"%os.getpid())
+        sys.stderr.write("<? /* [%s] pyoverquota[%s]: Timeout...*/ ?>\n" % (stamp, os.getpid()) )
         break
     time.sleep(0.1)
-    num=num+1
+    num = num + 1
 
-sys.stderr.write("<? /* pyoverquota[%s]: Creando lock...*/ ?>\n"%os.getpid())
+sys.stderr.write("<? /* [%s] pyoverquota[%s]: Creando lock...*/ ?>\n" % (stamp, os.getpid()) )
 # create lock file
 open(LOCK_FILE, 'w').close()
 #######################################################
@@ -116,25 +119,32 @@ def getQuota(user, used=False):
     return (False, 0, 0, 0)
 
 
+# get user lists
+#samba-tool user list 2>/dev/null
 def generateOverQuotas():
     txt=""
-    l = ldap.initialize('ldap://localhost:389')
-    allusers = l.search_s(read_conf("LDAP_OU_USERS"),ldap.SCOPE_SUBTREE,'(uid=*)',['uid'])
-    
+    args = ['samba-tool', 'user', 'list']
+    p = subprocess.Popen(" ".join(args), shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
     users = {}
+    while True:
+        output = p.stdout.readline()
+        
+        if output.startswith('ldb_wrap'):
+            continue
 
-    for a in allusers:
-        uid=a[1]['uid'][0]
-        (overquota, size, maxsize, percent)=getQuota(uid, True)
-        
-        txt=txt+"""$quotaArray['%s']=array('size'=>%s, 'maxsize'=> %s, 'percent'=>'%s', 'overQuota'=>%s);\n"""\
-                            %(uid,size,maxsize,percent, overquota)
-        
-        if overquota:
-            txt=txt+"$overQuota['%s']=array('uid'=>'%s', 'size'=>%s, 'maxsize'=> %s, 'percent'=>'%s');\n"\
-                            %(uid, uid,size,maxsize,percent)
-        #else:
-        #    print "/*%20s => no overquota */"%(uid)
+        uid = output.strip()
+        if uid != '':
+            (overquota, size, maxsize, percent) = getQuota(uid, True)
+            txt = txt + """$quotaArray['%s']=array('size'=>%s, 'maxsize'=> %s, 'percent'=>'%s', 'overQuota'=>%s);\n"""\
+                                % (uid, size, maxsize, percent, overquota)
+            if overquota:
+                txt = txt + "$overQuota['%s']=array('cn'=>'%s', 'size'=>%s, 'maxsize'=> %s, 'percent'=>'%s');\n"\
+                                % (uid, uid, size, maxsize, percent)
+  
+
+        if output == '' and p.poll() != None:
+            break
+
     return txt
 
 
@@ -150,18 +160,18 @@ $overQuota=array();
 $quotaArray=array();
 global $quotaArray, $overQuota, $quotaTime;
 
-"""%(time.asctime(), LIMIT, time.strftime("%d/%m/%Y %H:%M:%S", time.localtime()))
+"""%(time.asctime(), LIMIT, stamp)
 
 txt=txt+generateOverQuotas()
 
 txt=txt+"""
 
-?>"""
+"""
 
 f=open(DEST_FILE, 'w')
 f.write(txt)
 f.close()
 
 # delete lock file
-sys.stderr.write("<? /* pyoverquota[%s]: Borrando lock...*/ ?>\n"%os.getpid())
+sys.stderr.write("<? /* [%s] pyoverquota[%s]: Borrando lock...*/ ?>\n" % (stamp, os.getpid()) )
 os.unlink(LOCK_FILE)

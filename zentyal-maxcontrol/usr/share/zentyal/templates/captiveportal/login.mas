@@ -1,6 +1,7 @@
 <%args>
   $reason => ""
   $destination
+  $origDestination => ''
 </%args>
 <%init>
 use EBox::Gettext;
@@ -19,15 +20,15 @@ use EBox::Gettext;
                   <% __('Warning: Caps Lock is enabled')%>
                 </div>
 	<table id="login">
-          <tr> 
-            <td rowspan="4" id="logotd"> 
+          <tr>
+            <td rowspan="4" id="logotd">
               <img src="/data/images/title-login.png" alt="EducaMadrid Logo" id="logo"/> 
-            </td> 
-            <td colspan="2"> 
+            </td>
+            <td colspan="2">
                 <center><h2 style="color: #333">Portal cautivo</h2></center>
             <div class="warning" id="capsWarning" style="display: none"> 
                 Warning: Caps Lock is enabled
-            </div> 
+            </div>
 %		if(length($reason)){
 			<div id='reason'><% $reason %></div>
 %		}
@@ -37,16 +38,18 @@ use EBox::Gettext;
             <td><input  class='inputTextLogin' type='text'
                     name='credential_0'
                     id='credential_0'
-                    size='14' /></td>
+                    /></td>
           </tr>
           <tr>
             <td class="labeltd">Contraseña:</td>
             <td><input class='inputTextLogin' type='password'
                     name='credential_1'
                     id='credential_1'
-                    size='14' /></td>
+                    /></td>
                 <input type='hidden' name='destination'
                     value='<% $destination %>' />
+                <input type='hidden' name='origDestination'
+                    value='<% $origDestination %>' />
           </tr>
           <tr>
             <td></td>
@@ -59,7 +62,7 @@ use EBox::Gettext;
 	</div>
 </center>
 <div id="footer">
-    Portal cautivo para <a href="http://educa.madrid.org/">EducaMadrid</a> creado por <a href="http://www.zentyal.com/">eBox Technologies S.L.</a>
+    Portal cautivo para <a href="http://educa.madrid.org/">EducaMadrid</a> creado por <a href="http://www.zentyal.com/">Zentyal S.L.</a>
 </div>
 <script src="/data/js/help.js" type=text/javascript>//</SCRIPT>
 </body>

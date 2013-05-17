@@ -58,7 +58,7 @@ $hostname=leer_datos('hostname');
 
 
 $equipo=$ldap->get_computers($hostname .'$');
-if ( ! isset($equipo[0]->uid) ) {
+if ( ! isset($equipo[0]->cn) ) {
     /* hostname not found */
     header("Location: $schema://$host/$path/img/warning.png");
     mdie();

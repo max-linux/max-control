@@ -1,4 +1,3 @@
-<?php
 
 // aparecerán cajas con información útil para errores.
 define("DEBUG", False);
@@ -6,9 +5,6 @@ define("DEBUG", False);
 define("VERSION", "__VERSION__");
 
 /*********** a partir de aqui puede que ya no hay aque editar nada ********/
-
-// otros datos del dominio
-define("LDAP_HOSTNAME", "127.0.0.1");
 
 // ruta al comando winexe
 define("WINEXE", "/usr/bin/pywinexe");
@@ -18,12 +14,6 @@ define("MAXCONTROL", "/usr/bin/max-control");
 
 // ruta al comando pywakeonlan
 define("PYWAKEONLAN", "/usr/bin/pywakeonlan");
-
-
-// rutas a los perfiles
-define("HOMES", "/home/samba/users/");
-define("SAMBA_HOMES", '\\\\max-server\homes\\');
-define("SAMBA_PROFILES", '\\\\max-server\profiles\\');
 
 // RUTA a la clase smarty
 define("SMARTY_REQUIRE","/usr/share/php/smarty/Smarty.class.php");
@@ -106,4 +96,3 @@ $site["private_modules_none"]=array(
 
 $site["private_modules"]=array();
 
-?>

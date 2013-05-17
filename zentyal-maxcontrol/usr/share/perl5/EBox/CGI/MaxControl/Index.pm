@@ -15,7 +15,7 @@ sub new {
 	my $self = $class->SUPER::new('title'    => __('MAX Control'),
 				      'template' => 'maxcontrol/index.mas',
 				      @_);
-	$self->{domain} = "ebox-maxcontrol";
+	$self->{domain} = "zentyal-maxcontrol";
 	bless($self, $class);
 	return $self;
 }

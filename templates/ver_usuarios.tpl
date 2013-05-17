@@ -76,11 +76,11 @@
  
     <tbody> 
       {foreach from=$usuarios key=k item=u}
-      <tr class='border' id="user-{$u->attr('uid')}"> 
+      <tr class='border' id="user-{$u->attr('cn')}"> 
         {if $u->attr('description') != ''}
-        <td class='tcenter'><acronym title='{$u->attr('description')}'><span>{$u->attr('uid')}</span></acronym></td>
+        <td class='tcenter'><acronym title='{$u->attr('description')}'><span>{$u->attr('cn')} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if}</span></acronym></td>
         {else}
-        <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
+        <td class='tcenter'><span>{$u->attr('cn')} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if} </span></td> 
         {/if}
         <td class='tcenter'><span>{$u->attr('cn')} {$u->attr('sn')}</span></td> 
         <td class='tcenter'><span>
@@ -91,10 +91,10 @@
                         </span></td> 
         <td class='tcenter'><span>{$u->getquota()}</span></td>
         <td class='tcenter'> 
-            <a href="{$urleditar}/{$u->attr('uid')}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
+            <a href="{$urleditar}/{$u->attr('cn')}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
         </td>
         <td class='tcenter'> 
-            <input type='checkbox' class="userdel" name="{$u->attr('uid')}" id="{$u->attr('uid')}" onchange="javascript:oncheckboxChange();"/>
+            <input type='checkbox' class="userdel" name="{$u->attr('cn')}" id="{$u->attr('cn')}" onchange="javascript:oncheckboxChange();"/>
         </td>
       </tr>
       {/foreach}

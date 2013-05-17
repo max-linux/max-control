@@ -1,3 +1,9 @@
+max-control (3.0.0~alfa1) precise; urgency=low
+
+  * New alpha version for Zentyal 3
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 26 Feb 2013 13:35:57 +0100
+
 max-control (1.1.38) max; urgency=low
 
   * Only update empty or null MACS

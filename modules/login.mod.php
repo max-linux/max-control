@@ -57,8 +57,10 @@ if ($is_connecting){
         $url->ir("miperfil", "");
     }
     else {
-        $gui->session_error("Usuario o contraseña incorrectos.");
-        $url->ir("", "");
+        if(!DEBUG) {
+            $gui->session_error("Usuario o contraseña incorrectos.");
+            $url->ir("", "");
+        }
     }
 }
 

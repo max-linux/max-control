@@ -434,4 +434,12 @@ function date_diff2($start, $end="NOW")
         return $timeshift;
 }
 
-?>
+
+
+function startsWith($haystack, $needle) {
+    return strpos($haystack, $needle) === 0;
+}
+
+function endsWith($haystack, $needle) {
+    return substr($haystack, -strlen($needle)) == $needle;
+}

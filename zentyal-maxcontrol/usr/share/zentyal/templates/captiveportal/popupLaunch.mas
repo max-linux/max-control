@@ -1,5 +1,5 @@
 <%args>
-  $destination => ''
+  $origDestination => ''
 </%args>
 <%init>
 use EBox::Gettext;
@@ -23,11 +23,20 @@ use EBox::Gettext;
        <div style="padding: 15px">
          Se ha registrado correctamente. Si el navegador no ha mostrado un popup, pulse <a href='javascript:launch();'>aquí</a> para abrilo manualmente.
        </div>
+%      if ($origDestination) {
+       <div style="padding: 15px">
+         <% __x('{hb}Continue to your destination{he}',
+                hb => "<a href='$origDestination'>",
+                he  =>'</a>')
+
+          %>
+       </div>
+%      }
      </div>
   </center>
 
   <div id="footer">
-    Portal cautivo para <a href="http://educa.madrid.org/">EducaMadrid</a> creado por <a href="http://www.zentyal.com/">eBox Technologies S.L.</a>
+    Portal cautivo para <a href="http://educa.madrid.org/">EducaMadrid</a> creado por <a href="http://www.zentyal.com/">Zentyal S.L.</a>
   </div>
 </body>
 </html>

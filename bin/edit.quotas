@@ -13,6 +13,8 @@ os.environ['EDITOR']="/bin/cat"
 
 HOME="/home"
 REMOTE=commands.getoutput("df /home/samba 2>/dev/null | awk '/dev/ {print $1}'")
+REMOTE=commands.getoutput("blkid "+REMOTE+" -o value| head -1 | awk '{print \"/dev/disk/by-uuid/\"$1}'")
+
 if REMOTE == "":
     REMOTE="/dev/nbd0"
 

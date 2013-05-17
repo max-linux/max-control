@@ -43,7 +43,7 @@ include("../classes/winexe.class.php");
 
 //echo "<h2>LDAP</h2><br/>\n";
 
-$ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
+$ldap=new LDAP($binddn='cn=Administrator,cn=Users,dc=madrid,dc=local',$bindpw='mario');
 //$ldap=new LDAP();
 
 //$gui->debug( $ldap->lastUID() );
@@ -62,7 +62,8 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 //$gui->debug($ldap->error);
 //$gui->debug($ldap->is_connected());
 
-//$gui->debug($ldap->get_users());
+//$ldap->get_users('prue');
+$gui->debug($ldap->get_users('prueba2'));
 //$gui->debug($ldap->get_user($uid=$argv[1]));
 //$gui->debug($ldap->error);
 
@@ -148,9 +149,9 @@ $ldap=new LDAP($binddn='cn=ebox,dc=max-server',$bindpw='GzxovzAANdxoPux9');
 #    $computer->empty_attr( 'sambaProfilePath' );
 #}
 
-$exe=new WINEXE('winxp3');
-#echo $exe->reboot($exe->mac);
-$exe->init();
-echo $exe->windowsexe("ipconfig");
+// $exe=new WINEXE('winxp3');
+// #echo $exe->reboot($exe->mac);
+// $exe->init();
+// echo $exe->windowsexe("ipconfig");
 
 ?>

@@ -6,34 +6,25 @@ if [ "$1" = "configure" ]; then
    # remove old cache
    rm -f /var/lib/max-control/cache/* >/dev/null 2>&1 || true
 
-   if ! grep -q ^www-data /etc/sudoers; then
-     cat << EOF >> /etc/sudoers
 
-# max-control www-data need to exec /usr/bin/max-control
-www-data	ALL=NOPASSWD: /usr/bin/max-control
+   # # copy netlogon files
+   # if [ -d /home/samba/netlogon ] && [ ! -e /home/samba/netlogon/.lock ]; then
+   #     for fname in $(find /usr/share/max-control/netlogon/ -type f);do
+   #         cp "$fname" /home/samba/netlogon/
+   #     done
+   #     unix2dos /home/samba/netlogon/logon.bat >/dev/null 2>&1
+   #     unix2dos /home/samba/netlogon/mount.bat >/dev/null 2>&1
+   #     unix2dos /home/samba/netlogon/logon.kix >/dev/null 2>&1
+   #     unix2dos /home/samba/netlogon/winvista.win7.win2008.registry.fix.bat >/dev/null 2>&1
+   #     unix2dos /home/samba/netlogon/prepara_unir_dominio.bat >/dev/null 2>&1
+   #     unix2dos /home/samba/netlogon/README.txt >/dev/null 2>&1
 
+   #     pygenlogonshares > /dev/null 2>&1
+   #     unix2dos /home/samba/netlogon/shares.kix >/dev/null 2>&1
 
-EOF
-   fi
-
-   # copy netlogon files
-   if [ -d /home/samba/netlogon ] && [ ! -e /home/samba/netlogon/.lock ]; then
-       for fname in $(find /usr/share/max-control/netlogon/ -type f);do
-           cp "$fname" /home/samba/netlogon/
-       done
-       unix2dos /home/samba/netlogon/logon.bat >/dev/null 2>&1
-       unix2dos /home/samba/netlogon/mount.bat >/dev/null 2>&1
-       unix2dos /home/samba/netlogon/logon.kix >/dev/null 2>&1
-       unix2dos /home/samba/netlogon/winvista.win7.win2008.registry.fix.bat >/dev/null 2>&1
-       unix2dos /home/samba/netlogon/prepara_unir_dominio.bat >/dev/null 2>&1
-       unix2dos /home/samba/netlogon/README.txt >/dev/null 2>&1
-
-       pygenlogonshares > /dev/null 2>&1
-       unix2dos /home/samba/netlogon/shares.kix >/dev/null 2>&1
-
-       chown root:root /home/samba/netlogon/*
-       chmod 644 /home/samba/netlogon/*
-   fi
+   #     chown root:root /home/samba/netlogon/*
+   #     chmod 644 /home/samba/netlogon/*
+   # fi
 
 
    # TFTPBOOT menus
@@ -62,9 +53,6 @@ EOF
 
   # configure max-control, create conf.inc.php and shares
   /usr/bin/configure-max-control
-
-
-
 fi
 
 

@@ -4,16 +4,22 @@
 
 DEFAULT_TIMEOUT=5
 
-import subprocess, datetime, os, time, signal, sys
+import subprocess
+import datetime
+import os
+import time
+import signal
+import sys
 
 
 def timeout_cmd(cmd, timeout=DEFAULT_TIMEOUT):
     start = datetime.datetime.now()
+    #print cmd
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True, bufsize=0)
     while process.poll() is None:
         time.sleep(0.2)
         now = datetime.datetime.now()
-        if (now - start).seconds> timeout:
+        if (now - start).seconds > timeout:
             os.kill(process.pid, signal.SIGKILL)
             os.waitpid(-1, os.WNOHANG)
             print "RETURN -1"
@@ -23,7 +29,7 @@ def timeout_cmd(cmd, timeout=DEFAULT_TIMEOUT):
     #stdout, stderr = process.communicate()
     #print "stdout ",stdout
     #print "stderr ",stderr
-    print "RETURN %s"%process.returncode
+    print "RETURN %s" % process.returncode
     print "STDOUT ".join(process.stdout.readlines())
     return True
 
