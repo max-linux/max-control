@@ -11,6 +11,10 @@ global $permisos;
 global $site;
 global $module_actions;
 
+if(DEBUG) {
+    error_reporting(E_ALL);
+}
+
 $url=new URLHandler();
 
 if ( ! $permisos->is_connected() ) {
@@ -85,7 +89,7 @@ function montar($module, $action, $subaction) {
                 "isos" => $isos, 
                 "aulas" => $aulas,
                 "computers"=> $equipos,
-                "filter" => $filter, 
+                //"filter" => $filter, 
                 "urlform" => $urlform, 
                 "urlmontar"=>$urlmontar);
     
@@ -178,9 +182,8 @@ function desmontar($module, $action, $subaction) {
     
     $data=array("aulas" => $aulas,
                 "computers"=> $equipos,
-                "filter" => $filter, 
-                "urlform" => $urlform, 
-                "urlmontar"=>$urlmontar);
+                //"filter" => $filter, 
+                "urlform" => $urlform);
     
     $gui->add( $gui->load_from_template("desmontar_iso.tpl", $data) );
 }

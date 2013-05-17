@@ -12,11 +12,6 @@ global $site;
 global $module_actions;
 
 
-//FIXME borrar esto que no hace falta
-#global $permisos;
-#$permisos->is_admin();
-#$permisos->is_connected();
-#$permisos->is_teacher();
 
 $url=new URLHandler();
 
@@ -43,6 +38,8 @@ if ($active_action == "editar") {
     $user=$ldap->get_user($username);
     
     $urlform=$url->create_url($active_module, 'guardar');
+
+    //$gui->debuga($user);
     
     $data=array("username"=>$username, 
                 "u"=>$user,
@@ -97,5 +94,3 @@ if ($active_action == "guardar") {
         $url->ir($active_module, "editar");
 }
 
-
-?>

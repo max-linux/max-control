@@ -1,0 +1,4 @@
+
+# max-control for Zentyal sudo configuration
+www-data  ALL = NOPASSWD: /usr/bin/max-control
+

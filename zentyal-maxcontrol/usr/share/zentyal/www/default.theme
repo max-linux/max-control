@@ -60,7 +60,7 @@ ad_extra_style: ""
 
 additional_footer_style: ""
 
-# headTitle.mas
+# images
 favicon: "/favicon.ico"
 image_title: "/data/images/educamadrid.png"
 image_note: "/data/images/msg.png"
@@ -68,8 +68,8 @@ image_note: "/data/images/msg.png"
 # login/index.mas
 image_login_logo: "/data/images/educamadrid.png"
 alt_logo: "EducaMadrid"
-created_by_footer: "Panel de control para <a href=\"http://educa.madrid.org/\">EducaMadrid</a> creado por <a href=\"http://www.zentyal.com/\">eBox Technologies S.L.</a>"
+created_by_footer: "Panel de control para <a href=\"http://educa.madrid.org/\">EducaMadrid</a> creado por <a href=\"http://www.zentyal.com/\">Zentyal S.L.</a>"
 
 # footer.mas
-copyright_footer: "Panel de control para <a href=\"http://educa.madrid.org/\">EducaMadrid</a> creado por <a href=\"http://www.zentyal.com/\">eBox Technologies S.L.</a>"
+copyright_footer: "Panel de control para <a href=\"http://educa.madrid.org/\">EducaMadrid</a> creado por <a href=\"http://www.zentyal.com/\">Zentyal S.L.</a>"
 

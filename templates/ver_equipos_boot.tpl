@@ -20,7 +20,7 @@
 <table class='dataTable'> 
     <thead> 
     <tr>
-      <th class=''>Nombre {$pager->getSortIcons('uid')}</th> 
+      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
       <th class=''>Arranque configurado</th> 
       <th class=''>Configurar Arranque</th> 
@@ -32,7 +32,7 @@
       {foreach from=$equipos key=k item=u}
       <tr class='border' id="{$u->hostname()}"> 
       {if $u->teacher_in_computer()}
-        <td class='tcenter'><span>{$u->attr('uid')}</span></td> 
+        <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
         <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
         <td class='tcenter'><span>{$u->getBoot()}</span></td>
         {if $u->attr('macAddress') != ''}

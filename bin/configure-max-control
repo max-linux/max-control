@@ -12,19 +12,19 @@ if [ ! -e /etc/ldap.secret ]; then
   CONFIGURE=0
 fi
 
-if [ "$(pidof slapd)" = "" ]; then
-  echo " * WARNING: slapd is not running, no configuring max-control"
+if [ "$(pidof samba)" = "" ]; then
+  echo " * WARNING: samba is not running, no configuring max-control"
   CONFIGURE=0
 fi
 
 
-if ! grep -q ebox /etc/ldap.conf ; then
-  echo " * WARNING: /etc/ldap.conf not configured for EBox/Zentyal"
+if ! grep -q zentyal /etc/ldap.conf ; then
+  echo " * WARNING: /etc/ldap.conf not configured for Zentyal"
   CONFIGURE=0
 fi
 
-if ! getent group "Domain Users" >/dev/null 2>&1; then
-  echo " * WARNING: No 'Domain Users' group found, is Samba+LDAP enabled?"
+if ! getent group "Domain Admins" >/dev/null 2>&1; then
+  echo " * WARNING: No 'Domain Admins' group found, is Samba+PAM enabled?"
   CONFIGURE=0
 fi
 
@@ -43,7 +43,7 @@ if [ "$CONFIGURE" = "1" ]; then
     # (create max-control user or update-password)
 
     rm -f /etc/max-control/conf.inc.php
-    (cd /usr/share/max-control && php init.php )
+    (cd /usr/share/max-control && bash init.sh )
 
     chmod 640 /etc/max-control/conf.inc.php
     chown root:www-data /etc/max-control/conf.inc.php
@@ -70,11 +70,6 @@ if [ "$CONFIGURE" = "1" ]; then
     echo " * Updating /etc/samba/max-control.conf"
     /usr/bin/pymaxgensamba
 
-    # atftpd use /srv/tftp
-    if [ ! -L /srv/tftp ]; then
-        rmdir /srv/tftp >/dev/null 2>&1|| true
-        ln -s /var/lib/tftpboot /srv/tftp
-    fi
 
     # create PXE files
     /usr/bin/max-control pxe --genpxelinux

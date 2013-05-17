@@ -15,8 +15,7 @@ binary-install/max-control:: test
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ldap.php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ssh-test.php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/test*php
-
-	grep -q zentyal debian/control && rm -f $(CURDIR)/debian/max-control/etc/cron.d/clamav-freshclam || true
+	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/new.php
 
 	# replace __VERSION__ with VERSION
 	sed -i -e 's/__VERSION__/$(VERSION)/g' $(CURDIR)/debian/max-control/usr/share/max-control/conf.inc.php.init
@@ -32,8 +31,8 @@ test:
 	# check for PHP syntax errors
 	@for f in $(shell find debian/max-control -type f -name "*php"); do \
 		if [ -e "$$f" ]; then \
-			echo "php -l $$f";\
-			php -l $$f || exit 1; \
+			#echo "php -l $$f";\
+			php -l $$f >/dev/null || exit 1; \
 		fi; \
 	done
 

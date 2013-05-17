@@ -52,7 +52,7 @@
         <td></td> 
         <td> 
         <input class='inputButton' type='submit' name='{$action}' value="Guardar" alt="Guardar" /> 
-        <input type='hidden' name='uid' value='{$u->attr('uid')}' />
+        <input type='hidden' name='cn' value='{$u->attr('cn')}' />
         </td> 
     </tr>
 

@@ -63,10 +63,8 @@ function ver($module, $action, $subaction) {
     
     global $ldap;
     
-    /* get_users($filter='*', $group=LDAP_OU_USERS, $ignore="max-control", $role='') */
     $usuarios=$ldap->get_users( leer_datos('Filter'),
                                 $group=LDAP_OU_USERS,
-                                $ignore="max-control",
                                 $filterrole=leer_datos('role'));
     
     $urlform=$url->create_url($module, $action);
