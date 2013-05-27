@@ -58,7 +58,7 @@ def getquota(user, used=False):
                     color="black"
                     if size >= maxsize:
                         color="red"
-                    return "<span style='color:%s'>%sMB/%sMB (%0.2f%%)</span>"%(color, size, maxsize, percent)
+                    return "<span style='color:%s'>%sMB / %sMB (%0.2f%%)</span>"%(color, size, maxsize, percent)
     size=int(size)/1024
     return size
 
