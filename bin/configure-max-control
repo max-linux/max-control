@@ -59,11 +59,6 @@ if [ "$CONFIGURE" = "1" ]; then
     chown www-data:www-data /var/lib/max-control/importer
 
 
-    if [ -e /home/samba/netlogon/domain.txt ]; then
-        chmod 644 /home/samba/netlogon/domain.txt
-        unix2dos /home/samba/netlogon/domain.txt >/dev/null 2>&1
-    fi
-
     [ -d /var/lib/max-control/cache ] && chown www-data /var/lib/max-control/cache
 
     # create samba configuration
