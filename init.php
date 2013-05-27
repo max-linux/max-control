@@ -217,9 +217,5 @@ $fh = fopen($config, 'w');
 fwrite($fh, $out);
 fclose($fh);
 
-/* write domain in netlogon */
-$domainfd=fopen("/home/samba/netlogon/domain.txt", 'w');
-fwrite($domainfd, $LDAP_DOMAIN);
-fclose($domainfd);
 
 ?>

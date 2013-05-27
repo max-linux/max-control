@@ -7,26 +7,6 @@ if [ "$1" = "configure" ]; then
    rm -f /var/lib/max-control/cache/* >/dev/null 2>&1 || true
 
 
-   # # copy netlogon files
-   # if [ -d /home/samba/netlogon ] && [ ! -e /home/samba/netlogon/.lock ]; then
-   #     for fname in $(find /usr/share/max-control/netlogon/ -type f);do
-   #         cp "$fname" /home/samba/netlogon/
-   #     done
-   #     unix2dos /home/samba/netlogon/logon.bat >/dev/null 2>&1
-   #     unix2dos /home/samba/netlogon/mount.bat >/dev/null 2>&1
-   #     unix2dos /home/samba/netlogon/logon.kix >/dev/null 2>&1
-   #     unix2dos /home/samba/netlogon/winvista.win7.win2008.registry.fix.bat >/dev/null 2>&1
-   #     unix2dos /home/samba/netlogon/prepara_unir_dominio.bat >/dev/null 2>&1
-   #     unix2dos /home/samba/netlogon/README.txt >/dev/null 2>&1
-
-   #     pygenlogonshares > /dev/null 2>&1
-   #     unix2dos /home/samba/netlogon/shares.kix >/dev/null 2>&1
-
-   #     chown root:root /home/samba/netlogon/*
-   #     chmod 644 /home/samba/netlogon/*
-   # fi
-
-
    # TFTPBOOT menus
    rm -f /var/lib/tftpboot/pxelinux.cfg/max.menu
    for fname in $(find /usr/share/max-control/tftp.menus/ -type f); do
@@ -41,7 +21,7 @@ if [ "$1" = "configure" ]; then
 
 
    # enable mod_rewrite
-   [ -x /usr/sbin/a2enmod ] && a2enmod rewrite
+   [ ! -e /etc/apache2/mods-enabled/rewrite.load ] && [ -x /usr/sbin/a2enmod ] && a2enmod rewrite
 
    if [ -x "/etc/init.d/apache2" ]; then
     if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
