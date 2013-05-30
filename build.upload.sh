@@ -2,7 +2,6 @@
 set -e
 
 [ "$1" != "nobuild" ] && rm -f ../max-control*deb
-cp debian/control.zentyal debian/control
 VERSION=$(dpkg-parsechangelog | awk '/^Version/ {print $2}')
 
 
@@ -15,5 +14,4 @@ VERSION=$(dpkg-parsechangelog | awk '/^Version/ {print $2}')
 
 
 fakeroot debian/rules clean
-rm -f debian/control
-[ "$1" != "nobuild" ] && dpkg -i ../max-control*deb
+[ "$1" != "nobuild" ] && dpkg -i ../max-control_*${VERSION}*deb ../zentyal-maxcontrol_*${VERSION}*deb
