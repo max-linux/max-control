@@ -6,7 +6,7 @@
         <tr> 
             <td class='tright'><span class="ftitle">Nombre de usuario:</span></td> 
             <td>
-                <input type='text' class='inputText' name='uid' autocomplete="off" maxlength='20' onblur='javascript:useduid(this.value);' />
+                <input type='text' class='inputText' name='cn' autocomplete="off" maxlength='20' onblur='javascript:usedcn(this.value);' />
                 <span class="error" style="display:none;" id='usernotvalid'>El identificador está ocupado</span>
                 <span class="note" style="display:none;" id='uservalid'>El identificador está libre</span>
                 <span class="error" style="display:none;" id='userempty'>El identificador no puede estar vacío</span>
@@ -16,7 +16,7 @@
 
         <tr> 
             <td class='tright'><span class='ftitle'>Nombre:</span></td> 
-            <td><input type='text' class='inputText' name='cn' autocomplete="off" /></td> 
+            <td><input type='text' class='inputText' name='givenname' autocomplete="off" /></td> 
         </tr>
 
         <tr>
@@ -86,8 +86,8 @@
 {literal}
 <script type="text/javascript">
 <!--
-function useduid(uid) {
-    if ( uid == '' ) {
+function usedcn(cn) {
+    if ( cn == '' ) {
         $('#userempty')[0].style.display='';
         return false;
     }
@@ -97,7 +97,7 @@ function useduid(uid) {
     $.ajax({
       type: "POST",
       url: ajaxurl,
-      data: "accion=useduid&uid="+uid,
+      data: "accion=usedcn&cn="+cn,
       success: function(data) {
         if (data == 'used') {
             $('#usernotvalid')[0].style.display='';

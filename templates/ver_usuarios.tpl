@@ -50,8 +50,8 @@
 <table class='dataTable'> 
     <thead> 
       <tr>
-      <th class=''>Identificador {$pager->getSortIcons('uid')}</th> 
-      <th class=''>Nombre {$pager->getSortIcons('cn')} Apellidos {$pager->getSortIcons('sn')}</th> 
+      <th class=''>Identificador {$pager->getSortIcons('cn')}</th> 
+      <th class=''>Nombre {$pager->getSortIcons('givenname')} Apellidos {$pager->getSortIcons('sn')}</th> 
       <th class=''>Rol
           <select name='selectrole' id='selectrole' onchange="javascript:rolFilter(this);">
             <option value='' {if $role == ''}selected="selected"{/if}>----------</option>
@@ -82,7 +82,7 @@
         {else}
         <td class='tcenter'><span>{$u->attr('cn')} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if} </span></td> 
         {/if}
-        <td class='tcenter'><span>{$u->attr('cn')} {$u->attr('sn')}</span></td> 
+        <td class='tcenter'><span>{$u->attr('givenname')} {$u->attr('sn')}</span></td> 
         <td class='tcenter'><span>
             {if $u->get_role() == 'teacher'}Profesor{/if}
             {if $u->get_role() == 'tic'}Coordinador TIC{/if}
