@@ -1,3 +1,9 @@
+max-control (3.0.0~alfa4) max; urgency=low
+
+  * New alfa, users add/delete/edit/import working
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Thu, 30 May 2013 12:16:47 +0200
+
 max-control (3.0.0~alfa3) max; urgency=low
 
   * Fix install of zentya-maxcontrol
