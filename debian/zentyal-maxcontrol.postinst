@@ -1,22 +1,26 @@
 #!/bin/sh
 
 
-exit 0
 
 if [ "$1" = "configure" ]; then
-    if ! grep -q icaptive /etc/zentyal/hooks/firewall.postservice >/dev/null 2>&1; then
-        cat /etc/zentyal/hooks/captiveportal.postservice > /etc/zentyal/hooks/firewall.postservice
-    fi
+    #if ! grep -q icaptive /etc/zentyal/hooks/firewall.postservice >/dev/null 2>&1; then
+    #    cat /etc/zentyal/hooks/captiveportal.postservice > /etc/zentyal/hooks/firewall.postservice
+    #fi
 
     [ -e /proc/cmdline ] && ! grep -q debian-installer /proc/cmdline && /etc/init.d/zentyal firewall restart
 
-    # if not include before divert call Zentyal to regen smb.conf
-    # if ! grep -q 'max-control' /etc/samba/smb.conf; then
-    #     echo " * Configurando SAMBA con max-control ..."
-    #     touch /etc/samba/max-control.conf
-    #     /usr/share/zentyal/initial-setup samba
-    #     [ -e /proc/cmdline ] && ! grep -q debian-installer /proc/cmdline && /etc/init.d/zentyal samba restart
-    # fi
+
+    for f in /usr/share/zentyal-maxcontrol/hooks/*; do
+        h=$(basename $f)
+        echo " * Copiando hook: $h"
+        cp "$f" /etc/zentyal/hooks/
+        chmod +x /etc/zentyal/hooks/"$h"
+
+	# reiniciar servicio
+        SRV=$(echo $h| awk -F"." '{print $1}')
+        /etc/init.d/zentyal $SRV restart || true
+    done
+
 fi
 
 
