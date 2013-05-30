@@ -27,7 +27,7 @@ class Permisos {
     function is_connected(){
         global $gui;
         if ( isset($_SESSION["user"]) ) {
-            $gui->debug("permisos::is_connected() true");
+            //$gui->debug("permisos::is_connected() true");
             return True;
         }
         else {
@@ -61,7 +61,7 @@ class Permisos {
             return false;
         
         if ( isset($_SESSION['is_admin']) ) {
-            $gui->debug("permisos::is_admin() return session var='".$_SESSION['is_admin']."'");
+            //$gui->debug("permisos::is_admin() return session var='".$_SESSION['is_admin']."'");
             return $_SESSION['is_admin'];
         }
         
@@ -127,6 +127,13 @@ class Permisos {
         
         $ldap = new LDAP($binddn=$userdn, $bindpw=$pass);
         if ( ! $ldap->connect() ) {
+            $gui->debug("Usuario o contraseña incorrecta");
+            return false;
+        }
+
+        //if($user != )
+        if( !$ldap->get_user($user) ) {
+            // para mayusculas y minusculas
             $gui->debug("Usuario o contraseña incorrecta");
             return false;
         }
