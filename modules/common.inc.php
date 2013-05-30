@@ -206,7 +206,7 @@ function sanitizeOne($var, $type) {
         break;
         
         case 'net': // xx.xx.xx.xx
-        $var = preg_replace("/[^0-9.]/","", $var); 
+        $var = preg_replace("/[^0-9.]/","", $var);
         break;
         
         case 'mac': // xx:xx:xx:xx:xx:xx
