@@ -47,19 +47,19 @@ class Ajax {
         return false;
     }
 
-    function useduid($uid) {
-        if ( !$this->test_string($uid) ) {
+    function usedcn($cn) {
+        if ( !$this->test_string($cn) ) {
             $this->output = "invalid";
             return;
         }
         global $ldap;
-        if ( ! $ldap->get_user($uid) )
+        if ( ! $ldap->get_user($cn) )
             $this->output="free";
         else
             $this->output="used";
     }
 
-    function usedcn($cn) {
+    function usedgroup($cn) {
         if ( !$this->test_string($cn) ) {
             $this->output = "invalid";
             return;
@@ -113,8 +113,8 @@ class Ajax {
         switch($data['accion']) {
             case "getip": $this->getip($data['hostname']); break;
             case "getmac": $this->getmac($data['hostname']); break;
-            case "useduid": $this->useduid($data['uid']); break;
             case "usedcn": $this->usedcn($data['cn']); break;
+            case "usedgroup": $this->usedgroup($data['cn']); break;
             case "usedaula": $this->usedaula($data['cn']); break;
             case "importprogress": $this->importprogress(); break;
             default: $this->invalid();
