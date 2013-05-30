@@ -18,7 +18,7 @@ class ModuleLoader
         
         if($thismodule == "") return;
         
-        $gui->debug("cargando $thismodule...");
+        //$gui->debug("cargando $thismodule...");
         
         if ((@include "$path/modules/$thismodule.mod.php") == true) {
             $this->start_module($thismodule);
