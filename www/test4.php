@@ -36,4 +36,3 @@ $gui->debuga($ldap->is_teacher('festeban'));
 
 
 
-?>

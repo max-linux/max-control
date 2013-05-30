@@ -270,4 +270,3 @@ switch($action) {
     default: $gui->session_error("Accion desconocida '$action' en modulo $module");
 }
 
-?>

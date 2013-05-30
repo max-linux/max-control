@@ -77,4 +77,4 @@ header("Location: $schema://$host/$path/img/status_ok.png");
 
 
 mdie();
-?>
+

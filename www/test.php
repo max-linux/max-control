@@ -154,4 +154,3 @@ $gui->debug($ldap->get_users('prueba2'));
 // $exe->init();
 // echo $exe->windowsexe("ipconfig");
 
-?>

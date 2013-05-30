@@ -130,4 +130,4 @@ class Ajax {
         die($errtxt);
     }
 }
-?>
+

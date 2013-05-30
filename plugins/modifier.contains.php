@@ -32,4 +32,3 @@ function smarty_modifier_contains($string, $find='', $cases = false)
 
 /* vim: set expandtab: */
 
-?>

@@ -320,4 +320,3 @@ switch($action) {
     /*default: $url->ir($module, "equipo");*/
 }
 
-?>
