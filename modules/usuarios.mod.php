@@ -73,7 +73,7 @@ function ver($module, $action, $subaction) {
     $pager=new PAGER($usuarios, $urlform, 0, $args='', NULL);
     $pager->processArgs( array('Filter', 'skip', 'role', 'sort') );
     $usuarios=$pager->getItems();
-    $pager->sortfilter="(uid|cn|sn|usedSize)";
+    $pager->sortfilter="(cn|displayname|sn|usedSize)";
     
     /*  overquota 
     *   try to load /var/lib/max-control/quota.cache.php
@@ -87,6 +87,7 @@ function ver($module, $action, $subaction) {
             $overQuotaEnabled=True;
         }
     }
+    //$gui->debuga($usuarios);
     /*******************************************************/
     
     $data=array("usuarios" => $usuarios, 
@@ -127,6 +128,8 @@ function editar($module, $action, $subaction){
         $url->ir($module, "ver");
     }
     
+    $gui->debuga($user);
+
     $urlform=$url->create_url($module, 'guardar');
     
     $data=array("username"=>$username, 
@@ -149,18 +152,19 @@ function guardar($module, $action, $subaction) {
     /*
         Array
         (
-            [cn] => Juan
-            [sn] => Lopez Gómez
+            [name] => Pepe
+            [sn] => Fernández
+            [description] => aaaaa
             [role] => 
-            [loginShell] => /bin/bash
+            [loginShell] => /bin/false
             [newpwd] => 
             [newpwd2] => 
             [Editar] => Guardar
-            [uid] => juan12
+            [cn] => pepe
         )
     */
-    $useruid=leer_datos('uid');
-    if ($useruid == $_SESSION["username"]) {
+    $usercn=leer_datos('cn');
+    if ($usercn == $_SESSION["username"]) {
         $gui->session_error("No se puede editar la cuenta con la que se está conectado.");
         $url->ir($module, "ver");
     }
@@ -168,7 +172,7 @@ function guardar($module, $action, $subaction) {
     
     //$gui->debug("<pre>".print_r($ldap->additionalPasswords('test', 'test'), true)."</pre>");
     
-    $usuario=$ldap->get_user($useruid);
+    $usuario=$ldap->get_user($usercn);
     if( ! $permisos->is_admin() && $usuario->get_role() == 'admin') {
         $gui->session_error("Sólo los Administradores pueden editar cuentas de Administradores.");
         $url->ir($module, "ver");
@@ -191,19 +195,21 @@ function guardar($module, $action, $subaction) {
         }
     }
     
-    sanitize($_POST, array('uid' => 'uid',
-                           'cn'=>'cnsn',
+    sanitize($_POST, array(
+                           'cn'=>'cn',
+                           'displayname'=>'displayname',
                            'sn' => 'cnsn',
                            'description' => 'charnum',
                            'loginShell' => 'shell',
                            'role' => 'role'));
-    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+    $gui->debuga($_POST);
+    
     $usuario->set($_POST);
-    if( $usuario->description == '' ) {
-        $usuario->description=array();
-        $usuario->ldapdata['description']=array();
-    }
-    $res=$usuario->save( array('cn', 'sn', 'loginShell', 'description') );
+    // if( $usuario->description == '' ) {
+    //     $usuario->description=array();
+    //     $usuario->ldapdata['description']=array();
+    // }
+    $res=$usuario->save( array('cn', 'displayname', 'sn', 'loginShell', 'description') );
     
     if ($res)
         $gui->session_info("Datos guardados correctamente");
@@ -215,6 +221,7 @@ function guardar($module, $action, $subaction) {
     
     if(! DEBUG)
         $url->ir($module, "ver");
+    
 }
 
 function deletemultiple($module, $action, $subaction) {
@@ -311,18 +318,15 @@ function guardarnuevo($module, $action, $subaction) {
     */
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     /*
-        Array
-        (
-            [uid] => x6523
-            [cn] => Pedro
-            [sn] => Lopez González
-            [description] => comentario de pedro
-            [password] => 1234
-            [repassword] => 1234
-            [role] => 
-            [loginShell] => /bin/bash
+            [cn] => pepe6
+            [givenname] => Pepe6
+            [sn] => Ruiz Lopez
+            [password] => pepe6
+            [repassword] => pepe6
+            [description] => aaaaaa
+            [role] => teacher
+            [loginShell] => /bin/false
             [add] => Añadir
-        )
     */
     if( !$permisos->is_admin() && leer_datos('role') == 'admin') {
         $gui->session_error("Sólo los Administradores pueden crear Administradores.");
@@ -333,14 +337,14 @@ function guardarnuevo($module, $action, $subaction) {
         $gui->session_error("Las contraseñas no coinciden.");
         $url->ir($module, "add");
     }
-    if ( leer_datos('uid') == '' ) {
+    if ( leer_datos('cn') == '' ) {
         $gui->session_error("Identificador vacío.");
         $url->ir($module, "add");
     }
     
-    sanitize($_POST, array('uid' => 'uid',
-                           'cn'=>'cnsn',
-                           'sn' => 'cnsn',
+    sanitize($_POST, array('cn'=>'cn',
+                           'givenname'=>'givenname',
+                           'sn' => 'cn',
                            'description' => 'charnum',
                            'loginShell' => 'shell',
                            'role' => 'role',
@@ -348,6 +352,8 @@ function guardarnuevo($module, $action, $subaction) {
                            'repassword' => 'str'));
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $user = new USER($_POST);
+    $user->password=$_POST['password'];
+
     if ( ! $user->newUser() )  {
         $gui->session_error("No se ha podido añadir el usuario, compruebe todos los campos.");
         $url->ir($module, "add");
@@ -379,6 +385,8 @@ function groups($module, $action, $subaction) {
     $groups=$pager->getItems();
     
     $pager->sortfilter="(cn|numUsers)";
+
+    //$gui->debuga($groups);
 
     $data=array("groups" => $groups, 
                 "filter" => $filter, 
@@ -516,7 +524,7 @@ function groupdeletedo($module, $action, $subaction) {
     global $ldap;
     foreach($groupsarray as $group) {
         $todelete=$ldap->get_groups($group);
-        if ( ! $todelete[0] ){
+        if ( ! isset($todelete[0]) ){
             $gui->session_error(" El grupo '$group' no existe.");
             continue;
         }
