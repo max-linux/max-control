@@ -10,6 +10,7 @@ bin/edit.quotas       usr/bin/
 bin/reset-quotas      usr/bin/
 bin/pyoverquota       usr/bin/
 bin/max-control-importer usr/bin
+bin/max-s4sync        usr/bin/
 
 classes               usr/share/max-control/
 modules               usr/share/max-control/

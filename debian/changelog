@@ -1,3 +1,15 @@
+max-control (3.0.0~alfa3) max; urgency=low
+
+  * Fix install of zentya-maxcontrol
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 28 May 2013 16:20:25 +0200
+
+max-control (3.0.0~alfa2) max; urgency=low
+
+  * Prepare alfa2
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Tue, 28 May 2013 12:44:27 +0200
+
 max-control (3.0.0~alfa1) precise; urgency=low
 
   * New alpha version for Zentyal 3
