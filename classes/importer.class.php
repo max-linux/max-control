@@ -30,7 +30,7 @@ class Importer {
         global $gui;
         $this->fname=$fname;
         $this->defaultPassword='cmadrid';
-        $this->maxImport=5;
+        $this->maxImport=5; // crear de 5 en 5
         return;
     }
     
@@ -90,7 +90,7 @@ class Importer {
                 $profesores++;
             }
             else {
-                $userrole=""; /* alumno vacío */
+                $userrole=''; /* alumno vacío */
                 $alumnos++;
             }
             /*********** 20 chars UID limit ***************/
@@ -100,21 +100,21 @@ class Importer {
                 $extradata=", usuario sin recortar: $olduid";
             }
             /**********************************************/
-            $tmp=array('uid'           => $userdata[IMPORT_UID],
-                       'plainPassword' => $this->defaultPassword,
-                       'cn'            => $userdata[IMPORT_NAME],
+            $tmp=array('cn'            => $userdata[IMPORT_UID],
+                       'password'      => $this->defaultPassword,
+                       'givenname'     => $userdata[IMPORT_NAME],
                        'sn'            => $userdata[IMPORT_SURNAME],
                        'description'   => $userdata[IMPORT_NAME] . ' '. $userdata[IMPORT_SURNAME].$extradata,
                        'group'         => $usergroup,
                        'loginShell'    => '/bin/false',
                        'role'          => $userrole);
-            sanitize($tmp, array('uid' => 'uid',
-                                 'cn'=>'cnsn',
+            sanitize($tmp, array('cn' => 'uid',
+                                 'givenname'=>'cnsn',
                                  'sn' => 'cnsn',
                                  'description' => 'cnsn',
                                  'loginShell' => 'shell',
                                  'role' => 'role',
-                                 'plainPassword' => 'str',
+                                 'password' => 'str',
                                  'group' => 'uid'));
             $gui->debuga($tmp);
             $users[]=$tmp;
@@ -297,14 +297,14 @@ class Importer {
         $failed=0;
         global $ldap;
         foreach($users as $newuser) {
-            $origuid=$newuser['uid'];
+            $origuid=$newuser['cn'];
             
             if ( $this->isUserImported($origuid) ) {
                 //$gui->session_error("$i Usuario '".$origuid."' importado:continue...");
                 continue;
             }
             
-            if (strlen($newuser['uid']) == MAX_UID_LENGTH) {
+            if (strlen($newuser['cn']) == MAX_UID_LENGTH) {
                 if ( $this->isUserImported($origuid) ) {
                     //$gui->session_error("$i Usuario '".$origuid."' de 20 ya importado:continue2...");
                     $gui->session_error("Usuario '".$origuid."' existe, no se crearán duplicados.");
@@ -317,9 +317,9 @@ class Importer {
             }
             
             /* user UID can't have more than 20 chars */
-            if (strlen($newuser['uid']) > MAX_UID_LENGTH) {
+            if (strlen($newuser['cn']) > MAX_UID_LENGTH) {
                 $create=false;
-                $newuid=substr($newuser['uid'], 0, MAX_UID_LENGTH);
+                $newuid=substr($newuser['cn'], 0, MAX_UID_LENGTH);
                 //$gui->session_error("$i Usuario '".$origuid."' de más de 20...");
                 if ( $this->isUserImported($origuid) ) {
                     //$gui->session_error("$i Usuario '".$newuser['uid']."' importado:continue3...");
@@ -360,49 +360,53 @@ class Importer {
                 else {
                     //$gui->session_error("$i ELSE Usuario '$newuid' no existe");
                     $create=true;
-                    $this->LongUID($newuser['uid'], $newuid);
-                    $newuser['uid']=$newuid;
+                    $this->LongUID($newuser['cn'], $newuid);
+                    $newuser['cn']=$newuid;
                 }
                 if( ! $create ) {
                     continue;
                 }
                 else {
-                    $gui->session_info("Nombre largo (".strlen($origuid)."caracteres) acortado: $origuid =&gt; ".$newuser['uid']);
+                    $gui->session_info("Nombre largo (".strlen($origuid)."caracteres) acortado: $origuid =&gt; ".$newuser['cn']);
                 }
             }
             /*******************************************/
             //$gui->session_error("MAIN Usuario '".$origuid."' ".strlen($origuid)."...");
             $user = new USER($newuser);
-            if ( $ldap->get_user($newuser['uid']) ) {
-                //$gui->session_error("El usuario '".$newuser['uid']."' ya existe.");
+            $user->background=false;
+            if ( $ldap->get_user($newuser['cn']) ) {
+                $gui->session_error("El usuario '".$newuser['cn']."' ya existe.");
                 continue;
             }
             elseif ( $user->newUser() ) {
                 $this->userImported($origuid);
                 $i++;
                 $this->_createGroup($newuser['group'], $ldap);
-            } /* end of user->newUser() */
+            } // end of user->newUser()
             else {
-                $gui->debug(preg_match( '/'.$newuser['uid'].'/', $gui->error));
-                if( ! preg_match( '/'.$newuser['uid'].'/', $gui->error) ) {
-                    $gui->session_error("Error al crear usuario '".$newuser['uid']."' =&gt; " . $user->errortxt);
+                $gui->debug(preg_match( '/'.$newuser['cn'].'/', $gui->error));
+                if( ! preg_match( '/'.$newuser['cn'].'/', $gui->error) ) {
+                    $gui->session_error("Error al crear usuario '".$newuser['cn']."' =&gt; " . $user->errortxt);
                     $failed++;
                 }
                 continue;
             }
             
+            
             if($newuser['group'] != '') {
-                /* añadir usuario a grupo */
+                // añadir usuario a grupo
                 $groups=$ldap->get_groups($newuser['group']);
-                if ( $groups[0] && $groups[0]->newMember($newuser['uid']) ) {
-                        $gui->session_info("Usuario '".$newuser['uid']."' añadido al grupo '".$newuser['group']."'.</br>");
+                $gui->debuga($groups);
+                if ( isset($groups[0]) && $groups[0]->newMember($newuser['cn']) ) {
+                        $gui->session_info("Usuario '".$newuser['cn']."' añadido al grupo '".$newuser['group']."'");
                 }
                 else {
-                    $gui->session_error("No se ha podido añadir al usuario '".$newuser['uid']."' al grupo '".$newuser['group']."'.");
+                    $gui->session_error("No se ha podido añadir al usuario '".$newuser['cn']."' al grupo '".$newuser['group']."'.");
                 }
             }
             
-            /* salir si en el bucle hemos creado mas de X usuarios */
+            
+            // salir si en el bucle hemos creado mas de X usuarios
             if ($i >= $this->maxImport) {
                 //$gui->session_error("i($i) > maxImport(".$this->maxImport.")");
                 break;
@@ -454,21 +458,21 @@ class Importer {
         }
     }
 
-    function LongUID($uid, $newuid) {
-        file_put_contents(IMPORTER_DIR . "/long.php", "\$longUsernames['$uid']=array('$uid','$newuid');\n", FILE_APPEND | LOCK_EX);
+    function LongUID($cn, $newuid) {
+        file_put_contents(IMPORTER_DIR . "/long.php", "\$longUsernames['$cn']=array('$cn','$newuid');\n", FILE_APPEND | LOCK_EX);
     }
 
 
-    function userImported($uid) {
-        file_put_contents(IMPORTER_DIR . "/users_imported.php", "\$usersImported[]='$uid';\n", FILE_APPEND | LOCK_EX);
+    function userImported($cn) {
+        file_put_contents(IMPORTER_DIR . "/users_imported.php", "\$usersImported[]='$cn';\n", FILE_APPEND | LOCK_EX);
     }
     
     
-    function isUserImported($uid) {
+    function isUserImported($cn) {
         global $gui;
         if ( file_exists ( IMPORTER_DIR . "/users_imported.php" ) ) {
             include(IMPORTER_DIR . "/users_imported.php" );
-            if( in_array($uid, $usersImported) ) {
+            if( in_array($cn, $usersImported) ) {
                 //$gui->session_error("isUserImported($uid)=true");
                 return true;
             }
