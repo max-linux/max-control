@@ -45,4 +45,5 @@ echo print_r($found,true);
 #$mac=array('macAddress' => $found['macAddress'] );
 #$r = ldap_modify($cid, 'uid=wxp$,ou=Computers,dc=max-server', $mac );
 #echo print_r($r, true);
-?>
+
+

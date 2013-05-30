@@ -33,4 +33,3 @@ while($attrs = $ldap->fetch())
 
 
 
-?>

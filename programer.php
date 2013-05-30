@@ -44,4 +44,3 @@ $cronprogramer = new CronProgramer();
 $cronprogramer->doJobs();
 
 
-?>

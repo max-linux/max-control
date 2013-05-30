@@ -40,4 +40,4 @@ class USER {
 
 $user = new USER( array("cn"=>'cn', 'fail' => 'fail') );
 $user->show();
-?>
+

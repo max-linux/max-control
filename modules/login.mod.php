@@ -70,4 +70,3 @@ $gui->debug("MODULO LOGIN: action=$active_action module=$active_module");
 
 
 
-?>

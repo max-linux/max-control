@@ -46,4 +46,3 @@ $ldap = new LDAP();
 $importer = new Importer();
 $importer->doImport();
 
-?>

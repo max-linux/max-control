@@ -27,4 +27,3 @@ function smarty_modifier_isset($var)
 
 /* vim: set expandtab: */
 
-?>

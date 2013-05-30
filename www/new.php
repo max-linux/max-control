@@ -68,4 +68,3 @@ $gui->debuga( $ldap->get_user('Administrator') );
 
 //$gui->debuga($ldap->get_computers_from_aula('Aula23'));
 
-?>

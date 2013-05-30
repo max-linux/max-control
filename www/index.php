@@ -15,6 +15,12 @@ if ( ! is_readable($path . '/conf.inc.php') ) {
 include($path . '/conf.inc.php');
 include($path . '/modules/common.inc.php');
 
+if(DEBUG) {
+    ini_set('display_errors', 'On');
+    ini_set('display_startup_errors', 'On');
+    ini_set("session.gc_maxlifetime", "120000");
+    error_reporting(E_ALL);
+}
 
 $site['path']=$path;
 
@@ -109,4 +115,3 @@ if (isset($gui)) {
 }
 
 
-?>
