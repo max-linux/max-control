@@ -68,12 +68,12 @@ if ($active_action == "guardar") {
             $url->ir($active_module, "editar");
         }
         else {
-            $usuario->update_password($new, $usuario->uid);
+            $usuario->update_password($new, $usuario->cn);
         }
     }
     
-    sanitize($_POST, array('uid' => 'uid',
-                           'cn'=>'cnsn',
+    sanitize($_POST, array('cn'=>'cnsn',
+                           'givenname' => 'cnsn',
                            'sn' => 'cnsn',
                            'description' => 'cnsn'));
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
@@ -81,9 +81,8 @@ if ($active_action == "guardar") {
     
     if( $usuario->description == '' ) {
         $usuario->description=array();
-        $usuario->ldapdata['description']=array();
     }
-    $res=$usuario->save( array('cn', 'sn', 'description') );
+    $res=$usuario->save( array('cn', 'givenname', 'sn', 'description') );
     
     if ($res)
         $gui->session_info("Datos guardados correctamente");
