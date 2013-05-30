@@ -9,25 +9,366 @@ PROFILES_DIR="/home/samba/profiles/"
 GROUPS_DIR="/home/samba/groups/"
 SHARED_DIR="/home/samba/shares/"
 
+LOCK_FILE="/var/lib/max-control/max-control-run.lock"
+MAX_WAIT=20
+
+
 echo_exit(){
     echo $@
     exit 1
 }
 
+WAIT=0
+
+max_control_need_wait() {
+    while [ -f $LOCK_FILE ]; do
+        sleep 1
+        WAIT=$((WAIT+1))
+        echo "max-control[$$]: waiting ($@)"
+        if [ $WAIT -ge $MAX_WAIT ]; then
+            #echo_exit "locked"
+            rm -f $LOCK_FILE
+        fi
+    done
+}
+
+create_lock() {
+    max_control_need_wait
+    touch $LOCK_FILE
+}
+
+
+
+on_exit() {
+    #echo "remove lock"
+    rm -f $LOCK_FILE
+}
+
+
+trap on_exit EXIT
+trap on_exit INT
+trap on_exit QUIT
+trap on_exit TERM
+
+#touch $LOCK_FILE
+
+
+
 case $1 in
+    adduser)
+        # username and surname
+        NEWUSER=$2
+        NAME=$3
+        SURNAME=$4
+        # password
+        PASSWD=$5
+        ROLE=$6
+
+        if wbinfo -i "$NEWUSER" >/dev/null 2>&1 ; then
+            echo_exit "exists"
+        fi
+
+        create_lock
+
+        #DCNAME="$(samba-tool domain info 127.0.0.1 2>/dev/null| awk '/^DC name/ {print $4}')"
+        # max-server.madrid.local
+        DCNAME="$(dnsdomainname -f)"
+
+        DRIVE="$(awk -F'"' '/drive/ {print $4}' /var/lib/zentyal/conf/samba.bak| tail -1)"
+        # H:
+        if [ "$DRIVE" = "" ]; then
+            DRIVE='H:'
+        fi
+
+        LDAP_ADMIN="$(awk -F"'" '/LDAP_ADMIN/ {print $2}' /etc/max-control/conf.inc.php)"
+        LDAP_PASSW="$(awk -F"'" '/LDAP_PASS/ {print $2}' /etc/max-control/conf.inc.php)"
+
+
+
+
+        # echo samba-tool user add \
+        #   "$NEWUSER" "$PASSWD" --use-username-as-cn --given-name="$NAME" --surname="$SURNAME" \
+        #   -U"${LDAP_ADMIN}":"${LDAP_PASSW}" \
+        #   --profile-path='\\\\'$DCNAME'\\profiles\\'$NEWUSER \
+        #   --home-directory='\\\\'$DCNAME'\\'$NEWUSER \
+        #   --home-drive="'$DRIVE'"
+
+        samba-tool user add \
+          "$NEWUSER" "$PASSWD" --use-username-as-cn --given-name="$NAME" --surname="$SURNAME" \
+          -U"${LDAP_ADMIN}":"${LDAP_PASSW}" \
+          --profile-path='\\'$DCNAME'\profiles\'$NEWUSER \
+          --home-directory='\\'$DCNAME'\'$NEWUSER \
+          --home-drive="'$DRIVE'" || echo_exit "error"
+
+
+        #ldbsearch -H /opt/samba4/private/sam.ldb '(cn=aaa9)'
+
+        #NEWUUID=$(wbinfo --sid-to-uid `wbinfo --name-to-sid $NEWUSER | awk '{print $1}'`)
+        NEWUUID=$(wbinfo -n $NEWUSER| awk -F" |\-" '{print $8}')
+        NEWUUID=$((NEWUUID+50000))
+        #echo "NEWUUID=$NEWUUID"
+
+        mkdir -p "${PROFILES_DIR}/${NEWUSER}"
+        chown "${NEWUUID}":__USERS__ "${PROFILES_DIR}/${NEWUSER}"
+        chmod 700 "${PROFILES_DIR}/${NEWUSER}"
+
+        setfacl -b "${PROFILES_DIR}/${NEWUSER}"    2>&1
+        setfacl -R -m u:root:rwx,g::---,g:__USERS__:---,u:${NEWUUID}:rwx "${PROFILES_DIR}/${NEWUSER}" 2>&1
+        setfacl -R -m d:u:root:rwx,g::---,g:__USERS__:---,u:${NEWUUID}:rwx "${PROFILES_DIR}/${NEWUSER}" 2>&1
+
+
+        QUOTA=$(max-control getdefaultquota)
+        case $ROLE in
+            admin)
+                QUOTA=$((QUOTA*2))
+                samba-tool group addmembers "Administrators" "$NEWUSER"
+                samba-tool group addmembers "Group Policy Creator Owners" "$NEWUSER"
+                samba-tool group addmembers "Enterprise Admins" "$NEWUSER"
+                samba-tool group addmembers "Schema Admins" "$NEWUSER"
+                samba-tool group addmembers "Domain Admins" "$NEWUSER"
+            ;;
+            teacher)
+                QUOTA=$((QUOTA*2))
+                samba-tool group addmembers "Teachers" "$NEWUSER"
+            ;;
+            tic)
+                samba-tool group addmembers "CoordinadoresTIC" "$NEWUSER"
+            ;;
+        esac
+        /usr/bin/edit.quotas --set --user="${NEWUUID}" --size="$QUOTA" >/dev/null 2>&1
+
+        
+        echo 'OK'
+        exit 0
+
+
+        # sync SAMBA => LDAP for this new user
+        if [ ! -e /var/lib/max-control/importer/importer.lock ]; then
+            max-s4sync "$NEWUSER"
+            #
+            #
+            
+            QUOTA=$(max-control getdefaultquota)
+
+            #FIXME
+            max-control rights "$NEWUSER" "$ROLE" >/dev/null 2>&1
+
+            case $ROLE in
+                admin)
+                    QUOTA=$((QUOTA*2))
+                ;;
+                teacher)
+                    QUOTA=$((QUOTA*2))
+                ;;
+            esac
+            max-control createhome "$NEWUSER" "$QUOTA" >/dev/null 2>&1
+        fi
+
+
+
+
+        
+
+
+        # my @cmds = ();
+        # # Create the directory if it does not exist
+        # push (@cmds, "mkdir -p \'$path\'") unless -d $path;
+
+
+        # # Set unix permissions on directory
+        # push (@cmds, "chown $samAccountName:$group \'$path\'");
+        # push (@cmds, "chmod 0700 \'$path\'");
+
+        # # Set native NT permissions on directory
+        # my @perms;
+        # push (@perms, 'u:root:rwx');
+        # push (@perms, 'g::---');
+        # push (@perms, "g:$group:---");
+        # push (@perms, "u:$samAccountName:rwx");
+        # push (@cmds, "setfacl -b \'$path\'");
+        # push (@cmds, 'setfacl -R -m ' . join(',', @perms) . " \'$path\'");
+        # push (@cmds, 'setfacl -R -m d:' . join(',d:', @perms) ." \'$path\'");
+        # EBox::Sudo::root(@cmds);
+
+
+
+
+
+
+        # mkdir -p "$HOMES_DIR/${NEWUSER}"
+        # chown "${NEWUSER}":__USERS__ "${HOMES_DIR}/${NEWUSER}"
+        # chmod 701 "${HOMES_DIR}/${NEWUSER}"
+
+        # # profile
+        # mkdir -p "${PROFILES_DIR}/${NEWUSER}"
+        # chown "${NEWUSER}":__USERS__ "${PROFILES_DIR}/${NEWUSER}"
+        # chmod 701 "${PROFILES_DIR}/${NEWUSER}"
+
+        # #mkdir -p "${PROFILES_DIR}/${NEWUSER}.V2"
+        # #chown "${NEWUSER}":__USERS__ "${PROFILES_DIR}/${NEWUSER}.V2"
+        # #chmod 701 "${PROFILES_DIR}/${NEWUSER}.V2"
+
+        # if id "$NEWUSER" 2>/dev/null | grep -q -e Teachers -e "Domain Admins"; then
+        #     QUOTA=$((QUOTA*2))
+        # fi
+
+
+        # # set quota
+        # #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
+        # /usr/bin/edit.quotas --set --user="${NEWUSER}" --size=${QUOTA}
+        exit 0
+        ;;
+################################################################################
+    chpasswd)
+        # username and surname
+        USER=$2
+        PASS=$3
+
+        create_lock
+
+        samba-tool user setpassword "${USER}" --newpassword="${PASS}" >/dev/null 2>&1 && echo 'OK'
+        exit 0
+        ;;
+################################################################################
+    deluser)
+        # username and surname
+        DELUSER=$2
+
+        create_lock
+
+        samba-tool user delete "$DELUSER" >/dev/null 2>&1 && echo 'OK'
+        exit 0
+        ;;
+################################################################################
+    addcomputer)
+        # username and surname
+        NAME="$(echo $2| tr '[:lower:]' '[:upper:]')"
+        IP=$3
+
+        # listar todos los registros DNS
+        # host -t A -l madrid.local
+
+
+        DN="$(dnsdomainname)"
+        LDAP_ADMIN="$(awk -F"'" '/LDAP_ADMIN/ {print $2}' /etc/max-control/conf.inc.php)"
+        LDAP_PASSW="$(awk -F"'" '/LDAP_PASS/ {print $2}' /etc/max-control/conf.inc.php)"
+
+        echo samba-tool dns add 127.0.0.1 ${DN} ${NAME} A ${IP} -U${LDAP_ADMIN}:${LDAP_PASSW}
+
+        exit 0
+        ;;
+################################################################################
+    addaula)
+        NEW=$2
+        DESC=$3
+
+        create_lock
+
+
+        samba-tool group add "$NEW" --groupou=CN=Computers --group-scope=Domain --group-type=Security --description="$DESC" >/dev/null 2>&1 && echo 'OK'
+        exit 0
+        ;;
+################################################################################
+    delmember)
+        # username and surname
+        GROUP=$2
+        MEMBER=$3
+
+        create_lock
+
+        samba-tool group removemembers "$GROUP" "$MEMBER" >/dev/null 2>&1 && echo 'OK'
+        exit 0
+        ;;
+################################################################################
+    addmember)
+        # username and surname
+        GROUP=$2
+        MEMBER=$3
+
+        create_lock
+
+        samba-tool group addmembers "$GROUP" "$MEMBER" >/dev/null 2>&1 && echo 'OK'
+        exit 0
+        ;;
+################################################################################
+    rights)
+        # username
+        RUSER=$2
+        # password
+        ROLE=$3
+
+        case $ROLE in
+            admin)
+                samba-tool group addmembers "Administrators" "$RUSER"
+                samba-tool group addmembers "Group Policy Creator Owners" "$RUSER"
+                samba-tool group addmembers "Enterprise Admins" "$RUSER"
+                samba-tool group addmembers "Schema Admins" "$RUSER"
+                samba-tool group addmembers "Domain Admins" "$RUSER"
+
+                # no tic
+                samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
+                # no teacher
+                samba-tool group removemembers "Teachers" "$RUSER"
+            ;;
+
+            tic)
+                samba-tool group addmembers "CoordinadoresTIC" "$RUSER"
+                # no admin
+                samba-tool group removemembers "Administrators" "$RUSER"
+                samba-tool group removemembers "Group Policy Creator Owners" "$RUSER"
+                samba-tool group removemembers "Enterprise Admins" "$RUSER"
+                samba-tool group removemembers "Schema Admins" "$RUSER"
+                samba-tool group removemembers "Domain Admins" "$RUSER"
+                # no teacher
+                samba-tool group removemembers "Teachers" "$RUSER"
+            ;;
+
+            teacher)
+                samba-tool group addmembers "Teachers" "$RUSER"
+
+                # no admin
+                samba-tool group removemembers "Administrators" "$RUSER"
+                samba-tool group removemembers "Group Policy Creator Owners" "$RUSER"
+                samba-tool group removemembers "Enterprise Admins" "$RUSER"
+                samba-tool group removemembers "Schema Admins" "$RUSER"
+                samba-tool group removemembers "Domain Admins" "$RUSER"
+                # no tic
+                samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
+            ;;
+
+            *)
+                #alumno
+
+                # no admin
+                samba-tool group removemembers "Administrators" "$RUSER"
+                samba-tool group removemembers "Group Policy Creator Owners" "$RUSER"
+                samba-tool group removemembers "Enterprise Admins" "$RUSER"
+                samba-tool group removemembers "Schema Admins" "$RUSER"
+                samba-tool group removemembers "Domain Admins" "$RUSER"
+                # no tic
+                samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
+                # no teacher
+                samba-tool group removemembers "Teachers" "$RUSER"
+            ;;
+        esac
+
+
+        exit 0
+        ;;
+################################################################################
     createhome)
         # username
         NEWUSER=$2
         # quota in MB
         QUOTA=$3
-        mkdir -p "$HOMES_DIR/${NEWUSER}"
-        chown "${NEWUSER}":__USERS__ "${HOMES_DIR}/${NEWUSER}"
-        chmod 701 "${HOMES_DIR}/${NEWUSER}"
+        # mkdir -p "$HOMES_DIR/${NEWUSER}"
+        # chown "${NEWUSER}":__USERS__ "${HOMES_DIR}/${NEWUSER}"
+        # chmod 700 "${HOMES_DIR}/${NEWUSER}"
 
         # profile
         mkdir -p "${PROFILES_DIR}/${NEWUSER}"
         chown "${NEWUSER}":__USERS__ "${PROFILES_DIR}/${NEWUSER}"
-        chmod 701 "${PROFILES_DIR}/${NEWUSER}"
+        chmod 700 "${PROFILES_DIR}/${NEWUSER}"
 
         #mkdir -p "${PROFILES_DIR}/${NEWUSER}.V2"
         #chown "${NEWUSER}":__USERS__ "${PROFILES_DIR}/${NEWUSER}.V2"
@@ -47,6 +388,9 @@ case $1 in
     requota)
         NEWUSER=$2
         QUOTA=$3
+
+        create_lock
+
         if id "$NEWUSER" 2>/dev/null | grep -q -e Teachers -e "Domain Admins"; then
             QUOTA=$((QUOTA*2))
         fi
@@ -87,9 +431,9 @@ case $1 in
 
         # arreglar permisos
         chown "${DELUSER}":__USERS__ "${HOMES_DIR}/${DELUSER}"
-        chmod 701 "${HOMES_DIR}/${DELUSER}"
+        chmod 700 "${HOMES_DIR}/${DELUSER}"
         chown "${DELUSER}":__USERS__ "${PROFILES_DIR}/${DELUSER}"
-        chmod 701 "${PROFILES_DIR}/${DELUSER}"
+        chmod 700 "${PROFILES_DIR}/${DELUSER}"
         #chown "${DELUSER}":Domain\ Users "${PROFILES_DIR}/${DELUSER}.V2"
         #chmod 701 "${PROFILES_DIR}/${DELUSER}.V2"
         exit 0
@@ -98,7 +442,19 @@ case $1 in
     addgroup)
         ADDGROUP=$2
         READONLY=$3
+        DESC=$4
+
+        create_lock
+
         [ "${ADDGROUP}" = "" ] && echo_exit "nonexists"
+
+        getent group "$ADDGROUP" >/dev/null && echo_exit "exists"
+        
+        if ! samba-tool group add "$ADDGROUP" --groupou=CN=Users --group-scope=Domain --group-type=Security --description="$DESC" 2>&1; then
+            echo 'error'
+            exit
+        fi
+
         mkdir -p "${GROUPS_DIR}/${ADDGROUP}"
         chown root:"${ADDGROUP}" "${GROUPS_DIR}/${ADDGROUP}"
         chmod +t "${GROUPS_DIR}/${ADDGROUP}"
@@ -125,8 +481,15 @@ case $1 in
 ################################################################################
     deletegroup)
         DELGROUP=$2
+        DELDIR=$3
         [ "${DELGROUP}" = "" ] && echo_exit "nonexists"
-        rm -rf "$GROUPS_DIR/${DELGROUP}"
+
+        samba-tool group delete "${DELGROUP}"
+
+        if [ "$DELDIR" = "1" ]; then
+            rm -rf "$GROUPS_DIR/${DELGROUP}"
+        fi
+
         echo "ok"
         exit 0
         ;;
@@ -162,7 +525,6 @@ case $1 in
         ;;
 ################################################################################
     gensamba)
-        rm -f /etc/samba/max-control.conf
         pymaxgensamba 2>&1
         echo "ok"
         exit 0

@@ -58,7 +58,7 @@ TO_ADD={
                }
         }
 
-NOT_VALID_KEYS=['global', 'netlogon', 'profiles', 'homes', 'ebox-internal-backups', 'ebox-quarantine', 'print$', 'isos']
+NOT_VALID_KEYS=['global', 'netlogon', 'profiles', 'sysvol', 'homes', 'print$', 'isos']
 HIDDEN_GROUPS=['Instaladores', 'CoordinadoresTIC']
 
 
