@@ -13,11 +13,12 @@ use EBox::Gettext;
 
 <div class='maxcontrol'>
 %if ($active eq 'yes') {
-<a href="http://<% $ENV{HTTP_HOST} %>/control/">Ver maximizado</a>
+<p>MAX CONTROL es un interfaz para la gestión sencilla de usuarios, grupos, equipos y aulas en el servidor de centro basado en Zentyal.</p>
+<a href="http://<% $ENV{HTTP_HOST} %>/control/">Abrir panel de control</a>
 %} else {
 <div class='note'>
 <% __x('El módulo MAX Control no está habilitado. {openhref}Habilítelo{closehref} primero.',
-      openhref  => '<a href="/ebox/ServiceModule/StatusView">',
+      openhref  => '<a href="/ServiceModule/StatusView">',
       closehref => '</a>') %>
 </div>
 %}
