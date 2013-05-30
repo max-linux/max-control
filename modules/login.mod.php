@@ -54,7 +54,9 @@ if ($username != "" && $contrasena != ""){
 if ($is_connecting){
     
     if( $permisos->conectar($username, $contrasena) ) {
-        $url->ir("miperfil", "");
+        if(!DEBUG) {
+            $url->ir("miperfil", "");
+        }
     }
     else {
         if(!DEBUG) {
