@@ -83,6 +83,8 @@ function ver($module, $action, $subaction) {
     else
         $equipos=$ldap->get_computers( $filter );
 
+    //$gui->debuga($equipos);
+
     $urlform=$url->create_url($module, $action);
     
     $pager=new PAGER($equipos, $urlform, 0, $args='', NULL);
@@ -119,7 +121,7 @@ function editar($module, $action, $subaction){
     
     if( ! $equipo ){
         $gui->session_error("Equipo '$hostname' no encontrado");
-        $url->ir($active_module, "ver");
+        $url->ir($module, "ver");
     }
     
     $aulas=$ldap->get_aulas();
@@ -151,10 +153,12 @@ function updatedo($module, $action, $subaction){
         }
         else {
             //$gui->debuga($equipo);
-            $gui->session_info("El equipo ".$equipo->uid." ya tiene MAC registrada, no se actualiza.");
+            $gui->session_info("El equipo ".$equipo->cn." ya tiene MAC registrada, no se actualiza.");
         }
     }
-    $url->ir($module, "ver");
+    if(!DEBUG) {
+        $url->ir($module, "ver");
+    }
 }
 
 
@@ -241,7 +245,7 @@ function guardar($module, $action, $subaction){
         $url->ir($module, "ver");
     
     $equipo=$equipos[0];
-    $gui->debuga($_POST);
+    //$gui->debuga($_POST);
     /*
     Array
     (
@@ -253,19 +257,18 @@ function guardar($module, $action, $subaction){
         [hostname] => pc4
     )
     */
-    sanitize($_POST, array('sambaProfilePath' => 'str',
-                           'ipHostNumber'=>'net',
-                           'ipNetmaskNumber' => 'net',
+    sanitize($_POST, array('ipHostNumber'=>'net',
                            'macAddress' => 'mac',
                            'bootFile' => 'plain',
-                           'hostname' => 'plain'));
-    $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
+                           'hostname' => 'plain',
+                           'aula' => 'plain')
+            );
+    $gui->debuga($_POST);
+    //$gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $equipo->set($_POST);
-    $res=$equipo->save( array('sambaProfilePath', 
-                              'ipHostNumber', 
-                              'ipNetmaskNumber', 
-                              'macAddress', 
-                              'bootFile') );
+    $equipo->description=$_POST['ipHostNumber'] . '/' . $_POST['macAddress'];
+    $equipo->aula=$_POST['aula'];
+    $res=$equipo->save();
     
     if ($res) {
         $gui->session_info("Equipo guardado correctamente.");
@@ -402,6 +405,8 @@ function aulasequipos($module, $action, $subaction){
         $url->ir($module, "aulas");
     }
     
+    //samba-tool dns add 192.168.1.1 madrid.local MAX70A A 192.168.1.100 -Uadministrator
+
     $aula=leer_datos('args');
     global $ldap;
     $all=$ldap->get_computers_in_and_not_aula($aula);
