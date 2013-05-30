@@ -31,7 +31,6 @@
   <a id="m" href="{$logout_url}"><small>{$role}</small><br/>Salir de sesión</a> 
 </div> 
 
-<!-- <h3>Panel de control de Servidor de Centro</h3> -->
 
 <!-- div menu -->
 <div id='menu'> 
@@ -97,7 +96,7 @@
             <img width='132' height='43' alt='EducaMadrid' src='{$baseurl}/img/educamadrid.png' />
         </a>
     </div>
-    <p class='copyright-notice'><strong>EducaMadrid</strong> - 2011  - Consejería de Educación y Empleo, Comunidad de Madrid, max-control versión: {$max_control_version}</p>
+    <p class='copyright-notice'><strong>EducaMadrid</strong> - 2011-{$smarty.now|date_format:'%Y'}  - Consejería de Educación y Empleo, Comunidad de Madrid, max-control versión: {$max_control_version}</p>
   </div> 
 </div>
 </body> 

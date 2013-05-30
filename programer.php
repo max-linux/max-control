@@ -1,8 +1,12 @@
 <?php
 /*  programer run as www-data user */
 
+if ( ! is_readable('conf.inc.php') ) {
+    die('conf.inc.php no encontrado');
+}
 include('conf.inc.php');
 include('modules/common.inc.php');
+
 
 $now=strftime("%d/%m/%Y %H:%M:%S");
 

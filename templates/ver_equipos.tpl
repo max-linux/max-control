@@ -26,7 +26,7 @@
 <table class='dataTable'> 
     <thead> 
     <tr>
-      <th class=''>Nombre {$pager->getSortIcons('uid')}</th> 
+      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
       <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')} 
           <select name='selectaula' id='selectaula' onchange="javascript:aulaFilter(this);">
@@ -46,7 +46,7 @@
     <tbody> 
       {foreach from=$equipos key=k item=u}
       <tr class='border' id="computer-{$u->hostname()}"> 
-        <td class='tcenter'><span>{$u->attr('displayname')}</span></td> 
+        <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
         <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
         <td class='tcenter'><span>{$u->aula}</span></td>
         <td class='tcenter'> 
@@ -56,7 +56,7 @@
             <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="calculando..." />
         </td>
         <td class='tcenter'> 
-            <input type='checkbox' class="hostdel" name="{$u->attr('displayname')}" id="{$u->attr('displayname')}" onchange="javascript:oncheckboxChange();"/>
+            <input type='checkbox' class="hostdel" name="{$u->attr('cn')}" id="{$u->attr('cn')}" onchange="javascript:oncheckboxChange();"/>
         </td>
       </tr>
       {/foreach}

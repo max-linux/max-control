@@ -35,17 +35,12 @@
     <tr>
         <td class='tright'><span class='ftitle'>Aula:</span></td> 
         <td> 
-            <select name='sambaProfilePath' id='sambaProfilePath' > 
+            <select name='aula' id='aula' > 
                 <option value=''></option> 
                 {foreach from=$aulas key=k item=o}
-                <option value='{$o->attr('cn')}' {if $o->attr('cn') == $u->attr('sambaProfilePath')}selected="selected"{/if}>{$o->attr('cn')}</option>
+                <option value='{$o->attr('cn')}' {if $o->attr('cn') == $u->attr('aula')}selected="selected"{/if}>{$o->attr('cn')}</option>
                 {/foreach}
             </select> 
-            
-            <!--
-            <input type='text' class='inputText' name='new_sambaProfilePath' id='new_sambaProfilePath' value=""/>
-            <input class='inputButton' type='button' name='añadir' value="Añadir Grupo" alt="Añadir" onclick="javascript:append_sambaProfilePath(this.value);"/> 
-            -->
         </td> 
     </tr>
 

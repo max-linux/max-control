@@ -6,9 +6,15 @@
  <form action='{$urlform}' method='post' onsubmit="return checkpass();"> 
     <table class='formTable'> 
     <tr> 
+        <td class='tright'><span class="ftitle">Identificador:</span></td>
+        <td>
+            {$u->attr('cn')}
+        </td>
+    </tr>
+    <tr> 
         <td class='tright'><span class="ftitle">Nombre:</span></td>
         <td>
-            <input type='text' class='inputText' name='cn' id='cn' value="{$u->attr('cn')}" /> 
+            <input type='text' class='inputText' name='givenname' id='givenname' value="{$u->attr('givenname')}" /> 
         </td>
     </tr>
     <tr> 
@@ -69,7 +75,7 @@
         <td></td> 
         <td> 
         <input class='inputButton' type='submit' name='{$action}' value="Guardar" alt="Guardar" /> 
-        <input type='hidden' name='uid' value='{$u->attr('uid')}' />
+        <input type='hidden' name='cn' value='{$u->attr('cn')}' />
         <input class='inputButton' type='button' name='reset' value="Resetear perfil" 
          title="Borra todos los archivos personales de este usuario" onclick="javascript:resetProfile('{$username}');"/> 
         </td> 

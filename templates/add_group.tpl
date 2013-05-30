@@ -57,7 +57,7 @@ function usedcn(cn) {
     $.ajax({
       type: "POST",
       url: ajaxurl,
-      data: "accion=usedcn&cn="+cn,
+      data: "accion=usedgroup&cn="+cn,
       success: function(data) {
         if (data == 'used') {
             $('#groupnotvalid')[0].style.display='';

@@ -34,6 +34,3 @@
 
 
 
-{if $DEBUG}
-{debug}
-{/if}
