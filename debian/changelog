@@ -1,3 +1,15 @@
+max-control (3.5.0~alfa1max1) max; urgency=low
+
+  * Remove zentyal-captiveportal
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Sun, 14 Sep 2014 20:34:43 +0200
+
+max-control (3.5.0~alfa1) max; urgency=low
+
+  * Build in MAX server 2014
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Sun, 14 Sep 2014 20:30:11 +0200
+
 max-control (3.0.0~alfa4) max; urgency=low
 
   * New alfa, users add/delete/edit/import working
