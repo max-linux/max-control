@@ -63,11 +63,11 @@ if [ "$CONFIGURE" = "1" ]; then
 
     # create samba configuration
     echo " * Updating /etc/samba/max-control.conf"
-    /usr/bin/pymaxgensamba
+    /usr/bin/pymaxgensamba || true
 
 
     # create PXE files
-    /usr/bin/max-control pxe --genpxelinux
+    /usr/bin/max-control pxe --genpxelinux || true
 
     # reset quotas
     #echo " * Reseting quotas"
