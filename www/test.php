@@ -5,8 +5,8 @@
 #error_reporting(E_ERROR | E_WARNING | E_PARSE);
 #error_reporting(1);
 
-include("../conf.inc.php");
-include('../modules/common.inc.php');
+include("conf.inc.php");
+include('modules/common.inc.php');
 
 class GUI {
     function debug($txt) {
@@ -32,8 +32,8 @@ $gui = new GUI();
 #$gui->debug(array_diff($a, $b));
 #die();
 
-include("../classes/ldap.class.php");
-include("../classes/winexe.class.php");
+include("classes/ldap.class.php");
+include("classes/winexe.class.php");
 
 
 //echo conectar('ebox','GzxovzAANdxoPux9');
@@ -43,11 +43,11 @@ include("../classes/winexe.class.php");
 
 //echo "<h2>LDAP</h2><br/>\n";
 
-$ldap=new LDAP($binddn='cn=Administrator,cn=Users,dc=madrid,dc=local',$bindpw='mario');
+$ldap=new LDAP($binddn='cn=mario izquierdo,cn=Users,dc=madrid,dc=lan',$bindpw='mario');
 //$ldap=new LDAP();
 
-//$gui->debug( $ldap->lastUID() );
-//$gui->debug( $ldap->lastGID() );
+// $gui->debug( $ldap->lastUID() );
+// $gui->debug( $ldap->lastGID() );
 
 //$gui->debug( $ldap->getGID('__USERS__') );
 
@@ -63,7 +63,8 @@ $ldap=new LDAP($binddn='cn=Administrator,cn=Users,dc=madrid,dc=local',$bindpw='m
 //$gui->debug($ldap->is_connected());
 
 //$ldap->get_users('prue');
-$gui->debug($ldap->get_users('prueba2'));
+$gui->debug($ldap->get_users());
+// $gui->debug($ldap->get_users('prueba2'));
 //$gui->debug($ldap->get_user($uid=$argv[1]));
 //$gui->debug($ldap->error);
 

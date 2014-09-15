@@ -27,6 +27,7 @@ Depends: zentyal,
          zentyal-dhcp,
 #         zentyal-captiveportal,
          zentyal-squid,
+         winbind,
          max-control,
          ${misc:Depends}, ${shlibs:Depends}
 Conflicts: zentyal-captiveportal (<< 2.1.4max1)
