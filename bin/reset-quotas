@@ -56,7 +56,7 @@ for username in $(wbinfo -u| grep -v -e "^Guest$" -e "^krbtgt$" -e "^dns-"); do
         size_teachers=$((size*2))
         echo " * Set quota for user $username (teacher) $size_teachers MB"
         edit.quotas --user=$username --size=$size_teachers --set >/dev/null 2>&1
-    elif id "$username" | grep -q "Domain Admins" ; then
+    elif id "$username" | grep -i -q "domain admins" ; then
         # doble quota para tener ISOS
         size_admins=$((size*2))
         echo " * Set quota for user $username (admins) $size_admins MB"

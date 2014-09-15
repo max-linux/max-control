@@ -8,9 +8,9 @@
     {if $submenu }
     {if $key == $module}
     <ul class='submenu2'> 
-        {foreach from=$submenu key=subkey item=submenu}
+        {foreach from=$submenu key=subkey item=sub}
             <li class='menuUsersAndGroups2'> 
-                <a title="{$submenu}" href="{$basedir}/{$key}/{$subkey}" class="navc" target="_parent">{$submenu}</a> 
+                <a title="{$sub}" href="{$basedir}/{$key}/{$subkey}" class="navc" target="_parent">{$sub}</a> 
             </li>
         {/foreach}
     </ul> 

@@ -353,6 +353,7 @@ function guardarnuevo($module, $action, $subaction) {
     $gui->debug( "<pre>" . print_r($_POST,true) . "</pre>");
     $user = new USER($_POST);
     $user->password=$_POST['password'];
+    $user->background=false;
 
     if ( ! $user->newUser() )  {
         $gui->session_error("No se ha podido añadir el usuario, compruebe todos los campos.");

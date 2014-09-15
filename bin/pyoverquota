@@ -131,6 +131,8 @@ def generateOverQuotas():
         
         if output.startswith('ldb_wrap'):
             continue
+        if output.startswith('params.c'):
+            continue
 
         uid = output.strip()
         if uid != '':

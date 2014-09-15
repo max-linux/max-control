@@ -9,7 +9,7 @@ import commands
 from pprint import pprint
 
 CONF="/etc/max-control/conf.inc.php"
-SMB_CONF="/etc/samba/smb.conf"
+SMB_CONF="/etc/samba/shares.conf"
 SHARED_DIR="/home/samba/groups/"
 
 if not os.path.isfile(CONF):
@@ -32,16 +32,16 @@ if not os.path.isfile(CONF):
 """
 
 TO_EDIT={
-    'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/', 'ea support':'yes', 'store dos attributes':'yes'},
+    'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/', 'ea support':'yes', 'store dos attributes':'yes','full_audit:success':'none', 'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename'},
     #'print$':{'browseable':'no'},
-    'profiles': {'ea support':'yes', 'store dos attributes':'yes'},
-    'global':{'server string': 'MAX server'},
+    #'global':{'server string': 'MAX server'},
 }
 
 TO_ADD={
         #'ebox-internal-backups':{'browseable':'no'},
         #'ebox-quarantine':{'browseable':'no'},qq
-        #'global':{'full_audit:success':'none', 'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename'},
+        'profiles': {'ea support':'yes', 'store dos attributes':'yes'},
+        'global':{'server string': 'MAX server', 'full_audit:success':'none', 'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename'},
         'isos': {'comment': 'Archivos ISO', 
                'path': '/home/samba/shares/isos',
                #'valid users': ['@"Teachers"', '@"__USERS__"'],

@@ -74,7 +74,7 @@ case $1 in
         # max-server.madrid.local
         DCNAME="$(dnsdomainname -f)"
 
-        DRIVE="$(awk -F'"' '/drive/ {print $4}' /var/lib/zentyal/conf/samba.bak| tail -1)"
+        DRIVE="$(awk -F'"' '/drive/ {print $4}' /var/lib/zentyal/conf/samba.bak 2>/dev/null| tail -1)"
         # H:
         if [ "$DRIVE" = "" ]; then
             DRIVE='H:'
@@ -93,28 +93,39 @@ case $1 in
         #   --home-directory='\\\\'$DCNAME'\\'$NEWUSER \
         #   --home-drive="'$DRIVE'"
 
-        samba-tool user add \
+        # create local user
+        #self.exe_cmd("useradd -m %s -p%s -s /bin/bash -d /home/%s" %(username, username, username))
+        #self.exe_cmd("echo %s:%s | chpasswd" %(username, username))
+        NEWUUID=$(max-get-newuser-uuid)
+
+        useradd -m "$NEWUSER" -s /bin/bash -d "/home/$NEWUSER" --no-user-group --uid=$NEWUUID
+        echo "${NEWUSER}:${PASSWD}" | chpasswd
+
+
+        samba-tool user create \
           "$NEWUSER" "$PASSWD" --use-username-as-cn --given-name="$NAME" --surname="$SURNAME" \
           -U"${LDAP_ADMIN}":"${LDAP_PASSW}" \
           --profile-path='\\'$DCNAME'\profiles\'$NEWUSER \
           --home-directory='\\'$DCNAME'\'$NEWUSER \
-          --home-drive="'$DRIVE'" || echo_exit "error"
+          --home-drive="$DRIVE" \
+          --rfc2307-from-nss --gecos 'some text'|| echo_exit "error"
 
 
         #ldbsearch -H /opt/samba4/private/sam.ldb '(cn=aaa9)'
 
         #NEWUUID=$(wbinfo --sid-to-uid `wbinfo --name-to-sid $NEWUSER | awk '{print $1}'`)
-        NEWUUID=$(wbinfo -n $NEWUSER| awk -F" |\-" '{print $8}')
-        NEWUUID=$((NEWUUID+50000))
+        # NEWUUID=$(wbinfo -n $NEWUSER| awk -F" |\-" '{print $8}')
+        # NEWUUID=$((NEWUUID+50000))
         #echo "NEWUUID=$NEWUUID"
+        NEWUUID=$(id -u "$NEWUSER")
 
         mkdir -p "${PROFILES_DIR}/${NEWUSER}"
-        chown "${NEWUUID}":__USERS__ "${PROFILES_DIR}/${NEWUSER}"
+        chown "${NEWUUID}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}"
         chmod 700 "${PROFILES_DIR}/${NEWUSER}"
 
         setfacl -b "${PROFILES_DIR}/${NEWUSER}"    2>&1
-        setfacl -R -m u:root:rwx,g::---,g:__USERS__:---,u:${NEWUUID}:rwx "${PROFILES_DIR}/${NEWUSER}" 2>&1
-        setfacl -R -m d:u:root:rwx,g::---,g:__USERS__:---,u:${NEWUUID}:rwx "${PROFILES_DIR}/${NEWUSER}" 2>&1
+        setfacl -R -m u:root:rwx,g::---,g:"Domain Users":---,u:${NEWUUID}:rwx "${PROFILES_DIR}/${NEWUSER}" 2>&1
+        setfacl -R -m d:u:root:rwx,g::---,g:"Domain Users":---,u:${NEWUUID}:rwx "${PROFILES_DIR}/${NEWUSER}" 2>&1
 
 
         QUOTA=$(max-control getdefaultquota)
@@ -196,16 +207,16 @@ case $1 in
 
 
         # mkdir -p "$HOMES_DIR/${NEWUSER}"
-        # chown "${NEWUSER}":__USERS__ "${HOMES_DIR}/${NEWUSER}"
+        # chown "${NEWUSER}":"Domain Users" "${HOMES_DIR}/${NEWUSER}"
         # chmod 701 "${HOMES_DIR}/${NEWUSER}"
 
         # # profile
         # mkdir -p "${PROFILES_DIR}/${NEWUSER}"
-        # chown "${NEWUSER}":__USERS__ "${PROFILES_DIR}/${NEWUSER}"
+        # chown "${NEWUSER}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}"
         # chmod 701 "${PROFILES_DIR}/${NEWUSER}"
 
         # #mkdir -p "${PROFILES_DIR}/${NEWUSER}.V2"
-        # #chown "${NEWUSER}":__USERS__ "${PROFILES_DIR}/${NEWUSER}.V2"
+        # #chown "${NEWUSER}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}.V2"
         # #chmod 701 "${PROFILES_DIR}/${NEWUSER}.V2"
 
         # if id "$NEWUSER" 2>/dev/null | grep -q -e Teachers -e "Domain Admins"; then
@@ -226,6 +237,7 @@ case $1 in
 
         create_lock
 
+        echo "${USER}:${PASS}" | chpasswd
         samba-tool user setpassword "${USER}" --newpassword="${PASS}" >/dev/null 2>&1 && echo 'OK'
         exit 0
         ;;
@@ -236,6 +248,7 @@ case $1 in
 
         create_lock
 
+        deluser "$DELUSER" >/dev/null 2>&1
         samba-tool user delete "$DELUSER" >/dev/null 2>&1 && echo 'OK'
         exit 0
         ;;
@@ -362,16 +375,16 @@ case $1 in
         # quota in MB
         QUOTA=$3
         # mkdir -p "$HOMES_DIR/${NEWUSER}"
-        # chown "${NEWUSER}":__USERS__ "${HOMES_DIR}/${NEWUSER}"
+        # chown "${NEWUSER}":"Domain Users" "${HOMES_DIR}/${NEWUSER}"
         # chmod 700 "${HOMES_DIR}/${NEWUSER}"
 
         # profile
         mkdir -p "${PROFILES_DIR}/${NEWUSER}"
-        chown "${NEWUSER}":__USERS__ "${PROFILES_DIR}/${NEWUSER}"
+        chown "${NEWUSER}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}"
         chmod 700 "${PROFILES_DIR}/${NEWUSER}"
 
         #mkdir -p "${PROFILES_DIR}/${NEWUSER}.V2"
-        #chown "${NEWUSER}":__USERS__ "${PROFILES_DIR}/${NEWUSER}.V2"
+        #chown "${NEWUSER}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}.V2"
         #chmod 701 "${PROFILES_DIR}/${NEWUSER}.V2"
 
         if id "$NEWUSER" 2>/dev/null | grep -q -e Teachers -e "Domain Admins"; then
@@ -430,9 +443,9 @@ case $1 in
         mkdir -p "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" 2>/dev/null
 
         # arreglar permisos
-        chown "${DELUSER}":__USERS__ "${HOMES_DIR}/${DELUSER}"
+        chown "${DELUSER}":"Domain Users" "${HOMES_DIR}/${DELUSER}"
         chmod 700 "${HOMES_DIR}/${DELUSER}"
-        chown "${DELUSER}":__USERS__ "${PROFILES_DIR}/${DELUSER}"
+        chown "${DELUSER}":"Domain Users" "${PROFILES_DIR}/${DELUSER}"
         chmod 700 "${PROFILES_DIR}/${DELUSER}"
         #chown "${DELUSER}":Domain\ Users "${PROFILES_DIR}/${DELUSER}.V2"
         #chmod 701 "${PROFILES_DIR}/${DELUSER}.V2"

@@ -366,6 +366,7 @@ class USER extends BASE {
         }
         else {
             $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' 2>&1";
+            $gui->debug($cmd);
             exec($cmd, $output);
             $gui->debug("newUser<pre>".print_r($output, true)."</pre>");
         }
@@ -1035,7 +1036,7 @@ class LDAP {
         }
 
         ldap_set_option($this->cid, LDAP_OPT_PROTOCOL_VERSION, 3);
-        //$gui->debug("=============> ldap_bind($this->cid, $this->binddn, $this->bindpw)<=================");
+        // $gui->debug("=============> ldap_bind($this->cid, $this->binddn, $this->bindpw)<=================");
         if ( ! @($this->bid=ldap_bind($this->cid, $this->binddn, $this->bindpw)) ) {
             $this->error = "Error: Usuario o contraseña incorrectos.\n".ldap_error($this->cid);
             $gui->debug("===> ".$this->error."<========");
@@ -1086,7 +1087,8 @@ class LDAP {
         $ignore = array('max-control', 'Administrator',
                         'proxy-zentyal3', 'dns-zentyal3',
                         'proxy-max-server', 'dns-max-server',
-                        'krbtgt', 'Guest');
+                        'krbtgt', 'Guest', 'zentyal-squid-max-server');
+        // $ignore = array();
         
         $users=array();
         $class="posixAccount";

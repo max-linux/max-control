@@ -10,9 +10,14 @@ sed -i -e "s/$VERSION/__GIT__/g" conf.inc.php| grep VERSION
 cp bin/max-control /usr/bin/max-control
 
 
-for f in $(git status| grep "bin/"| awk '{print $3}'); do
-  cp $f /usr/$f
+for f in $(git status| grep "bin/"| awk '{if($1 == "modified:") print $2; else if($1 == "new") print $3; else if($1~"bin/") print $1}'); do
+  if [ -e "$f" ]; then
+    echo "  cp $f  => /usr/$f"
+    cp $f /usr/$f
+  fi
 done
+
+
 
 
 touch /tmp/importer.log

@@ -2,15 +2,15 @@
 
 CONFIGURE=1
 
-if [ ! -e /etc/ldap.conf ]; then
-  echo " * WARNING: /etc/ldap.conf not exists, no configuring max-control"
-  CONFIGURE=0
-fi
+# if [ ! -e /etc/ldap.conf ]; then
+#   echo " * WARNING: /etc/ldap.conf not exists, no configuring max-control"
+#   CONFIGURE=0
+# fi
 
-if [ ! -e /etc/ldap.secret ]; then
-  echo " * WARNING: /etc/ldap.secret not exists, no configuring max-control"
-  CONFIGURE=0
-fi
+# if [ ! -e /etc/ldap.secret ]; then
+#   echo " * WARNING: /etc/ldap.secret not exists, no configuring max-control"
+#   CONFIGURE=0
+# fi
 
 if [ "$(pidof samba)" = "" ]; then
   echo " * WARNING: samba is not running, no configuring max-control"
@@ -18,10 +18,10 @@ if [ "$(pidof samba)" = "" ]; then
 fi
 
 
-if ! grep -q zentyal /etc/ldap.conf ; then
-  echo " * WARNING: /etc/ldap.conf not configured for Zentyal"
-  CONFIGURE=0
-fi
+# if ! grep -q zentyal /etc/ldap.conf ; then
+#   echo " * WARNING: /etc/ldap.conf not configured for Zentyal"
+#   CONFIGURE=0
+# fi
 
 if ! getent group "Domain Admins" >/dev/null 2>&1; then
   echo " * WARNING: No 'Domain Admins' group found, is Samba+PAM enabled?"
