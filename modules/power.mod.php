@@ -48,10 +48,6 @@ $multiple_actions=array("poweroff" =>         "Apagar seleccionados",
                         "rebootmax" =>        "Reiniciar en MAX los seleccionados",
                         );
 
-if ( $permisos->is_admin() && backharddi_installed() ) {
-    $multiple_actions["rebootbackharddi"]="Reiniciar en Backharddi los seleccionados";
-}
-
 /*************************************************/
 
 function aulas($module, $action, $subaction) {
@@ -80,12 +76,10 @@ function aulas($module, $action, $subaction) {
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "mode" => $mode,
-                "backharddi_installed" => backharddi_installed(),
                 "urlpoweroff"=>$url->create_url($module, 'aula_preguntar', 'poweroff'),
                 "urlreboot"=>$url->create_url($module, 'aula_preguntar', 'reboot'),
                 "urlrebootwindows"=>$url->create_url($module, 'aula_preguntar', 'rebootwindows'),
                 "urlrebootmax"=>$url->create_url($module, 'aula_preguntar', 'rebootmax'),
-                "urlbackharddi"=>$url->create_url($module, 'aula_preguntar', 'rebootbackharddi'),
                 "urlwakeonlan" => $url->create_url($module, 'aula_preguntar', 'wakeonlan'),
                 "urlformmultiple" => $url->create_url($module, 'aulamultiple_preguntar'),
                 "multiple_actions" => $multiple_actions,
@@ -164,12 +158,10 @@ function equipos($module, $action, $subaction) {
                 "filter" => $filter,
                 "urlform" => $urlform,
                 "mode" => $mode,
-                "backharddi_installed" => backharddi_installed(),
                 "urlpoweroff"=>$url->create_url($module, 'equipo_preguntar', 'poweroff'),
                 "urlreboot"=>$url->create_url($module, 'equipo_preguntar', 'reboot'),
                 "urlrebootwindows"=>$url->create_url($module, 'equipo_preguntar', 'rebootwindows'),
                 "urlrebootmax"=>$url->create_url($module, 'equipo_preguntar', 'rebootmax'),
-                "urlbackharddi"=>$url->create_url($module, 'equipo_preguntar', 'rebootbackharddi'),
                 "urlwakeonlan" => $url->create_url($module, 'equipo_preguntar', 'wakeonlan'),
                 "urlformmultiple" => $url->create_url($module, 'equipomultiple_preguntar'),
                 "multiple_actions" => $multiple_actions,
@@ -213,10 +205,6 @@ function docomputer($module, $action, $subaction) {
         //$res[]=$computer->action($action);
         $computer->action($subaction, $computer->macAddress);
     }
-    // si es backharddi redirigir a un iframe
-    if ( $permisos->is_admin() && ($subaction == 'rebootbackharddi') ) {
-        $url->ir($module, "backharddi");
-    }
     
     
     $gui->debug("Finalizadas acciones tiempo: " . time_end() );
@@ -224,17 +212,7 @@ function docomputer($module, $action, $subaction) {
         $url->ir($module, "equipos");
 }
 
-function backharddi($module, $action, $subaction) {
-    global $gui, $url, $permisos;
-    if ( ! $permisos->is_admin() ) {
-        $gui->session_error("Sólo pueden acceder al clonado los Administradores.");
-        $url->ir($module,"");
-    }
-    //$gui->debuga($_SERVER);
-    $urliframe="http://".$_SERVER['SERVER_NAME'].":9091/";
-    $data=array("urliframe"=>$urliframe);
-    $gui->add( $gui->load_from_template("backharddi.tpl", $data) );
-}
+
 
 function equipomultiple_preguntar($module, $action, $subaction) {
     global $gui, $url;
@@ -359,7 +337,6 @@ switch($action) {
     case "equipos":          equipos($module, $action, $subaction); break;
     case "equipo_preguntar": equipo_preguntar($module, $action, $subaction); break;
     case "docomputer":       docomputer($module, $action, $subaction); break;
-    case "backharddi":       backharddi($module, $action, $subaction); break;
     
     case "equipomultiple_preguntar": equipomultiple_preguntar($module, $action, $subaction); break;
     case "equipomultiple_preguntardo": equipomultiple_preguntardo($module, $action, $subaction); break;

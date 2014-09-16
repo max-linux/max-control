@@ -363,16 +363,19 @@ class USER extends BASE {
             $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' > /dev/null 2>&1 &";
             $gui->debug($cmd);
             pclose(popen($cmd, "r"));
+            $gui->session_info("Usuario '".$this->cn."' creado correctamente.");
         }
         else {
             $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' 2>&1";
             $gui->debug($cmd);
             exec($cmd, $output);
             $gui->debug("newUser<pre>".print_r($output, true)."</pre>");
+            if( end($output) != 'OK' ) {
+                $gui->session_error("Error creando usuario '".$this->cn."'.");
+            }
         }
         
         
-        $gui->session_info("Usuario '".$this->cn."' creado correctamente.");
         return true;
     }
 
@@ -821,7 +824,7 @@ class COMPUTER extends BASE {
 
     function boot($conffile) {
         /*
-        $conffile must be windows, max, backhardding or aula name
+        $conffile must be windows, max, or aula name
         */
         
         global $gui;
@@ -957,16 +960,6 @@ class COMPUTER extends BASE {
                 // python bin/pyboot --cronadd --boot=max-extlinux --mac=08:00:27:96:0D:E6
                 $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1");
                 exec("sudo ".MAXCONTROL." pxe --cronadd --boot=max-extlinux --mac=$mac 2>&1", $output);
-                $gui->debuga($output);
-                // llamar a reiniciar
-                return $this->action('reboot', $mac);
-            }
-            elseif ( $actionname == 'rebootbackharddi' ) {
-                $this->action('wakeonlan', $mac);
-                // cambiar MAC a backharddi-ng-text.menu
-                // python bin/pyboot --cronadd --boot=backharddi-ng-text --mac=08:00:27:96:0D:E6
-                $gui->debug("sudo ".MAXCONTROL." pxe --cronadd --boot=backharddi-ng-text --mac=$mac 2>&1");
-                exec("sudo ".MAXCONTROL." pxe --cronadd --boot=backharddi-ng-text --mac=$mac 2>&1", $output);
                 $gui->debuga($output);
                 // llamar a reiniciar
                 return $this->action('reboot', $mac);
@@ -1543,12 +1536,6 @@ class LDAP {
         $menus=array();
         foreach (glob(PXELINUXCFG ."*.menu") as $filename) {
             $gui->debug("$filename size " . filesize($filename). " ".basename($filename, '.menu'));
-            if( ! backharddi_installed() && 
-                  (basename($filename, '.menu') == 'backharddi-ng-text' || 
-                   basename($filename, '.menu') == 'backharddi-ng') ) {
-                $gui->debug("$filename continue NO BACKHARDDI-NG");
-                continue;
-            }
             $menus[basename($filename, '.menu')]=$this->readMenu($filename);
         }
         if ($aula)
