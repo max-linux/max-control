@@ -15,10 +15,6 @@ if [ "$1" = "configure" ]; then
        cp $fname /var/lib/tftpboot/pxelinux.cfg/
    done
 
-   if [ -d /usr/share/zentyal/ ]; then
-      rm -f /var/lib/tftpboot/pxelinux.cfg/backharddi*
-   fi
-
 
    # enable mod_rewrite
    [ ! -e /etc/apache2/mods-enabled/rewrite.load ] && [ -x /usr/sbin/a2enmod ] && a2enmod rewrite

@@ -7,7 +7,6 @@
              {if $faction == 'wakeonlan'}encender (WakeOnLAN){/if}
              {if $faction == 'rebootwindows'}reiniciar en Windows{/if}
              {if $faction == 'rebootmax'}reiniciar en MAX{/if}
-             {if $faction == 'rebootbackharddi'}reiniciar en Backharddi-NG{/if}
         los equipos:</h2>
      
         <ul>

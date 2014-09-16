@@ -21,11 +21,6 @@ binary-install/max-control:: test
 	sed -i -e 's/__VERSION__/$(VERSION)/g' $(CURDIR)/debian/max-control/usr/share/max-control/conf.inc.php.init
 	sed -i -e 's/__VERSION__/$(VERSION)/g' $(CURDIR)/debian/max-control/usr/share/max-control/conf.inc.php.example
 
-	grep -q zentyal debian/control && \
-		rm -f $(CURDIR)/debian/max-control/usr/share/max-control/tftp.menus/backharddi-ng-text.menu ;\
-		rm -f $(CURDIR)/debian/max-control/usr/share/max-control/tftp.menus/backharddi-ng.menu ;\
-		head -27 tftpboot/pxelinux.cfg/default > $(CURDIR)/debian/max-control/var/lib/tftpboot/pxelinux.cfg/default
-
 
 test:
 	# check for PHP syntax errors
