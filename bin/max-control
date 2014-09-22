@@ -4,7 +4,7 @@
 #
 #
 
-HOMES_DIR="/home/"
+
 PROFILES_DIR="/home/samba/profiles/"
 GROUPS_DIR="/home/samba/groups/"
 SHARED_DIR="/home/samba/shares/"
@@ -12,6 +12,8 @@ SHARED_DIR="/home/samba/shares/"
 LOCK_FILE="/var/lib/max-control/max-control-run.lock"
 MAX_WAIT=20
 
+WORKGROUP=$(dnsdomainname -d | awk -F"." '{print toupper($1)}')
+HOMES_DIR="/home/${WORKGROUP}"
 
 echo_exit(){
     echo $@
@@ -73,6 +75,7 @@ case $1 in
         #DCNAME="$(samba-tool domain info 127.0.0.1 2>/dev/null| awk '/^DC name/ {print $4}')"
         # max-server.madrid.local
         DCNAME="$(dnsdomainname -f)"
+        
 
         DRIVE="$(awk -F'"' '/drive/ {print $4}' /var/lib/zentyal/conf/samba.bak 2>/dev/null| tail -1)"
         # H:
@@ -83,7 +86,8 @@ case $1 in
         LDAP_ADMIN="$(awk -F"'" '/LDAP_ADMIN/ {print $2}' /etc/max-control/conf.inc.php)"
         LDAP_PASSW="$(awk -F"'" '/LDAP_PASS/ {print $2}' /etc/max-control/conf.inc.php)"
 
-
+        mkdir -p "${HOMES_DIR}"
+        #set -x
 
 
         # echo samba-tool user add \
@@ -98,8 +102,10 @@ case $1 in
         #self.exe_cmd("echo %s:%s | chpasswd" %(username, username))
         NEWUUID=$(max-get-newuser-uuid)
 
-        useradd -m "$NEWUSER" -s /bin/bash -d "/home/$NEWUSER" --no-user-group --uid=$NEWUUID
+        useradd -m "$NEWUSER" -s /bin/bash -d "${HOMES_DIR}/$NEWUSER" --no-user-group --uid="${NEWUUID}" || echo_exit "error"
         echo "${NEWUSER}:${PASSWD}" | chpasswd
+        chown -R "${NEWUSER}:Domain Users" "${HOMES_DIR}/$NEWUSER"
+        chmod 700 "${HOMES_DIR}/$NEWUSER"
 
 
         samba-tool user create \
@@ -108,7 +114,8 @@ case $1 in
           --profile-path='\\'$DCNAME'\profiles\'$NEWUSER \
           --home-directory='\\'$DCNAME'\'$NEWUSER \
           --home-drive="$DRIVE" \
-          --rfc2307-from-nss --gecos 'some text'|| echo_exit "error"
+          --rfc2307-from-nss --gecos "$NAME $SURNAME" \
+          --uid="$NEWUSER" --uid-number="${NEWUUID}" --login-shell=/bin/bash || echo_exit "error"
 
 
         #ldbsearch -H /opt/samba4/private/sam.ldb '(cn=aaa9)'
@@ -151,29 +158,6 @@ case $1 in
         
         echo 'OK'
         exit 0
-
-
-        # sync SAMBA => LDAP for this new user
-        if [ ! -e /var/lib/max-control/importer/importer.lock ]; then
-            max-s4sync "$NEWUSER"
-            #
-            #
-            
-            QUOTA=$(max-control getdefaultquota)
-
-            #FIXME
-            max-control rights "$NEWUSER" "$ROLE" >/dev/null 2>&1
-
-            case $ROLE in
-                admin)
-                    QUOTA=$((QUOTA*2))
-                ;;
-                teacher)
-                    QUOTA=$((QUOTA*2))
-                ;;
-            esac
-            max-control createhome "$NEWUSER" "$QUOTA" >/dev/null 2>&1
-        fi
 
 
 
@@ -248,8 +232,8 @@ case $1 in
 
         create_lock
 
-        deluser "$DELUSER" >/dev/null 2>&1
         samba-tool user delete "$DELUSER" >/dev/null 2>&1 && echo 'OK'
+        deluser "$DELUSER" >/dev/null 2>&1
         exit 0
         ;;
 ################################################################################
@@ -317,6 +301,7 @@ case $1 in
                 samba-tool group addmembers "Enterprise Admins" "$RUSER"
                 samba-tool group addmembers "Schema Admins" "$RUSER"
                 samba-tool group addmembers "Domain Admins" "$RUSER"
+                samba-tool group addmembers "Instaladores" "$RUSER"
 
                 # no tic
                 samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
@@ -332,6 +317,7 @@ case $1 in
                 samba-tool group removemembers "Enterprise Admins" "$RUSER"
                 samba-tool group removemembers "Schema Admins" "$RUSER"
                 samba-tool group removemembers "Domain Admins" "$RUSER"
+                samba-tool group removemembers "Instaladores" "$RUSER"
                 # no teacher
                 samba-tool group removemembers "Teachers" "$RUSER"
             ;;
@@ -345,6 +331,7 @@ case $1 in
                 samba-tool group removemembers "Enterprise Admins" "$RUSER"
                 samba-tool group removemembers "Schema Admins" "$RUSER"
                 samba-tool group removemembers "Domain Admins" "$RUSER"
+                samba-tool group removemembers "Instaladores" "$RUSER"
                 # no tic
                 samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
             ;;
@@ -358,6 +345,7 @@ case $1 in
                 samba-tool group removemembers "Enterprise Admins" "$RUSER"
                 samba-tool group removemembers "Schema Admins" "$RUSER"
                 samba-tool group removemembers "Domain Admins" "$RUSER"
+                samba-tool group removemembers "Instaladores" "$RUSER"
                 # no tic
                 samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
                 # no teacher
@@ -463,7 +451,11 @@ case $1 in
 
         getent group "$ADDGROUP" >/dev/null && echo_exit "exists"
         
-        if ! samba-tool group add "$ADDGROUP" --groupou=CN=Users --group-scope=Domain --group-type=Security --description="$DESC" 2>&1; then
+        if ! samba-tool group add "$ADDGROUP" \
+                        --groupou=CN=Users \
+                        --group-scope=Domain \
+                        --group-type=Security \
+                        --description="$DESC" 2>&1; then
             echo 'error'
             exit
         fi

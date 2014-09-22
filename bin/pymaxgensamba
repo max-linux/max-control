@@ -7,9 +7,11 @@ from configobj import ConfigObj
 import ldap
 import commands
 from pprint import pprint
+import shutil
 
 CONF="/etc/max-control/conf.inc.php"
 SMB_CONF="/etc/samba/shares.conf"
+SMB_CONF_BACKUP="/var/lib/max-control/shares.conf"
 SHARED_DIR="/home/samba/groups/"
 
 if not os.path.isfile(CONF):
@@ -22,7 +24,7 @@ if not os.path.isfile(CONF):
  path = /home/samba/shares/isos
  guest ok = yes
  #valid users =
- read list = @"__USERS__"
+ read list = @"Domain Users"
  write list = @"Teachers"
  admin users =
  read only = No
@@ -32,23 +34,36 @@ if not os.path.isfile(CONF):
 """
 
 TO_EDIT={
-    'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/', 'ea support':'yes', 'store dos attributes':'yes','full_audit:success':'none', 'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename'},
+    'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/',
+              'ea support':'yes',
+              'store dos attributes':'yes',
+              'full_audit:success':'none',
+              #'full_audit:success':'connect opendir open disconnect unlink mkdir rmdir rename',
+              'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename',
+              'path':'/home/__DOMAIN__/%S',
+              },
     #'print$':{'browseable':'no'},
-    #'global':{'server string': 'MAX server'},
 }
 
 TO_ADD={
         #'ebox-internal-backups':{'browseable':'no'},
-        #'ebox-quarantine':{'browseable':'no'},qq
-        'profiles': {'ea support':'yes', 'store dos attributes':'yes'},
-        'global':{'server string': 'MAX server', 'full_audit:success':'none', 'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename'},
+        #'ebox-quarantine':{'browseable':'no'},
+        'profiles': {'ea support':'yes',
+                     'store dos attributes':'yes'},
+
+        'global':{'server string': 'MAX server',
+                  'full_audit:success':'none',
+                  'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename',
+                  'winbind nss info':'rfc2307',
+                 },
+
         'isos': {'comment': 'Archivos ISO', 
                'path': '/home/samba/shares/isos',
-               #'valid users': ['@"Teachers"', '@"__USERS__"'],
-               'read list': ['@"Teachers"', '@"__USERS__"'],
+               #'valid users': ['@"Teachers"', '@"Domain Users"'],
+               'read list': ['@"Teachers"', '@"Domain Users"'],
                #'write list': '@"Teachers"',
                'write list': ['@"Teachers"','@"Domain Admins"'],
-               'read list': '@"__USERS__"',
+               #'read list': '@"Domain Users"',
                'admin users': '@"Domain Admins"',
                'guest ok': 'yes',
                'read only': 'no', 
@@ -77,6 +92,10 @@ def read_conf(varname):
 
 GROUPS=read_conf('LDAP_OU_GROUPS')
 DOMAIN=read_conf('LDAP_DOMAIN')
+
+# hack to change samba users home dir
+TO_EDIT['homes']['path']="/home/%s/%%S" % DOMAIN.split('.')[0].upper()
+TO_ADD['global']['template homedir']="/home/%s/%%S" % DOMAIN.split('.')[0].upper()
 
 def getGroupsShares():
     sharedgroups=[]
@@ -208,10 +227,21 @@ for key in TO_ADD:
     if key not in NOT_VALID_KEYS:
         print " * Create shared", key
 
-# delete not needed dir
-os.system("rm -rf %s/homes" %SHARED_DIR)
+# write before LDAP connection
+smb.write()
 
-ALL_GROUPS=getGroupsShares()
+# delete not needed dir
+# os.system("rm -rf %s/homes" %SHARED_DIR)
+
+try:
+    ALL_GROUPS=getGroupsShares()
+except ldap.SERVER_DOWN:
+    # use backup if exists
+    if os.path.isfile(SMB_CONF_BACKUP):
+        shutil.copy2(SMB_CONF_BACKUP, SMB_CONF)
+        sys.exit(0)
+
+
 for group in ALL_GROUPS:
     if group in NOT_VALID_KEYS:
         # no create special sections
@@ -245,6 +275,9 @@ for group in HIDDEN_GROUPS:
 
 smb.write()
 
+# write backup file
+shutil.copy2(SMB_CONF, SMB_CONF_BACKUP)
+
 
 # # test if smb.conf have include line
 # f=open('/etc/samba/smb.conf', 'r')
@@ -261,8 +294,9 @@ smb.write()
 #     f.write("\ninclude = /etc/samba/max-control.conf\n")
 #     f.close()
 
-if 'SUDO_USER' in os.environ and os.environ['SUDO_USER'] == 'ebox':
-    sys.exit(0)
+# if 'SUDO_USER' in os.environ and os.environ['SUDO_USER'] == 'ebox':
+#     print "Running pymaxgensamba FROM ebox user ..."
+#     sys.exit(0)
 
 #print " * Restarting samba ..."
 #commands.getstatusoutput("/etc/init.d/zentyal samba restart")

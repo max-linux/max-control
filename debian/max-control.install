@@ -36,4 +36,4 @@ programer.php         usr/share/max-control/
 
 logrotate.d/max-control etc/logrotate.d/
 sudoers.d/max-control   etc/sudoers.d/
-max-control.conf        etc/apache2/conf.d/
+max-control.conf        etc/apache2/conf-enabled/

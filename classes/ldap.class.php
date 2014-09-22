@@ -755,6 +755,9 @@ class COMPUTER extends BASE {
         global $ldap, $gui;
 
         //$new=array( 'description' => array($this->ipHostNumber . "/" . $this->macAddress) );
+        if( $this->description == '' ) {
+            $this->description = $this->ipHostNumber . "/" . $this->macAddress;
+        }
         $new=array( 'description' => array($this->description) );
 
         $gui->debuga($new);

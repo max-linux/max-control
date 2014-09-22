@@ -1,3 +1,9 @@
+max-control (3.5.0~alfa1max2) max; urgency=medium
+
+  * Fix some paths
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Mon, 22 Sep 2014 15:31:41 +0200
+
 max-control (3.5.0~alfa1max1) max; urgency=low
 
   * Remove zentyal-captiveportal
