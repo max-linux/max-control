@@ -4,7 +4,7 @@ import pwd
 import sys
 
 uids = []
-MIN_UUID= 1999
+MIN_UUID= 2000
 MAX_UUID = 20000
 
 

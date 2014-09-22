@@ -16,7 +16,7 @@ if [ "$1" = "configure" ]; then
         cp "$f" /etc/zentyal/hooks/
         chmod +x /etc/zentyal/hooks/"$h"
 
-	# reiniciar servicio
+        # reiniciar servicio
         SRV=$(echo $h| awk -F"." '{print $1}')
         /etc/init.d/zentyal $SRV restart || true
     done

@@ -14,8 +14,8 @@ SHARED_DIR="/home/samba/groups/"
 
 TO_ADD={'isos': {'comment': 'Archivos ISO', 
                'path': '/home/samba/shares/isos',
-               'valid users': ['@"Teachers"', '@"__USERS__"'],
-               'read list': ['@"Teachers"', '@"__USERS__"'],
+               'valid users': ['@"Teachers"', '@"Domain Users"'],
+               'read list': ['@"Teachers"', '@"Domain Users"'],
                'write list': '@"Teachers"',
                'admin users': '@"Domain Admins"',
                'read only': 'No', 
