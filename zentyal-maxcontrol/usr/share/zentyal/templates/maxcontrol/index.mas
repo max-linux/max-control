@@ -13,13 +13,22 @@ use EBox::Gettext;
 
 <div class='maxcontrol'>
 %if ($active eq 'yes') {
-<p>MAX CONTROL es un interfaz para la gestión sencilla de usuarios, grupos, equipos y aulas en el servidor de centro basado en Zentyal.</p>
-<a href="http://<% $ENV{HTTP_HOST} %>/control/">Abrir panel de control</a>
+<p>MAX CONTROL es un interfaz para la gesti&oacute;n sencilla de usuarios, grupos, equipos y aulas en el servidor de centro basado en Zentyal.</p>
+<a class='maxcontrol_link' href="" target="_blank">Abrir panel de control</a>
 %} else {
 <div class='note'>
-<% __x('El módulo MAX Control no está habilitado. {openhref}Habilítelo{closehref} primero.',
+<% __x('El m&oacute;dulo MAX Control no est&aacute; habilitado. {openhref}Habil&iacute;telo{closehref} primero.',
       openhref  => '<a href="/ServiceModule/StatusView">',
       closehref => '</a>') %>
 </div>
 %}
 </div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+    $('.maxcontrol_link').attr('href')="http://" + document.location.hostname + "/control/";
+});
+//]]>
+</script>

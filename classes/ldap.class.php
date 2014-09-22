@@ -488,42 +488,39 @@ class GROUP extends BASE {
 
 
     function newMember($username) {
-        global $gui;
-        $gui->debug("GROUP:newMember($username)");
+        global $gui, $ldap;
+
+        $members=$this->member;
+        $members[]="CN=$username,".LDAP_OU_USERS;
+
+        $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
+        if(!$r) return false;
+        $this->member=$members;
+        return true;
+    }
 
 
-        $cmd="sudo ".MAXCONTROL." addmember '".$this->cn."' '$username' 2>&1";
-        $gui->debuga($cmd);
-        exec($cmd, $output);
-        $gui->debuga($output);
+    function delMember($username) {
+        global $gui, $ldap;
 
-        if( isset($output[0]) && $output[0] == 'OK' ) {
-            return true;
+        $members=$this->member;
+        $udel="CN=$username,".LDAP_OU_USERS;
+
+
+        $newmembers=array();
+        foreach ($members as $m) {
+            if ( $m == $udel || $m == $username ) {
+                continue;
+            }
+            $newmembers[]=$m;
         }
-        return false;
+        $members=$newmembers;
+        
 
-
-        /*
-        //$gui->debuga($this);
-        if ( ! isset($this->ldapdata['memberUid']) ){
-            $this->ldapdata['memberUid']=array();
-        }
-        $members=$this->ldapdata['memberUid'];
-        if ( in_array($username, $this->ldapdata['memberUid']) ) {
-            // user is in group
-            $gui->debug("newMember(user=$username, group=".$this->cn.") user is in group, not adding" );
-            return true;
-        }
-        $members[]=$username;
-        unset($members['count']);
-        $gui->debuga($members);
-        $this->ldapdata['memberUid']=$members;
-        $this->memberUid=$members;
-        $res = $this->save(array('memberUid'));
-        global $ldap;
-        $ldap->updateLogonShares();
-        return $res;
-        */
+        $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
+        if(!$r) return false;
+        $this->member=$members;
+        return true;
     }
 }
 
@@ -595,9 +592,46 @@ class AULA extends BASE {
         foreach ($this->member as $k => $v) {
             if( endsWith(strtolower($v), strtolower(LDAP_OU_COMPUTERS) ) ) {
                 $this->computers[] = $this->split_dn($v);
+                
             }
         }
         return $this->computers;
+    }
+
+    function add_computer($computer) {
+        global $gui, $ldap;
+
+        $members=$this->member;
+        $members[]="CN=$computer,".LDAP_OU_COMPUTERS;
+
+        $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
+        if(!$r) return false;
+        $this->member=$members;
+        return true;
+    }
+
+
+    function del_computer($computer) {
+        global $gui, $ldap;
+
+        $members=$this->member;
+        $cdel="CN=$computer,".LDAP_OU_COMPUTERS;
+
+
+        $newmembers=array();
+        foreach ($members as $m) {
+            if ( $m == $cdel || $m == $computer ) {
+                continue;
+            }
+            $newmembers[]=$m;
+        }
+        $members=$newmembers;
+        
+
+        $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
+        if(!$r) return false;
+        $this->member=$members;
+        return true;
     }
 
 
@@ -710,7 +744,7 @@ class COMPUTER extends BASE {
 
         //$gui->debuga(" init() ".$this->description);
         //{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}
-        if($this->description != '') {
+        if(strpos($this->description, "/") !== false) {
             $tmp=preg_split('/\//', $this->description);
             //$gui->debuga($tmp);
             $this->ipHostNumber=$tmp[0];
@@ -722,29 +756,30 @@ class COMPUTER extends BASE {
 
     function save($data=array()) {
         global $gui, $ldap;
-        $gui->debuga($this);
+        // $gui->debuga($this);
         $saved=$this->saveIPMAC();
 
         // save aula
         if($this->get_aula() != $this->aula) {
             $gui->debuga("SAVE AULA=".$this->aula);
 
-            if($this->aula == '') {
-                //FIXME
-                // quitar miembros
-                $cmd="sudo ".MAXCONTROL." delmember '".$this->cn."' '".$this->description."' 2>&1";
-                $gui->debuga($cmd);
-                exec($cmd, $output);
-                $gui->debuga($output);
 
-                if( isset($result[0]) && $result[0] == 'OK' ) {
-                    return true;
+            if($this->aula == '') {
+                $aulas=$ldap->get_aulas( $this->get_aula() );
+                if(sizeof($aulas) != 1) {
+                    return false;
                 }
+                $gui->debuga($this->dn ." borrar del aula=".$this->get_aula());
+                // quitar miembros
+                $saved = $aulas[0]->del_computer( $this->name );
             }
             else {
-                $new=array( 'memberof' => array($this->aula) );
-                $r = ldap_modify($ldap->cid, $this->dn, $new);
-                if(!$r) $saved=false;
+                $aulas=$ldap->get_aulas( $this->aula );
+                if(sizeof($aulas) != 1) {
+                    return false;
+                }
+                $gui->debuga($this->dn ." añadir al aula=".$this->aula);
+                $saved = $aulas[0]->add_computer( $this->name );
             }
         }
 
@@ -760,7 +795,7 @@ class COMPUTER extends BASE {
         }
         $new=array( 'description' => array($this->description) );
 
-        $gui->debuga($new);
+        // $gui->debuga($new);
 
         $r = ldap_modify($ldap->cid, $this->dn, $new);
         //$gui->debuga($r);
@@ -997,6 +1032,8 @@ class LDAP {
         var $cachedTeachers=NULL;
         var $cachedTics=NULL;
 
+        var $connected=false;
+
     function LDAP($binddn = "", $bindpw = "", $hostname = LDAP_HOST) {
         
         if ($binddn != "")
@@ -1038,19 +1075,23 @@ class LDAP {
             $gui->debug("===> ".$this->error."<========");
             return false;
         }
+        $this->connected=true;
         return true;
     }
 
 
     function search($filter, $basedn='', $attrs=array('*'))  {
-        //global $gui;
+        // global $gui;
+        if( ! $this->connected ) {
+            return array();
+        }
         $localbasedn=$this->basedn;
         if ($basedn != '')
             $localbasedn=$basedn;
         
         $result = array();
         
-        //$gui->debug("ldap_search('".$this->cid."', '$localbasedn', '$filter')");
+        // $gui->debug("ldap_search('".$this->cid."', '$localbasedn', '$filter')");
         $sr = ldap_search($this->cid, $localbasedn, $filter, $attrs);
         if(! $sr) {
             return array();
@@ -1062,6 +1103,9 @@ class LDAP {
 
     function disconnect($txt='') {
         global $gui;
+        if( ! $this->connected ) {
+            return array();
+        }
         //$gui->debug("<h2>ldap->disconnect() ".$this->$binddn."</h2>");
         if($this->error != '' && $this->error != 'Success') {
             $gui->debug("LDAP::error ". $this->error);
@@ -1484,6 +1528,18 @@ class LDAP {
         }
 
         return $computers;
+    }
+
+    function get_macs_from_aula($aula) {
+        // FIXME
+        $macs=array();
+        $computers=$this->get_computers_from_aula($aula);
+
+        foreach ($computers as $c) {
+            $gui->debuga($c);
+        }
+
+        return $macs;
     }
 
     function get_computers_in_and_not_aula($aula) {

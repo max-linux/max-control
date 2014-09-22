@@ -72,7 +72,7 @@ define("MAXCONTROL", "/usr/bin/max-control");
 define("PYWAKEONLAN", "/usr/bin/pywakeonlan");
 
 // RUTA a la clase smarty
-define("SMARTY_REQUIRE","/usr/share/php/smarty/Smarty.class.php");
+define("SMARTY_REQUIRE","/usr/share/php/smarty3/Smarty.class.php");
 
 // cache de smart
 define("SMARTY_CACHE", "/var/lib/max-control/cache");
@@ -80,7 +80,7 @@ define("SMARTY_CACHE", "/var/lib/max-control/cache");
 // ruta a las plantillas mejor no editar
 define("SMARTY_TEMPLATES", "/templates");
 
-define("SMARTY_PLUGINS", '/usr/share/php/smarty/plugins/');
+define("SMARTY_PLUGINS", '/usr/share/php/smarty3/plugins/');
 
 /*
 * enable apache mod_rewrite (mejor no tocar)

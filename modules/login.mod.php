@@ -54,15 +54,11 @@ if ($username != "" && $contrasena != ""){
 if ($is_connecting){
     
     if( $permisos->conectar($username, $contrasena) ) {
-        if(!DEBUG) {
-            $url->ir("miperfil", "");
-        }
+        $url->ir("miperfil", "");
     }
     else {
-        if(!DEBUG) {
-            $gui->session_error("Usuario o contraseña incorrectos.");
-            $url->ir("", "");
-        }
+        $gui->session_error("Usuario o contraseña incorrectos.");
+        $url->ir("");
     }
 }
 

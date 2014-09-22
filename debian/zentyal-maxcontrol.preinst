@@ -27,7 +27,12 @@ if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
     #zentyal_add_divert /etc/zentyal/hooks/firewall.postservice
 
     # limit 500 => 2500 search results
-    zentyal_add_divert /usr/share/zentyal/stubs/users/config.ldif.mas
+    #zentyal_add_divert /usr/share/zentyal/stubs/users/config.ldif.mas
+
+    # remove old divert
+    if dpkg-divert --list zentyal-maxcontrol | grep -q config.ldif.mas; then
+        dpkg-divert --package zentyal-maxcontrol --rename --remove "/usr/share/zentyal/stubs/users/config.ldif.mas"
+    fi
 
 fi
 

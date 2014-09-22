@@ -453,7 +453,7 @@ case $1 in
         
         if ! samba-tool group add "$ADDGROUP" \
                         --groupou=CN=Users \
-                        --group-scope=Domain \
+                        --group-scope=Global \
                         --group-type=Security \
                         --description="$DESC" 2>&1; then
             echo 'error'

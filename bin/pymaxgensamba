@@ -74,7 +74,23 @@ TO_ADD={
         }
 
 NOT_VALID_KEYS=['global', 'netlogon', 'profiles', 'sysvol', 'homes', 'print$', 'isos']
-HIDDEN_GROUPS=['Instaladores', 'CoordinadoresTIC']
+HIDDEN_GROUPS=['Instaladores', 'CoordinadoresTIC',
+               'Allowed RODC Password Replication Group',
+               'Enterprise Read-only Domain Controllers',
+               'Denied RODC Password Replication Group',
+               'Read-only Domain Controllers',
+               'Group Policy Creator Owners',
+               'RAS and IAS Servers',
+               'Domain Controllers',
+               'Enterprise Admins',
+               'Domain Computers',
+               'Cert Publishers',
+               'DnsUpdateProxy',
+               'Domain Admins',
+               'Domain Guests',
+               'Schema Admins',
+               'Domain Users',
+               'DnsAdmins']
 
 
 def read_conf(varname):
@@ -100,11 +116,12 @@ TO_ADD['global']['template homedir']="/home/%s/%%S" % DOMAIN.split('.')[0].upper
 def getGroupsShares():
     sharedgroups=[]
     l = ldap.initialize('ldap://localhost:389')
+    #print read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW")
     l.simple_bind_s(read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW"))
-    results = l.search_s(GROUPS,ldap.SCOPE_SUBTREE,'(objectclass=posixGroup)', ['cn', 'member', 'gidNumber'])
+    results = l.search_s(GROUPS,ldap.SCOPE_SUBTREE,'(objectclass=group)', ['cn', 'member', 'gidNumber'])
 
     #import pprint
-    #pprint.pprint(results)
+    #pprint(results)
 
     for group in results:
         if "Teachers" in group[0]:
@@ -114,6 +131,8 @@ def getGroupsShares():
         
         if not groupname in HIDDEN_GROUPS:
             sharedgroups.append(groupname)
+            print group
+    #pprint(sharedgroups)
     return sharedgroups
 
 

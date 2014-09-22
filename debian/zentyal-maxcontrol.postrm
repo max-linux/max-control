@@ -24,7 +24,11 @@ if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" ]; then
     #zentyal_remove_divert /etc/zentyal/hooks/firewall.postservice
 
     # limit 500 => 2500 search results
-    zentyal_remove_divert /usr/share/zentyal/stubs/users/config.ldif.mas
+    #zentyal_remove_divert /usr/share/zentyal/stubs/users/config.ldif.mas
+
+    if dpkg-divert --list zentyal-maxcontrol | grep -q config.ldif.mas; then
+        zentyal_remove_divert /usr/share/zentyal/stubs/users/config.ldif.mas
+    fi
 fi
 
 

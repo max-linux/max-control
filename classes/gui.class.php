@@ -196,7 +196,7 @@ class Gui
     function debug_array($thisarray, $from="debug_array()"){
         $this->debug("debug_array() from=$from");
         foreach($thisarray as $key => $value){
-            $this->debug ("$from <small>key=<b>$key</b> value=<b>$value</b></small>");
+            $this->debug ("$from <small>key=<b>$key</b> value=<b>".print_r($value, true)."</b></small>");
         }
     }
 }

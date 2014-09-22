@@ -81,8 +81,10 @@ class URLHandler {
     
     function create_url($module, $action, $subaction="") {
         global $site;
-        if( APACHE_MOD_REWRITE ){
-            $txt=$site["basedir"] . "/$module/$action" ;
+        if( APACHE_MOD_REWRITE ) {
+            $txt=$site["basedir"] . "/$module" ;
+            if($action != "")
+                $txt.="/$action";
             if($subaction != "")
                 $txt.="/$subaction";
             return $txt;
