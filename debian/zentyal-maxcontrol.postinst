@@ -21,6 +21,8 @@ if [ "$1" = "configure" ]; then
         /etc/init.d/zentyal $SRV restart || true
     done
 
+    #/etc/init.d/zentyal webadmin restart || true
+
 fi
 
 

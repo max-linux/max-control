@@ -4,10 +4,14 @@ depends:
     - network
     - dhcp
     - samba
-    - users
 
 enabledepends:
     - network
     - dhcp
     - samba
-    - users
+
+bootdepends:
+    - network
+    - dhcp
+    - samba
+

@@ -23,8 +23,8 @@
             <li>{$k}</li>
             {if $faction != 'delete' && $u->numUsers > 0}
                 <ul>
-                {foreach from=$u->get_users() item=u}
-                <li>{$u}</li>
+                {foreach from=$u->get_users() item=uu}
+                <li>{$uu}</li>
                 {/foreach}
                 </ul>
             {/if}

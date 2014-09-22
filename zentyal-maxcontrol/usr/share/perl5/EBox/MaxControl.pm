@@ -49,6 +49,7 @@ sub menu
     $root->add(new EBox::Menu::Item('url' => 'MaxControl/Index',
                                     'text' => $self->printableName(),
                                     'separator' => 'Infrastructure',
+                                    'icon' => 'samba',
                                     'order' => 460));
 }
 

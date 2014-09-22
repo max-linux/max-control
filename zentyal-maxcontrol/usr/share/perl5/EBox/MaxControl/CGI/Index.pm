@@ -1,10 +1,11 @@
-package EBox::CGI::MaxControl::Index;
+package EBox::MaxControl::CGI::Index;
 
 use strict;
 use warnings;
 
 use base 'EBox::CGI::ClientBase';
 
+use EBox;
 use EBox::Global;
 use EBox::Gettext;
 
@@ -13,8 +14,8 @@ use EBox::Gettext;
 sub new {
 	my $class = shift;
 	my $self = $class->SUPER::new('title'    => __('MAX Control'),
-				      'template' => 'maxcontrol/index.mas',
-				      @_);
+	      						  'template' => 'maxcontrol/index.mas',
+	      						  @_);
 	$self->{domain} = "zentyal-maxcontrol";
 	bless($self, $class);
 	return $self;

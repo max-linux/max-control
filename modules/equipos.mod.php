@@ -460,44 +460,77 @@ function equiposguardar($module, $action, $subaction){
     
     global $ldap;
 
+    $aulas=$ldap->get_aulas($aula);
+    if( sizeof($aulas) != 1 ) {
+        $gui->session_error("Aula '$aula' no encontrada.");
+        $url->ir($module, "aulas", "equipos");
+        return;
+    }
+
 
     if ( count($addcomputers) > 0 ) {
         foreach($addcomputers as $addcomputer) {
-             // equitar el sambaProfilePath del equipo con el aula
-            $equipo=$ldap->get_computers($addcomputer .'$');
-            $equipo[0]->sambaProfilePath=$aula;
-            $equipo[0]->ldapdata['sambaProfilePath']=$aula;
-            $res=$equipo[0]->save( array('sambaProfilePath') );
-            if ($res) {
+            if( $aulas[0]->add_computer($addcomputer) ) {
                 $gui->session_info("Equipo '$addcomputer' añadido al aula '$aula' correctamente.");
+                $equipo=$ldap->get_computers($addcomputer .'$');
                 $equipo[0]->boot($aula);
             }
-            else
+            else {
                 $gui->session_error("No se puedo añadir el equipo '$addcomputer' al aula '$aula'.");
+            }
         }
         if (!DEBUG)
           $url->ir($module, "aulas", "equipos/$aula");
     }
     elseif ( count($delcomputers) > 0 ) {
         foreach($delcomputers as $delcomputer) {
-            // borrar el sambaProfilePath
-            $equipo=$ldap->get_computers($delcomputer .'$');
-            if ( isset($equipo[0]) ) {
-                $res = $equipo[0]->empty_attr( 'sambaProfilePath' );
-                if ($res) {
-                    $gui->session_info("Equipo '$delcomputer' quitado del aula '$aula' correctamente.");
-                    $equipo[0]->boot('default');
-                }
-                else
-                    $gui->session_error("No se puedo quitar el equipo '$delcomputer' del aula '$aula'.");
+
+            if( $aulas[0]->del_computer($delcomputer) ) {
+                $gui->session_info("Equipo '$delcomputer' quitado del aula '$aula' correctamente.");
+                $equipo=$ldap->get_computers($delcomputer .'$');
+                $equipo[0]->boot('default');
             }
             else {
-                $gui->session_error("No se pudo encontrar el equipo '$delcomputer'");
+                $gui->session_error("No se pudo quitar el equipo '$delcomputer' del aula '$aula'");
             }
         }
+
         if (!DEBUG)
           $url->ir($module, "aulas", "equipos/$aula");
     }
+
+
+    // if ( count($addcomputers) > 0 ) {
+    //     foreach($addcomputers as $addcomputer) {
+    //         $equipo=$ldap->get_computers($addcomputer .'$');
+    //         $equipo[0]->aula="$aula";
+    //         if ($equipo[0]->save() ) {
+    //             $gui->session_info("Equipo '$addcomputer' añadido al aula '$aula' correctamente.");
+    //             $equipo[0]->boot($aula);
+    //         }
+    //         else {
+    //             $gui->session_error("No se puedo añadir el equipo '$addcomputer' al aula '$aula'.");
+    //         }
+    //     }
+    //     if (!DEBUG)
+    //       $url->ir($module, "aulas", "equipos/$aula");
+    // }
+    // elseif ( count($delcomputers) > 0 ) {
+    //     foreach($delcomputers as $delcomputer) {
+    //         // borrar el sambaProfilePath
+    //         $equipo=$ldap->get_computers($delcomputer .'$');
+    //         $equipo[0]->aula="";
+    //         if ($equipo[0]->save() ) {
+    //             $gui->session_info("Equipo '$delcomputer' quitado del aula '$aula' correctamente.");
+    //             $equipo[0]->boot('default');
+    //         }
+    //         else {
+    //             $gui->session_error("No se puedo añadir el equipo '$delcomputer' al aula '$aula'.");
+    //         }
+    //     }
+    //     if (!DEBUG)
+    //       $url->ir($module, "aulas", "equipos/$aula");
+    // }
     else {
         $gui->session_error("No se ha seleccionado ningún equipo.");
         $url->ir($module, "aulas", "equipos/$aula");

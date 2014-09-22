@@ -64,7 +64,11 @@ def addComputersToAulas(aulas):
     l.simple_bind_s(read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW"))
     allcomputers = l.search_s(read_conf("LDAP_OU_COMPUTERS"),ldap.SCOPE_SUBTREE,'(objectclass=computer)',['cn', 'memberOf', 'description'])
     for c in allcomputers:
+        # print c
         if not c[1].has_key('description'):
+            continue
+
+        if "/" not in c[1]['description'][0]:
             continue
 
         (ip, mac) = c[1]['description'][0].split('/')

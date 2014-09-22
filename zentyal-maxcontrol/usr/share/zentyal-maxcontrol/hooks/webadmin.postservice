@@ -1,0 +1,11 @@
+#!/bin/sh
+
+
+if ! grep -q maxcontrol /var/lib/zentyal/dynamicwww/css/public.css; then
+    cat << EOF >> /var/lib/zentyal/dynamicwww/css/public.css
+
+/* max-server */
+.icon-maxcontrol { background-image: url("/data/images/package-icons/zentyal-samba.png");}
+EOF
+
+fi
