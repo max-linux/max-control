@@ -64,7 +64,7 @@ function create_user($username, $i) {
                 "description" => "Descripción Usuario",
                 "password" => $username,
                 "role" => "alumno",
-                "loginShell" => "/bin/false"
+                "loginshell" => "/bin/false"
                 );
         $user = new USER( $new );
         $user->newUser();
