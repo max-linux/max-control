@@ -156,7 +156,7 @@ function guardar($module, $action, $subaction) {
             [sn] => Fernández
             [description] => aaaaa
             [role] => 
-            [loginShell] => /bin/false
+            [loginshell] => /bin/false
             [newpwd] => 
             [newpwd2] => 
             [Editar] => Guardar
@@ -200,16 +200,18 @@ function guardar($module, $action, $subaction) {
                            'displayname'=>'displayname',
                            'sn' => 'cnsn',
                            'description' => 'charnum',
-                           'loginShell' => 'shell',
+                           'loginshell' => 'shell',
                            'role' => 'role'));
-    $gui->debuga($_POST);
+    // $gui->debuga($_POST);
     
     $usuario->set($_POST);
+    // $gui->debuga($usuario);
+
     // if( $usuario->description == '' ) {
     //     $usuario->description=array();
     //     $usuario->ldapdata['description']=array();
     // }
-    $res=$usuario->save( array('cn', 'displayname', 'sn', 'loginShell', 'description') );
+    $res=$usuario->save( array('cn', 'displayname', 'sn', 'loginshell', 'description') );
     
     if ($res)
         $gui->session_info("Datos guardados correctamente");
@@ -325,7 +327,7 @@ function guardarnuevo($module, $action, $subaction) {
             [repassword] => pepe6
             [description] => aaaaaa
             [role] => teacher
-            [loginShell] => /bin/false
+            [loginshell] => /bin/false
             [add] => Añadir
     */
     if( !$permisos->is_admin() && leer_datos('role') == 'admin') {
@@ -346,7 +348,7 @@ function guardarnuevo($module, $action, $subaction) {
                            'givenname'=>'givenname',
                            'sn' => 'cn',
                            'description' => 'charnum',
-                           'loginShell' => 'shell',
+                           'loginshell' => 'shell',
                            'role' => 'role',
                            'password' => 'str',
                            'repassword' => 'str'));

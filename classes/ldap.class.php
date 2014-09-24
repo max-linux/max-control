@@ -73,7 +73,7 @@ class BASE {
         global $gui;
         foreach($parameter as $k => $v) {
             $this->ldapdata[$k]=$v;
-            //$gui->debug("set $k => ".print_r($v, true));
+            // $gui->debug("set $k => ".print_r($v, true));
             if ( isset($this->$k) ) {
                 if ( is_array($this->$k) ) {
                     unset($v['count']);
@@ -183,8 +183,10 @@ class USER extends BASE {
         [repassword] => pepe6
         [description] => aaaaaa
         [role] => teacher
-        [loginShell] => /bin/false
+        [loginshell] => /bin/false
         */
+        
+        // $gui->debuga("data=".print_r($data, true));
 
         if ($this->givenname =='') {
             $this->givenname=' ';
@@ -195,6 +197,7 @@ class USER extends BASE {
 
         $new=array( 'givenname' => array($this->givenname),
                     'sn' => array($this->sn),
+                    'loginshell' => array($this->loginshell),
                   );
 
 
@@ -202,10 +205,17 @@ class USER extends BASE {
             $new['description']=array($this->description);
         }
 
-        $gui->debuga($new);
-        $gui->debuga($this->dn);
+        // $gui->debuga($new);
+        // $gui->debuga($this->dn);
 
         $r = ldap_modify($ldap->cid, $this->dn, $new);
+
+        $cmd='sudo '.MAXCONTROL." chshell '".$this->loginshell."' '".$this->cn."' 2>&1";
+        $gui->debuga($cmd);
+        exec($cmd, $output);
+        $gui->debuga($output);
+
+
         //$gui->debuga($r);
         if ($r) {
             return true;
@@ -345,7 +355,7 @@ class USER extends BASE {
         [repassword] => pepe6
         [description] => aaaaaa
         [role] => teacher
-        [loginShell] => /bin/false
+        [loginshell] => /bin/false
         */
 
         // bin/max-control adduser pepe4 Pepe4 'Lopez Gomez' pepe4
@@ -360,13 +370,13 @@ class USER extends BASE {
 
         // crear home, profiles y aplicar quota en background
         if($this->background) {
-            $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' > /dev/null 2>&1 &";
+            $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' '$loginshell' > /dev/null 2>&1 &";
             $gui->debug($cmd);
             pclose(popen($cmd, "r"));
             $gui->session_info("Usuario '".$this->cn."' creado correctamente.");
         }
         else {
-            $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' 2>&1";
+            $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' '$loginshell' 2>&1";
             $gui->debug($cmd);
             exec($cmd, $output);
             $gui->debug("newUser<pre>".print_r($output, true)."</pre>");
@@ -435,6 +445,10 @@ class GROUP extends BASE {
         $this->get_users();
     }
 
+    function get_num_users() {
+        return sizeof($this->get_users());
+    }
+
     function get_users() {
         $users=array();
         foreach ($this->member as $k => $v) {
@@ -455,6 +469,9 @@ class GROUP extends BASE {
         [createshared] => 1
         [readonly] => 1
         */
+        if($this->description == '') {
+            $this->description=$this->cn;
+        }
         $saved=false;
 
         $cmd="sudo ".MAXCONTROL." addgroup '".$this->cn."' '$readonly' '".$this->description."' 2>&1";
@@ -522,6 +539,12 @@ class GROUP extends BASE {
         $this->member=$members;
         return true;
     }
+
+    function renameGroup($newname) {
+        global $gui;
+        $gui->session_error("SAMBA 4 no permite renombrar grupos, pruebe a borrar y añadir uno nuevo");
+        return false;
+    } 
 }
 
 
@@ -596,6 +619,42 @@ class AULA extends BASE {
             }
         }
         return $this->computers;
+    }
+
+
+    function newMember($username) {
+        global $gui, $ldap;
+
+        $members=$this->member;
+        $members[]="CN=$username,".LDAP_OU_USERS;
+
+        $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
+        if(!$r) return false;
+        $this->member=$members;
+        return true;
+    }
+
+    function delMember($username) {
+        global $gui, $ldap;
+
+        $members=$this->member;
+        $udel="CN=$username,".LDAP_OU_USERS;
+
+
+        $newmembers=array();
+        foreach ($members as $m) {
+            if ( $m == $udel || $m == $username ) {
+                continue;
+            }
+            $newmembers[]=$m;
+        }
+        $members=$newmembers;
+        
+
+        $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
+        if(!$r) return false;
+        $this->member=$members;
+        return true;
     }
 
     function add_computer($computer) {
@@ -682,24 +741,63 @@ class AULA extends BASE {
         return $this->cachedBoot;
     }
 
+    function genPXELinux() {
+        global $gui;
+        //bin/max-control pxe --genpxelinux
+        exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", $output);
+        return;
+    }
+
+    function boot($conffile) {
+        /*
+        $conffile must be windows, max or aula name
+        */
+        
+        global $gui;
+        $aula=$this->cn;
+        
+        if ($conffile == '') {
+            $conffile='default';
+        }
+        
+        //max-control pxe --aula=aula_primaria_1 --boot=windows
+        exec("sudo ".MAXCONTROL." pxe --boot='$conffile' --aula='".$this->safecn()."' ", $output);
+        $gui->debug("AULA:boot($conffile, ".$this->safecn().")<pre>".print_r($output, true)."</pre>");
+        if ( ! isset($result[0]) ) {
+            $gui->session_info("Arranque de '".$this->cn."' actualizado.");
+        }
+        return true;
+    }
+
     function newAula() {
         global $gui;
         
-        //$gui->debuga($this);
-        /*
-        [cn] => aula2
-        [description] => comentario
-        */
-
-        //samba-tool group add "Aula23" --groupou=CN=Computers --group-scope=Domain --group-type=Security --description="Aula 23"
-        //samba-tool group add Aula1 --groupou=CN=Computers --group-scope=Domain --group-type=Security --description="Aula1"
+        if( $this->description == '' ) {
+            $this->description=$this->cn;
+        }
 
         $cmd="sudo ".MAXCONTROL." addaula '".$this->cn."' '".$this->description."' 2>&1";
         $gui->debuga($cmd);
         exec($cmd, $output);
         $gui->debuga($output);
 
-        if( isset($result[0]) && $result[0] == 'OK' ) {
+        if( isset($result[0]) && end($result) == 'OK' ) {
+            return true;
+        }
+        
+        return false;
+    }
+
+
+    function delAula() {
+        global $gui;
+        
+        $cmd="sudo ".MAXCONTROL." delaula '".$this->cn."' 2>&1";
+        $gui->debuga($cmd);
+        exec($cmd, $output);
+        $gui->debuga($output);
+
+        if( isset($result[0]) && end($result) == 'OK' ) {
             return true;
         }
         
@@ -1508,6 +1606,21 @@ class LDAP {
                     );
     }
 
+    function get_macs_from_aula($aula) {
+        global $gui;
+        // FIXME
+        $macs=array();
+        $computers=$this->get_computers_from_aula($aula);
+
+        foreach ($computers as $c) {
+            if($c->macAddress != '') {
+                $gui->debuga($c);
+                $macs[]=$c->macAddress;
+            }
+        }
+
+        return $macs;
+    }
 
     function get_computers_from_aula($aula) {
         global $gui;
@@ -1528,18 +1641,6 @@ class LDAP {
         }
 
         return $computers;
-    }
-
-    function get_macs_from_aula($aula) {
-        // FIXME
-        $macs=array();
-        $computers=$this->get_computers_from_aula($aula);
-
-        foreach ($computers as $c) {
-            $gui->debuga($c);
-        }
-
-        return $macs;
     }
 
     function get_computers_in_and_not_aula($aula) {

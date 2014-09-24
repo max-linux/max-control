@@ -44,9 +44,9 @@ include("classes/winexe.class.php");
 
 
 
-$user = get_class_methods('COMPUTER');
-sort($user);
-$gui->debuga($user);
+// $user = get_class_methods('COMPUTER');
+// sort($user);
+// $gui->debuga($user);
 
 
 /*
@@ -151,59 +151,266 @@ COMPUTER
     [22] => show
     [23] => teacher_in_computer
 
-
+SAMBA 4
  
-# Objeto 1: CN=Grupo4,CN=Users,DC=madrid,DC=lan
-dn: CN=Grupo4,CN=Users,DC=madrid,DC=lan
-cn: Grupo4
-description: grupo 4
-distinguishedname: CN=Grupo4,CN=Users,DC=madrid,DC=lan
-gidnumber: 3131
-grouptype: -2147483646
-instancetype: 4
-name: Grupo4
-objectcategory: CN=Group,CN=Schema,CN=Configuration,DC=madrid,DC=lan
-objectclass: top
-objectclass: posixAccount
-objectclass: group
-objectguid:: ZDgZVuw5f0GPuxDeFpPBnQ==
-objectsid:: AQUAAAAAAAUVAAAAWkPcISoQO251ALVOawQAAA==
-samaccountname: Grupo4
-samaccounttype: 268435456
-usnchanged: 4346
-usncreated: 4345
-whenchanged: 20140922182552.0Z
-whencreated: 20140922182552.0Z
+class BASE 
+    function BASE(array $parameter = array()) 
+    function init()
+    function set(array $parameter = array()) 
+    function split_dn($dn) 
+    function attr($attrname) 
 
 
-
-# Objeto 1: CN=Group5,CN=Users,DC=madrid,DC=lan
-dn: CN=Group5,CN=Users,DC=madrid,DC=lan
-cn: Group5
-description: esto es grupo 5
-distinguishedname: CN=Group5,CN=Users,DC=madrid,DC=lan
-gidnumber: 3134
-grouptype: -2147483646
-instancetype: 4
-name: Group5
-objectcategory: CN=Group,CN=Schema,CN=Configuration,DC=madrid,DC=lan
-objectclass: top
-objectclass: posixAccount
-objectclass: group
-objectguid:: u+mpheUiwkOkOlWVGHQfdw==
-objectsid:: AQUAAAAAAAUVAAAAWkPcISoQO251ALVObgQAAA==
-samaccountname: Group5
-samaccounttype: 268435456
-usnchanged: 4354
-usncreated: 4353
-whenchanged: 20140922184235.0Z
-whencreated: 20140922184235.0Z
+class USER extends BASE 
+--    public static function attrs() 
+**    function set_role() 
+--    function save($data) 
+**    function update_password($new, $cn) 
+--    function init()
+**    function is_role($role) 
+**    function get_role() 
+NN    function is_romaing() 
+**    function getNumericQuota() 
+**    function getquota() 
+**    function newUser($data=array()) 
+**    function delUser($delprofile='') 
+**    function resetProfile() 
 
 
+class GROUP extends BASE 
+--    public static function attrs() 
+--    function init()
+**  function get_num_users() 
+**    function get_users() 
+    
+**    function newMember($username) 
+**    function delMember($username) 
+
+**    function newGroup($createshared, $readonly, $grouptype=2) 
+**    function delGroup($delprofile='') 
+
+WW    function renameGroup($newname)
+
+
+class AULA extends BASE 
+--    public static function attrs() 
+--    function init()
+--    function safecn() 
+**    function get_num_users() 
+**    function get_users() 
+**    function get_num_computers() 
+
+**    function teacher_in_aula() 
+    function get_computers() 
+
+NN    function add_computer($computer) 
+NN    function del_computer($computer) 
+
+**    function newMember($username) 
+**    function delMember($username) 
+
+**    function newAula()
+**    function delAula() 
+
+**    function getBoot() 
+**    function genPXELinux() 
+
+
+class COMPUTER extends BASE 
+    public static function attrs() 
+    function init()
+    function save($data=array()) 
+    function saveIPMAC() 
+    function hostname() 
+    function rnd() 
+    function get_aula() 
+    function teacher_in_computer() 
+    function show() 
+    function boot($conffile) 
+    function getBoot() 
+    function pxeMAC() 
+    function getMACIP() 
+    function action($actionname, $mac)
+
+
+class LDAP 
+    function LDAP($binddn = "", $bindpw = "", $hostname = LDAP_HOST) 
+    function get_error()
+    function is_connected() 
+    function connect()
+    function search($filter, $basedn='', $attrs=array('*'))  
+    function disconnect($txt='') 
+    function get_users($filter='', $group=LDAP_OU_USERS, $filterrole='') 
+    function get_user($cn='') 
+    function user_exists($cn) 
+    function get_user_uids($group=LDAP_OU_USERS) 
+    function get_groups($filter='', $include_system=false) 
+    function get_group($cn) 
+    function get_members_in_and_not_group($groupfilter) 
+    function get_tics_uids() 
+    function is_tic($uid='') 
+    function get_teachers_uids($filter='*') 
+    function is_teacher($uid='') 
+    function is_admin($uid='') 
+    function get_aulas($aula='') 
+    function get_aulas_cn($aula='') 
+    function get_computers($com='') 
+    function get_aula($aulafilter) 
+    function get_teacher_from_aula($aulafilter) 
+    function get_macs_from_aula($aula) 
+    function get_computers_from_aula($aula) 
+    function get_computers_in_and_not_aula($aula) 
+    function readMenu($fmenu) 
+    function getBootMenus($aula=False) 
+    function getISOS($filter='')
+
+===============================================================
+OpenLDAP
+
+class BASE 
+    function BASE(array $parameter = array()) 
+    function set(array $parameter = array()) 
+    function show() 
+    function attr($attrname) 
+    function init()
+    function pre_save() 
+    function get_save_dn()
+    function load_class_required($varname) 
+    function is_restricted($varname) 
+    function save($attrs=array()) 
+    function empty_attr( $attr ) 
+
+
+class USER extends BASE 
+--    function init()
+--    function get_save_dn()
+**    function get_role() 
+**    function is_role($role) 
+OB    function reQuota()
+**    function set_role($role) 
+**    function update_password($new) 
+**    function newUser() 
+**    function delUser($delprofile='') 
+**    function getNumericQuota() 
+**    function getquota() 
+**    function resetProfile() 
+
+
+class GROUP extends BASE 
+--    function init()
+**    function get_num_users() 
+**    function get_users() 
+--    function get_save_dn()
+    
+**    function newMember($username) 
+**    function delMember($username) 
+
+OB    function addGroup() 
+**    function newGroup($createshared, $readonly, $grouptype=2) 
+**    function delGroup($delprofile='') 
+
+    function renameGroup($newname) 
+
+
+class AULA extends BASE 
+--    function init()
+--    function safecn() 
+**    function get_num_users() 
+**    function get_users() 
+**    function get_num_computers() 
+
+**    function teacher_in_aula() 
+--    function get_save_dn()
+
+**    function newMember($username) 
+**    function delMember($username) 
+
+**    function newAula() 
+**    function delAula() 
+
+**    function getBoot() 
+**    function genPXELinux() 
+    function boot($conffile)
+
+
+class COMPUTER extends BASE 
+    function init() 
+    function hostname() 
+    function get_save_dn()
+    function rnd() 
+    function load_class_required($varname) 
+    function is_restricted($varname) 
+    function pre_save() 
+    function action($actionname, $mac)
+    function getMACIP() 
+    function genPXELinux() 
+    function cleanPXELinux() 
+    function resetBoot() 
+    function boot($conffile) 
+    function getBoot() 
+    function pxeMAC() 
+    function teacher_in_computer() 
+    function delComputer() 
+    function newComputer($data) 
+
+
+class ISO extends BASE
+    function save() 
+    function init()
+
+
+class LDAP 
+    function LDAP($binddn = "", $bindpw = "", $hostname = LDAP_HOSTNAME) 
+    function get_error()
+    function connect()
+    function is_connected() 
+    function get_users($filter='*', $group=LDAP_OU_USERS, $ignore="max-control", $filterrole='') 
+    function get_user($uid='') 
+    function user_exists($uid) 
+    function get_user_uids($group=LDAP_OU_USERS) 
+    function get_tics_uids($filter='*') 
+    function is_tic($uid='') 
+    function get_teachers_uids($filter='*') 
+    function is_teacher($uid='') 
+    function is_admin($uid='') 
+    function get_computers($uid='') 
+    function get_computer_by_ip($ip='') 
+    function get_aulas($aula='') 
+    function get_aula($aulafilter) 
+    function get_teacher_from_aula($aulafilter) 
+    function get_macs_from_aula($aula) 
+    function get_computers_from_aula($aula) 
+    function get_computers_in_and_not_aula($aula) 
+    function get_aulas_cn($aula='') 
+    function get_group($cn) 
+    function get_groups($groupfilter='*', $include_system=false) 
+    function get_members_in_and_not_group($groupfilter) 
+    function lastUID() 
+    function lastGID() 
+    function getGID($gidname) 
+    function additionalPasswords($txtpasswd, $user, $samba=false) 
+    function getSID() 
+    function getDefaultQuota() 
+    function deleteProfile($uid) 
+    function deleteGroupProfile($group) 
+    function addGroupProfile($group, $readonly=0) 
+    function genSamba() 
+    function updateLogonShares() 
+    function purgeWINS() 
+    function getGroupMembers($group) 
+    function addUserToGroup($user, $group) 
+    function delUserFromGroup($user, $group) 
+    function readMenu($fmenu) 
+    function getBootMenus($aula=False) 
+    function getISOS($filter='') 
+    function search($filter, $basedn='')
+    function fetch() 
+    function resetResult() 
+    function disconnect($txt='') 
 
  */
 
-die();
+
 
 
 //echo conectar('ebox','GzxovzAANdxoPux9');
@@ -252,16 +459,19 @@ $ldap=new LDAP();
 /* editar mario-desktop computer */
 //$host=$ldap->get_computers('mario-desktop$');
 
-$aulas=$ldap->get_aulas();
-$gui->debuga($aulas[0]);
+// $aulas=$ldap->get_aulas();
+// $gui->debuga($aulas[0]);
 // $gui->debuga( $aulas[0]->get_computers() );
 
 // $gui->debuga( $aulas[0]->add_computer('MAX75RC4') );
 // $gui->debuga( $aulas[0]->get_computers() );
 
-$gui->debuga( $aulas[0]->del_computer('MAX75RC4') );
-$gui->debuga( $aulas[0]->del_computer('max75rc3') );
-$gui->debuga( $aulas[0]->get_computers() );
+// $gui->debuga( $aulas[0]->del_computer('MAX75RC4') );
+// $gui->debuga( $aulas[0]->del_computer('max75rc3') );
+// $gui->debuga( $aulas[0]->get_computers() );
+// 
+
+$gui->debuga($ldap->get_macs_from_aula('Aula1') );
 
 //$gui->debug($host[0]);
 //$gui->debug("PURE: ". $host[0]->_pure);

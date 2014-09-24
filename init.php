@@ -142,7 +142,7 @@ if ( ! $user ) {
             "description" => "Usuario administrador creado para uso del panel max-control",
             "password" => $LDAP_PASS,
             "role" => "admin",
-            "loginShell" => "/bin/bash"
+            "loginshell" => "/bin/bash"
             );
     $user = new USER( $new );
     $user->newUser();

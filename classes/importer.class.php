@@ -106,13 +106,13 @@ class Importer {
                        'sn'            => $userdata[IMPORT_SURNAME],
                        'description'   => $userdata[IMPORT_NAME] . ' '. $userdata[IMPORT_SURNAME].$extradata,
                        'group'         => $usergroup,
-                       'loginShell'    => '/bin/false',
+                       'loginshell'    => '/bin/false',
                        'role'          => $userrole);
             sanitize($tmp, array('cn' => 'uid',
                                  'givenname'=>'cnsn',
                                  'sn' => 'cnsn',
                                  'description' => 'cnsn',
-                                 'loginShell' => 'shell',
+                                 'loginshell' => 'shell',
                                  'role' => 'role',
                                  'password' => 'str',
                                  'group' => 'uid'));

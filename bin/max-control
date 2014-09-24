@@ -65,12 +65,17 @@ case $1 in
         # password
         PASSWD=$5
         ROLE=$6
+        USHELL=$7
 
         if wbinfo -i "$NEWUSER" >/dev/null 2>&1 ; then
             echo_exit "exists"
         fi
 
         create_lock
+
+        if [ "${USHELL}" = "" ]; then
+            USHELL="/bin/false"
+        fi
 
         #DCNAME="$(samba-tool domain info 127.0.0.1 2>/dev/null| awk '/^DC name/ {print $4}')"
         # max-server.madrid.local
@@ -102,7 +107,7 @@ case $1 in
         #self.exe_cmd("echo %s:%s | chpasswd" %(username, username))
         NEWUUID=$(max-get-newuser-uuid)
 
-        useradd -m "$NEWUSER" -s /bin/bash -d "${HOMES_DIR}/$NEWUSER" --no-user-group --uid="${NEWUUID}" || echo_exit "error"
+        useradd -m "$NEWUSER" -s "${USHELL}" -d "${HOMES_DIR}/$NEWUSER" --no-user-group --uid="${NEWUUID}" || echo_exit "error"
         echo "${NEWUSER}:${PASSWD}" | chpasswd
         chown -R "${NEWUSER}:Domain Users" "${HOMES_DIR}/$NEWUSER"
         chmod 700 "${HOMES_DIR}/$NEWUSER"
@@ -115,7 +120,7 @@ case $1 in
           --home-directory='\\'$DCNAME'\'$NEWUSER \
           --home-drive="$DRIVE" \
           --rfc2307-from-nss --gecos "$NAME $SURNAME" \
-          --uid="$NEWUSER" --uid-number="${NEWUUID}" --login-shell=/bin/bash || echo_exit "error"
+          --uid="$NEWUSER" --uid-number="${NEWUUID}" --login-shell="${USHELL}" || echo_exit "error"
 
 
         #ldbsearch -H /opt/samba4/private/sam.ldb '(cn=aaa9)'
@@ -213,6 +218,18 @@ case $1 in
         # /usr/bin/edit.quotas --set --user="${NEWUSER}" --size=${QUOTA}
         exit 0
         ;;
+
+################################################################################
+    chshell)
+        # shell and username
+        USHELL=$2
+        USER=$3
+
+        create_lock
+
+        usermod --shell "${USHELL}" "${USER}" && echo 'OK'
+        exit 0
+        ;;
 ################################################################################
     chpasswd)
         # username and surname
@@ -262,7 +279,21 @@ case $1 in
         create_lock
 
 
-        samba-tool group add "$NEW" --groupou=CN=Computers --group-scope=Domain --group-type=Security --description="$DESC" >/dev/null 2>&1 && echo 'OK'
+        samba-tool group add "$NEW" \
+                   --groupou=CN=Computers \
+                   --group-scope=Domain \
+                   --group-type=Security \
+                   --description="$DESC" 2>&1 && echo 'OK'
+        exit 0
+        ;;
+################################################################################
+    delaula)
+        DEL=$2
+        
+        create_lock
+
+
+        samba-tool group delete "$DEL" 2>&1 && echo 'OK'
         exit 0
         ;;
 ################################################################################

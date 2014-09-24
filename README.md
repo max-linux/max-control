@@ -24,3 +24,7 @@ apt-get install max-control
 ```
 
 * Open browser http://127.0.0.1/control and follow instructions
+
+
+
+ * For winexe details: http://sourceforge.net/p/winexe/winexe-waf/ci/master/tree/
