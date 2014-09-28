@@ -22,6 +22,7 @@ fi
 
 DOMAIN=$(dnsdomainname)
 BASEDN=$(dnsdomainname | sed -e 's/\./,DC=/g' -e 's/^/DC=/')
+WORKGROUP=$(dnsdomainname | awk -F. '{print toupper($1)}')
 #SERVERDN=$(ldbsearch "(&(objectClass=computer)(CN=${HOSTNAME}*))" -H ldap://127.0.0.1:389 -U${USER}%${PASS} 2>/dev/null| awk -F": " '/^dn:/{print $2}')
 # if [ "$SERVERDN" = "" ]; then
 #   echo " * ERROR: No se pudo encontrar el servidor de dominio."
@@ -35,19 +36,21 @@ if [ "$BASEDN" = "" ]; then
 fi
 
 
+# create MAXGroups container and Teacher, CoordinadoresTIC and Instaladores
+zentyal-maxcontrol init
 
-# Crear grupos internos
-samba-tool group list 2>/dev/null | grep -q "^Teachers$" || \
-    samba-tool group add "Teachers" --groupou=CN=Builtin --group-scope=Domain \
-               --group-type=Security --description="Profesores"
+# # Crear grupos internos
+# samba-tool group list 2>/dev/null | grep -q "^Teachers$" || \
+#     samba-tool group add "Teachers" --groupou=CN=Builtin --group-scope=Domain \
+#                --group-type=Security --description="Profesores"
 
-samba-tool group list 2>/dev/null | grep -q "^CoordinadoresTIC$" || \
-    samba-tool group add "CoordinadoresTIC" --groupou=CN=Builtin --group-scope=Domain \
-               --group-type=Security --description="Coordinadores TIC"
+# samba-tool group list 2>/dev/null | grep -q "^CoordinadoresTIC$" || \
+#     samba-tool group add "CoordinadoresTIC" --groupou=CN=Builtin --group-scope=Domain \
+#                --group-type=Security --description="Coordinadores TIC"
 
-samba-tool group list 2>/dev/null | grep -q "^Instaladores$" || \
-    samba-tool group add "Instaladores" --groupou=CN=Builtin --group-scope=Domain \
-               --group-type=Security --description="Instaladores de equipos"
+# samba-tool group list 2>/dev/null | grep -q "^Instaladores$" || \
+#     samba-tool group add "Instaladores" --groupou=CN=Builtin --group-scope=Domain \
+#                --group-type=Security --description="Instaladores de equipos"
 
 
 rm -f /etc/max-control/conf.inc.php
@@ -58,6 +61,7 @@ cat << EOF > /etc/max-control/conf.inc.php
 
 // basedn del dominio
 define('LDAP_BASEDN', '${BASEDN}');
+define('WORKGROUP', '${WORKGROUP}');
 
 // autenticacion
 define('LDAP_BINDDN', 'CN=${USER},CN=Users,${BASEDN}');
@@ -75,7 +79,7 @@ define('LDAP_OU_GROUPS',    'CN=Users,${BASEDN}');
 // dominio
 define('LDAP_DOMAIN', '${DOMAIN}');
 
-define('LDAP_OU_BUILTINS',      'CN=Builtin,${BASEDN}');
+define('LDAP_OU_BUILTINS',      'CN=MAXGroups,${BASEDN}');
 // Administrators
 define('LDAP_OU_ADMINS',        'CN=Administrators,CN=Builtin,${BASEDN}');
 define('LDAP_OU_DADMINS',       'CN=Domain Admins,CN=Users,${BASEDN}');
@@ -83,16 +87,16 @@ define('LDAP_OU_DUSERS',        'CN=Domain Users,CN=Users,${BASEDN}');
 
 
 define('TEACHERS', 'Teachers');
-define('LDAP_OU_TEACHERS',      'CN=Teachers,CN=Builtin,${BASEDN}');
+define('LDAP_OU_TEACHERS',      'CN=Teachers,CN=MAXGroups,${BASEDN}');
 
 define('TICS', 'CoordinadoresTIC');
-define('LDAP_OU_TICS',          'CN=CoordinadoresTIC,CN=Builtin,${BASEDN}');
+define('LDAP_OU_TICS',          'CN=CoordinadoresTIC,CN=MAXGroups,${BASEDN}');
 
 define('INSTALLATORS', 'Instaladores');
-define('LDAP_OU_INSTALLATORS',  'CN=Instaladores,CN=Builtin,${BASEDN}');
+define('LDAP_OU_INSTALLATORS',  'CN=Instaladores,CN=MAXGroups,${BASEDN}');
 
 
-define("HOMES", "/home/");
+define("HOMES", "/home/${WORKGROUP}/");
 
 define("LDAP_HOST", '${HOST}');
 define("LDAP_HOSTNAME", '${HOSTNAME}');
