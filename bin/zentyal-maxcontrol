@@ -1,0 +1,299 @@
+#!/usr/bin/perl
+#
+# MAX Control interface to Zentyal
+
+
+use strict;
+use warnings;
+
+# use POSIX qw(setuid getuid);
+
+# my ($pwName, $pwCode, $pwUid, $pwGid, $pwQuota, $pwComment, $pwGcos, $pwHome, $pwLogprog) = getpwnam( "ebox" );
+# #print "Trying to become UID $pwUid\n";
+# setuid($pwUid);
+
+use EBox;
+use EBox::Samba::Group;
+use EBox::Samba::User;
+use EBox::Exceptions::LDAP;
+use Net::LDAP::Constant qw(LDAP_LOCAL_ERROR);
+
+
+EBox::init();
+my $samba = EBox::Global->modInstance('samba'); 
+my $parent = EBox::Samba::Group->defaultContainer();
+my $HOMES_DIR = "/home/" . uc($samba->workgroup());
+
+
+if($ARGV[0] eq 'adduser') {
+    
+    # foreach my $key (sort keys(%ENV)) {
+    #   print "$key = $ENV{$key}\n";
+    # }
+
+    throw EBox::Exceptions::MissingArgument('USERNAME') unless ($ENV{'USERNAME'});
+    throw EBox::Exceptions::MissingArgument('NAME') unless ($ENV{'NAME'});
+    throw EBox::Exceptions::MissingArgument('SURNAME') unless ($ENV{'SURNAME'});
+    throw EBox::Exceptions::MissingArgument('DESCRIPTION') unless ($ENV{'DESCRIPTION'});
+    throw EBox::Exceptions::MissingArgument('PASSWORD') unless ($ENV{'PASSWORD'});
+    throw EBox::Exceptions::MissingArgument('QUOTA') unless ($ENV{'QUOTA'});
+    throw EBox::Exceptions::MissingArgument('USHELL') unless ($ENV{'USHELL'});
+
+
+    my $drive = $samba->drive();
+    my $drivePath = "\\\\" . $samba->netbiosName() . "." . $samba->kerberosRealm();
+    my $profilesPath = $drivePath."\\profiles";
+    my $home = $HOMES_DIR . "/" . $ENV{'USERNAME'};
+    
+
+    my $user = EBox::Samba::User->create(
+        name => $ENV{'USERNAME'},
+        parent => $parent,
+        givenName => $ENV{'NAME'},
+        # initials => 'na',
+        cn => $ENV{'NAME'},
+        sn => $ENV{'SURNAME'},
+        displayName => $ENV{'NAME'} . " " . $ENV{'SURNAME'},
+        description => $ENV{'DESCRIPTION'},
+        samAccountName => $ENV{'USERNAME'}, # string with the user name
+        password => $ENV{'PASSWORD'},       # Clear text password
+        isSystemUser => 0,
+        # uidNumber => # AUTO
+    );
+    $user->_setFilesystemQuota($ENV{'QUOTA'});
+    $user->setRoamingProfile(1, $profilesPath, 1);
+    $user->setHomeDrive($drive, $drivePath, 1);
+    $user->set("loginShell", $ENV{'USHELL'}, 1);
+    $user->set("homeDirectory", $home, 1);
+    $user->save();
+
+    # move("/home/".$ENV{'USERNAME'}, $home);
+    EBox::Sudo::silentRoot("mv '/home/'".$ENV{'USERNAME'}." '$home'");
+
+    if($ENV{'ROLE'} eq 'admin') {
+        my $admins = new EBox::Samba::Group(sid => $samba->ldap->domainSID() . "-512");
+        $admins->addMember($user);
+        $admins->save();
+        print "Añadido usuario a grupo administradores\n";
+    }
+    elsif($ENV{'ROLE'} eq 'tic') {
+        # my $tics = new EBox::Samba::Group(samAccountName => "CoordinadoresTIC");
+        my $tics = new EBox::Samba::Group(dn => "CN=CoordinadoresTIC,CN=MAXGroups," . $samba->ldap->dn());
+        $tics->addMember($user);
+        $tics->save();
+        print "Añadido usuario a grupo coordinadores TIC\n";
+    }
+    elsif($ENV{'ROLE'} eq 'teacher') {
+        # my $teachers = new EBox::Samba::Group(samAccountName => "Teachers");
+        my $teachers = new EBox::Samba::Group(dn => "CN=Teachers,CN=MAXGroups," . $samba->ldap->dn());
+        $teachers->addMember($user);
+        $teachers->save();
+        print "Añadido usuario a grupo profesores\n";
+    }
+    EBox::Sudo::silentRoot("sss_cache -u '".$ENV{'USERNAME'}."'");
+}
+elsif($ARGV[0] eq 'deluser') {
+
+    throw EBox::Exceptions::MissingArgument('USERNAME') unless ($ENV{'USERNAME'});
+
+    my $user = new EBox::Samba::User(samAccountName => $ENV{'USERNAME'});
+    if ($user->exists()) {
+        $user->deleteObject();
+
+        my $path = $HOMES_DIR . "/" . $ENV{'USERNAME'};
+        EBox::Sudo::silentRoot("rm -rf '$path'");
+        EBox::Sudo::silentRoot("sss_cache -u '".$ENV{'USERNAME'}."'");
+    }
+}
+
+elsif($ARGV[0] eq 'addgroup') {
+# Method: create
+#
+#   Adds a new Samba group.
+#
+# Parameters:
+#
+#   args - Named parameters:
+#       name            - Group name.
+#       parent          - Parent container that will hold this new Group.
+#       description     - Group's description.
+#       mail            - Group's mail.
+#       isSecurityGroup - If true it creates a security group, otherwise creates a distribution group. By default true.
+#       isSystemGroup   - If true it adds the group as system group, otherwise as normal group.
+#       gidNumber       - The gid number to use for this group. If not defined it will auto assigned by the system.
+#
+    
+    EBox::Samba::Group->create(
+        name => $ENV{'NAME'},
+        parent => $parent,
+        description => '',
+        mail => '',
+        isSecurityGroup => 1,
+        isSystemGroup => 0
+    );
+
+}
+
+elsif($ARGV[0] eq 'init') {
+    my $ldap = $samba->ldap();
+    my $containerName = 'MAXGroups';
+    my $dn = "CN=$containerName," . $ldap->dn();
+
+    my $param = {
+        base => $dn,
+        filter => '(objectClass=container)',
+    };
+    my $result = $ldap->search($param);
+    if ($result->count() == 0) {
+        print " * Creando contenedor CN=MAXGroups...\n";
+        my %attr = (objectClass  => ['top', 'container'],
+                    cn           => $containerName,
+                    name         => $containerName,
+                    description  => 'Container to put the MAX SERVER user groups',
+                    instanceType => 4);
+
+        my $entry = new Net::LDAP::Entry($dn, %attr);
+        $result = $entry->update($ldap->connection());
+        if ($result->is_error()) {
+            unless ($result->code() == LDAP_LOCAL_ERROR and $result->error() eq 'No attributes to update') {
+                my @changes = $entry->changes();
+                throw EBox::Exceptions::LDAP(
+                    message => __('Error on group container LDAP entry creation:'),
+                    result  => $result,
+                    opArgs  => "@changes",
+                   );
+            };
+        }
+    }
+
+    else {
+        print " * El contenedor CN=MAXGroups ya existe\n";
+    }
+    #
+    #
+    # Create Teachers CoordinadoresTIC Instaladores groups
+    $parent = $samba->objectFromDN('CN=MAXGroups,' . $samba->ldap->dn());
+
+    my $group = new EBox::Samba::Group(dn => "CN=Teachers," . $parent->dn());
+    unless ( $group->exists() ) {
+        EBox::Samba::Group->create(
+            name => 'Teachers',
+            parent => $parent,
+            description => 'Profesores',
+            isSecurityGroup => 1,
+            isSystemGroup => 0
+        );
+        print " * Creado grupo profesores\n";
+    }
+
+    $group = new EBox::Samba::Group(dn => "CN=CoordinadoresTIC," . $parent->dn());
+    unless ( $group->exists() ) {
+        EBox::Samba::Group->create(
+            name => 'CoordinadoresTIC',
+            parent => $parent,
+            description => 'Coordinadores TIC',
+            isSecurityGroup => 1,
+            isSystemGroup => 0
+        );
+        print " * Creado grupo coordinadores TIC\n";
+    }
+
+    $group = new EBox::Samba::Group(dn => "CN=Instaladores," . $parent->dn());
+    unless ( $group->exists() ) {
+        EBox::Samba::Group->create(
+            name => 'Instaladores',
+            parent => $parent,
+            description => 'Instaladores',
+            isSecurityGroup => 1,
+            isSystemGroup => 0
+        );
+        print " * Creado grupo instaladores\n";
+    }
+}
+
+elsif($ARGV[0] eq 'test') {
+    # my $samba = EBox::Global->modInstance('samba');
+
+    # # print $samba . "\n";
+    # # print $samba->drive();
+    # # 
+    
+    # my $drivePath = "\\\\".$samba->netbiosName().".".$samba->kerberosRealm();
+    # my $profilesPath = $drivePath."\\profiles";
+
+    # print "drivePath=$drivePath\n";
+    # print "profilesPath=$profilesPath\n";
+
+    # print $samba->ldap->dn() . "\n";
+    # my $baseObject = new EBox::Samba::LdapObject(dn => 'CN=Builtin,' . $samba->ldap->dn());
+    # print "baseObject=$baseObject\n";
+    # if ($baseObject->exists()) {
+    #     print "existe => ".$baseObject->dn()."\n";
+    # } else {
+    #     print "no existe\n";
+    # }
+    # print $baseObject->_entry() . "\n";
+    # print $samba->objectFromDN('CN=Builtin,' . $samba->ldap->dn());
+    #
+    #print $HOMES_DIR;
+    #
+    # print $samba->ldap->domainSID() . "\n";
+
+    # my $admins = new EBox::Samba::Group(sid => $samba->ldap->domainSID() . "-512");
+    # print $admins->name . "\n";
+
+    # my $user = new EBox::Samba::User(samAccountName => 'jorge');
+    # if ($user->exists()) {
+    #     $admins->addMember($user);
+    # }
+    # else {
+    #     print "user no exists\n";
+    # }
+
+    # my $admins = new EBox::Samba::Group(sid => "S-1-5-32-544"); # Administrators
+    # print $admins->name . "\n";
+    # $admins->addMember($user);
+    # 
+    
+    # CN=Teachers,CN=Builtin,DC=madrid,DC=lan
+    # my $teachers = new EBox::Samba::Group(dn => "CN=Teachers,CN=Builtin,DC=madrid,DC=lan");
+    # my $entry = $teachers->_entry() . "\n";
+    # print any(@{[$entry->get_value('objectClass')]}); . "\n";
+    
+    # print $samba->objectFromDN('CN=MAXGroups,' . $samba->ldap->dn());
+
+    # my $containerName = 'MAXGroups';
+    # my $dn = "CN=$containerName," . $samba->ldap->dn();
+    # my $param = {
+    #     base => $dn,
+    #     # scope => 'one',
+    #     filter => '(objectClass=container)',
+    # };
+    # my $result = $samba->ldap->search($param);
+    # print "$result\n";
+    # print $result->count()."\n";
+
+    # $parent = $samba->objectFromDN('CN=MAXGroups,' . $samba->ldap->dn());
+    # my $group = new EBox::Samba::Group(dn => "CN=Teachers," . $parent->dn());
+    # if ($group->exists()) {
+    #     print "existe\n";
+    # }
+    # else {
+    #     print "no existe\n";
+    # }
+
+    # my ($pwName, $pwCode, $pwUid, $pwGid, $pwQuota, $pwComment, $pwGcos, $pwHome, $pwLogprog) = getpwnam( "ebox" );
+    # print "Trying to become UID $pwUid\n";
+    # setuid( getpwnam("ebox") );
+    # 
+    
+    print getpwnam("ebox") . " \n";
+
+}
+
+
+
+print "\n";
+
+
+1;

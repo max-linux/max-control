@@ -9,13 +9,14 @@ import commands
 from pprint import pprint
 import shutil
 
-CONF="/etc/max-control/conf.inc.php"
-SMB_CONF="/etc/samba/shares.conf"
-SMB_CONF_BACKUP="/var/lib/max-control/shares.conf"
-SHARED_DIR="/home/samba/groups/"
+CONF = "/etc/max-control/conf.inc.php"
+SMB_CONF = "/etc/samba/shares.conf"
+SSSD_CONF = '/etc/sssd/sssd.conf'
+SMB_CONF_BACKUP = "/var/lib/max-control/shares.conf"
+SHARED_DIR = "/home/samba/groups/"
 
 if not os.path.isfile(CONF):
-    print " * No existe el archivo %s"%(CONF)
+    print " * No existe el archivo %s" % (CONF)
     sys.exit(0)
 
 """
@@ -33,71 +34,70 @@ if not os.path.isfile(CONF):
  force directory mode = 0775
 """
 
-TO_EDIT={
+TO_EDIT = {
     'homes': {'hide files': '/desktop.ini/$RECYCLE.BIN/*.desktop/.*/',
-              'ea support':'yes',
-              'store dos attributes':'yes',
-              'full_audit:success':'none',
-              #'full_audit:success':'connect opendir open disconnect unlink mkdir rmdir rename',
-              'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename',
-              'path':'/home/__DOMAIN__/%S',
+              'ea support': 'yes',
+              'store dos attributes': 'yes',
+              'full_audit:success': 'none',
+              #'full_audit:success': 'connect opendir open disconnect unlink mkdir rmdir rename',
+              'full_audit:failure': 'connect opendir open disconnect unlink mkdir rmdir rename',
+              'path': '/home/__DOMAIN__/%S',
               },
     #'print$':{'browseable':'no'},
 }
 
-TO_ADD={
-        #'ebox-internal-backups':{'browseable':'no'},
-        #'ebox-quarantine':{'browseable':'no'},
-        'profiles': {'ea support':'yes',
-                     'store dos attributes':'yes'},
+TO_ADD = {'profiles': {'ea support': 'yes',
+                       'store dos attributes': 'yes'},
 
-        'global':{'server string': 'MAX server',
-                  'full_audit:success':'none',
-                  'full_audit:failure':'connect opendir open disconnect unlink mkdir rmdir rename',
-                  'winbind nss info':'rfc2307',
-                 },
+          'global': {'server string': 'MAX server',
+                     'full_audit:success': 'none',
+                     'full_audit:failure': 'connect opendir open disconnect unlink mkdir rmdir rename',
+                     'winbind nss info': 'rfc2307',
+                     },
+          # 'ebox-internal-backups':{'browseable':'no'},
+          # 'ebox-quarantine':{'browseable':'no'},
 
-        'isos': {'comment': 'Archivos ISO', 
-               'path': '/home/samba/shares/isos',
-               #'valid users': ['@"Teachers"', '@"Domain Users"'],
-               'read list': ['@"Teachers"', '@"Domain Users"'],
-               #'write list': '@"Teachers"',
-               'write list': ['@"Teachers"','@"Domain Admins"'],
-               #'read list': '@"Domain Users"',
-               'admin users': '@"Domain Admins"',
-               'guest ok': 'yes',
-               'read only': 'no', 
-               'browseable': 'no', 
-               'force create mode': '0664', 
-               'force directory mode': '0775',
-               }
-        }
+          'isos': {'comment': 'Archivos ISO',
+                   'path': '/home/samba/shares/isos',
+                   # 'valid users': ['@"Teachers"', '@"Domain Users"'],
+                   'read list': ['@"Teachers"', '@"Domain Users"'],
+                   # 'write list': '@"Teachers"',
+                   'write list': ['@"Teachers"', '@"Domain Admins"'],
+                   # 'read list': '@"Domain Users"',
+                   'admin users': '@"Domain Admins"',
+                   'guest ok':  'yes',
+                   'read only': 'no',
+                   'browseable': 'no',
+                   'force create mode': '0664',
+                   'force directory mode': '0775',
+                   }
+          }
 
-NOT_VALID_KEYS=['global', 'netlogon', 'profiles', 'sysvol', 'homes', 'print$', 'isos']
-HIDDEN_GROUPS=['Instaladores', 'CoordinadoresTIC',
-               'Allowed RODC Password Replication Group',
-               'Enterprise Read-only Domain Controllers',
-               'Denied RODC Password Replication Group',
-               'Read-only Domain Controllers',
-               'Group Policy Creator Owners',
-               'RAS and IAS Servers',
-               'Domain Controllers',
-               'Enterprise Admins',
-               'Domain Computers',
-               'Cert Publishers',
-               'DnsUpdateProxy',
-               'Domain Admins',
-               'Domain Guests',
-               'Schema Admins',
-               'Domain Users',
-               'DnsAdmins']
+NOT_VALID_KEYS = ['global', 'netlogon', 'profiles', 'sysvol', 'homes', 'print$', 'isos']
+HIDDEN_GROUPS = ['Instaladores', 'CoordinadoresTIC',
+                 'Allowed RODC Password Replication Group',
+                 'Enterprise Read-only Domain Controllers',
+                 'Denied RODC Password Replication Group',
+                 'Read-only Domain Controllers',
+                 'Group Policy Creator Owners',
+                 'RAS and IAS Servers',
+                 'Domain Controllers',
+                 'Enterprise Admins',
+                 'Domain Computers',
+                 'Cert Publishers',
+                 'DnsUpdateProxy',
+                 'Domain Admins',
+                 'Domain Guests',
+                 'Schema Admins',
+                 'Domain Users',
+                 'DnsAdmins']
 
 
 def read_conf(varname):
-    f=open(CONF, 'r')
-    data=f.readlines()
+    f = open(CONF, 'r')
+    data = f.readlines()
     f.close()
-    
+
     for line in data:
         if line.startswith('define') and varname in line:
             if len(line.split('"')) >= 3:
@@ -106,33 +106,35 @@ def read_conf(varname):
                 return line.split("'")[3]
     return ''
 
-GROUPS=read_conf('LDAP_OU_GROUPS')
-DOMAIN=read_conf('LDAP_DOMAIN')
+GROUPS = read_conf('LDAP_OU_GROUPS')
+DOMAIN = read_conf('LDAP_DOMAIN')
+WORKGROUP = read_conf('WORKGROUP')
+
 
 # hack to change samba users home dir
-TO_EDIT['homes']['path']="/home/%s/%%S" % DOMAIN.split('.')[0].upper()
-TO_ADD['global']['template homedir']="/home/%s/%%S" % DOMAIN.split('.')[0].upper()
+TO_EDIT['homes']['path'] = "/home/%s/%%S" % WORKGROUP
+TO_ADD['global']['template homedir'] = "/home/%s/%%S" % WORKGROUP
+
 
 def getGroupsShares():
-    sharedgroups=[]
+    sharedgroups = []
     l = ldap.initialize('ldap://localhost:389')
     #print read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW")
     l.simple_bind_s(read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW"))
-    results = l.search_s(GROUPS,ldap.SCOPE_SUBTREE,'(objectclass=group)', ['cn', 'member', 'gidNumber'])
+    results = l.search_s(GROUPS, ldap.SCOPE_SUBTREE, '(objectclass=group)', ['cn', 'member', 'gidNumber'])
 
-    #import pprint
-    #pprint(results)
+    # pprint(results)
 
     for group in results:
         if "Teachers" in group[0]:
             continue
-        
-        groupname=group[1]['cn'][0]
-        
+
+        groupname = group[1]['cn'][0]
+
         if not groupname in HIDDEN_GROUPS:
             sharedgroups.append(groupname)
-            print group
-    #pprint(sharedgroups)
+            # print group
+    # pprint(sharedgroups)
     return sharedgroups
 
 
@@ -144,14 +146,14 @@ class MyConfigObj (ConfigObj):
             val = self._decode_element(self._quote(this_entry))
         else:
             val = repr(this_entry)
-        
+
         # delete simple quote from groups names
         if "@" in val:
-            val=val.replace("'", "")
-        
+            val = val.replace("'", "")
+
         # add space before varname
-        indent_string='    '
-        
+        indent_string = '    '
+
         return '%s%s%s%s%s' % (
             indent_string,
             self._decode_element(self._quote(entry, multiline=False)),
@@ -186,27 +188,24 @@ def newGroupShare(groupname, readonly):
     #    * 17405 readonly false
     #    * 17401 readonly true
     #
-    share={
-            "comment": "compartido por %s"%groupname,
-            "path": os.path.join(SHARED_DIR, groupname),
-            #"valid users": '@"%s"'%groupname,
-            "valid users": ['@"Domain Admins"', '@"%s"'%groupname],
-            "force group": "%s"%groupname,
-            "read list":  ['@"Domain Admins"', '@"%s"'%groupname],
-            "write list": ['@"Domain Admins"', '@"%s"'%groupname],
-            "admin users": '@"Domain Admins"',
-            "force create mode":"0660",
-            "force directory mode": "0770",
-            "printable": "no",
-            "read only": "no",
-            "browseable": "yes",
-          }
+    share = {"comment": "compartido por %s" % groupname,
+             "path": os.path.join(SHARED_DIR, groupname),
+             #"valid users": '@"%s"'%groupname,
+             "valid users": ['@"Domain Admins"', '@"%s"' % groupname],
+             "force group": "%s" % groupname,
+             "read list":  ['@"Domain Admins"', '@"%s"' % groupname],
+             "write list": ['@"Domain Admins"', '@"%s"' % groupname],
+             "admin users": '@"Domain Admins"',
+             "force create mode": "0660",
+             "force directory mode": "0770",
+             "printable": "no",
+             "read only": "no",
+             "browseable": "yes",
+             }
     if readonly == 1:
-        print " * Group %s readonly for puppils."%groupname
-        share["write list"]=['@"Domain Admins"', '@"Teachers"']
+        print " * Group %s readonly for puppils." % groupname
+        share["write list"] = ['@"Domain Admins"', '@"Teachers"']
     return share
-
-
 
 # def reloadSamba():
 #     """
@@ -228,8 +227,8 @@ def newGroupShare(groupname, readonly):
 #     for pid in PIDS:
 #         commands.getstatusoutput("kill -1 %s"%pid)
 #     return True
-
-smb=MyConfigObj(SMB_CONF)
+#
+smb = MyConfigObj(SMB_CONF)
 #
 for key in TO_EDIT:
     for attr in TO_EDIT[key]:
@@ -237,11 +236,11 @@ for key in TO_EDIT:
         smb[key][attr] = TO_EDIT[key][attr]
 #
 for key in TO_ADD:
-    smb[key]=TO_ADD[key]
+    smb[key] = TO_ADD[key]
     if key in ['homes', 'profiles']:
         continue
     # FIXME isos owned by teachers
-    result=commands.getstatusoutput("max-control createshared '%s' 'Teachers'"%key)
+    result = commands.getstatusoutput("max-control createshared '%s' 'Teachers'" % key)
     #print "createshared ",key, " = " ,result
     if key not in NOT_VALID_KEYS:
         print " * Create shared", key
@@ -253,7 +252,7 @@ smb.write()
 # os.system("rm -rf %s/homes" %SHARED_DIR)
 
 try:
-    ALL_GROUPS=getGroupsShares()
+    ALL_GROUPS = getGroupsShares()
 except ldap.SERVER_DOWN:
     # use backup if exists
     if os.path.isfile(SMB_CONF_BACKUP):
@@ -265,20 +264,20 @@ for group in ALL_GROUPS:
     if group in NOT_VALID_KEYS:
         # no create special sections
         continue
-    
+
     # if exists check permisos
-    groupdir=os.path.join(SHARED_DIR, group)
+    groupdir = os.path.join(SHARED_DIR, group)
     if os.path.isdir(groupdir):
         #
         # readonly (for puppils) is read from st_mode
         #    * 17405 readonly false
         #    * 17401 readonly true
         #
-        readonly=0
+        readonly = 0
         if os.stat(groupdir).st_mode == 17401:
-            readonly=1
-        smb[group]=newGroupShare(group, readonly)
-        result=commands.getstatusoutput("max-control addgroup '%s' '%s'"%(group, readonly))
+            readonly = 1
+        smb[group] = newGroupShare(group, readonly)
+        result = commands.getstatusoutput("max-control addgroup '%s' '%s'" % (group, readonly))
         #print "addgroup ", group, " = " ,result
         print " * Add group", group
 
@@ -320,3 +319,15 @@ shutil.copy2(SMB_CONF, SMB_CONF_BACKUP)
 #print " * Restarting samba ..."
 #commands.getstatusoutput("/etc/init.d/zentyal samba restart")
 #reloadSamba()
+"""
+[domain/madrid.lan]
+    fallback_homedir = /home/%u
+    default_shell = /bin/bash
+
+"""
+sssd = MyConfigObj(SSSD_CONF)
+# pprint(sssd)
+sssd["domain/%s" % DOMAIN.lower()]["fallback_homedir"] = "/home/%s/%%S" % WORKGROUP
+sssd["domain/%s" % DOMAIN.lower()]["default_shell"] = "/bin/false"
+# pprint(sssd)
+sssd.write()

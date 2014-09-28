@@ -11,17 +11,17 @@ from pprint import pprint
 from configobj import ConfigObj
 import time
 
-CONFIG_FILE="/etc/max-control/conf.inc.php"
+CONFIG_FILE = "/etc/max-control/conf.inc.php"
 if not os.path.isfile(CONFIG_FILE):
-    print " * No existe el archivo %s"%(CONFIG_FILE)
+    print " * No existe el archivo %s" % (CONFIG_FILE)
     sys.exit(0)
 
 
 def read_conf(varname):
-    f=open(CONFIG_FILE, 'r')
-    data=f.readlines()
+    f = open(CONFIG_FILE, 'r')
+    data = f.readlines()
     f.close()
-    
+
     for line in data:
         if line.startswith('define') and varname in line:
             if len(line.split('"')) >= 3:
@@ -31,41 +31,43 @@ def read_conf(varname):
     return ''
 
 
-PXELINUXCFG=read_conf('PXELINUXCFG')
-DEFAULT=os.path.join( PXELINUXCFG, 'default')
-DONTDELETE=['default']
-CRON_FILE="/var/lib/max-control/cron"
-TIMEOUT=15*60
-
+PXELINUXCFG = read_conf('PXELINUXCFG')
+DEFAULT = os.path.join(PXELINUXCFG, 'default')
+DONTDELETE = ['default']
+CRON_FILE = "/var/lib/max-control/cron"
+TIMEOUT = 15 * 60
 
 
 def safe_aula(aula):
-    return( aula.replace(' ', '_') )
+    return(aula.replace(' ', '_'))
+
 
 def convertMAC(mac):
     #print "convertMAC(%s)"%mac
-    return( "01-" + mac.lower().replace(':', '-') )
+    return("01-" + mac.lower().replace(':', '-'))
+
 
 def getAulas():
     l = ldap.initialize('ldap://localhost:389')
     l.simple_bind_s(read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW"))
-    allaulas = l.search_s(read_conf("LDAP_OU_COMPUTERS"),ldap.SCOPE_SUBTREE,'(objectclass=group)',['cn', 'member'])
-    
+    allaulas = l.search_s(read_conf("LDAP_OU_COMPUTERS"), ldap.SCOPE_SUBTREE, '(objectclass=group)', ['cn', 'member'])
+
     aulas = {}
     for a in allaulas:
-        aulas[ a[1]['cn'][0] ] = []
+        aulas[a[1]['cn'][0]] = []
 
-    aulas['default']=[]
+    aulas['default'] = []
     return aulas
 
 
 def addComputersToAulas(aulas):
     l = ldap.initialize('ldap://localhost:389')
     l.simple_bind_s(read_conf("LDAP_BINDDN"), read_conf("LDAP_BINDPW"))
-    allcomputers = l.search_s(read_conf("LDAP_OU_COMPUTERS"),ldap.SCOPE_SUBTREE,'(objectclass=computer)',['cn', 'memberOf', 'description'])
+    allcomputers = l.search_s(read_conf("LDAP_OU_COMPUTERS"), ldap.SCOPE_SUBTREE, '(objectclass=computer)', ['cn', 'memberOf', 'description'])
     for c in allcomputers:
         # print c
-        if not c[1].has_key('description'):
+        # if not c[1].has_key('description'):
+        if "description" not in c[1].keys():
             continue
 
         if "/" not in c[1]['description'][0]:
@@ -73,163 +75,167 @@ def addComputersToAulas(aulas):
 
         (ip, mac) = c[1]['description'][0].split('/')
 
-        if not c[1].has_key('memberOf'):
-            aulas['default'].append( mac ) 
+        # if not c[1].has_key('memberOf'):
+        if "memberOf" not in c[1].keys():
+            aulas['default'].append(mac)
             continue
 
-        aula=c[1]['memberOf'][0].split(',')[0].replace('CN=', '')
+        aula = c[1]['memberOf'][0].split(',')[0].replace('CN=', '')
         aulas[aula].append(mac)
 
     #pprint (aulas)
     return (aulas)
 
 
-
 def genPXELINUX(aulas):
     for aula in aulas:
-        aulafile=os.path.join( PXELINUXCFG , safe_aula(aula) )
+        aulafile = os.path.join(PXELINUXCFG, safe_aula(aula))
         if not os.path.exists(aulafile):
-            if os.path.exists( aulafile + ".menu"):
-                aulafile=aulafile+".menu"
-        
+            if os.path.exists(aulafile + ".menu"):
+                aulafile = aulafile + ".menu"
 
         for mac in aulas[aula]:
             # don't write empty macs
             #print "mac='%s'"%mac
             if mac.strip() == '':
                 continue
-            
-            macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
-            
-            
+
+            macfile = os.path.join(PXELINUXCFG, convertMAC(mac))
+
             #
             # no borrar la MAC si el equipo apunta a *.menu o a default
             #
             try:
-                boot=os.readlink(macfile)
+                boot = os.readlink(macfile)
                 if ".menu" in boot or "default" in boot:
                     continue
             except:
                 pass
-            
-            
-            if os.path.exists( macfile ):
+
+            if os.path.exists(macfile):
                 #print "rm %s"%( macfile )
                 os.unlink(macfile)
-            
-            if not os.path.exists( aulafile ):
+
+            if not os.path.exists(aulafile):
                 #print "ln -s %s %s"%( DEFAULT , aulafile )
-                os.symlink( DEFAULT, aulafile )
-            
-            if os.path.islink( macfile ):
+                os.symlink(DEFAULT, aulafile)
+
+            if os.path.islink(macfile):
                 os.unlink(macfile)
-            
-            os.symlink( aulafile, macfile )
+
+            os.symlink(aulafile, macfile)
 
 
 def bootMAC(boot, mac):
-    aulas={}
-    aulas[boot]=[ mac ]
+    aulas = {}
+    aulas[boot] = [mac]
     # delete MACFILE (updating from unique computer)
-    macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
-    if os.path.exists( macfile ):
+    macfile = os.path.join(PXELINUXCFG, convertMAC(mac))
+    if os.path.exists(macfile):
         os.unlink(macfile)
     # generate all links with this aula
     genPXELINUX(aulas)
 
+
 def cleanPXE():
-    for f in glob.glob( PXELINUXCFG + "*"):
+    for f in glob.glob(PXELINUXCFG + "*"):
         if os.path.basename(f) in DONTDELETE:
             continue
         if ".menu" in os.path.basename(f):
             continue
         os.unlink(f)
 
+
 def getBoot(mac):
-    macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
+    macfile = os.path.join(PXELINUXCFG, convertMAC(mac))
     if os.path.exists(macfile):
-        boot=os.path.basename(os.readlink(macfile))
+        boot = os.path.basename(os.readlink(macfile))
         return boot.replace('.menu', '')
     else:
         return 'default'
 
 
 def getBootAula(aula):
-    aulafile=os.path.join( PXELINUXCFG , safe_aula(aula) )
+    aulafile = os.path.join(PXELINUXCFG, safe_aula(aula))
     if not os.path.exists(aulafile):
-        if os.path.exists( aulafile + ".menu"):
-            aulafile=aulafile+".menu"
+        if os.path.exists(aulafile + ".menu"):
+            aulafile = aulafile + ".menu"
     if not os.path.exists(aulafile):
         return 'default'
     return os.path.basename(os.readlink(aulafile)).replace('.menu', '')
 
+
 def bootAula(boot, aula):
-    bootfile=os.path.join( PXELINUXCFG , boot )
-    aulafile=os.path.join( PXELINUXCFG , safe_aula(aula) )
-    
+    bootfile = os.path.join(PXELINUXCFG, boot)
+    aulafile = os.path.join(PXELINUXCFG, safe_aula(aula))
+
     # search bootfile or append .menu
     if not os.path.exists(bootfile):
-        if os.path.exists( bootfile + ".menu"):
-            bootfile=bootfile+".menu"
-    
+        if os.path.exists(bootfile + ".menu"):
+            bootfile = bootfile + ".menu"
+
     if not os.path.exists(bootfile):
-        bootfile=os.path.join( PXELINUXCFG , 'default' )
-    
+        bootfile = os.path.join(PXELINUXCFG, 'default')
+
     #print "ln -s %s %s"%(bootfile, aulafile)
-    if os.path.islink( aulafile ):
+    if os.path.islink(aulafile):
         os.unlink(aulafile)
-    
-    os.symlink( bootfile, aulafile )
+
+    os.symlink(bootfile, aulafile)
+
 
 def deleteMAC(mac):
-    macfile=os.path.join( PXELINUXCFG , convertMAC(mac) )
-    if os.path.exists( macfile ):
+    macfile = os.path.join(PXELINUXCFG, convertMAC(mac))
+    if os.path.exists(macfile):
         os.unlink(macfile)
 
+
 def humanDate():
-    year, month, day, hour, minute, seconds ,wdy, yday, isdst= time.localtime()
-    savedatetxt="%4d-%02d-%02d %02d:%02d:%02d" %(year, month, day, hour, minute, seconds)
+    year, month, day, hour, minute, seconds, wdy, yday, isdst = time.localtime()
+    savedatetxt = "%4d-%02d-%02d %02d:%02d:%02d" % (year, month, day, hour, minute, seconds)
     return savedatetxt
 
 
 def doCron():
     if not os.path.isfile(CRON_FILE):
-        #print "[%s] no data"%(humanDate())
+        # print "[%s] no data"%(humanDate())
         return
     # leer CRON_FILE y borrar las entradas caducadas borrando las MAC's
-    data=ConfigObj(CRON_FILE)
+    data = ConfigObj(CRON_FILE)
     for safemac in data:
-        if ( int(time.time()) - int(data[safemac]['time']) ) < TIMEOUT: #15minutos
-            print "[%s] %s NO caducado"%(humanDate(), data[safemac]['mac'])
-            #continue
+        if (int(time.time()) - int(data[safemac]['time'])) < TIMEOUT:  # 15minutos
+            print "[%s] %s NO caducado" % (humanDate(), data[safemac]['mac'])
+            # continue
         else:
-            print "[%s] %s caducado, reseteando a '%s'"%(humanDate(), data[safemac]['mac'], data[safemac]['old'])
+            print "[%s] %s caducado, reseteando a '%s'" % (humanDate(), data[safemac]['mac'], data[safemac]['old'])
             # configurar MAC a que apunte a OLD
             bootMAC(data[safemac]['old'], data[safemac]['mac'])
             # borrar de CRON_FILE
             del data[safemac]
-    
+
     data.write()
 
+
 def cronAdd(mac, boot):
-    # añadir a CRON_FILE 
-    data=ConfigObj(CRON_FILE)
-    if data.has_key(convertMAC(mac)):
+    # añadir a CRON_FILE
+    data = ConfigObj(CRON_FILE)
+    # if data.has_key(convertMAC(mac)):
+    if convertMAC(mac) in data.keys():
         # actualizar timestamp
-        data[convertMAC(mac)]['time']=int(time.time())
+        data[convertMAC(mac)]['time'] = int(time.time())
         # guardar nuevo boot
-        data[convertMAC(mac)]['boot']=boot
+        data[convertMAC(mac)]['boot'] = boot
     else:
         # crear nueva
-        data[convertMAC(mac)]={
-                           'time':int(time.time()), 
-                           'boot':boot,
-                           'old':getBoot(mac),
-                           'mac':mac
-                           }
+        data[convertMAC(mac)] = {'time': int(time.time()),
+                                 'boot': boot,
+                                 'old': getBoot(mac),
+                                 'mac': mac
+                                 }
     data.write()
     # configurar MAC para que apunte a boot
     bootMAC(boot, mac)
+
 
 def cronClean():
     if os.path.isfile(CRON_FILE):
@@ -238,10 +244,10 @@ def cronClean():
 
 def deleteAula(aula):
     for pfile in glob.glob(PXELINUXCFG + "*"):
-        link=None
-        macfile=os.path.basename(pfile)
+        link = None
+        macfile = os.path.basename(pfile)
         try:
-            link=os.path.basename(os.readlink(pfile))
+            link = os.path.basename(os.readlink(pfile))
         except:
             pass
         if link:
@@ -254,7 +260,19 @@ def deleteAula(aula):
 
 
 try:
-    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help", "clean", "genpxelinux", "boot=", "mac=", "getboot=", "getbootaula=", "aula=", "delete=", "cron", "cronadd", "cronclean", "delaula="])
+    OPTS, ARGS = getopt.getopt(sys.argv[1:], ":hg", ["help",
+                                                     "clean",
+                                                     "genpxelinux",
+                                                     "boot=",
+                                                     "mac=",
+                                                     "getboot=",
+                                                     "getbootaula=",
+                                                     "aula=",
+                                                     "delete=",
+                                                     "cron",
+                                                     "cronadd",
+                                                     "cronclean",
+                                                     "delaula="])
 except getopt.error, msg:
     print (msg)
     print ("for command line options use pyboot --help")
@@ -265,60 +283,60 @@ if len(OPTS) == 0:
     print "no options"
     sys.exit(0)
 
-boot=None
-mac=None
-aula=None
-cronadd=False
+boot = None
+mac = None
+aula = None
+cronadd = False
 
 for o, a in OPTS:
     if o in ("-h", "--help"):
         sys.exit()
-    
+
     elif o in ("-g", "--genpxelinux"):
-        aulas=addComputersToAulas( getAulas() )
+        aulas = addComputersToAulas(getAulas())
         genPXELINUX(aulas)
         sys.exit(0)
-    
+
     elif o == "--boot":
-        boot=a
-    
+        boot = a
+
     elif o == "--mac":
-        mac=a
-    
+        mac = a
+
     elif o == "--clean":
         cleanPXE()
         sys.exit(0)
-    
+
     elif o == "--getboot":
         print getBoot(a)
         sys.exit(0)
-    
+
     elif o == "--getbootaula":
         print getBootAula(a)
         sys.exit(0)
-        
+
     elif o == "--aula":
-        aula=a
-    
+        aula = a
+
     elif o == "--delete":
         deleteMAC(a)
         sys.exit(0)
-    
+
     elif o == "--cron":
         doCron()
         sys.exit(0)
-    
+
     elif o == "--cronadd":
-        cronadd=True
-    
+        cronadd = True
+
     elif o == "--cronclean":
         cronClean()
         sys.exit(0)
-    
+
     elif o == "--delaula":
         deleteAula(a)
         sys.exit(0)
-    
+
     else:
         print "unknow option"
         sys.exit(0)
@@ -337,4 +355,3 @@ elif boot and aula:
 
 else:
     print "unknow option"
-
