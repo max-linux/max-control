@@ -45,108 +45,38 @@ class Menu {
     function PublicMenu() {
         return "";
     }
-/*
 
-$site["private_modules_admin"]=array(
-        "miperfil" => "Mi perfil",
-        "usuarios" => "Usuarios y Grupos",
-        "equipos" => "Aulas y Equipos",
-        "isos" => "Distribuir ISOS",
-        "power" => "Apagado y reinicio",
-        "boot" => "Programar arranque",
-        );
-
-$site["private_modules_tic"]=array(
-        "miperfil" => "Mi perfil",
-        "usuarios" => "Usuarios y Grupos",
-        "equipos" => "Aulas y Profesores",
-        "isos" => "Distribuir ISOS",
-        "power" => "Apagado y reinicio",
-        "boot" => "Programar arranque",
-        );
-
-$site["private_modules_teacher"]=array(
-        "miperfil" => "Mi perfil",
-        "isos" => "Distribuir ISOS",
-        "power" => "Apagado y reinicio",
-        );
-
-$site["private_modules_none"]=array(
-        "miperfil" => "Mi perfil"
-        );
-
- */
     function PrivateMenu() {
         global $permisos, $gui;
         
         //
+        $menu=array();
+
+        return $this->_genMenu($menu);
+    }
+
+    function TeacherMenu() {
+        global $permisos, $gui;
+        
+        //
         $menu=array(
-                'dash'   => array('title'=>'Inicio', 'icon'=>'bar-chart-o'),
-                // 'users'  => array('title'=>'Usuarios', 'icon'=>'users', 'menu' => array(
-                //                             'users'       =>array('title'=>'Lista', 'icon'=>'th'),
-                //                             'users/create'=>array('title'=>'Nuevo', 'icon'=>'plus'),
-                //                                                                       )),
+                    'isos' => array('title'=>'Distribuir ISOS', 'icon'=>'hdd-o'),
 
-                'minipc' => array('title'=>'Equipos', 'icon'=>'random'),
-
-                'contadores' => array('title'=>'Contadores', 'icon'=>'tachometer', 'menu' => array(
-                                            'contadores'      => array('title'=>'Lista', 'icon'=>'th'),
-                                            // 'contadores/add'  => array('title'=>'Nuevo', 'icon'=>'plus'),
-                                            'contadores/test' => array('title'=>'Prueba lectura', 'icon'=>'download'),
+                    'power' => array('title'=>'Apagado y reinicio', 'icon'=>'power-off', 'menu' => array(
+                                                'power/aulas'   => array('title'=>'Aulas', 'icon'=>'sitemap'),
+                                                'power/equipos' => array('title'=>'Equipos', 'icon'=>'desktop'),
                                                                                       )),
-                'wizard' => array('title'=>'Asistente', 'icon'=>'magic'),
-
                     );
 
         return $this->_genMenu($menu);
     }
 
     function ManagerMenu() {
-        $menu=array(
-                'dash'   => array('title'=>'Inicio', 'icon'=>'bar-chart-o'),
-                'users'  => array('title'=>'Usuarios', 'icon'=>'users'),
-
-                'minipc' => array('title'=>'Equipos', 'icon'=>'random'),
-
-                'contadores' => array('title'=>'Contadores', 'icon'=>'tachometer', 'menu' => array(
-                                            'contadores'      => array('title'=>'Lista', 'icon'=>'th'),
-                                            'contadores/add'  => array('title'=>'Nuevo', 'icon'=>'plus'),
-                                            'contadores/test' => array('title'=>'Prueba lectura', 'icon'=>'download'),
-                                                                                      )),
-
-                'contabilidad' => array('title'=>'Contabilidad', 'icon'=>'eur', 'menu' => array(
-                                            'contabilidad'      => array('title'=>'Precios', 'icon'=>'th'),
-                                            'contabilidad/calculate' => array('title'=>'Facturas', 'icon'=>'money'),
-                                                                                      )),
-                
-                'wizard' => array('title'=>'Asistente', 'icon'=>'magic'),
-                    );
+        $menu=array();
 
         return $this->_genMenu($menu);
     }
-/*
-$site["private_modules_admin"]=array(
-        "miperfil" => "Mi perfil",
-        "usuarios" => "Usuarios y Grupos",
-            "ver" => "Usuarios",
-            "grupos" => "Grupos",
-            "importar" => "Importar"
-        "equipos" => "Aulas y Equipos",
-            "aulas" => "Aulas",
-            "ver" => "Equipos"
 
-        "isos" => "Distribuir ISOS",
-            "ver" => "Ver ISOS",
-
-        "power" => "Apagado y reinicio",
-            "aulas" => "Aulas",
-            "equipos" => "Equipos",
-        "boot" => "Programar arranque",
-            "aula" => "Aulas",
-            "equipo" => "Equipos",
-        );
-
- */
     function AdminMenu() {
         $menu=array(
                 'dash'          => array('title'=>'Inicio', 'icon'=>'home'),

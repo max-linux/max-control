@@ -106,6 +106,18 @@ if (isset($gui) && isset($_SESSION["user"]) ){
   $gui->assign("user", $_SESSION["user"] );
   $gui->assign("role", $permisos->get_humanrole() );
   $gui->assign("logout_url", $nav->url->create_url("login", "logout") );
+
+  // logueado cargar modulo por defecto
+  if( $nav->get_module() == "") {
+    if( ENABLE_BOOTSTRAP && $permisos->is_admin() ) {
+      $url->ir("dash", "");
+    }
+    else {
+      $url->ir("miperfil", "");
+    }
+
+  }
+
 }
 elseif ( isset($gui) ) {
   $gui->assign('login', True );

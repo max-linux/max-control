@@ -35,7 +35,7 @@
                 </button>
                 <a class="navbar-brand" href="{$baseurl}">
                     <img src="{$baseurl}/img/title.png" alt="Panel de Control" style="height: 35px;"/> 
-                    Panel de control de Servidor de Centro
+                    Panel de control<span class="hidden-xs"> de Servidor de Centro</span>
                 </a>
             </div>
             <!-- /.navbar-header -->
@@ -130,22 +130,24 @@
     </div>
     <!-- /#wrapper -->
 
-    <div class="footer">
-      <div class="container">
-        <div class='main-projects text-center'>
+<div id="footer" class="container">
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+        <div class="navbar-inner navbar-content-center text-center">
+
             <a rel='external' title='Comunidad de Madrid (ventana nueva)' href='http://www.madrid.org/' class='external-link'>
                 <img width='132' height='43' alt='Comunidad de Madrid, Consejería de Educación y Empleo' src='{$baseurl}/img/consejeria.png' />
             </a>
+            <br class="visible-xs">
+            <span>
+                <strong>EducaMadrid</strong> - 2011-{$smarty.now|date_format:'%Y'}  - Consejería de Educación y Empleo, Comunidad de Madrid, max-control versión: {$max_control_version}
+            </span>
+            <br class="visible-xs">
             <a rel='external' title='EducaMadrid (ventana nueva)' href='http://www.educa.madrid.org' class='external-link'>
                 <img width='132' height='43' alt='EducaMadrid' src='{$baseurl}/img/educamadrid.png' />
             </a>
-            <div>
-                <strong>EducaMadrid</strong> - 2011-{$smarty.now|date_format:'%Y'}  - Consejería de Educación y Empleo, Comunidad de Madrid, max-control versión: {$max_control_version}
-            </div>
         </div>
-      </div> 
-      </div>
-    </div>
+    </nav>
+</div>
 
     
     <script src="{$baseurl}/js/bootstrap.min.js"></script>
