@@ -28,7 +28,7 @@ use EBox::Gettext;
 <script type="text/javascript">
 //<![CDATA[
 $(document).ready(function(){
-    $('.maxcontrol_link').attr('href')="http://" + document.location.hostname + "/control/";
+    $('.maxcontrol_link').attr('href', "http://" + document.location.hostname + "/control/");
 });
 //]]>
 </script>
