@@ -367,16 +367,18 @@ class USER extends BASE {
         $sn=$this->sn;
         $password=$this->password;
         $role=$this->role;
+        $loginshell=$this->loginshell;
+        $description=$this->description;
 
         // crear home, profiles y aplicar quota en background
         if($this->background) {
-            $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' '$loginshell' > /dev/null 2>&1 &";
+            $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' '$loginshell' '$description' > /dev/null 2>&1 &";
             $gui->debug($cmd);
             pclose(popen($cmd, "r"));
             $gui->session_info("Usuario '".$this->cn."' creado correctamente.");
         }
         else {
-            $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' '$loginshell' 2>&1";
+            $cmd='sudo '.MAXCONTROL." adduser '$cn' '$givenname' '$sn' '$password' '$role' '$loginshell' '$description' 2>&1";
             $gui->debug($cmd);
             exec($cmd, $output);
             $gui->debug("newUser<pre>".print_r($output, true)."</pre>");
@@ -1733,6 +1735,21 @@ class LDAP {
 }
 
 
+class ISO extends BASE{
+    var $filename='';
+    var $size='';
+    var $volumeid='';
+    
+    function save() {
+        return;
+    }
+    
+    function init(){
+        $this->volumeid = $this->ldapdata['volumeid'];
+        $this->size = $this->ldapdata['size'];
+        return;
+    }
 
+}
 
 
