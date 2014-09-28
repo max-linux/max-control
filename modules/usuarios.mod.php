@@ -100,6 +100,7 @@ function ver($module, $action, $subaction) {
                 "urlform" => $urlform, 
                 "urlformmultiple" => $url->create_url($module, 'deletemultiple'),
                 "urleditar"=>$url->create_url($module,'editar'),
+                "urladd"=>$url->create_url($module,'add'),
                 "urlborrar"=>$url->create_url($module,'delete'),
                 "resetprofilebase" => $url->create_url($module, 'resetprofile'),
                 "pager"=>$pager);
@@ -251,7 +252,7 @@ function deletemultiple($module, $action, $subaction) {
 
 function deletemultipledo($module, $action, $subaction) {
     global $gui, $url,$permisos;
-    $gui->debug( "<pre>". print_r($_POST, true) . "</pre>" );
+    $gui->debuga($_POST);
     $usernames=leer_datos('usernames');
     $faction=leer_datos('faction');
     $deleteprofile=leer_datos('deleteprofile'); /* 1 o vacio */
@@ -300,7 +301,6 @@ function deletemultipledo($module, $action, $subaction) {
 function add($module, $action, $subaction) {
     global $gui, $url, $permisos;
     $user=new USER();
-    $url=new URLHandler();
     $urlform=$url->create_url($module, 'guardarnuevo');
     
     $data=array("u"=>$user,
@@ -395,6 +395,7 @@ function groups($module, $action, $subaction) {
                 "filter" => $filter, 
                 "urlform" => $urlform, 
                 "urleditar"=>$url->create_url($module, 'groupeditar'),
+                "urladd"=>$url->create_url($module, 'groupadd'),
                 "urlborrar"=>$url->create_url($module, 'groupdelete'),
                 "urlmiembros"=> $url->create_url($module,'groupmembers'),
                 "pager"=>$pager);
@@ -576,7 +577,6 @@ function groupdeletedo($module, $action, $subaction) {
 function groupadd($module, $action, $subaction) {
     global $gui, $url;
     $group=new GROUP();
-    $url=new URLHandler();
     $urlform=$url->create_url($module, 'groupsavenew');
     
     $data=array("u"=>$group,

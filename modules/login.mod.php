@@ -19,7 +19,7 @@ global $site;
 global $module_actions;
 
 
-$url=new URLHandler();
+global $url;
 
 $active_module=$url->get("module");
 $active_action=$url->get("action");
@@ -54,7 +54,12 @@ if ($username != "" && $contrasena != ""){
 if ($is_connecting){
     
     if( $permisos->conectar($username, $contrasena) ) {
-        $url->ir("miperfil", "");
+        if(ENABLE_BOOTSTRAP && $permisos->is_admin()) {
+            $url->ir("dash", "");
+        }
+        else {
+            $url->ir("miperfil", "");
+        }
     }
     else {
         $gui->session_error("Usuario o contraseña incorrectos.");

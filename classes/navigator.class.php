@@ -13,7 +13,7 @@ class Navigator
 
 
     function Navigator(){
-        global $gui;
+        global $gui, $url;
         $this->mod=new ModuleLoader();
         $this->mod->load_module();
 
@@ -26,7 +26,7 @@ class Navigator
         }*/
         $this->menu_izdo=$this->mod->read_modules();
         // inicializar clase manejadora url
-        $this->url= new URLHandler;
+        $this->url= $url;
 
         return;
     }
@@ -54,7 +54,6 @@ class Navigator
     }
 
     function set_url($module, $action){
-        $url=new URLHandler();
         return $url->create_url($module, $action);
     }
     

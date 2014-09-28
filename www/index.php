@@ -50,6 +50,7 @@ include($path . '/classes/pager.class.php');
 include($path . '/classes/programer.class.php');
 include($path . '/classes/importer.class.php');
 include($path . '/classes/winexe.class.php');
+require $path . '/classes/menu.class.php';
 
 
 global $module_actions;
@@ -64,19 +65,27 @@ $permisos = new Permisos();
 // cargar interfaz
 global $gui;
 $gui= new Gui();
+if(DEBUG) {
+    $gui->smarty->clearAllCache();
+}
+
 
 global $url;
-$url= new URLHandler();
+$url= new URLHandler($site["basedir"], null);
+
+global $menu;
+$menu=new Menu();
+$gui->assign('menuObj', $menu);
 
 global $ldap;
 $ldap = new LDAP();
 
 // ver si es peticion ajax
-$ajaxurl=new URLHandler();
+$ajaxurl=new URLHandler($site["basedir"], null);
 if ( $ajaxurl->get("ajax") == "1" ) {
     include($path . '/classes/ajax.class.php');
     $ajax= new Ajax();
-    $ajax->process($ajaxurl->post_array);
+    $ajax->process($_POST);
     $ajax->show();
     die();
 }

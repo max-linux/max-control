@@ -15,7 +15,7 @@ if(DEBUG) {
     error_reporting(E_ALL);
 }
 
-$url=new URLHandler();
+global $url;
 
 if ( ! $permisos->is_connected() ) {
     $url->ir("","");

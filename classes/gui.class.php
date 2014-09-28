@@ -66,7 +66,8 @@ class Gui
         }
     }
     
-    function render(){
+    function render() {
+        global $path;
         if(DEBUG) {
             error_reporting(E_ALL);
         }
@@ -115,6 +116,12 @@ class Gui
             $this->smarty->assign('max_control_version', "DESCONOCIDA" );
         }
         $this->smarty->assign("content", $this->get_content());
+
+        // use bootstrap template if avalaible
+        if( ENABLE_BOOTSTRAP && is_file($path . SMARTY_TEMPLATES . "/bootstrap/" . $this->main_template)) {
+            $this->main_template = "bootstrap/" . $this->main_template;
+        }
+
         $this->smarty->display($this->main_template);
     }
     
@@ -190,6 +197,9 @@ class Gui
             $n->error_reporting=true;
         }
         
+        if( ENABLE_BOOTSTRAP && is_file($path . SMARTY_TEMPLATES . "/bootstrap/" . $tpl)) {
+            $tpl = "bootstrap/$tpl";
+        }
         return $n->fetch($tpl);
     }
     
@@ -200,5 +210,4 @@ class Gui
         }
     }
 }
-
 

@@ -12,7 +12,7 @@ global $site;
 global $module_actions;
 
 
-$url=new URLHandler();
+global $url;
 
 $module=$url->get("module");
 $action=$url->get("action");
@@ -103,6 +103,7 @@ function ver($module, $action, $subaction) {
                 "urlform" => $urlform, 
                 "urleditar"=>$url->create_url($module,'editar'),
                 "urlborrar"=>$url->create_url($module,'borrar'),
+                "urlupdate"=>$url->create_url($module,'update'),
                 "pager" => $pager);
     $gui->add( $gui->load_from_template("ver_equipos.tpl", $data) );
 }
@@ -317,6 +318,7 @@ function veraulas($module, $action, $subaction){
                 "urlprofesores"=>$url->create_url($module,'aulas', 'miembros'),
                 "urlequipos"=>$url->create_url($module,'aulas', 'equipos'),
                 "urlborrar" =>$url->create_url($module,'aulas', 'borrar'),
+                "urladd" =>$url->create_url($module,'aulas', 'nueva'),
                 "pager" => $pager);
     $gui->add( $gui->load_from_template("ver_aulas.tpl", $data) );
 }
@@ -547,7 +549,6 @@ function aulasnueva($module, $action, $subaction){
     }
     
     $group=new GROUP();
-    $url=new URLHandler();
     $urlform=$url->create_url($module, $action, 'aulaguardar');
     
     $data=array("u"=>$group,

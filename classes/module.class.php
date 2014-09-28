@@ -12,8 +12,7 @@ class ModuleLoader
 
     function load_module(){
         global $path;
-        global $gui;
-        $url=new URLHandler();
+        global $gui, $url;
         $thismodule=$url->get("module");
         
         if($thismodule == "") return;

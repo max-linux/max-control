@@ -13,7 +13,7 @@ global $module_actions;
 
 
 
-$url=new URLHandler();
+global $url;
 
 $active_module=$url->get("module");
 $active_action=$url->get("action");

@@ -12,7 +12,7 @@ global $site;
 global $module_actions;
 
 
-$url=new URLHandler();
+global $url;
 
 $module=$url->get("module");
 $action=$url->get("action");

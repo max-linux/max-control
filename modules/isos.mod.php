@@ -15,7 +15,7 @@ if(DEBUG) {
     error_reporting(E_ALL);
 }
 
-$url=new URLHandler();
+global $url;
 
 if ( ! $permisos->is_connected() ) {
     $url->ir("","");
@@ -68,6 +68,7 @@ function ver($module, $action, $subaction) {
                 "filter" => $filter,
                 "urlform" => $url->create_url($module, $action),
                 "urlmount"=>$url->create_url($module, 'mountdo'),
+                "urldesmontar"=>$url->create_url($module, 'desmontar'),
                 );
     $gui->add( $gui->load_from_template("ver_isos.tpl", $data) );
 }
@@ -91,7 +92,7 @@ function montar($module, $action, $subaction) {
                 "computers"=> $equipos,
                 //"filter" => $filter, 
                 "urlform" => $urlform, 
-                "urlmontar"=>$urlmontar);
+                "urlmontar"=>$url->create_url($module, 'mountdo'));
     
     $gui->add( $gui->load_from_template("montar_iso.tpl", $data) );
 }
