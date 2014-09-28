@@ -17,7 +17,7 @@
 
                     <div class="col-lg-6">
                         <form class="form-inline" id="formuser" action="{$urlform}" method="post"> 
-                          <input class="form-control" placeholder="Buscar" type='text' name='Filter' id='Filter' value="{$filter}" /> 
+                          <input class="form-group form-control" placeholder="Buscar" type='text' name='Filter' id='Filter' value="{$filter}" /> 
                           <input type='hidden' name='role' id="role" value='{$role}' />
                           
                           <button type="submit" class="btn btn-primary">Buscar</button>
@@ -29,7 +29,7 @@
 
                     </div>
                     <div class="col-lg-6 text-right pull-right" >
-                        <select class="form-control" style="display:none;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
+                        <select class="form-group form-control" style="display:none;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
                             <option value=''>Seleccionar acción...</option>
                             <option value='delete'>&nbsp;&nbsp;&nbsp;&nbsp;Borrar grupos</option>
                             <option value='deletemembers'>&nbsp;&nbsp;&nbsp;&nbsp;Borrar grupos y sus miembros</option>

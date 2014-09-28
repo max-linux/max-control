@@ -27,13 +27,6 @@ body {
     }
 }
 
-@media(max-width:768px) {
-  /* title in small devices */
-  .navbar-brand {
-    font-size: 16px;
-  }
-}
-
 .navbar-top-links li {
     display: inline-block;
 }
@@ -355,39 +348,39 @@ table.dataTable thead .sorting:after {
 
 /* Sticky footer styles
 -------------------------------------------------- */
+/*
 html {
   position: relative;
   min-height: 100%;
 }
 body {
-  /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
 .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
-  /* Set the fixed height of the footer here */
   height: 60px;
   background-color: #f5f5f5;
 }
-
+*/
 
 /* Custom page CSS
 -------------------------------------------------- */
-/* Not required for template or sticky footer method. */
-
-body > .container {
-  padding: 60px 15px 0;
-}
-.container .text-muted {
-  margin: 20px 0;
+.navbar-brand {
+    padding: 8px 15px;
 }
 
-.footer > .container {
-  padding-right: 15px;
-  padding-left: 15px;
+@media(max-width:768px) {
+  /* title in small devices */
+  .navbar-brand {
+    font-size: 16px;
+  }
+  .navbar-fixed-bottom {
+    position: inherit;
+  }
 }
+
 
 code {
   font-size: 80%;
@@ -406,11 +399,6 @@ abbr, acronym {
 }
 .sortlink:hover{
     text-decoration:none;
-}
-
-.vertical-align {
-    display: flex;
-    align-items: center;
 }
 
 /* dropdown menu */
@@ -435,13 +423,11 @@ abbr, acronym {
     z-index: 100;
     filter: alpha(opacity=90);
     -moz-opacity: 0.9;
-    KhtmlOpacity: .9;
     opacity: .9;
     color: #fff;
 }
 
 /* pager */
-
 .pages {
     /*font: 83%/1.4 arial, helvetica, sans-serif;*/
     /*padding: 1em;
@@ -458,7 +444,7 @@ abbr, acronym {
     border: 1px solid #fff;
     background: #fff;
 }
-.pages span.current {
+.pages .current {
     border: 1px solid #2E6AB1;
     font-weight: bold;
     background: #2E6AB1;

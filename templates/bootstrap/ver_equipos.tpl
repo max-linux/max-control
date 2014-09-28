@@ -16,7 +16,7 @@
 
                     <div class="col-lg-6">
                         <form class="form-inline" id="hosts" action="{$urlform}" method="post"> 
-                          <input class="form-control" placeholder="Buscar" type='text' name='Filter' id='Filter' value="{$filter}" /> 
+                          <input class="form-group form-group form-control" placeholder="Buscar" type='text' name='Filter' id='Filter' value="{$filter}" /> 
                           <input type='hidden' name='role' id="role" value='{$role}' />
                           
                           <button type="submit" class="btn btn-primary">Buscar</button>
