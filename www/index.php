@@ -1,6 +1,6 @@
 <?php
 // 10 minutos de session
-ini_set("session.gc_maxlifetime", "600"); 
+ini_set("session.gc_maxlifetime", "600");
 ini_set('memory_limit','128M');
 set_time_limit(30);
 session_start();

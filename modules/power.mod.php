@@ -57,8 +57,8 @@ function aulas($module, $action, $subaction) {
     $filter=leer_datos('Filter');
     $filter=leer_datos('Filter');
     $filtertxt='';
-    if($filter != '') $filtertxt="*$filter*";
-    $aulas=$ldap->get_aulas($filtertxt);
+    // if($filter != '') $filtertxt="*$filter*";
+    $aulas=$ldap->get_aulas($filter);
     
     $urlform=$url->create_url($module, $action);
     
