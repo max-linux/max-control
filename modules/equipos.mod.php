@@ -91,7 +91,7 @@ function ver($module, $action, $subaction) {
     $pager->processArgs( array('Filter', 'skip', 'aula', 'sort') );
     
     $equipos=$pager->getItems();
-    $pager->sortfilter="(uid|ipHostNumber|macAddress|sambaProfilePath)";
+    $pager->sortfilter="(uid|ipHostNumber|macAddress|aula)";
     
     $aulas=$ldap->get_aulas_cn();
     //$gui->debuga($aulas);
@@ -253,7 +253,7 @@ function guardar($module, $action, $subaction){
         [macAddress] => 08:00:27:fc:4f:4
         [ipHostNumber] => 192.168.1.14
         [bootFile] => 
-        [sambaProfilePath] => aula primaria 2
+        [aula] => aula primaria 2
         [Editar] => Guardar
         [hostname] => pc4
     )
@@ -501,38 +501,6 @@ function equiposguardar($module, $action, $subaction){
           $url->ir($module, "aulas", "equipos/$aula");
     }
 
-
-    // if ( count($addcomputers) > 0 ) {
-    //     foreach($addcomputers as $addcomputer) {
-    //         $equipo=$ldap->get_computers($addcomputer .'$');
-    //         $equipo[0]->aula="$aula";
-    //         if ($equipo[0]->save() ) {
-    //             $gui->session_info("Equipo '$addcomputer' añadido al aula '$aula' correctamente.");
-    //             $equipo[0]->boot($aula);
-    //         }
-    //         else {
-    //             $gui->session_error("No se puedo añadir el equipo '$addcomputer' al aula '$aula'.");
-    //         }
-    //     }
-    //     if (!DEBUG)
-    //       $url->ir($module, "aulas", "equipos/$aula");
-    // }
-    // elseif ( count($delcomputers) > 0 ) {
-    //     foreach($delcomputers as $delcomputer) {
-    //         // borrar el sambaProfilePath
-    //         $equipo=$ldap->get_computers($delcomputer .'$');
-    //         $equipo[0]->aula="";
-    //         if ($equipo[0]->save() ) {
-    //             $gui->session_info("Equipo '$delcomputer' quitado del aula '$aula' correctamente.");
-    //             $equipo[0]->boot('default');
-    //         }
-    //         else {
-    //             $gui->session_error("No se puedo añadir el equipo '$delcomputer' al aula '$aula'.");
-    //         }
-    //     }
-    //     if (!DEBUG)
-    //       $url->ir($module, "aulas", "equipos/$aula");
-    // }
     else {
         $gui->session_error("No se ha seleccionado ningún equipo.");
         $url->ir($module, "aulas", "equipos/$aula");

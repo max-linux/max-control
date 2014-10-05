@@ -98,7 +98,7 @@ function update_progressbar() {
           $('#doneok').html(data.ok);
           $('#donefailed').html(data.failed);
           if(data.failed > 0 ) {
-            $('#doneFailedli')[0].style.display='';
+            $('#doneFailedli').show();
           }
           if(percent > 100) {
             percent=100;
@@ -109,10 +109,10 @@ function update_progressbar() {
           $('#progressValue')[0].style.width=percent + "%";
           
           if(percent > 99) {
-            $('#finished')[0].style.display='';
+            $('#finished').show();
             $('#title').html("Importador finalizado");
-            $('#stop')[0].style.display='none';
-            $('#doneDate')[0].style.display='';
+            $('#stop').hide();
+            $('#doneDate').show();
             $('#doneDateValue').html(data.doneDateValue);
             if(data.timeNeeded)
                 $('#doneDateValue')[0].innerHTML+=" <small>("+data.timeNeeded+")</small>";
@@ -124,16 +124,16 @@ function update_progressbar() {
           $('#info_messages').html(data.info);
           $('#error_messages').html(data.error);
           if (data.info != '') {
-            $('#info')[0].style.display='';
+            $('#info').show();
           }
           if (data.error != '') {
-            $('#error')[0].style.display='';
+            $('#error').show();
           }
           
           var numberLongUsernames=ObjectSize(data.longUsernames);
           if( numberLongUsernames > 0 ) {
             //console.log(data.longUsernames);
-            $('#longusernames')[0].style.display='';
+            $('#longusernames').show();
             var txt='';
             txt+='<table class="dataTable">';
             txt+='<thead><tr><th style="width:50%;">Identificador original</th>';
@@ -146,7 +146,7 @@ function update_progressbar() {
             txt+='</table>';
             $('#longusernames_txt').html(txt);
             
-            $('#numberLongUsernames')[0].style.display='';
+            $('#numberLongUsernames').show();
             $('#numberLongUsernames_txt').html(numberLongUsernames);
           }
       }

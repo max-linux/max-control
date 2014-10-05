@@ -1,3 +1,12 @@
+max-control (3.5.1~max1) max; urgency=low
+
+  * Finish bootstrap
+  * Add a welcome wizard to create first user
+  * Use more things using samba4 LDAP or EBox API
+  * Global clean
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Sun, 05 Oct 2014 15:58:06 +0200
+
 max-control (3.5.0~rc2max1) max; urgency=medium
 
   * New package with new Bootstrap template

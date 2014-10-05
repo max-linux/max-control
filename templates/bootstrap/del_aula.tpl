@@ -19,8 +19,3 @@
 </form>
 
 
-{*
-{if $DEBUG}
-{debug}
-{/if}
-*}

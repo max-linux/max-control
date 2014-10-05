@@ -381,6 +381,10 @@ body {
   }
 }
 
+.navbar-fixed-bottom span {
+    bottom: -8px;
+    position: relative;
+}
 
 code {
   font-size: 80%;
@@ -475,4 +479,9 @@ abbr, acronym {
 
 .pages .nextprev-next {
     float: right;
+}
+
+
+.select-programer {
+    width: 80px;
 }

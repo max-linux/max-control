@@ -70,6 +70,7 @@
                                     <li><a href="{$urlmiembros}/{$u->cn}"><i class="fa fa-users fa-fw"></i> Miembros</a></li>
                                     <li class="divider"></li>
                                     <li><a href="{$urleditar}/{$u->cn}"><i class="fa fa-edit fa-fw"></i> Editar</a></li>
+                                    <li><a href="{$urlborrar}?faction=delete&amp;groupnames={$u->cn}"><i class="fa fa-trash-o fa-fw"></i> Borrar</a></li>
                                     
                                 </ul>
                             </div>
@@ -110,67 +111,6 @@
 </form>
 
 
-{*
-<table class="bDataTable"> 
-    <tr> 
-        <td> 
-        <form id="group" action="{$urlform}" method="post"> 
-          <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
-          <input type='submit' name='button' value="Buscar" title="Buscar" /> 
-          <input type='submit' name='button' value="Añadir grupo" title="Añadir grupo" />
-          <select style="display:none;float:right;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
-            <option value=''>Seleccionar acción...</option>
-            <option value='delete'>&nbsp;&nbsp;&nbsp;&nbsp;Borrar grupos</option>
-            <option value='deletemembers'>&nbsp;&nbsp;&nbsp;&nbsp;Borrar grupos y sus miembros</option>
-            <option value='clean'>&nbsp;&nbsp;&nbsp;&nbsp;Limpiar perfiles de usuarios de los grupos</option>
-           </select>
-        </form>
-        
-        </td> 
-    </tr> 
-</table> 
-
-
-<table class='dataTable'> 
-    <thead> 
-      <tr>
-      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
-      <th class=''>Miembros {$pager->getSortIcons('numUsers')}</th>
-      <th class=''>Acciones <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/></th> 
-      </tr>
-    </thead>
- 
- 
-    <tbody> 
-      {foreach from=$groups key=k item=u}
-      <tr class='border' id="group-{$u->attr('cn')}"> 
-        {if $u->attr('description') != ''}
-        <td class='tcenter'><acronym title='{$u->attr('description')}'><span>{$u->attr('cn')}</span></acronym></td>
-        {else}
-        <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
-        {/if}
-        
-        <td class='tcenter'><span>
-                        {$u->attr('numUsers')}
-                        <a href="{$urlmiembros}/{$u->cn}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
-                        </span>
-        </td> 
-        <td class='tcenter'> 
-            <a href="{$urleditar}/{$u->cn}" title='Renombrar grupo'><img src="{$baseurl}/img/edit-table.gif" alt="renombrar" /></a>
-            <input type='checkbox' class="groupdel" name="{$u->attr('cn')}" id="{$u->attr('cn')}" onchange="javascript:oncheckboxChange();"/>
-        </td>
-      </tr>
-      {/foreach}
-
-    </tbody> 
-</table> 
-*}
-
-<!-- paginador -->
-{if $pager}
-{$pager->getHTML()}
-{/if}
-
 
 {literal}
 <script type="text/javascript">
@@ -186,9 +126,9 @@ function oncheckboxChange() {
         }
     });
     if(multiple)
-        $('#selAction')[0].style.display='';
+        $('#selAction').show();
     else
-        $('#selAction')[0].style.display='none';
+        $('#selAction').hide();
 }
 
 function deleteSelected(){
@@ -208,9 +148,9 @@ function enableAll(obj){
         $('.groupdel')[i].checked=obj.checked;
     });
     if(obj.checked)
-        $('#selAction')[0].style.display='';
+        $('#selAction').show();
     else
-        $('#selAction')[0].style.display='none';
+        $('#selAction').hide();
 }
 
 function actionSelected(){
@@ -235,8 +175,3 @@ function actionSelected(){
 
 
 
-{*
-{if $DEBUG}
-{debug}
-{/if}
-*}

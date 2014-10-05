@@ -66,7 +66,10 @@ case $1 in
         PASSWD=$5
         ROLE=$6
         USHELL=$7
-        DESCRIPTION=$7
+        DESCRIPTION=$8
+
+        # '$cn' '$givenname' '$sn' '$password' '$role' '$loginshell' '$description' 
+        #   2          3        4      5          6           7            8
 
         if getent passwd "$NEWUSER" >/dev/null 2>&1 ; then
             echo_exit "exists"
@@ -92,7 +95,7 @@ case $1 in
         #set -x
         set -e
 
-        export USERNAME="${NEWUSER}"
+        export MUSERNAME="${NEWUSER}"
         export PASSWORD="${PASSWD}"
         export NAME="${NAME}"
         export SURNAME="${SURNAME}"
@@ -104,160 +107,8 @@ case $1 in
         zentyal-maxcontrol adduser
         echo 'OK'
         exit 0
-
-        # #DCNAME="$(samba-tool domain info 127.0.0.1 2>/dev/null| awk '/^DC name/ {print $4}')"
-        # # max-server.madrid.local
-        # DCNAME="$(dnsdomainname -f)"
-        
-
-        # DRIVE="$(awk -F'"' '/drive/ {print $4}' /var/lib/zentyal/conf/samba.bak 2>/dev/null| tail -1)"
-        # # H:
-        # if [ "$DRIVE" = "" ]; then
-        #     DRIVE='H:'
-        # fi
-
-        # LDAP_ADMIN="$(awk -F"'" '/LDAP_ADMIN/ {print $2}' /etc/max-control/conf.inc.php)"
-        # LDAP_PASSW="$(awk -F"'" '/LDAP_PASS/ {print $2}' /etc/max-control/conf.inc.php)"
-
-        # mkdir -p "${HOMES_DIR}"
-        # #set -x
-
-
-        # # echo samba-tool user add \
-        # #   "$NEWUSER" "$PASSWD" --use-username-as-cn --given-name="$NAME" --surname="$SURNAME" \
-        # #   -U"${LDAP_ADMIN}":"${LDAP_PASSW}" \
-        # #   --profile-path='\\\\'$DCNAME'\\profiles\\'$NEWUSER \
-        # #   --home-directory='\\\\'$DCNAME'\\'$NEWUSER \
-        # #   --home-drive="'$DRIVE'"
-
-        # # create local user
-        # #self.exe_cmd("useradd -m %s -p%s -s /bin/bash -d /home/%s" %(username, username, username))
-        # #self.exe_cmd("echo %s:%s | chpasswd" %(username, username))
-        # NEWUUID=$(max-get-newuser-uuid)
-
-        # useradd -m "$NEWUSER" -s "${USHELL}" -d "${HOMES_DIR}/$NEWUSER" --no-user-group --uid="${NEWUUID}" || echo_exit "error"
-        # echo "${NEWUSER}:${PASSWD}" | chpasswd
-        # chown -R "${NEWUSER}:Domain Users" "${HOMES_DIR}/$NEWUSER"
-        # chmod 700 "${HOMES_DIR}/$NEWUSER"
-
-
-        # samba-tool user create \
-        #   "$NEWUSER" "$PASSWD" --use-username-as-cn --given-name="$NAME" --surname="$SURNAME" \
-        #   -U"${LDAP_ADMIN}":"${LDAP_PASSW}" \
-        #   --profile-path='\\'$DCNAME'\profiles\'$NEWUSER \
-        #   --home-directory='\\'$DCNAME'\'$NEWUSER \
-        #   --home-drive="$DRIVE" \
-        #   --rfc2307-from-nss --gecos "$NAME $SURNAME" \
-        #   --uid="$NEWUSER" --uid-number="${NEWUUID}" --login-shell="${USHELL}" || echo_exit "error"
-
-
-        # #ldbsearch -H /opt/samba4/private/sam.ldb '(cn=aaa9)'
-
-        # #NEWUUID=$(wbinfo --sid-to-uid `wbinfo --name-to-sid $NEWUSER | awk '{print $1}'`)
-        # # NEWUUID=$(wbinfo -n $NEWUSER| awk -F" |\-" '{print $8}')
-        # # NEWUUID=$((NEWUUID+50000))
-        # #echo "NEWUUID=$NEWUUID"
-        # NEWUUID=$(id -u "$NEWUSER")
-
-        # mkdir -p "${PROFILES_DIR}/${NEWUSER}"
-        # chown "${NEWUUID}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}"
-        # chmod 700 "${PROFILES_DIR}/${NEWUSER}"
-
-        # setfacl -b "${PROFILES_DIR}/${NEWUSER}"    2>&1
-        # setfacl -R -m u:root:rwx,g::---,g:"Domain Users":---,u:${NEWUUID}:rwx "${PROFILES_DIR}/${NEWUSER}" 2>&1
-        # setfacl -R -m d:u:root:rwx,g::---,g:"Domain Users":---,u:${NEWUUID}:rwx "${PROFILES_DIR}/${NEWUSER}" 2>&1
-
-
-        # QUOTA=$(max-control getdefaultquota)
-        # case $ROLE in
-        #     admin)
-        #         QUOTA=$((QUOTA*2))
-        #         samba-tool group addmembers "Administrators" "$NEWUSER"
-        #         samba-tool group addmembers "Group Policy Creator Owners" "$NEWUSER"
-        #         samba-tool group addmembers "Enterprise Admins" "$NEWUSER"
-        #         samba-tool group addmembers "Schema Admins" "$NEWUSER"
-        #         samba-tool group addmembers "Domain Admins" "$NEWUSER"
-        #     ;;
-        #     teacher)
-        #         QUOTA=$((QUOTA*2))
-        #         samba-tool group addmembers "Teachers" "$NEWUSER"
-        #     ;;
-        #     tic)
-        #         samba-tool group addmembers "CoordinadoresTIC" "$NEWUSER"
-        #     ;;
-        # esac
-        # /usr/bin/edit.quotas --set --user="${NEWUUID}" --size="$QUOTA" >/dev/null 2>&1
-
-        
-        # echo 'OK'
-        # exit 0
-
-
-
-
-        
-
-
-        # my @cmds = ();
-        # # Create the directory if it does not exist
-        # push (@cmds, "mkdir -p \'$path\'") unless -d $path;
-
-
-        # # Set unix permissions on directory
-        # push (@cmds, "chown $samAccountName:$group \'$path\'");
-        # push (@cmds, "chmod 0700 \'$path\'");
-
-        # # Set native NT permissions on directory
-        # my @perms;
-        # push (@perms, 'u:root:rwx');
-        # push (@perms, 'g::---');
-        # push (@perms, "g:$group:---");
-        # push (@perms, "u:$samAccountName:rwx");
-        # push (@cmds, "setfacl -b \'$path\'");
-        # push (@cmds, 'setfacl -R -m ' . join(',', @perms) . " \'$path\'");
-        # push (@cmds, 'setfacl -R -m d:' . join(',d:', @perms) ." \'$path\'");
-        # EBox::Sudo::root(@cmds);
-
-
-
-
-
-
-        # mkdir -p "$HOMES_DIR/${NEWUSER}"
-        # chown "${NEWUSER}":"Domain Users" "${HOMES_DIR}/${NEWUSER}"
-        # chmod 701 "${HOMES_DIR}/${NEWUSER}"
-
-        # # profile
-        # mkdir -p "${PROFILES_DIR}/${NEWUSER}"
-        # chown "${NEWUSER}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}"
-        # chmod 701 "${PROFILES_DIR}/${NEWUSER}"
-
-        # #mkdir -p "${PROFILES_DIR}/${NEWUSER}.V2"
-        # #chown "${NEWUSER}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}.V2"
-        # #chmod 701 "${PROFILES_DIR}/${NEWUSER}.V2"
-
-        # if id "$NEWUSER" 2>/dev/null | grep -q -e Teachers -e "Domain Admins"; then
-        #     QUOTA=$((QUOTA*2))
-        # fi
-
-
-        # # set quota
-        # #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
-        # /usr/bin/edit.quotas --set --user="${NEWUSER}" --size=${QUOTA}
-        exit 0
         ;;
 
-################################################################################
-    chshell)
-        # shell and username
-        USHELL=$2
-        USER=$3
-
-        create_lock
-
-        usermod --shell "${USHELL}" "${USER}" && echo 'OK'
-        exit 0
-        ;;
 ################################################################################
     chpasswd)
         # username and surname
@@ -276,7 +127,7 @@ case $1 in
         create_lock
 
         set -e
-        export USERNAME="$2"
+        export MUSERNAME="$2"
         zentyal-maxcontrol deluser
         echo 'OK'
         exit 0
@@ -352,75 +203,6 @@ case $1 in
         exit 0
         ;;
 ################################################################################
-    rights)
-        # username
-        RUSER=$2
-        # password
-        ROLE=$3
-
-        case $ROLE in
-            admin)
-                samba-tool group addmembers "Administrators" "$RUSER"
-                samba-tool group addmembers "Group Policy Creator Owners" "$RUSER"
-                samba-tool group addmembers "Enterprise Admins" "$RUSER"
-                samba-tool group addmembers "Schema Admins" "$RUSER"
-                samba-tool group addmembers "Domain Admins" "$RUSER"
-                samba-tool group addmembers "Instaladores" "$RUSER"
-
-                # no tic
-                samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
-                # no teacher
-                samba-tool group removemembers "Teachers" "$RUSER"
-            ;;
-
-            tic)
-                samba-tool group addmembers "CoordinadoresTIC" "$RUSER"
-                # no admin
-                samba-tool group removemembers "Administrators" "$RUSER"
-                samba-tool group removemembers "Group Policy Creator Owners" "$RUSER"
-                samba-tool group removemembers "Enterprise Admins" "$RUSER"
-                samba-tool group removemembers "Schema Admins" "$RUSER"
-                samba-tool group removemembers "Domain Admins" "$RUSER"
-                samba-tool group removemembers "Instaladores" "$RUSER"
-                # no teacher
-                samba-tool group removemembers "Teachers" "$RUSER"
-            ;;
-
-            teacher)
-                samba-tool group addmembers "Teachers" "$RUSER"
-
-                # no admin
-                samba-tool group removemembers "Administrators" "$RUSER"
-                samba-tool group removemembers "Group Policy Creator Owners" "$RUSER"
-                samba-tool group removemembers "Enterprise Admins" "$RUSER"
-                samba-tool group removemembers "Schema Admins" "$RUSER"
-                samba-tool group removemembers "Domain Admins" "$RUSER"
-                samba-tool group removemembers "Instaladores" "$RUSER"
-                # no tic
-                samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
-            ;;
-
-            *)
-                #alumno
-
-                # no admin
-                samba-tool group removemembers "Administrators" "$RUSER"
-                samba-tool group removemembers "Group Policy Creator Owners" "$RUSER"
-                samba-tool group removemembers "Enterprise Admins" "$RUSER"
-                samba-tool group removemembers "Schema Admins" "$RUSER"
-                samba-tool group removemembers "Domain Admins" "$RUSER"
-                samba-tool group removemembers "Instaladores" "$RUSER"
-                # no tic
-                samba-tool group removemembers "CoordinadoresTIC" "$RUSER"
-                # no teacher
-                samba-tool group removemembers "Teachers" "$RUSER"
-            ;;
-        esac
-
-
-        exit 0
-        ;;
-################################################################################
     createhome)
         # username
         NEWUSER=$2
@@ -455,13 +237,10 @@ case $1 in
         QUOTA=$3
 
         create_lock
-
-        if id "$NEWUSER" 2>/dev/null | grep -q -e Teachers -e "Domain Admins"; then
-            QUOTA=$((QUOTA*2))
-        fi
         # set quota
         #/usr/share/ebox-samba/ebox-samba-quota -s ${NEWUSER} ${QUOTA}
-        /usr/bin/edit.quotas --set --user="${NEWUSER}" --size=${QUOTA}
+        /usr/bin/edit.quotas --set --user="${NEWUSER}" --size="${QUOTA}"
+        /usr/bin/pyoverquota >> /var/log/max-control-pxe.log 2>&1
         exit 0
         ;;
 ################################################################################
@@ -481,7 +260,6 @@ case $1 in
         [ "${DELUSER}" = "" ] && echo_exit "nonexists"
         rm -rf "$HOMES_DIR/${DELUSER}"
         rm -rf "$PROFILES_DIR/${DELUSER}"
-        #rm -rf "$PROFILES_DIR/${DELUSER}.V2"
         echo "ok"
         exit 0
         ;;
@@ -489,6 +267,7 @@ case $1 in
     resetprofile)
         DELUSER=$2
         [ "${DELUSER}" = "" ] && echo_exit "nonexists"
+        set -e
         #rm -rf "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
         #mkdir -p "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
         rm -rf "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" 2>/dev/null
@@ -499,21 +278,142 @@ case $1 in
         chmod 700 "${HOMES_DIR}/${DELUSER}"
         chown "${DELUSER}":"Domain Users" "${PROFILES_DIR}/${DELUSER}"
         chmod 700 "${PROFILES_DIR}/${DELUSER}"
-        #chown "${DELUSER}":Domain\ Users "${PROFILES_DIR}/${DELUSER}.V2"
-        #chmod 701 "${PROFILES_DIR}/${DELUSER}.V2"
+        #
+        # push (@perms, 'u:root:rwx');
+        # push (@perms, 'g::---');
+        # push (@perms, "g:$gidNumber:---");
+        # push (@perms, "u:$samAccountName:rwx");
+        # push (@cmds, "setfacl -b \'$path\'");
+        # push (@cmds, 'setfacl -R -m ' . join(',', @perms) . " \'$path\'");
+        # push (@cmds, 'setfacl -R -m d:' . join(',d:', @perms) ." \'$path\'");
+        GIDNUM=$(id -g ${DELUSER})
+        #
+        setfacl -b "${PROFILES_DIR}/${DELUSER}"    2>&1
+        setfacl -R -m u:root:rwx,g::---,g:${GIDNUM}:---,u:${DELUSER}:rwx "${PROFILES_DIR}/${DELUSER}" 2>&1
+        setfacl -R -m d:u:root:rwx,d:g::---,d:g:${GIDNUM}:---,d:u:${DELUSER}:rwx "${PROFILES_DIR}/${DELUSER}" 2>&1
+
+        #
+        /usr/bin/pyoverquota >> /var/log/max-control-pxe.log 2>&1
+        echo 'OK'
         exit 0
         ;;
 ################################################################################
     addgroup)
         ADDGROUP=$2
-        READONLY=$3
-        DESC=$4
+        CREATESHARED=$3
+        READONLY=$4
+        DESC=$5
 
         create_lock
 
-        [ "${ADDGROUP}" = "" ] && echo_exit "nonexists"
+        [ "${2}" = "" ] && echo_exit "nonexists"
 
-        getent group "$ADDGROUP" >/dev/null && echo_exit "exists"
+        set -e
+        # set -x
+
+        export NAME="${2}"
+        export CREATESHARED="${3}"
+        export READONLY="${4}"
+        export DESCRIPTION="${5}"
+        
+        # getent group "$2" >/dev/null && echo_exit "exists"
+        # zentyal-maxcontrol addgroup
+
+
+        if [ "${CREATESHARED}" = "1" ]; then
+            mkdir -p "${GROUPS_DIR}/${NAME}"
+            chown administrator:adm "${GROUPS_DIR}/${NAME}"
+            chmod 775 "${GROUPS_DIR}/${NAME}"
+            # chmod +t "${GROUPS_DIR}/${NAME}"
+            # chmod g+w "${GROUPS_DIR}/${NAME}"
+            [ "$READONLY" = "1" ] && chmod o-r "${GROUPS_DIR}/${NAME}"
+
+
+            # [test2]
+            #     comment = compartido por test2
+            #     read list = @"Domain Admins", @"test2"
+            #     printable = no
+            #     write list = @"Domain Admins", @"Teachers"
+            #     force create mode = 0660
+            #     valid users = @"Domain Admins", @"test2"
+            #     path = /home/samba/groups/test2
+            #     read only = no
+            #     browseable = yes
+            #     force directory mode = 0770
+            #     admin users = @"Domain Admins"
+            #     force group = test2
+
+            # # file: home/samba/shares/aaaa
+            # # owner: administrator
+            # # group: adm
+            # user::rwx
+            # user:administrator:rwx
+            # user:3000002:rwx
+            # 
+            # group::rwx
+            # group:adm:rwx
+            # group:domain\040admins:rwx
+            # group:teachers:rwx
+            # group:test2:r-x
+            # group:3000002:rwx
+            # 
+            # mask::rwx
+            # other::---
+            # 
+            # default:user::rwx
+            # default:user:administrator:rwx
+            # default:user:3000002:rwx
+            # default:group::---
+            # default:group:adm:rwx
+            # default:group:domain\040admins:rwx
+            # default:group:teachers:rwx
+            # default:group:test2:r-x
+            # default:group:3000002:rwx
+            # default:mask::rwx
+            # default:other::---
+            # 
+            # 
+            # 
+            # getfacl -t /home/samba/shares/aaaa/
+            # # file: home/samba/shares/aaaa/
+            # USER   administrator  rwx  rwx
+            # user   administrator  rwx  rwx
+            # user   3000002        rwx  rwx
+            # GROUP  adm            rwx  ---
+            # group  adm            rwx  rwx
+            # group  domain admins  rwx  rwx
+            # group  teachers       rwx  rwx
+            # group  test2          r-x  r-x
+            # group  3000002        rwx  rwx
+            # mask                  rwx  rwx
+            # other                 ---  ---
+
+            setfacl -R -b "${GROUPS_DIR}/${NAME}" 2>&1
+            setfacl -R -m \
+u:administrator:rwx,\
+g::---,\
+g:adm:---,\
+g:"Domain Admins":rwx,\
+g:3000002:rwx,\
+g:"Teachers":rwx,\
+g:"${NAME}":r-x,\
+other:---                      "${GROUPS_DIR}/${NAME}" 2>&1
+
+            setfacl -R -m \
+d:u:administrator:rwx,\
+d:g::---,\
+d:g:adm:---,\
+d:g:"Domain Admins":rwx,\
+d:g:3000002:rwx,\
+d:g:"Teachers":rwx,\
+d:g:"${NAME}":r-x                     "${GROUPS_DIR}/${NAME}" 2>&1
+        fi
+
+        echo 'OK'
+        exit 0
+
+
+
         
         if ! samba-tool group add "$ADDGROUP" \
                         --groupou=CN=Users \
@@ -594,7 +494,7 @@ case $1 in
         ;;
 ################################################################################
     gensamba)
-        pymaxgensamba 2>&1
+        pymaxgensamba reloadsamba 2>&1
         echo "ok"
         exit 0
         ;;

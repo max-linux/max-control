@@ -28,7 +28,7 @@
     <tr>
       <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
-      <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')} 
+      <th class=''>Aula {$pager->getSortIcons('aula')} 
           <select name='selectaula' id='selectaula' onchange="javascript:aulaFilter(this);">
             <option value='' {if $aula == ''}selected='selected'{/if}>----------</option>
             {foreach from=$aulas key=k item=u}

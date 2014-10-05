@@ -32,7 +32,7 @@
     <tr>
       <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
       <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
-      <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')}</th> 
+      <th class=''>Aula {$pager->getSortIcons('aula')}</th> 
       <th class=''>Acciones</th> 
       <th class=''>Encender/Reiniciar en</th> 
       <th class=''>Estado</th> 

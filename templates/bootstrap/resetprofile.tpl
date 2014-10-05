@@ -14,7 +14,7 @@
      
      <input type='hidden' name='user' value='{$user}' />
      
-     <button type="submit" class="btn btn-danger">Importar</button>
+     <button type="submit" class="btn btn-danger">Borrar</button>
     </div>
 </form>
 

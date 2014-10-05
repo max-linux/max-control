@@ -110,66 +110,6 @@
 <!-- /.row -->
 
 
-{*
-<table class="bDataTable"> 
-    <tr> 
-        <td> 
-        <form id="hosts" action="{$urlform}" method="post"> 
-          <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
-          <input type='submit' name='button' value="Buscar" title="Buscar" /> 
-          <input type='submit' name='button' value="Desmontar ISO" title="Desmontar ISO" />
-        </form>
-        </td> 
-    </tr> 
-</table> 
-
-
-<table class='dataTable'> 
-    <thead> 
-    <tr>
-      <th class=''>Archivo</th> 
-      <th class=''>Tamaño</th> 
-      <th class=''>Volume ID</th> 
-      <th class='tleft'>Montar</th> 
-    </tr>
-    </thead>
-
-    {if $numisos > 0}
-    <tbody> 
-      {foreach from=$isos key=k item=u}
-      <tr class='border' id="{$u->attr('filename')}"> 
-        <td class='tcenter'><span>{$u->attr('filename')}</span></td> 
-        <td class='tcenter'><span>{$u->attr('size')}</span></td> 
-        <td class='tcenter'><span>{$u->attr('volumeid')}</span></td>
-        <td class='tleft'> 
-        
-            <select name='taula' id='taula' onchange="javascript:mount_iso('{$u->filename}', 'aula',this.value);"> 
-                <option value=''>En aula</option> 
-                {foreach from=$aulas item=a}
-                    {if $a->teacher_in_aula()}
-                        <option value='{$a->attr('cn')}'>{$a->attr('cn')} ({$a->get_num_computers()} equipos)</option>
-                    {/if}
-                {/foreach}
-            </select>
-            
-            <br/><br/>
-            
-            <select name='tequipo' id='tequipo' onchange="javascript:mount_iso('{$u->filename}','equipo',this.value);"> 
-                <option value=''>En equipo</option> 
-                {foreach from=$computers item=a}
-                    {if $a->teacher_in_computer()}
-                        <option value='{$a->hostname()}'>{$a->hostname()}</option>
-                    {/if}
-                {/foreach}
-            </select>
-        </td>
-      </tr>
-      {/foreach}
-
-    </tbody> 
-    {/if}
-</table> 
-*}
 
 <form id="formiso" name="formiso" action='{$urlmount}' method='post'>
     <input type='hidden' name='iso' id='iso' value='' />
@@ -197,9 +137,3 @@ function mount_iso(iso, what, where) {
 </script>
 {/literal}
 
-
-{*
-{if $DEBUG}
-{debug}
-{/if}
-*}

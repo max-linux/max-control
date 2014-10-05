@@ -422,6 +422,22 @@ class LDAP
 
 // $ldap=new LDAP($binddn='cn=admin,cn=Users,dc=madrid,dc=lan',$bindpw='admin2');
 $ldap=new LDAP();
+$users = $ldap->get_users('pepe');
+$gui->debuga($users);
+// $users[0]->role="teacher";
+// $users[0]->set_role();
+
+// $data=$ldap->search("(&(objectclass=posixAccount)(CN=Teachers))",
+//                             $basedn=LDAP_OU_BUILTINS,
+//                             $attrs=GROUP::attrs());
+
+// // $gui->debuga($data);
+// $gui->debuga(new GROUP($data[0]));
+// 
+
+// $a = $ldap->get_builtin_groups(TICS);
+// $gui->debuga($a);
+
 
 // $gui->debug( $ldap->lastUID() );
 // $gui->debug( $ldap->lastGID() );
@@ -471,7 +487,7 @@ $ldap=new LDAP();
 // $gui->debuga( $aulas[0]->get_computers() );
 // 
 
-$gui->debuga($ldap->get_macs_from_aula('Aula1') );
+// $gui->debuga($ldap->get_macs_from_aula('Aula1') );
 
 //$gui->debug($host[0]);
 //$gui->debug("PURE: ". $host[0]->_pure);

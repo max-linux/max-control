@@ -17,7 +17,6 @@ modules               usr/share/max-control/
 plugins               usr/share/max-control/
 templates             usr/share/max-control/
 www                   usr/share/max-control/
-conf.inc.php.example  usr/share/max-control/
 
 conf.inc.php.init     usr/share/max-control/
 init.sh               usr/share/max-control/

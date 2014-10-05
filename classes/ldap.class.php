@@ -115,7 +115,7 @@ class BASE {
 class USER extends BASE {
     var $cn='', $givenname='', $sn='', $dn='', $displayname='', $samaccountname='', $userprincipalname='', $description='';
     var $homedirectory='', $homedrive='', $loginshell='', $profilepath='';
-    var $memberof=array(), $objectclass=array();
+    var $memberof=array(), $objectclass=array(), $quota=0;
 
     var $role='unset';
     var $password='';
@@ -126,14 +126,14 @@ class USER extends BASE {
     public static function attrs() {
          return array('cn', 'givenname', 'sn', 'dn' ,'displayname', 'samaccountname', 'userprincipalname', 'description',
                       'homedirectory', 'homedrive', 'loginshell', 'profilepath',
-                      'memberof', 'objectclass',
+                      'memberof', 'objectclass', 'quota',
                       );
     }
 
     function set_role() {
-        global $gui;
+        global $gui, $ldap;
 
-        $gui->debuga($this);
+        // $gui->debuga($this);
 
         $oldrole='';
         foreach ($this->memberof as $g) {
@@ -153,19 +153,53 @@ class USER extends BASE {
         }
         
 
-        $gui->debuga("'$oldrole' => '$this->role'");
+        $gui->debuga("set_role() '$oldrole' => '$this->role'");
         if ($this->role != $oldrole) {
-            // actualizar rol
-            $cn=$this->cn;
-            $role=$this->role;
+            // quitar del rol viejo
+            switch ($oldrole) {
+                case 'tic':
+                    $old = $ldap->get_builtin_groups(TICS);
+                    $old->delMember($this->cn);
+                    break;
 
-            $cmd='sudo '.MAXCONTROL." rights '$cn' '$role' 2>&1";
-            $gui->debuga($cmd);
+                case 'teacher':
+                    $old = $ldap->get_builtin_groups(TEACHERS);
+                    $old->delMember($this->cn);
+                    break;
+
+                case 'admins':
+                    $old = $ldap->get_builtin_groups('Domain Admins');
+                    $old->delMember($this->cn);
+                    break;
+            }
+
+            $quota = DEFAULT_QUOTA;
+            switch ($this->role) {
+                case 'tic':
+                    $old = $ldap->get_builtin_groups(TICS);
+                    $old->newMember($this->cn);
+                    break;
+
+                case 'teacher':
+                    $old = $ldap->get_builtin_groups(TEACHERS);
+                    $old->newMember($this->cn);
+                    $quota = $quota * 2;
+                    break;
+
+                case 'admin':
+                    $old = $ldap->get_builtin_groups('Domain Admins');
+                    $old->newMember($this->cn);
+                    $quota = $quota * 2;
+                    break;
+            }
+
+            $r = ldap_modify($ldap->cid, $this->dn, array('quota' => $quota));
+            $cmd='sudo '.MAXCONTROL.' requota '.$this->cn.' '.$quota.' 2>&1';
+            $gui->debug($cmd);
             exec($cmd, $output);
             $gui->debuga($output);
-
-            // $gui->debug($cmd);
-            // pclose(popen($cmd, "r"));
+            
+            //
             return true;
         }
         return false;
@@ -197,7 +231,7 @@ class USER extends BASE {
 
         $new=array( 'givenname' => array($this->givenname),
                     'sn' => array($this->sn),
-                    'loginshell' => array($this->loginshell),
+                    'loginShell' => $this->loginshell,
                   );
 
 
@@ -209,12 +243,6 @@ class USER extends BASE {
         // $gui->debuga($this->dn);
 
         $r = ldap_modify($ldap->cid, $this->dn, $new);
-
-        $cmd='sudo '.MAXCONTROL." chshell '".$this->loginshell."' '".$this->cn."' 2>&1";
-        $gui->debuga($cmd);
-        exec($cmd, $output);
-        $gui->debuga($output);
-
 
         //$gui->debuga($r);
         if ($r) {
@@ -384,6 +412,7 @@ class USER extends BASE {
             $gui->debug("newUser<pre>".print_r($output, true)."</pre>");
             if( end($output) != 'OK' ) {
                 $gui->session_error("Error creando usuario '".$this->cn."'.");
+                return false;
             }
         }
         
@@ -419,7 +448,10 @@ class USER extends BASE {
         
         exec("sudo ".MAXCONTROL." resetprofile '".$this->cn."' 2>&1", $output);
         $gui->debug("<pre>resetProfile(".$this->cn.") output=".print_r($output, true)."</pre>");
-        return true;
+        if( end($output) != 'OK' ) {
+            return true;
+        }
+        return false;
     }
 
 }
@@ -466,8 +498,8 @@ class GROUP extends BASE {
         global $gui;
         $gui->debuga($this);
         /*
-        [cn] => grupo1
-        [description] => aaaaaa
+        [cn] => test4
+        [description] => comentario test 4
         [createshared] => 1
         [readonly] => 1
         */
@@ -476,7 +508,7 @@ class GROUP extends BASE {
         }
         $saved=false;
 
-        $cmd="sudo ".MAXCONTROL." addgroup '".$this->cn."' '$readonly' '".$this->description."' 2>&1";
+        $cmd="sudo ".MAXCONTROL." addgroup '".$this->cn."' '$createshared' '$readonly' '".$this->description."' 2>&1";
         $gui->debuga($cmd);
         exec($cmd, $output);
         $gui->debuga($output);
@@ -571,6 +603,7 @@ class AULA extends BASE {
         //$this->objectguid = bin_to_str_guid($this->objectguid);
 
         unset($this->ldapdata);
+        $this->getBoot();
     }
 
     function safecn() {
@@ -985,8 +1018,8 @@ class COMPUTER extends BASE {
         
         /****************************/
         if ( $conffile == 'aula') {
-            if ( isset($this->sambaProfilePath) && $this->sambaProfilePath != '' ) {
-                $conffile = preg_replace('/\s+/', '_', $this->sambaProfilePath);
+            if ( isset($this->aula) && $this->aula != '' ) {
+                $conffile = preg_replace('/\s+/', '_', $this->aula);
             }
             else {
                 $conffile='default';
@@ -1445,7 +1478,21 @@ class LDAP {
         return in_array($uid, $this->cachedAdmins);
     }
 
-
+    function get_builtin_groups($cn) {
+        global $gui;
+        $basedn=LDAP_OU_BUILTINS;
+        if($cn == 'Domain Admins') {
+            $basedn=LDAP_OU_USERS;
+        }
+        //
+        $data=$this->search("(&(objectclass=group)(CN=".$cn."))",
+                            $basedn=$basedn,
+                            $attrs=GROUP::attrs());
+        if( sizeof($data) != 1 ) {
+            return array();
+        }
+        return new GROUP($data[0]);
+    }
 
     function get_aulas($aula='') {
         global $gui;

@@ -87,6 +87,7 @@ function ver($module, $action, $subaction) {
             $overQuotaEnabled=True;
         }
     }
+    $gui->debuga($overQuota);
     //$gui->debuga($usuarios);
     /*******************************************************/
     

@@ -147,7 +147,7 @@ function equipos($module, $action, $subaction) {
     $pager=new PAGER($equipos, $urlform, 0, $args='', NULL);
     $pager->processArgs( array('Filter', 'skip', 'sort') );
     $equipos=$pager->getItems();
-    $pager->sortfilter="(uid|ipHostNumber|macAddress|sambaProfilePath)";
+    $pager->sortfilter="(uid|ipHostNumber|macAddress|aula)";
     
     $mode='admin';
     if ( ! $permisos->is_admin() ) {

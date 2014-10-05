@@ -1,7 +1,7 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">Añadir usuario</h1>
+        <h1 class="page-header">Bienvenido a MAX Control</h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -9,7 +9,7 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
-            
+            <h3>Antes de seguir vamos a añadir un usuario administrador</h3>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-lg-6">
@@ -38,28 +38,6 @@
                                 <label>Comentario</label>
                                 <input type='text' class='form-control' name='description' id='description' size='70'/> 
                             </div>
-                            
-                            
-                            <div class="form-group form-inline">
-                                <label>Permisos (rol)</label>
-                                <select class="form-control pull-right" name='role' id='role' > 
-                                    <option value=''>Alumno</option> 
-                                    <option value='teacher'>Profesor</option> 
-                                    <option value='tic'>Coordinador TIC</option> 
-                                    {if $permisos->is_admin() }
-                                    <option value='admin'>Administrador</option> 
-                                    {/if}
-                                </select> 
-                            </div>
-
-
-                            <div class="form-group form-inline">
-                                <label>Acceso a consola</label>
-                                <select class="form-control pull-right" name='loginshell' id='loginshell' > 
-                                    <option value='/bin/false' selected='selected'>Sin acceso a shell</option> 
-                                    <option value='/bin/bash'>Con acceso a shell (bash)</option> 
-                                </select>  
-                            </div>
 
 
                             <div class="form-group">
@@ -74,6 +52,9 @@
                                 <div class="alert alert-danger" style="display:none;" id='badpassword'>Las contraseñas no coinciden</div>
                             </div>
                             
+
+                            <input type='hidden' name='role' id="role" value='admin' />
+                            <input type='hidden' name='loginshell' id="loginshell" value='/bin/bash' />
                             <button type="submit" class="btn btn-primary pull-right">Guardar</button>
                         </form>
                     </div>
