@@ -40,19 +40,22 @@ if ($active_action == "editar") {
     $username=$_SESSION['username'];
     global $ldap;
     $user=$ldap->get_user($username);
-    
-    $urlform=$url->create_url($active_module, 'guardar');
 
-    //$gui->debuga($user);
+    if($user) {
+        $urlform=$url->create_url($active_module, 'guardar');
+
+        //$gui->debuga($user);
+        
+        $data=array("username"=>$username, 
+                    "u"=>$user,
+                    "urlform"=>$urlform,
+                    "action" => "Editar");
+        
+        //$gui->add("<pre>".print_r($data, true)."</pre>");
+        
+        $gui->add( $gui->load_from_template("miperfil.tpl", $data ) );
+    }
     
-    $data=array("username"=>$username, 
-                "u"=>$user,
-                "urlform"=>$urlform,
-                "action" => "Editar");
-    
-    //$gui->add("<pre>".print_r($data, true)."</pre>");
-    
-    $gui->add( $gui->load_from_template("miperfil.tpl", $data ) );
 }
 
 

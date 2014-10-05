@@ -62,15 +62,15 @@
                     {foreach from=$equipos key=k item=u}
                         <tr class='border' id="computer-{$u->hostname()}"> 
                           <td class='text-center'>
-                            {$u->attr('cn')}
+                            {$u->cn}
 
                             <div class="btn-group pull-right">
                                 <button type="button" class="btn btn-default btn-xs dropdown-toggle btn btn-info" data-toggle="dropdown">
                                     <i class="fa fa-chevron-down"></i>
                                 </button>
                                 <ul class="dropdown-menu slidedown" data-data='{$u|@json_encode}'>
-                                    <li class="visible-xs">IP: {$u->attr('ipHostNumber')}</li>
-                                    <li class="visible-xs">MAC: {$u->attr('macAddress')}</li>
+                                    <li class="visible-xs">IP: {$u->ipHostNumber}</li>
+                                    <li class="visible-xs">MAC: {$u->macAddress}</li>
                                     <li class="visible-xs">Aula: {$u->aula}</li>
                                     <li class="visible-xs divider"></li>
                                     <li><a href="{$urleditar}/{$u->cn}"><i class="fa fa-edit fa-fw"></i> Editar</a></li>
@@ -79,7 +79,7 @@
                             </div>
 
                         </td> 
-                          <td class='text-center hidden-xs'>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</td> 
+                          <td class='text-center hidden-xs'>{$u->ipHostNumber} / {$u->macAddress}</td> 
                           <td class='text-center hidden-xs'>{$u->aula}</td>
                           <td class='text-center'> 
                               <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="calculando..." />
@@ -88,7 +88,7 @@
                               <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/edit-table.gif" alt="editar" /></a>
                           </td>*}
                           <td class='text-center'> 
-                              <input type='checkbox' class="hostdel" name="{$u->attr('cn')}" id="{$u->attr('cn')}" onchange="javascript:oncheckboxChange();"/>
+                              <input type='checkbox' class="hostdel" name="{$u->cn}" id="{$u->cn}" onchange="javascript:oncheckboxChange();"/>
                           </td>
                         </tr>
                     {/foreach}

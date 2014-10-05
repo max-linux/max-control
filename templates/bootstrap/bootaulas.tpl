@@ -64,7 +64,7 @@
                             </div>
 
                       </td> 
-                      <td class='text-center'><span>{$u->getBoot()}</span></td>
+                      <td class='text-center'>{$u->getBoot()}</td>
                     </tr>
                     {/if}
                     {/foreach}

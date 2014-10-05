@@ -208,7 +208,7 @@ class Permisos {
         global $gui;
         $gui->debug("permisos::desconectar()");
         unset($_SESSION["user"]);
-        unset($_SESSION["dni"]);
+        unset($_SESSION["username"]);
         unset($_SESSION['is_admin']);
         unset($_SESSION['is_teacher']);
         unset($_SESSION['is_tic']);

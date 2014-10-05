@@ -58,8 +58,8 @@
                     {foreach from=$aulas item=u}
                       <tr class='border' id="{$u->safecn()}"> 
                         <td class="text-center">
-                            {if $u->attr('description') != ''}
-                            <acronym title='{$u->attr('description')}'><span>{$u->cn}</span></acronym>
+                            {if $u->description != ''}
+                            <acronym title='{$u->description}'>{$u->cn}</acronym>
                             {else}
                             <span>{$u->cn}</span>
                             {/if}

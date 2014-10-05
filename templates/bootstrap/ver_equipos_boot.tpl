@@ -46,10 +46,10 @@
                     {foreach from=$equipos key=k item=u}
                     <trid="{$u->hostname()}"> 
                     {if $u->teacher_in_computer()}
-                      <td class='text-center'>{$u->attr('cn')}</td> 
-                      <td class='text-center'>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</td> 
+                      <td class='text-center'>{$u->cn}</td> 
+                      <td class='text-center'>{$u->ipHostNumber} / {$u->macAddress}</td> 
                       <td class='text-center'>{$u->getBoot()}</td>
-                      {if $u->attr('macAddress') != ''}
+                      {if $u->macAddress != ''}
                         <td class='text-center'> 
                             <a href="{$urleditar}/{$u->hostname()}"><img src="{$baseurl}/img/edit-table.gif" alt="configurar" title="Configurar arranque" /></a>
                         </td>

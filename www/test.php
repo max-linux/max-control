@@ -422,8 +422,16 @@ class LDAP
 
 // $ldap=new LDAP($binddn='cn=admin,cn=Users,dc=madrid,dc=lan',$bindpw='admin2');
 $ldap=new LDAP();
-$users = $ldap->get_users('pepe');
-$gui->debuga($users);
+
+if( ! $ldap->connected ) {
+    echo "error\n";
+}
+else {
+    echo "ok\n";
+}
+
+// $users = $ldap->get_users('admin');
+// $gui->debuga($users);
 // $users[0]->role="teacher";
 // $users[0]->set_role();
 

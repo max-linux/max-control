@@ -7,6 +7,7 @@
 </div>
 
 
+
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
@@ -18,17 +19,17 @@
 
                             <div class="form-group">
                                 <label>Nombre</label>
-                                <input type='text' class='form-control' name='givenname' id='givenname' value="{$u->attr('givenname')}" /> 
+                                <input type='text' class='form-control' name='givenname' id='givenname' value="{$u->givenname}" /> 
                             </div>
 
                             <div class="form-group">
                                 <label>Apellidos</label>
-                                <input type='text' class='form-control' name='sn' id='sn' value="{$u->attr('sn')}" /> 
+                                <input type='text' class='form-control' name='sn' id='sn' value="{$u->sn}" /> 
                             </div>
 
                             <div class="form-group">
                                 <label>Comentario</label>
-                                <input type='text' class='form-control' name='description' id='description' value="{$u->attr('description')}" /> 
+                                <input type='text' class='form-control' name='description' id='description' value="{$u->description}" /> 
                             </div>
                             
                             
@@ -53,7 +54,7 @@
                                 <p class="alert-danger" style="display:none;" id='badpassword'>Las contraseñas no coinciden</p>
                             </div>
                             
-                            <input type='hidden' name='cn' value='{$u->attr('cn')}' />
+                            <input type='hidden' name='cn' value='{$u->cn}' />
 
                             <button type="submit" class="btn btn-primary pull-right">Guardar</button>
                         </form>

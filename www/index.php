@@ -80,6 +80,8 @@ $gui->assign('menuObj', $menu);
 global $ldap;
 $ldap = new LDAP();
 
+
+
 // ver si es peticion ajax
 $ajaxurl=new URLHandler($site["basedir"], null);
 if ( $ajaxurl->get("ajax") == "1" ) {
@@ -91,13 +93,18 @@ if ( $ajaxurl->get("ajax") == "1" ) {
 }
 
 
-
-
-
 //cargamos la clase navegador
 $nav = new Navigator();
 
 
+// test valid max-control credentials
+if( isset($gui) && ! $ldap->connected ) {
+  $gui->content='';
+  $gui->disable_menu=true;
+  $gui->add( $gui->load_from_template("no-configurado.html") );
+  $gui->render();
+  die();
+}
 
 
 /***************   cargar login o index **************/

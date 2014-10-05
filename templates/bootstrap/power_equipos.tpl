@@ -60,9 +60,9 @@
                     {foreach from=$equipos item=u}
                     {if $u->teacher_in_computer()}
                     <tr id="computer-{$u->hostname()}"> 
-                      <td class='text-center'><span>{$u->attr('cn')}</span></td> 
-                      <td class='text-center'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
-                      <td class='text-center'><span>{$u->get_aula()}</span></td>
+                      <td class='text-center'>{$u->cn}</td> 
+                      <td class='text-center'>{$u->ipHostNumber} / {$u->macAddress}</td> 
+                      <td class='text-center'>{$u->get_aula()}</td>
                       <td class='text-center'> 
                           <a href="{$urlpoweroff}/{$u->hostname()}" title="Apagar equipo {$u->hostname()}"><img src="{$baseurl}/img/poweroff.png" alt="apagar" /></a>
                           <a href="{$urlreboot}/{$u->hostname()}" title="Reiniciar equipo {$u->hostname()}"><img src="{$baseurl}/img/reboot.png" alt="reiniciar" /></a>

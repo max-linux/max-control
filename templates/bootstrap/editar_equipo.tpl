@@ -19,20 +19,20 @@
                             
                             <div class="form-group form-inline">
                                 <label class="col-lg-4">Dirección MAC</label>
-                                <input type='text' class='form-control' name='macAddress' id='macAddress' value="{$u->attr('macAddress')}" />
+                                <input type='text' class='form-control' name='macAddress' id='macAddress' value="{$u->macAddress}" />
                                 <button class='form-control btn btn-primary' type='button' name='getmacbtn' onclick="javascript:getmac();">Averiguar MAC</button>
                             </div>
 
                             <div class="form-group form-inline">
                                 <label class="col-lg-4">Dirección IP</label>
-                                <input type='text' class='form-control' name='ipHostNumber' id='ipHostNumber' value="{$u->attr('ipHostNumber')}" />
+                                <input type='text' class='form-control' name='ipHostNumber' id='ipHostNumber' value="{$u->ipHostNumber}" />
                                 <button class='form-control btn btn-primary' type='button' name='getipbtn' onclick="javascript:getip();">Averiguar IP</button>
 
                             </div>
 
                             <div class="form-group form-inline">
                                 <label class="col-lg-4">Archivo de arranque</label>
-                                <input type='text' class='form-control' name='bootFile' id='bootFile' value="{$u->attr('bootFile')}" /> 
+                                <input type='text' class='form-control' name='bootFile' id='bootFile' value="{$u->bootFile}" /> 
                                 <p class="help-block">(por defecto vacío)</p>
                             </div>
                             
@@ -43,7 +43,7 @@
                                 <select class='form-control' name='aula' id='aula' > 
                                     <option value=''></option> 
                                     {foreach from=$aulas key=k item=o}
-                                    <option value='{$o->attr('cn')}' {if $o->attr('cn') == $u->attr('aula')}selected="selected"{/if}>{$o->attr('cn')}</option>
+                                    <option value='{$o->cn}' {if $o->cn == $u->aula}selected="selected"{/if}>{$o->cn}</option>
                                     {/foreach}
                                 </select>  
                             </div>
