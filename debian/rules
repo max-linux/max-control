@@ -19,7 +19,6 @@ binary-install/max-control:: test
 
 	# replace __VERSION__ with VERSION
 	sed -i -e 's/__VERSION__/$(VERSION)/g' $(CURDIR)/debian/max-control/usr/share/max-control/conf.inc.php.init
-	sed -i -e 's/__VERSION__/$(VERSION)/g' $(CURDIR)/debian/max-control/usr/share/max-control/conf.inc.php.example
 
 	cp bin/winexe $(CURDIR)/debian/max-control/usr/bin/max-winexe
 	chmod 755 $(CURDIR)/debian/max-control/usr/bin/max-winexe

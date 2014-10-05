@@ -62,10 +62,10 @@
                         <tbody>
                             
                     {foreach from=$isos key=k item=u}
-                          <tr id="{$u->attr('filename')}"> 
-                            <td class='center'><span>{$u->attr('filename')}</span></td> 
-                            <td class='center'><span>{$u->attr('size')}</span></td> 
-                            <td class='center'><span>{$u->attr('volumeid')}</span></td>
+                          <tr id="{$u->filename}"> 
+                            <td class='center'>{$u->filename}</td> 
+                            <td class='center'>{$u->size}</td> 
+                            <td class='center'>{$u->volumeid}</td>
                             <td class='text-left'> 
                             
                                 <div class="form-group form-inline">
@@ -73,7 +73,7 @@
                                         <option value=''>En aula</option> 
                                         {foreach from=$aulas item=a}
                                             {if $a->teacher_in_aula()}
-                                                <option value='{$a->attr("cn")}'>&nbsp;&nbsp;{$a->attr('cn')} ({$a->get_num_computers()} equipos)</option>
+                                                <option value='{$a->cn}'>&nbsp;&nbsp;{$a->cn} ({$a->get_num_computers()} equipos)</option>
                                             {/if}
                                         {/foreach}
                                     </select>

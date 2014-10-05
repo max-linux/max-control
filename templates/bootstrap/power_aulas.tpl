@@ -58,8 +58,8 @@
                     {foreach from=$aulas item=u}
                       <tr id="{$u->safecn()}"> 
                       {if $u->teacher_in_aula()}
-                        <td class='text-center'><span>{$u->cn}</span></td> 
-                        <td class='tex-center hidden-xs'><span>{$u->get_num_computers()}</span></td>
+                        <td class='text-center'>{$u->cn}</td> 
+                        <td class='tex-center hidden-xs'>{$u->get_num_computers()}</td>
                         <td class='text-center'> 
                             {if $u->get_num_computers() > 0 }
                             <a href="{$urlpoweroff}/{$u->cn}" title="Apagar aula '{$u->cn}'"><img src="{$baseurl}/img/poweroff.png" alt="apagar" /></a>

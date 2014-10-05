@@ -18,7 +18,7 @@
                         <option value=''></option> 
                         {foreach from=$aulas item=a}
                             {if $a->teacher_in_aula()}
-                                <option value='{$a->attr('cn')}'>{$a->attr('cn')} ({$a->get_num_computers()} equipos)</option>
+                                <option value='{$a->cn}'>{$a->cn} ({$a->get_num_computers()} equipos)</option>
                             {/if}
                         {/foreach}
                     </select> 

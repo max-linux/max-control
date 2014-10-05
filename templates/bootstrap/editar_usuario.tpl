@@ -17,22 +17,22 @@
                         <form role="form" action='{$urlform}' method='post' onsubmit="return checkpass();">
 
                             <div class="form-group">
-                                <label>Identificador: {$u->attr('cn')}</label>
+                                <label>Identificador: {$u->cn}</label>
                             </div>
                             
                             <div class="form-group">
                                 <label>Nombre</label>
-                                <input type='text' class='form-control' name='givenname' id='givenname' value="{$u->attr('givenname')}" /> 
+                                <input type='text' class='form-control' name='givenname' id='givenname' value="{$u->givenname}" /> 
                             </div>
 
                             <div class="form-group">
                                 <label>Apellidos</label>
-                                <input type='text' class='form-control' name='sn' id='sn' value="{$u->attr('sn')}" /> 
+                                <input type='text' class='form-control' name='sn' id='sn' value="{$u->sn}" /> 
                             </div>
 
                             <div class="form-group">
                                 <label>Comentario</label>
-                                <input type='text' class='form-control' name='description' id='description' size='70' value="{$u->attr('description')}" /> 
+                                <input type='text' class='form-control' name='description' id='description' size='70' value="{$u->description}" /> 
                             </div>
                             
                             
@@ -52,8 +52,8 @@
                             <div class="form-group form-inline">
                                 <label>Acceso a consola</label>
                                 <select class="form-control pull-right" name='loginshell' id='loginshell' > 
-                                    <option value='/bin/false' {if $u->attr('loginshell') == '/bin/false'}selected='selected'{/if}>Sin acceso a shell</option> 
-                                    <option value='/bin/bash' {if $u->attr('loginshell') == '/bin/bash'}selected='selected'{/if}>Con acceso a shell (bash)</option> 
+                                    <option value='/bin/false' {if $u->loginshell == '/bin/false'}selected='selected'{/if}>Sin acceso a shell</option> 
+                                    <option value='/bin/bash' {if $u->loginshell == '/bin/bash'}selected='selected'{/if}>Con acceso a shell (bash)</option> 
                                 </select>  
                             </div>
 
@@ -69,7 +69,7 @@
                                 <div class="alert alert-danger" style="display:none;" id='badpassword'>Las contraseñas no coinciden</div>
                             </div>
                             
-                            <input type='hidden' name='cn' value='{$u->attr('cn')}' />
+                            <input type='hidden' name='cn' value='{$u->cn}' />
                             <button class='btn btn-danger' type='button' name='reset' value="Resetear perfil" title="Borra todos los archivos personales de este usuario" onclick="javascript:resetProfile('{$username}');"/>Resetear perfil</button>
 
                             <button type="submit" class="btn btn-primary pull-right">Guardar</button>

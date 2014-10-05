@@ -12,6 +12,7 @@ class Gui
     var $debug_txt;
     var $debugger_txt;
     var $main_template;
+    var $disable_menu=false;
     
     function Gui() {
         $this->content="";
@@ -116,6 +117,7 @@ class Gui
             $this->smarty->assign('max_control_version', "DESCONOCIDA" );
         }
         $this->smarty->assign("content", $this->get_content());
+        $this->smarty->assign("disable_menu", $this->disable_menu);
 
         // use bootstrap template if avalaible
         if( ENABLE_BOOTSTRAP && is_file($path . SMARTY_TEMPLATES . "/bootstrap/" . $this->main_template)) {

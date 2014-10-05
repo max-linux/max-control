@@ -89,10 +89,10 @@
                     {foreach from=$usuarios key=k item=u}
                         <tr>
                             <td>
-                                {if $u->attr('description') != ''}
-                                    <acronym title='{$u->attr('description')}'><span>{$u->attr('cn')} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if}</span></acronym>
+                                {if $u->description != ''}
+                                    <acronym title='{$u->description}'>{$u->cn} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if}</span></acronym>
                                 {else}
-                                    <span>{$u->attr('cn')} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if} </span>
+                                    <span>{$u->cn} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if} </span>
                                 {/if}
 
                                 <div class="btn-group pull-right">
@@ -100,13 +100,13 @@
                                         <i class="fa fa-chevron-down"></i>
                                     </button>
                                     <ul class="dropdown-menu slidedown" data-data='{$u|@json_encode}'>
-                                        <li><a href="{$urleditar}/{$u->attr('cn')}"><i class="fa fa-edit fa-fw"></i> Editar</a></li>
-                                        <li><a href="{$resetprofilebase}/{$u->attr('cn')}"><i class="fa fa-refresh fa-fw"></i>Limpiar perfil</a></li>
-                                        <li><a href="{$urlformmultiple}?faction=delete&amp;usernames={$u->attr('cn')}"><i class="fa fa-trash-o fa-fw"></i> Borrar</a></li>
+                                        <li><a href="{$urleditar}/{$u->cn}"><i class="fa fa-edit fa-fw"></i> Editar</a></li>
+                                        <li><a href="{$resetprofilebase}/{$u->cn}"><i class="fa fa-refresh fa-fw"></i>Limpiar perfil</a></li>
+                                        <li><a href="{$urlformmultiple}?faction=delete&amp;usernames={$u->cn}"><i class="fa fa-trash-o fa-fw"></i> Borrar</a></li>
                                     </ul>
                                 </div>
                             </td>
-                            <td class="hidden-xs">{$u->attr('givenname')} {$u->attr('sn')}</td>
+                            <td class="hidden-xs">{$u->givenname} {$u->sn}</td>
                             <td>
                                 {if $u->get_role() == 'teacher'}Profesor{/if}
                                 {if $u->get_role() == 'tic'}Coordinador TIC{/if}
@@ -116,7 +116,7 @@
                             <td class="hidden-xs">{$u->getquota()}</td>
                             
                             <td>
-                                <input type='checkbox' class="userdel" name="{$u->attr('cn')}" id="{$u->attr('cn')}" onchange="javascript:oncheckboxChange();"/>
+                                <input type='checkbox' class="userdel" name="{$u->cn}" id="{$u->cn}" onchange="javascript:oncheckboxChange();"/>
                             </td>
 
                         </tr>

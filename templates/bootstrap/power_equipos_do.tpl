@@ -30,9 +30,9 @@
     <tbody> 
       {foreach from=$computers item=c}
       <trid="{$c->hostname()}"> 
-        <td class='text-center'><span>{$c->hostname()}</span></td> 
-        <td class='text-center'><span>{$c->ipHostNumber}</span></td> 
-        <td class='text-center'><span>{$c->macAddress}</span></td>
+        <td class='text-center'>{$c->hostname()}</td> 
+        <td class='text-center'>{$c->ipHostNumber}</td> 
+        <td class='text-center'>{$c->macAddress}</td>
       </tr>
       {/foreach}
 

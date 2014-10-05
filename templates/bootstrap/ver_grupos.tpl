@@ -53,12 +53,12 @@
                         <tbody>
                     
                     {foreach from=$groups key=k item=u}
-                      <tr id="group-{$u->attr('cn')}"> 
+                      <tr id="group-{$u->cn}"> 
                         <td>
-                            {if $u->attr('description') != ''}
-                                <acronym title='{$u->attr('description')}'><span>{$u->attr('cn')}</span></acronym>
+                            {if $u->description != ''}
+                                <acronym title='{$u->description}'>{$u->cn}</acronym>
                             {else}
-                                <span>{$u->attr('cn')}</span>
+                                <span>{$u->cn}</span>
                             {/if}
 
 
@@ -76,11 +76,11 @@
                             </div>
                         </td> 
                         
-                        <td>{$u->attr('numUsers')}</td> 
+                        <td>{$u->numUsers}</td> 
                         <td class='tcenter'> 
                             
                             
-                            <input type='checkbox' class="groupdel" name="{$u->attr('cn')}" id="{$u->attr('cn')}" onchange="javascript:oncheckboxChange();"/>
+                            <input type='checkbox' class="groupdel" name="{$u->cn}" id="{$u->cn}" onchange="javascript:oncheckboxChange();"/>
                         </td>
                       </tr>
                     {/foreach}
