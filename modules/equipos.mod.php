@@ -91,7 +91,7 @@ function ver($module, $action, $subaction) {
     $pager->processArgs( array('Filter', 'skip', 'aula', 'sort') );
     
     $equipos=$pager->getItems();
-    $pager->sortfilter="(uid|ipHostNumber|macAddress|aula)";
+    $pager->sortfilter="(cn|ipHostNumber|macAddress|aula)";
     
     $aulas=$ldap->get_aulas_cn();
     //$gui->debuga($aulas);
