@@ -81,7 +81,7 @@ function equipo($module, $action, $subaction) {
     $pager=new PAGER($equipos, $urlform, 0, $args='', NULL);
     $pager->processArgs( array('Filter', 'skip', 'sort') );
     $equipos=$pager->getItems();
-    $pager->sortfilter="(uid|ipHostNumber|macAddress)";
+    $pager->sortfilter="(cn|ipHostNumber|macAddress)";
     
     $data=array("equipos" => $equipos,
                 "filter" => $filter, 
