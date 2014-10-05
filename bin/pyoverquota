@@ -10,48 +10,48 @@ import subprocess
 from subprocess import Popen, PIPE, STDOUT
 import commands
 
-os.environ['LC_ALL']="C"
-os.environ['EDITOR']="/bin/cat"
+os.environ['LC_ALL'] = "C"
+os.environ['EDITOR'] = "/bin/cat"
 
-HOME="/home"
-REMOTE=commands.getoutput("df /home/samba 2>/dev/null | awk '/dev/ {print $1}'")
-REMOTE=commands.getoutput("/sbin/blkid "+REMOTE+" -o value| head -1 | awk '{print \"/dev/disk/by-uuid/\"$1}'")
+HOME = "/home"
+REMOTE = commands.getoutput("df /home/samba 2>/dev/null | awk '/dev/ {print $1}'")
+REMOTE = commands.getoutput("/sbin/blkid " + REMOTE + " -o value| head -1 | awk '{print \"/dev/disk/by-uuid/\"$1}'")
 if REMOTE == "":
-    REMOTE="/dev/nbd0"
+    REMOTE = "/dev/nbd0"
 
-CONF="/etc/max-control/conf.inc.php"
-LIMIT=float(80) #percent
-LOCK_FILE="/var/lib/max-control/quota.cache.php.lock"
-DEST_FILE="/var/lib/max-control/quota.cache.php"
-MAX_WAIT=50 # 5 seconds
-num=0
+CONF = "/etc/max-control/conf.inc.php"
+LIMIT = float(80)  # percent
+LOCK_FILE = "/var/lib/max-control/quota.cache.php.lock"
+DEST_FILE = "/var/lib/max-control/quota.cache.php"
+MAX_WAIT = 50  # 5 seconds
+num = 0
 stamp = time.strftime("%d/%m/%Y %H:%M:%S", time.localtime())
 
 if not os.path.isfile(CONF):
-    print >> sys.stderr," * No existe el archivo %s"%CONF
+    print >> sys.stderr, " * No existe el archivo %s" % CONF
     sys.exit(0)
 
 if os.path.isfile("/aquota.user") or os.path.isfile("/quota.user"):
-    HOME="/"
+    HOME = "/"
 
 if os.path.isfile("/home/samba/aquota.user") or os.path.isfile("/home/samba/quota.user"):
-    HOME="/home/samba"
+    HOME = "/home/samba"
 
 if not os.path.isfile(HOME + "/aquota.user") and not os.path.isfile(HOME + "/quota.user"):
-    print >> sys.stderr," * No quotas found"
+    print >> sys.stderr, " * No quotas found"
     sys.exit(0)
 
 
 #######################################################
 while os.path.isfile(LOCK_FILE):
-    sys.stderr.write("<? /* [%s] pyoverquota[%s]: Esperando lock...*/ ?>\n" % (stamp, os.getpid()) )
+    sys.stderr.write("<? /* [%s] pyoverquota[%s]: Esperando lock...*/ ?>\n" % (stamp, os.getpid()))
     if num > MAX_WAIT:
-        sys.stderr.write("<? /* [%s] pyoverquota[%s]: Timeout...*/ ?>\n" % (stamp, os.getpid()) )
+        sys.stderr.write("<? /* [%s] pyoverquota[%s]: Timeout...*/ ?>\n" % (stamp, os.getpid()))
         break
     time.sleep(0.1)
     num = num + 1
 
-sys.stderr.write("<? /* [%s] pyoverquota[%s]: Creando lock...*/ ?>\n" % (stamp, os.getpid()) )
+sys.stderr.write("<? /* [%s] pyoverquota[%s]: Creando lock...*/ ?>\n" % (stamp, os.getpid()))
 # create lock file
 open(LOCK_FILE, 'w').close()
 #######################################################
@@ -60,10 +60,10 @@ open(LOCK_FILE, 'w').close()
 #print >> sys.stderr," REMOTE=%s HOME quota=%s"%(REMOTE, HOME)
 
 def read_conf(varname):
-    f=open(CONF, 'r')
-    data=f.readlines()
+    f = open(CONF, 'r')
+    data = f.readlines()
     f.close()
-    
+
     for line in data:
         if line.startswith('define') and varname in line:
             if len(line.split('"')) >= 3:
@@ -73,13 +73,14 @@ def read_conf(varname):
     return ''
 
 try:
-    CONF_LIMIT=read_conf("OVERQUOTA_LIMIT")
+    CONF_LIMIT = read_conf("OVERQUOTA_LIMIT")
     if CONF_LIMIT != '':
-        LIMIT=float(CONF_LIMIT)
+        LIMIT = float(CONF_LIMIT)
 except Exception, err:
     import traceback
     print >> sys.stderr, err
     traceback.print_exc(file=sys.stderr)
+
 
 def getQuota(user, used=False):
     """
@@ -88,71 +89,87 @@ def getQuota(user, used=False):
       Filesystem          blocks       soft       hard     inodes     soft     hard
       /dev/nbd0               12    2048000    2048000          3        0        0
     """
-    column=2
-    percent=""
+    column = 2
+    percent = ""
     if used:
-        column=1
-    size=0
-    cmd="/usr/sbin/edquota -u %s -f %s "%(user, HOME)
+        column = 1
+    size = 0
+    cmd = "/usr/sbin/edquota -u %s -f %s " % (user, HOME)
     p = Popen(cmd, shell=True, bufsize=0, stdout=PIPE, stderr=STDOUT, close_fds=True)
     stdout = p.stdout
     for line in stdout.readlines():
         if line != '\n':
-            line=line.replace('\n', '')
+            line = line.replace('\n', '')
             #print "==>%s"%line
             if REMOTE in line:
-                size=line.split()[column]
+                size = line.split()[column]
                 if used:
                     if int(line.split()[2]) == 0:
                         return (False, 0, 0, 0)
-                    #print "==>%s"%line
-                    percent=float(line.split()[1])/float(line.split()[2])*100
-                    #print "percent(%s)=%s/%s/100" %(percent, line.split()[1], line.split()[2])
-                    #print "\n\n"
-                    size=int(size)/1024
-                    maxsize=int(line.split()[2])/1024
-                    overquota=False
-                    #print "%s %s > %s"%(user, percent,LIMIT)
+                    # print "==>%s"%line
+                    percent = float(line.split()[1]) / float(line.split()[2]) * 100
+                    # print "percent(%s)=%s/%s/100" %(percent, line.split()[1], line.split()[2])
+                    # print "\n\n"
+                    size = int(size) / 1024
+                    # if user == 'pepe':
+                    #     size = 8000
+                    #     percent = 200
+                    maxsize = int(line.split()[2]) / 1024
+                    overquota = False
+                    # print "%s %s > %s" % (user, percent, LIMIT)
+                    # sys.stderr.write("%s %s > %s\n" % (user, percent, LIMIT))
                     if percent > LIMIT:
-                        overquota=True
-                    return (overquota, size, maxsize, "%0.2f%%"%percent)
+                        overquota = True
+                    return (overquota, size, maxsize, "%0.2f%%" % percent)
     return (False, 0, 0, 0)
 
 
 # get user lists
 #samba-tool user list 2>/dev/null
 def generateOverQuotas():
-    txt=""
+    txt = ""
+    hostname = read_conf("LDAP_HOSTNAME")
+    ignore = ["zentyal-squid-%s" % hostname,
+              "dns-%s" % hostname,
+              'Administrator',
+              'max-control',
+              'krbtgt',
+              'Guest']
+
     args = ['samba-tool', 'user', 'list']
     p = subprocess.Popen(" ".join(args), shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
-    users = {}
     while True:
         output = p.stdout.readline()
-        
+
         if output.startswith('ldb_wrap'):
             continue
         if output.startswith('params.c'):
             continue
-
+        #
         uid = output.strip()
+        if uid in ignore:
+            # sys.stderr.write("IGNORE user=%s\n" % uid)
+            continue
+        #
+        # sys.stderr.write("user=%s\n" % uid)
         if uid != '':
             (overquota, size, maxsize, percent) = getQuota(uid, True)
-            txt = txt + """$quotaArray['%s']=array('size'=>%s, 'maxsize'=> %s, 'percent'=>'%s', 'overQuota'=>%s);\n"""\
-                                % (uid, size, maxsize, percent, overquota)
+            # sys.stderr.write("user=%s quota=%s\n" % (uid, getQuota(uid, True)))
+            txt = txt + "$quotaArray['%s']=array('size'=>%s, 'maxsize'=> %s, 'percent'=>'%s', 'overQuota'=>%s);\n" \
+                        % (uid, size, maxsize, percent, overquota)
             if overquota:
-                txt = txt + "$overQuota['%s']=array('cn'=>'%s', 'size'=>%s, 'maxsize'=> %s, 'percent'=>'%s');\n"\
-                                % (uid, uid, size, maxsize, percent)
-  
+                txt = txt + "$overQuota['%s']=array('cn'=>'%s', 'size'=>%s, 'maxsize'=> %s, 'percent'=>'%s');\n" \
+                            % (uid, uid, size, maxsize, percent)
 
-        if output == '' and p.poll() != None:
+        if output == '' and p.poll() is not None:
             break
 
     return txt
 
 
-txt="""<?php
+txt = """<?php
 
-/* generated by pyoverquota on: "%s" 
+/* generated by pyoverquota on: "%s"
 *
 *  OVERQUOTA_LIMIT=%s%%
 */
@@ -162,18 +179,18 @@ $quotaTime="%s";
 $overQuota=array();
 $quotaArray=array();
 
-"""%(time.asctime(), LIMIT, stamp)
+""" % (time.asctime(), LIMIT, stamp)
 
-txt=txt+generateOverQuotas()
+txt = txt + generateOverQuotas()
 
-txt=txt+"""
+txt = txt + """
 
 """
 
-f=open(DEST_FILE, 'w')
+f = open(DEST_FILE, 'w')
 f.write(txt)
 f.close()
 
 # delete lock file
-sys.stderr.write("<? /* [%s] pyoverquota[%s]: Borrando lock...*/ ?>\n" % (stamp, os.getpid()) )
+sys.stderr.write("<? /* [%s] pyoverquota[%s]: Borrando lock...*/ ?>\n" % (stamp, os.getpid()))
 os.unlink(LOCK_FILE)

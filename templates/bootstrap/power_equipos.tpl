@@ -46,7 +46,7 @@
                             <tr>
                                 <th>Nombre {$pager->getSortIcons('cn')}</th> 
                                 <th>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
-                                <th>Aula {$pager->getSortIcons('sambaProfilePath')}</th> 
+                                <th>Aula {$pager->getSortIcons('aula')}</th> 
                                 <th>Acciones</th> 
                                 <th>Encender/Reiniciar en</th> 
                                 <th>Estado</th> 
@@ -108,72 +108,6 @@
     <input type='hidden' name='faction' id="faction" value='' />
 </form>
 
-{*
-<table class="bDataTable"> 
-    <tr> 
-        <td> 
-        <form action="{$urlform}" method="post"> 
-          <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
-          <input type='submit' name='button' value="Buscar" title="Buscar" /> 
-          
-          <select style="display:none;float:right;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
-            <option value=''>Seleccionar acción...</option>
-            {foreach from=$multiple_actions key=k item=u}
-            <option value='{$k}'>&nbsp;&nbsp;&nbsp;&nbsp;{$u}</option>
-            {/foreach}
-          </select>
-          
-        </form>
-        </td> 
-    </tr> 
-</table> 
-
-<table class='dataTable'> 
-    <thead> 
-    <tr>
-      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
-      <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
-      <th class=''>Aula {$pager->getSortIcons('sambaProfilePath')}</th> 
-      <th class=''>Acciones</th> 
-      <th class=''>Encender/Reiniciar en</th> 
-      <th class=''>Estado</th> 
-      <th class=''>Múltiple
-       <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/>
-      </th>
-    </tr>
-    </thead>
- 
- 
-    <tbody> 
-      {foreach from=$equipos item=u}
-      {if $u->teacher_in_computer()}
-      <tr class='border' id="computer-{$u->hostname()}"> 
-        <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
-        <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
-        <td class='tcenter'><span>{$u->get_aula()}</span></td>
-        <td class='tcenter'> 
-            <a href="{$urlpoweroff}/{$u->hostname()}" title="Apagar equipo {$u->hostname()}"><img src="{$baseurl}/img/poweroff.png" alt="apagar" /></a>
-            <a href="{$urlreboot}/{$u->hostname()}" title="Reiniciar equipo {$u->hostname()}"><img src="{$baseurl}/img/reboot.png" alt="reiniciar" /></a>
-            <a href="{$urlwakeonlan}/{$u->hostname()}" title="Encender {$u->hostname()}"><img src="{$baseurl}/img/poweron.png" alt="encendido de equipos" /></a>
-        </td>
-        <td class='tcenter'>
-            <a href="{$urlrebootwindows}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en Windows"><img src="{$baseurl}/img/windows.png" alt="windows" /></a>
-            <a href="{$urlrebootmax}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en MAX"><img src="{$baseurl}/img/linux-logo.jpg" alt="MAX" /></a>
-        </td>
-        <td class='tcenter'> 
-            <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="calculando..." />
-        </td>
-        <td class='tcenter'> 
-            <input type='checkbox' class="computeraction" name="{$u->hostname()}" id="{$u->hostname()}" onchange="javascript:oncheckboxChange();"/>
-        </td>
-      </tr>
-      {/if}
-      {/foreach}
-
-    </tbody> 
-</table> 
-
-*}
 
 
 {literal}

@@ -87,6 +87,8 @@ function equipo($module, $action, $subaction) {
                 "filter" => $filter, 
                 "urlform" => $urlform, 
                 "urleditar"=>$url->create_url($module,'editarequipo'),
+                "urlrefresh"=>$url->create_url($module, 'refresh'),
+                "urlclean"=>$url->create_url($module, 'clean'),
                 "pager"=>$pager);
     $gui->add( $gui->load_from_template("ver_equipos_boot.tpl", $data) );
 }
@@ -177,6 +179,9 @@ function aula($module, $action, $subaction) {
                 "urlform" => $urlform,
                 "urleditar"=>$url->create_url($module, 'editaaula', 'arranque'),
                 "urlprogramar"=>$url->create_url($module, 'programaaula'),
+                "urlrefresh"=>$url->create_url($module, 'refresh'),
+                "urlclean"=>$url->create_url($module, 'clean'),
+                "urledithosts"=>$url->create_url('equipos', 'aulas', 'equipos'),
                 "programer" => $programer,
                 "pager" => $pager);
     $gui->add( $gui->load_from_template("bootaulas.tpl", $data) );

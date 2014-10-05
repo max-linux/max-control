@@ -16,7 +16,7 @@
 
                             <div class="form-group">
                                 <label>Nombre del aula:</label>
-                                <input type='text' class='form-control'  name='cn' id='cn' autocomplete="off" maxlength='20' onblur='javascript:usedcn(this.value);' />
+                                <input type='text' class='form-control'  name='cn' id='cn' autocomplete="off" maxlength='20' onblur='javascript:usedcn(this.value);' autofocus/>
                                 <div class="alert alert-danger" style="display:none;" id='groupnotvalid'>El identificador está ocupado</div>
                                 <div class="alert alert-success" style="display:none;" id='groupvalid'>El identificador está libre</div>
                                 <div class="alert alert-danger" style="display:none;" id='groupempty'>El identificador no puede estar vacío</div>
@@ -43,35 +43,7 @@
     <!-- /.col-lg-12 -->
 </div>
 
-{*
-<form action='{$urlform}' method='post' onsubmit="return checkform();"> 
-    <table class='formTable'> 
-        <tr> 
-            <td class='tright'><span class="ftitle">Nombre del aula:</span></td> 
-            <td>
-                <input type='text' class='inputText' name='cn' id='cn' autocomplete="off" onblur='javascript:usedcn(this.value);' />
-                <span class="error" style="display:none;" id='groupnotvalid'>El identificador está ocupado</span>
-                <span class="note" style="display:none;" id='groupvalid'>El identificador está libre</span>
-                <span class="error" style="display:none;" id='groupempty'>El identificador no puede estar vacío</span>
-                <span class="error" style="display:none;" id='groupinvalid'>Identificador no válido (letras ASCII, números o .-_)</span>
-            </td> 
-        </tr> 
 
-        <tr> 
-            <td class='tright'><span class='ftitle'>Comentario:</span></td> 
-            <td><input type='text' class='inputText' name='description' autocomplete="off" /></td> 
-        </tr> 
-
-        <tr> 
-            <td></td> 
-            <td> 
-            <input class='inputButton' type='submit' name='add' value="Añadir" alt="Añadir" /> 
-            </td> 
-        </tr> 
-    </table> 
-</form>
-
-*}
 
 <script type="text/javascript">
     var ajaxurl="{$baseurl}/index.php?ajax=1";

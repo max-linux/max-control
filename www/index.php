@@ -107,6 +107,10 @@ if (isset($gui) && isset($_SESSION["user"]) ){
   $gui->assign("role", $permisos->get_humanrole() );
   $gui->assign("logout_url", $nav->url->create_url("login", "logout") );
 
+  if( ! is_file(FIRST_RUN) && $nav->get_module() != "templogin" && $permisos->is_templogin() ) {
+    $url->ir('templogin');
+  }
+
   // logueado cargar modulo por defecto
   if( $nav->get_module() == "") {
     if( ENABLE_BOOTSTRAP && $permisos->is_admin() ) {
@@ -120,9 +124,16 @@ if (isset($gui) && isset($_SESSION["user"]) ){
 
 }
 elseif ( isset($gui) ) {
-  $gui->assign('login', True );
-  $gui->assign("login_url", $nav->url->create_url("login", "login") );
-  $gui->main_template="login.tpl";
+  if( ! is_file(FIRST_RUN) ) {
+    // login as admintemp user
+    $permisos->tempLogin();
+    $url->ir('templogin');
+  }
+  else {
+    $gui->assign('login', True );
+    $gui->assign("login_url", $nav->url->create_url("login", "login") );
+    $gui->main_template="login.tpl";
+  }
 }
 /************************************************************/
 
@@ -136,6 +147,7 @@ if (isset($gui)) {
         $gui->debug("VERSION=".VERSION);
     }
     $gui->debug("QUERY_STRING=".$_SERVER['QUERY_STRING']);
+    // $gui->debuga($_SESSION);
     $gui->debug_array($_POST, "index.php POST");
     $gui->debug_array($_GET, "index.php GET");
     $gui->debug("Tiempo de ejecución: " . time_end() );

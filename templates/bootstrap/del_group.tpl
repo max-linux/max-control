@@ -63,8 +63,3 @@
     </form>
 </div>
 
-{*
-{if $DEBUG}
-{debug}
-{/if}
-*}

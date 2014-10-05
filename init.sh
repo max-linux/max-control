@@ -23,12 +23,6 @@ fi
 DOMAIN=$(dnsdomainname)
 BASEDN=$(dnsdomainname | sed -e 's/\./,DC=/g' -e 's/^/DC=/')
 WORKGROUP=$(dnsdomainname | awk -F. '{print toupper($1)}')
-#SERVERDN=$(ldbsearch "(&(objectClass=computer)(CN=${HOSTNAME}*))" -H ldap://127.0.0.1:389 -U${USER}%${PASS} 2>/dev/null| awk -F": " '/^dn:/{print $2}')
-# if [ "$SERVERDN" = "" ]; then
-#   echo " * ERROR: No se pudo encontrar el servidor de dominio."
-#   exit 0
-# fi
-# BASEDN=$(echo $SERVERDN | awk -F"OU=Domain Controllers," '{print $2}')
 
 if [ "$BASEDN" = "" ]; then
     echo " * ERROR: No se pudo determinar el servidor de dominio."
@@ -36,21 +30,10 @@ if [ "$BASEDN" = "" ]; then
 fi
 
 
-# create MAXGroups container and Teacher, CoordinadoresTIC and Instaladores
+# create MAXGroups container
+# and Teacher, CoordinadoresTIC and Instaladores
 zentyal-maxcontrol init
 
-# # Crear grupos internos
-# samba-tool group list 2>/dev/null | grep -q "^Teachers$" || \
-#     samba-tool group add "Teachers" --groupou=CN=Builtin --group-scope=Domain \
-#                --group-type=Security --description="Profesores"
-
-# samba-tool group list 2>/dev/null | grep -q "^CoordinadoresTIC$" || \
-#     samba-tool group add "CoordinadoresTIC" --groupou=CN=Builtin --group-scope=Domain \
-#                --group-type=Security --description="Coordinadores TIC"
-
-# samba-tool group list 2>/dev/null | grep -q "^Instaladores$" || \
-#     samba-tool group add "Instaladores" --groupou=CN=Builtin --group-scope=Domain \
-#                --group-type=Security --description="Instaladores de equipos"
 
 
 rm -f /etc/max-control/conf.inc.php
@@ -98,8 +81,8 @@ define('LDAP_OU_INSTALLATORS',  'CN=Instaladores,CN=MAXGroups,${BASEDN}');
 
 define("HOMES", "/home/${WORKGROUP}/");
 
-define("LDAP_HOST", '${HOST}');
-define("LDAP_HOSTNAME", '${HOSTNAME}');
+define("LDAP_HOST", "${HOST}");
+define("LDAP_HOSTNAME", "${HOSTNAME}");
 define("LDAP_PORT", ${PORT});
 
 define('CONFIGURED', True);

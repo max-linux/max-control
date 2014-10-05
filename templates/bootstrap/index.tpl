@@ -153,9 +153,6 @@
     <script src="{$baseurl}/js/bootstrap.min.js"></script>
     <script src="{$baseurl}/js/plugins/metisMenu/metisMenu.min.js"></script>
     <script src="{$baseurl}/js/maxcontrol.js"></script>
-{*
-    <script src="{$baseurl}/js/plugins/dataTables/jquery.dataTables.js"></script>
-    <script src="{$baseurl}/js/plugins/dataTables/dataTables.bootstrap.js"></script>
-*}
+
 </body>
 </html>

@@ -25,7 +25,7 @@ class Programer {
             $confdata=$this->config[$this->aula];
         $timers=array();
         for($i=0; $i<7; $i++) {
-            $html="<select class='$varprefix' name='".$varprefix.$i."' id='".$varprefix.$i."'>";
+            $html="<select class='form-control select-programer $varprefix' name='".$varprefix.$i."' id='".$varprefix.$i."'>";
             //$gui->debug($confdata[$varprefix.$i]." ¿=? off");
             if( $confdata && isset($confdata[$varprefix.$i]) && $confdata[$varprefix.$i] == 'off') {
                 $html.="<option value='off' selected='selected'>off</option>\n";
@@ -47,8 +47,8 @@ class Programer {
                 }
             }
             $html.="</select>";
-            if( $i==0) {
-                $html.="<a class='marginl5' href='javascript:programer(\"$varprefix\", \"".$varprefix."0\");'>";
+            if( $i == 0 ) {
+                $html.="<a class='marginl5 pull-right' href='javascript:programer(\"$varprefix\", \"".$varprefix."0\");'>";
                 $html.="<img src='".$site["basedir"]."/img/right.gif' alt='=&gt;' title='Copiar a toda la semana' /></a>";
             }
             $timers[]=$html;
@@ -57,7 +57,7 @@ class Programer {
     }
     
     function getSO($varname, $types) {
-        $html="<select name='".$varname."_menu' id='".$varname."_menu' > ";
+        $html="<select class='form-control' name='".$varname."_menu' id='".$varname."_menu' > ";
         $html.="<option value=''>-----------</option>";
         foreach($types as $k => $v) {
             $selected="";

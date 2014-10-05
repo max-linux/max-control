@@ -24,6 +24,10 @@ class Menu {
         global $permisos, $gui;
 
         // $switchUser=$gui->smarty->get_template_vars('switchUser');
+        // 
+        if( $permisos->is_templogin() ) {
+            return $this->PublicMenu();
+        }
 
         if( ! $permisos->is_connected() ) {
             return $this->PublicMenu();
@@ -32,7 +36,7 @@ class Menu {
             return $this->AdminMenu();
         }
         elseif ( $permisos->is_tic() ) {
-            return $this->TicMenu();
+            return $this->AdminMenu();
         }
 
         elseif ( $permisos->is_teacher() ) {

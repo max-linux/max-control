@@ -118,6 +118,13 @@ class Permisos {
         return False;
     }
 
+    function is_templogin() {
+        if( ! isset($_SESSION['istemplogin']) ) {
+            return false;
+        }
+        return $_SESSION['istemplogin'];
+    }
+
     
     function conectar($user, $pass){
         global $gui;
@@ -175,10 +182,26 @@ class Permisos {
         
         $_SESSION['info']='';
         $_SESSION['error']='';
+        $_SESSION['istemplogin']=False;
         
         $ldap->disconnect('PERMISOS::conectar()');
         
         return true;
+    }
+
+
+    function tempLogin() {
+        $_SESSION["user"]="si";
+        $_SESSION["username"]='admintemp';
+
+        $_SESSION['role']='admin';
+        $_SESSION['is_admin']=True;
+        $_SESSION['is_teacher']=False;
+        $_SESSION['is_tic']=False;
+
+        $_SESSION['info']='';
+        $_SESSION['error']='';
+        $_SESSION['istemplogin']=True;
     }
     
     function desconectar() {

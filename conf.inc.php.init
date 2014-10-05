@@ -64,6 +64,7 @@ define("DEFAULT_QUOTA", "2000");
 /* file to read/write programer events */
 define("PROGRAMER_INI", "/var/lib/max-control/programer.ini");
 define("IMPORTER_DIR", "/var/lib/max-control/importer/");
+define("FIRST_RUN", "/var/lib/max-control/first-run.done");
 
 $site["public_modules"]=array();
 

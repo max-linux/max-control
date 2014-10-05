@@ -1,7 +1,7 @@
 
 
 <h3>Configurar el arranque del equipo <u>{$u->hostname()}</u></h3>
-<h2>Pertenece al aula '{$u->attr('sambaProfilePath')}'</h2>
+<h2>Pertenece al aula '{$u->attr('aula')}'</h2>
 <form action='{$urlform}' method='post'> 
     <table class='formTable'> 
 
@@ -12,10 +12,10 @@
             <select name='boot' id='boot' > 
                 <option value=''>Menú de arranque</option> 
                 {foreach from=$tipos key=k item=o}
-                {if $k == 'aula' && $u->attr('sambaProfilePath') == ''}
+                {if $k == 'aula' && $u->attr('aula') == ''}
                 <!-- empty aula -->
                 {else}
-                <option value='{$k}' {if $k == 'aula'}selected='selected'{/if}>{$o} {if $k == 'aula'}({$u->attr('sambaProfilePath')}){/if}</option>
+                <option value='{$k}' {if $k == 'aula'}selected='selected'{/if}>{$o} {if $k == 'aula'}({$u->attr('aula')}){/if}</option>
                 {/if}
                 {/foreach}
             </select> 

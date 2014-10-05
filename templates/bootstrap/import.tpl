@@ -78,9 +78,3 @@ function disable_submit() {
 </script>
 {/literal}
 
-
-{*
-{if $DEBUG}
-{debug}
-{/if}
-*}

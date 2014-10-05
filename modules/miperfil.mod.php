@@ -19,8 +19,12 @@ $active_module=$url->get("module");
 $active_action=$url->get("action");
 $active_subaction=$url->get("subaction");
 
+if ( $permisos->is_templogin() ) {
+    $url->ir("");
+}
+
 if ( ! $permisos->is_connected() ) {
-    $url->ir("","");
+    $url->ir("");
 }
 
 $module_actions=array(

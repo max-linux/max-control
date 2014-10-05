@@ -75,12 +75,12 @@
 {literal}
 <script type="text/javascript">
 function checkpass() {
-    if ( $('#newpwd')[0].value !=  $('#newpwd2')[0].value) {
-        $('#badpassword')[0].style.display='';
+    if ( $('#newpwd').val() !=  $('#newpwd2').val()) {
+        $('#badpassword').show();
         return false;
     }
     else {
-        $('#badpassword')[0].style.display='none';
+        $('#badpassword').hide();
         return true;
     }
 }

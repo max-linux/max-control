@@ -4,13 +4,13 @@ import pwd
 import sys
 
 uids = []
-MIN_UUID= 2000
+MIN_UUID = 2000
 MAX_UUID = 20000
 
 
 for u in pwd.getpwall():
     if u.pw_uid > MIN_UUID and u.pw_uid < MAX_UUID:
-        uids.append( int(u.pw_uid) )
+        uids.append(int(u.pw_uid))
 
 if len(uids) < 1:
     print MIN_UUID + 1
@@ -22,7 +22,7 @@ uids.sort()
 last = 0
 for i in uids:
     #print "   last=%s i=%s" %(last, i)
-    if last and (i -last > 1):
+    if last and (i - last > 1):
         #print "found => %s" %(last + 1)
         print last + 1
         sys.exit(0)

@@ -6,7 +6,7 @@ import sys
 from configobj import ConfigObj
 import ldap
 import commands
-from pprint import pprint
+# from pprint import pprint
 import shutil
 
 CONF = "/etc/max-control/conf.inc.php"
@@ -74,7 +74,9 @@ TO_ADD = {'profiles': {'ea support': 'yes',
           }
 
 NOT_VALID_KEYS = ['global', 'netlogon', 'profiles', 'sysvol', 'homes', 'print$', 'isos']
-HIDDEN_GROUPS = ['Instaladores', 'CoordinadoresTIC',
+HIDDEN_GROUPS = ['Instaladores',
+                 'CoordinadoresTIC',
+                 'Teachers',
                  'Allowed RODC Password Replication Group',
                  'Enterprise Read-only Domain Controllers',
                  'Denied RODC Password Replication Group',
@@ -182,6 +184,33 @@ def newGroupShare(groupname, readonly):
      recycle: keeptree = yes
      recycle: excludedir = /tmp|/var/tmp
      recycle: directory_mode = 0700
+
+     [aaaa]
+        comment = aaaa
+        path = /home/samba/shares/aaaa
+        browseable = Yes
+        read only = No
+        force create mode = 0660
+        force directory mode = 0660
+        vfs objects = acl_xattr full_audit
+        acl_xattr:ignore system acls = yes
+        full_audit:success = connect opendir disconnect unlink mkdir rmdir open rename
+        full_audit:failure = connect opendir disconnect unlink mkdir rmdir open rename
+
+    [test2]
+        comment = compartido por test2
+        read list = @"Domain Admins", @"test2"
+        printable = no
+        write list = @"Domain Admins", @"Teachers"
+        force create mode = 0660
+        valid users = @"Domain Admins", @"test2"
+        path = /home/samba/groups/test2
+        read only = no
+        browseable = yes
+        force directory mode = 0770
+        admin users = @"Domain Admins"
+        force group = test2
+
     """
     #
     # readonly (for puppils) is read from st_mode
@@ -190,43 +219,28 @@ def newGroupShare(groupname, readonly):
     #
     share = {"comment": "compartido por %s" % groupname,
              "path": os.path.join(SHARED_DIR, groupname),
+             "browseable": "yes",
+             "force create mode": "0660",
+             "force directory mode": "0770",
+             "read only": "no",
+             "vfs objects": "acl_xattr full_audit",
+             "acl_xattr:ignore system acls": "yes",
+             "full_audit:success": "none",
+             "full_audit:failure": "connect opendir disconnect unlink mkdir rmdir open rename",
              #"valid users": '@"%s"'%groupname,
-             "valid users": ['@"Domain Admins"', '@"%s"' % groupname],
+             # "valid users": ['@"Domain Admins"', '@"%s"' % groupname],
              "force group": "%s" % groupname,
              "read list":  ['@"Domain Admins"', '@"%s"' % groupname],
              "write list": ['@"Domain Admins"', '@"%s"' % groupname],
              "admin users": '@"Domain Admins"',
-             "force create mode": "0660",
-             "force directory mode": "0770",
-             "printable": "no",
-             "read only": "no",
-             "browseable": "yes",
+             # "printable": "no",
              }
     if readonly == 1:
         print " * Group %s readonly for puppils." % groupname
         share["write list"] = ['@"Domain Admins"', '@"Teachers"']
     return share
 
-# def reloadSamba():
-#     """
-#       if testparm -s /etc/samba/smb.conf >/dev/null 2>&1; then
-#         PIDS=$(pidof smbd)
-#         for pid in $PIDS; do
-#             kill -1 $pid
-#         done
-#         exit 0
-#       else
-#         exit 1
-#       fi
-#     """
-#     testparm=commands.getstatusoutput('testparm -s /etc/samba/smb.conf >/dev/null 2>&1')
-#     if testparm[0] != 0:
-#         print "testparm error"
-#         return False
-#     PIDS=commands.getoutput('pidof smbd').split('\n')
-#     for pid in PIDS:
-#         commands.getstatusoutput("kill -1 %s"%pid)
-#     return True
+
 #
 smb = MyConfigObj(SMB_CONF)
 #
@@ -331,3 +345,9 @@ sssd["domain/%s" % DOMAIN.lower()]["fallback_homedir"] = "/home/%s/%%S" % WORKGR
 sssd["domain/%s" % DOMAIN.lower()]["default_shell"] = "/bin/false"
 # pprint(sssd)
 sssd.write()
+#
+#
+# Reload samba
+if "reloadsamba" in sys.argv:
+    # reloadSamba()
+    os.system("smbcontrol all reload-config > /dev/null 2>&1")
