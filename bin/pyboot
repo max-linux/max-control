@@ -32,7 +32,8 @@ def read_conf(varname):
 
 
 PXELINUXCFG = read_conf('PXELINUXCFG')
-DEFAULT = os.path.join(PXELINUXCFG, 'default')
+# DEFAULT = os.path.join(PXELINUXCFG, 'default')
+DEFAULT = 'default'
 DONTDELETE = ['default']
 CRON_FILE = "/var/lib/max-control/cron"
 TIMEOUT = 15 * 60
@@ -87,20 +88,31 @@ def addComputersToAulas(aulas):
     return (aulas)
 
 
+def symlink(orig, dest):
+    fdir = os.curdir
+    os.chdir(PXELINUXCFG)
+    os.symlink(orig, dest)
+    os.chdir(fdir)
+
+
 def genPXELINUX(aulas):
+    os.chdir(PXELINUXCFG)
     for aula in aulas:
-        aulafile = os.path.join(PXELINUXCFG, safe_aula(aula))
+        # aulafile = os.path.join(PXELINUXCFG, safe_aula(aula))
+        aulafile = safe_aula(aula)
+        # print aulafile
         if not os.path.exists(aulafile):
             if os.path.exists(aulafile + ".menu"):
                 aulafile = aulafile + ".menu"
 
         for mac in aulas[aula]:
             # don't write empty macs
-            #print "mac='%s'"%mac
+            # print "mac='%s'"%mac
             if mac.strip() == '':
                 continue
 
-            macfile = os.path.join(PXELINUXCFG, convertMAC(mac))
+            # macfile = os.path.join(PXELINUXCFG, convertMAC(mac))
+            macfile = convertMAC(mac)
 
             #
             # no borrar la MAC si el equipo apunta a *.menu o a default
@@ -113,17 +125,18 @@ def genPXELINUX(aulas):
                 pass
 
             if os.path.exists(macfile):
-                #print "rm %s"%( macfile )
+                # print "rm %s"%( macfile )
                 os.unlink(macfile)
 
             if not os.path.exists(aulafile):
-                #print "ln -s %s %s"%( DEFAULT , aulafile )
-                os.symlink(DEFAULT, aulafile)
+                # print "   ln -s %s %s" % (DEFAULT, aulafile)
+                symlink(DEFAULT, aulafile)
 
             if os.path.islink(macfile):
                 os.unlink(macfile)
 
-            os.symlink(aulafile, macfile)
+            # print "  ln -s %s %s" % (aulafile, macfile)
+            symlink(aulafile, macfile)
 
 
 def bootMAC(boot, mac):
@@ -181,7 +194,7 @@ def bootAula(boot, aula):
     if os.path.islink(aulafile):
         os.unlink(aulafile)
 
-    os.symlink(bootfile, aulafile)
+    symlink(bootfile, aulafile)
 
 
 def deleteMAC(mac):
@@ -235,6 +248,7 @@ def cronAdd(mac, boot):
     data.write()
     # configurar MAC para que apunte a boot
     bootMAC(boot, mac)
+    # print data
 
 
 def cronClean():

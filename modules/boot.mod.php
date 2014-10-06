@@ -41,6 +41,7 @@ function refresh($module, $action, $subaction) {
     global $gui, $url;
     $gui->debug("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1");
     exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", $output);
+    $gui->debuga($output);
     if ( ! isset($output[0]) )
         $gui->session_info("Actualizados aulas y equipos para arranque PXE.");
     else
