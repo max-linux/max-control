@@ -45,6 +45,24 @@ if [ "$CONFIGURE" = "1" ]; then
     echo " * Updating /etc/samba/max-control.conf"
     /usr/bin/pymaxgensamba || true
 
+    # set TFTP to IPV4
+    # root@max-server:~/max-control# sed 's/\[::\]/0.0.0.0/g' /etc/default/tftpd-hpa                                                                                                                                 
+    # # /etc/default/tftpd-hpa
+
+    # TFTP_USERNAME="tftp"
+    # TFTP_DIRECTORY="/var/lib/tftpboot"
+    # TFTP_ADDRESS="0.0.0.0:69"
+    # TFTP_OPTIONS="--secure -v --verbosity 9"
+    # root@max-server:~/max-control# grep "\[::\]" /etc/default/tftpd-hpa 
+    # TFTP_ADDRESS="[::]:69"
+    
+    if [ -e /etc/default/tftpd-hpa ]; then
+        if grep -q "\[::\]" /etc/default/tftpd-hpa; then
+            echo " * Fixing tftpd-hpa config"
+            sed -i 's/\[::\]/0.0.0.0/g' /etc/default/tftpd-hpa
+            service zentyal dhcp restart
+        fi
+    fi
 
     # create PXE files
     /usr/bin/max-control pxe --genpxelinux || true

@@ -916,6 +916,8 @@ class COMPUTER extends BASE {
             }
         }
 
+        $ldap->genPXELinux();
+
         return $saved;
     }
 
