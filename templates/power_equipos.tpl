@@ -1,81 +1,113 @@
 
-<h2>Apagado o reinicio de equipos ({$pager->getMAX()})</h2>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Apagado o reinicio de equipos ({$pager->getMAX()})</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
 
 
 
-<table class="bDataTable"> 
-    <tr> 
-        <td> 
-        <form action="{$urlform}" method="post"> 
-          <input type='text' name='Filter' id='Filter' value="{$filter}" /> 
-          <input type='submit' name='button' value="Buscar" title="Buscar" /> 
-          
-          <select style="display:none;float:right;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
-            <option value=''>Seleccionar acción...</option>
-            {foreach from=$multiple_actions key=k item=u}
-            <option value='{$k}'>&nbsp;&nbsp;&nbsp;&nbsp;{$u}</option>
-            {/foreach}
-          </select>
-          
-        </form>
-        </td> 
-    </tr> 
-</table> 
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+
+                <div class="row">
+
+                    <div class="col-lg-6">
+                        <form class="form-inline" id="formuser" action="{$urlform}" method="post"> 
+                          <input class="form-group form-control" placeholder="Buscar" type='text' name='Filter' id='Filter' value="{$filter}" /> 
+                          <input type='hidden' name='role' id="role" value='{$role}' />
+                          
+                          <button type="submit" class="btn btn-primary">Buscar</button>
+                          
+                        </form>
+
+
+                    </div>
+                    <div class="col-lg-6 text-right pull-right" >
+                        <select class="form-control" style="display:none;" name='selAction' id='selAction' onchange="javascript:actionSelected();">
+                          <option value=''>Seleccionar acción...</option>
+                          {foreach from=$multiple_actions key=k item=u}
+                          <option value='{$k}'>&nbsp;&nbsp;&nbsp;&nbsp;{$u}</option>
+                          {/foreach}
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nombre {$pager->getSortIcons('cn')}</th> 
+                                <th>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
+                                <th>Aula {$pager->getSortIcons('aula')}</th> 
+                                <th>Acciones</th> 
+                                <th>Encender/Reiniciar en</th> 
+                                <th>Estado</th> 
+                                <th>Múltiple
+                                 <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    
+                    {foreach from=$equipos item=u}
+                    {if $u->teacher_in_computer()}
+                    <tr id="computer-{$u->hostname()}"> 
+                      <td class='text-center'>{$u->cn}</td> 
+                      <td class='text-center'>{$u->ipHostNumber} / {$u->macAddress}</td> 
+                      <td class='text-center'>{$u->get_aula()}</td>
+                      <td class='text-center'> 
+                          <a href="{$urlpoweroff}/{$u->hostname()}" title="Apagar equipo {$u->hostname()}"><img src="{$baseurl}/img/poweroff.png" alt="apagar" /></a>
+                          <a href="{$urlreboot}/{$u->hostname()}" title="Reiniciar equipo {$u->hostname()}"><img src="{$baseurl}/img/reboot.png" alt="reiniciar" /></a>
+                          <a href="{$urlwakeonlan}/{$u->hostname()}" title="Encender {$u->hostname()}"><img src="{$baseurl}/img/poweron.png" alt="encendido de equipos" /></a>
+                      </td>
+                      <td class='text-center'>
+                          <a href="{$urlrebootwindows}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en Windows"><img src="{$baseurl}/img/windows.png" alt="windows" /></a>
+                          <a href="{$urlrebootmax}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en MAX"><img src="{$baseurl}/img/linux-logo.jpg" alt="MAX" /></a>
+                      </td>
+                      <td class='text-center'> 
+                          <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="calculando..." />
+                      </td>
+                      <td class='text-center'> 
+                          <input type='checkbox' class="computeraction" name="{$u->hostname()}" id="{$u->hostname()}" onchange="javascript:oncheckboxChange();"/>
+                      </td>
+                    </tr>
+                    {/if}
+                    {/foreach}
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+
+                {if $pager->needPager()}
+                    <div class="well">
+                    {$pager->getHTML()}
+                    </div>
+                {/if}
+
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
 
 <form id="formactionmultiplecomputer" name="formactionmultiplecomputer" action="{$urlformmultiple}" method="post">
     <input type='hidden' name='computers' id="computers" value='' />
     <input type='hidden' name='faction' id="faction" value='' />
 </form>
 
-<table class='dataTable'> 
-    <thead> 
-    <tr>
-      <th class=''>Nombre {$pager->getSortIcons('cn')}</th> 
-      <th class=''>IP {$pager->getSortIcons('ipHostNumber')} / MAC {$pager->getSortIcons('macAddress')}</th> 
-      <th class=''>Aula {$pager->getSortIcons('aula')}</th> 
-      <th class=''>Acciones</th> 
-      <th class=''>Encender/Reiniciar en</th> 
-      <th class=''>Estado</th> 
-      <th class=''>Múltiple
-       <input title='Seleccionar todos los visibles' class="nomargin" type='checkbox' onchange="javascript:enableAll(this);"/>
-      </th>
-    </tr>
-    </thead>
- 
- 
-    <tbody> 
-      {foreach from=$equipos item=u}
-      {if $u->teacher_in_computer()}
-      <tr class='border' id="computer-{$u->hostname()}"> 
-        <td class='tcenter'><span>{$u->attr('cn')}</span></td> 
-        <td class='tcenter'><span>{$u->attr('ipHostNumber')} / {$u->attr('macAddress')}</span></td> 
-        <td class='tcenter'><span>{$u->get_aula()}</span></td>
-        <td class='tcenter'> 
-            <a href="{$urlpoweroff}/{$u->hostname()}" title="Apagar equipo {$u->hostname()}"><img src="{$baseurl}/img/poweroff.png" alt="apagar" /></a>
-            <a href="{$urlreboot}/{$u->hostname()}" title="Reiniciar equipo {$u->hostname()}"><img src="{$baseurl}/img/reboot.png" alt="reiniciar" /></a>
-            <a href="{$urlwakeonlan}/{$u->hostname()}" title="Encender {$u->hostname()}"><img src="{$baseurl}/img/poweron.png" alt="encendido de equipos" /></a>
-        </td>
-        <td class='tcenter'>
-            <a href="{$urlrebootwindows}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en Windows"><img src="{$baseurl}/img/windows.png" alt="windows" /></a>
-            <a href="{$urlrebootmax}/{$u->hostname()}" title="Reiniciar equipo '{$u->hostname()}' en MAX"><img src="{$baseurl}/img/linux-logo.jpg" alt="MAX" /></a>
-        </td>
-        <td class='tcenter'> 
-            <img src="{$baseurl}/status.php?hostname={$u->hostname()}&amp;rnd={$u->rnd()}" alt="calculando..." />
-        </td>
-        <td class='tcenter'> 
-            <input type='checkbox' class="computeraction" name="{$u->hostname()}" id="{$u->hostname()}" onchange="javascript:oncheckboxChange();"/>
-        </td>
-      </tr>
-      {/if}
-      {/foreach}
-
-    </tbody> 
-</table> 
-
-<!-- paginador -->
-{if $pager}
-{$pager->getHTML()}
-{/if}
 
 
 {literal}
@@ -92,9 +124,9 @@ function oncheckboxChange() {
         }
     });
     if(multiple)
-        $('#selAction')[0].style.display='';
+        $('#selAction').show();
     else
-        $('#selAction')[0].style.display='none';
+        $('#selAction').hide();
 }
 
 function actionSelected(){
@@ -105,8 +137,8 @@ function actionSelected(){
             multiple=true;
         }
     });
-    $('#computers')[0].value=toDelete;
-    $('#faction')[0].value=$('#selAction :selected').val();
+    $('#computers').val(toDelete);
+    $('#faction').val($('#selAction :selected').val());
     $('#formactionmultiplecomputer')[0].submit();
 }
 
@@ -115,13 +147,13 @@ function enableAll(obj){
         $('.computeraction')[i].checked=obj.checked;
     });
     if(obj.checked)
-        $('#selAction')[0].style.display='';
+        $('#selAction').show();
     else
-        $('#selAction')[0].style.display='none';
+        $('#selAction').hide();
 }
 
 function rolFilter(obj) {
-    $('#role')[0].value=obj.value;
+    $('#role').val(obj.value);
     document.forms.formuser.submit();
 }
 -->

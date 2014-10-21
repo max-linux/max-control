@@ -124,7 +124,7 @@ class Menu {
         // if(DEBUG){
         //     $data['debug']=true;
         // }
-        return $gui->load_from_template("bootstrap/menuizdo.tpl", $data);
+        return $gui->load_from_template("menuizdo.tpl", $data);
     }
 
 } /* fin clase Menu */

@@ -1,7 +1,12 @@
-<h2>Borrar equipo</h2>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Borrar equipo</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
 
 <form action='{$urlaction}' method='post'> 
-    <div class="warning">
+    <div class="alert alert-danger">
      <h2>Se van a borrar los equipos</h2>
      
         <ul>
@@ -10,17 +15,16 @@
         {/foreach}
         </ul>
      
+     <br/>
      <h4>Esta operación no se puede deshacer</h4>
-     <br/><br/>
+     <br/>
      
      <input type='hidden' name='equipos' value='{$equipos}' />
      
-     <input class='inputButton' type='submit' name='confirm' value="Confirmar" alt="Confirmar" />
+     <button type="submit" class="btn btn-danger">Confirmar</button>
     </div>
 </form>
 
 
 
-{if $DEBUG}
-{debug}
-{/if}
+

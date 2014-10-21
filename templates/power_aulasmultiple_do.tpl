@@ -1,7 +1,13 @@
-<h2>Apagado o reinicio de aulas</h2>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Apagado o reinicio de aulas</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
 
 <form action='{$urlaction}' method='post'> 
-    <div class="warning">
+    <div class="alert alert-warning">
       <h2>Se van a {if $faction == 'poweroff'}apagar{/if}
              {if $faction == 'reboot'}reiniciar{/if}
              {if $faction == 'wakeonlan'}encender (WakeOnLAN){/if}
@@ -15,10 +21,11 @@
         {/foreach}
         </ul>
      
+     <br>
      
      <input type='hidden' name='aulas' value='{$aulas}' />
      <input type='hidden' name='faction' value='{$faction}' />
-     <input class='inputButton' type='submit' name='confirm' value="Confirmar" alt="Confirmar" />
+     <button type="submit" class="btn btn-danger">Confirmar</button>
     </div>
 </form>
 
