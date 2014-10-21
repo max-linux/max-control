@@ -54,7 +54,7 @@ if ($username != "" && $contrasena != ""){
 if ($is_connecting){
     
     if( $permisos->conectar($username, $contrasena) ) {
-        if(ENABLE_BOOTSTRAP && $permisos->is_admin()) {
+        if($permisos->is_admin()) {
             $url->ir("dash", "");
         }
         else {

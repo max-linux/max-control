@@ -1,73 +1,87 @@
 
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Editando mi perfil</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
 
-<h3>Editando mi perfil  <span class='stitle'>{$username}</span></h3> 
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <form role="form" action='{$urlform}' method='post' onsubmit="return checkpass();">
+
+                            <div class="form-group">
+                                <label>Nombre</label>
+                                <input type='text' class='form-control' name='givenname' id='givenname' value="{$u->givenname}" /> 
+                            </div>
+
+                            <div class="form-group">
+                                <label>Apellidos</label>
+                                <input type='text' class='form-control' name='sn' id='sn' value="{$u->sn}" /> 
+                            </div>
+
+                            <div class="form-group">
+                                <label>Comentario</label>
+                                <input type='text' class='form-control' name='description' id='description' value="{$u->description}" /> 
+                            </div>
+                            
+                            
+                            <div class="form-group form-inline">
+                                <label>Permisos (rol)</label>
+                                {if $u->get_role() == ''}Alumno{/if}
+                                {if $u->get_role() == 'teacher'}Profesor{/if}
+                                {if $u->get_role() == 'tic'}Coordinador TIC{/if}
+                                {if $u->get_role() == 'admin'}Administrador{/if}
+                            </div>
+
+
+                            
+                            <div class="form-group">
+                                <label>Contraseña</label>
+                                <input type='password' class='form-control' name='newpwd' id='newpwd' value="" autocomplete="off" /> (dejar vacío para no cambiar)
+                            </div>
+
+                            <div class="form-group">
+                                <label>Confirmar contraseña</label>
+                                <input type='password' class='form-control' name='newpwd2' id='newpwd2' value="" autocomplete="off" onblur='javascript:checkpass();' /> 
+                                <p class="alert-danger" style="display:none;" id='badpassword'>Las contraseñas no coinciden</p>
+                            </div>
+                            
+                            <input type='hidden' name='cn' value='{$u->cn}' />
+
+                            <button type="submit" class="btn btn-primary pull-right">Guardar</button>
+                        </form>
+                    </div>
+                    <!-- /.col-lg-6 (nested) -->
+                    
+                </div>
+                <!-- /.row (nested) -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
  
 
- <form action='{$urlform}' method='post' onsubmit="return checkpass();"> 
-    <table class='formTable'> 
-    <tr> 
-        <td class='tright'><span class="ftitle">Nombre:</span></td>
-        <td><input type='text' class='inputText' name='givenname' id='givenname' value="{$u->attr('givenname')}" /> 
-        </td>
-    </tr>
-    <tr>
-        <td class='tright'><span class='ftitle'>Apellidos:</span></td> 
-        <td><input type='text' class='inputText' name='sn' id='sn' value="{$u->attr('sn')}" /></td> 
-    </tr>
-
-    <tr> 
-        <td class='tright'><span class="ftitle">Comentario:</span></td>
-        <td>
-            <input type='text' class='inputText' name='description' id='description' value="{$u->attr('description')}" /> 
-        </td>
-    </tr>
-
-    <tr>
-        <td class='tright'><span class='ftitle'>Rol (permisos):</span></td> 
-        <td> 
-            {if $u->get_role() == ''}Alumno{/if}
-            {if $u->get_role() == 'teacher'}Profesor{/if}
-            {if $u->get_role() == 'tic'}Coordinador TIC{/if}
-            {if $u->get_role() == 'admin'}Administrador{/if}
-        </td> 
-    </tr>
-
-
-    <tr>
-        <td class='tright'><span class='ftitle'>Cambiar contraseña:</span></td> 
-        <td>
-            <input type='password' class='inputText' name='newpwd' id='newpwd' value="" autocomplete="off" /> (dejar vacío para no cambiar)
-        </td>
-    </tr>
-
-    <tr>
-        <td class='tright'><span class='ftitle'>Confirmar contraseña:</span></td> 
-        <td>
-            <input type='password' class='inputText' name='newpwd2' id='newpwd2' value="" autocomplete="off" onblur='javascript:checkpass();' /> 
-            <span class="error" style="display:none;" id='badpassword'>Las contraseñas no coinciden</span>
-        </td>
-    </tr>
-
-    <tr> 
-        <td></td> 
-        <td> 
-        <input class='inputButton' type='submit' name='{$action}' value="Guardar" alt="Guardar" /> 
-        <input type='hidden' name='cn' value='{$u->attr('cn')}' />
-        </td> 
-    </tr>
-
-    </table> 
-    </form> 
 
 {literal}
 <script type="text/javascript">
 function checkpass() {
-    if ( $('#newpwd')[0].value !=  $('#newpwd2')[0].value) {
-        $('#badpassword')[0].style.display='';
+    if ( $('#newpwd').val() !=  $('#newpwd2').val()) {
+        $('#badpassword').show();
         return false;
     }
     else {
-        $('#badpassword')[0].style.display='none';
+        $('#badpassword').hide();
         return true;
     }
 }

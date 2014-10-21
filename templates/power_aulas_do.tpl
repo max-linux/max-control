@@ -1,6 +1,12 @@
-<h2>Apagado o reinicio de aulas</h2>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Apagado o reinicio de aulas</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
 
-<div class="warning">
+
+<div class="col-lg-9 alert alert-warning">
  <h2>Se va a {if $action == 'poweroff'}apagar{/if}
              {if $action == 'reboot'}reiniciar{/if}
              {if $action == 'wakeonlan'}encender (WakeOnLAN){/if}
@@ -9,28 +15,31 @@
  el aula: {$aula}</h2>
  <br/><br/>
 
- <table class='dataTable'> 
-    <thead> 
-     <tr>
-      <th class=''>Nombre</th> 
-      <th class=''>IP</th>
-      <th class=''>MAC</th>
-     </tr>
-    </thead>
- 
- 
-    <tbody> 
-      {foreach from=$computers item=c}
-      <tr class='border' id="{$c->hostname()}"> 
-        <td class='tcenter'><span>{$c->hostname()}</span></td> 
-        <td class='tcenter'><span>{$c->ipHostNumber}</span></td> 
-        <td class='tcenter'><span>{$c->macAddress}</span></td>
-      </tr>
-      {/foreach}
+ <div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+      <thead> 
+       <tr>
+        <th class='text-center'>Nombre</th> 
+        <th class='text-center'>IP</th>
+        <th class='text-center'>MAC</th>
+       </tr>
+      </thead>
+   
+   
+      <tbody> 
+        {foreach from=$computers item=c}
+        <tr id="{$c->hostname()}"> 
+          <td class='text-center'>{$c->hostname()}</td> 
+          <td class='text-center'>{$c->ipHostNumber}</td> 
+          <td class='text-center'>{$c->macAddress}</td>
+        </tr>
+        {/foreach}
 
-    </tbody> 
-</table> 
- <span class="confirm"> <a href="{$urlaction}">CONTINUAR <img src="{$baseurl}/img/apply.gif" alt="continuar" /></a></span>
+      </tbody> 
+  </table> 
+  <a class="btn btn-warning pull-right" href="{$urlaction}">CONTINUAR</a>
+</div>
+
 </div>
 
 

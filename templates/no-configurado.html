@@ -1,74 +1,30 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-		      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
-<html xmlns="http://www.w3.org/1999/xhtml"> 
-<head> 
-<title>Panel de control</title> 
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="css/style.css" rel="stylesheet" type="text/css" /> 
-</head>
-<body>
-
-<div id="top">
-</div> 
-<div id="header"> 
-    <a href=""> 
-    <img src="img/title.png" alt="title"/> 
-    </a>
-</div> 
-
-<div id="hmenu">
-</div> 
-
-<h3>Panel de control de Servidor de Centro</h3>
-
-<div id='menu'> 
-</div>
 
 
-<div id="limewrap">
-    <div id="content"><div>
-</div> 
+<div class='alert alert-danger'>
 
+    <h2>MAX Control no está configurado.</h2>
+    <ol>
+        
 
-<div id="main"> 
-<h2>MAX Control no está configurado.</h2>
-<ol>
-    <li>Dentro de Zentyal cree un usuario con permisos de <b>administrador</b>. <br/>
-        <b>(luego se puede borrar ese usuario desde max-control)</b><br/><br/><br/></li>
+        <li>Dentro de Zentyal activar los módulos:<br></li>
+        <ul>
+            <li>Red</li>
+            <li>DHCP</li>
+            <li>Compartir ficheros</li>
+            <li>MAX Control</li>
+        </ul><br>
 
-    <li>Dentro de Zentyal activar los módulos:<br/><br/><br/></li>
-    <ul>
-        <li>Red</li>
-        <li>DHCP</li>
-        <li>Compartir ficheros</li>
-        <li>Usuarios y grupos</li>
-        <li>MAX Control</li>
-    </ul><br/><br/>
+        <li><b>Reinicie el servidor</b><br><br></li>
 
-    <li><b>Reinicie el servidor</b><br/><br/></li>
+        <li>Ejecute desde una consola local o por SSH:<br><br><code>sudo configure-max-control</code><br><br></li>
+        <li>Vuelva a esta página y podrá entrar con cualquier usuario del dominio<br><br><br></li>
 
-    <li>Ejecute desde una consola local o por SSH:<br/><br/><pre>sudo configure-max-control</pre><br/></li>
-    <li>Vuelva a esta página y podrá entrar con cualquier usuario del dominio<br/><br/><br/></li>
-</ol>
+        {if $DEBUG}
+            <li>Con DEBUG activado, ejecuta <code>sudo bash update.config.sh</code></li>
+        {/if}
+    </ol>
 
 
 </div>
 
 
-
-</div></div>
-<div id="footer"> 
-  <div id='site-bottom'>
-    <div class='main-projects'>
-        <a rel='external' title='Comunidad de Madrid (ventana nueva)' href='http://www.madrid.org/' class='external-link'>
-            <img width='132' height='43' alt='Comunidad de Madrid, Consejería de Educación y Empleo' src='img/consejeria.png' />
-        </a>
-        <a rel='external' title='EducaMadrid (ventana nueva)' href='http://www.educa.madrid.org' class='external-link'>
-            <img width='132' height='43' alt='EducaMadrid' src='img/educamadrid.png' />
-        </a>
-    </div>
-    <p class='copyright-notice'><strong>EducaMadrid</strong> - 2011  - Consejería de Educación y Empleo, Comunidad de Madrid</p>
-  </div> 
-</div>
-</body> 
-</html>

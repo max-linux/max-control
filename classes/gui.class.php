@@ -119,11 +119,6 @@ class Gui
         $this->smarty->assign("content", $this->get_content());
         $this->smarty->assign("disable_menu", $this->disable_menu);
 
-        // use bootstrap template if avalaible
-        if( ENABLE_BOOTSTRAP && is_file($path . SMARTY_TEMPLATES . "/bootstrap/" . $this->main_template)) {
-            $this->main_template = "bootstrap/" . $this->main_template;
-        }
-
         $this->smarty->display($this->main_template);
     }
     
@@ -199,9 +194,6 @@ class Gui
             $n->error_reporting=true;
         }
         
-        if( ENABLE_BOOTSTRAP && is_file($path . SMARTY_TEMPLATES . "/bootstrap/" . $tpl)) {
-            $tpl = "bootstrap/$tpl";
-        }
         return $n->fetch($tpl);
     }
     

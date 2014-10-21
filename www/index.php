@@ -120,7 +120,7 @@ if (isset($gui) && isset($_SESSION["user"]) ){
 
   // logueado cargar modulo por defecto
   if( $nav->get_module() == "") {
-    if( ENABLE_BOOTSTRAP && $permisos->is_admin() ) {
+    if( $permisos->is_admin() ) {
       $url->ir("dash", "");
     }
     else {

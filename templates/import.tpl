@@ -1,7 +1,14 @@
 
-<h2>Importador de usuarios</h2>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Importador de usuarios</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
 
-<div class='help'>
+
+
+<div class='alert alert-info'>
 Para importar una lista grande de usuarios se necesita esa lista en formato CSV
 que se puede generar desde una hoja de cálculo (Excel u OpenOffice/LibreOffice Calc).
 <br/><br/>
@@ -38,20 +45,26 @@ El identificador de usuario y el grupo no puede tener espacios, caracteres raros
 <br/><br/>
 
 La importación necesita entre uno y tres segundos por usuario y se ejecuta en segundo plano, se podrá ver el progreso y los usuarios creados durante el tiempo que dure la importación o una vez que haya terminado un resumen.
+
+
+        <form class="alert alert-warning" id="importer" method="post" enctype="multipart/form-data" action="{$urlform}" onsubmit="return disable_submit();"> 
+          
+
+          <div class="form-group form-inline">
+            <label>Carga de archivo CSV</label>
+            <input type="file" name="importfile">
+         </div>
+
+          <input type="hidden" name="MAX_FILE_SIZE" value="50000">
+          <button type="submit" class="btn btn-primary">Importar</button>
+        </form>
+
 </div>
 
 
-<table class="bDataTable"> 
-    <tr> 
-        <td> 
-        <form id="importer" method="post" enctype="multipart/form-data" action="{$urlform}" onsubmit="return disable_submit();"> 
-          <input name="importfile" type="file">
-          <input type="hidden" name="MAX_FILE_SIZE" value="50000">
-          <input type='submit' name='import' id='import' value="Importar" title="Importar"/>
-        </form>
-        </td> 
-    </tr> 
-</table> 
+
+
+
 
 {literal}
 <script type="text/javascript">
@@ -65,9 +78,3 @@ function disable_submit() {
 </script>
 {/literal}
 
-
-{*
-{if $DEBUG}
-{debug}
-{/if}
-*}
