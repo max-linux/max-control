@@ -1104,6 +1104,19 @@ class COMPUTER extends BASE {
         $gui->session_error("El equipo '".$this->hostname()."' no está encendido o no se pudo resolver su IP.");
     }
 
+    function genPXELinux() {
+        global $gui;
+        //bin/max-control pxe --genpxelinux
+        exec("sudo ".MAXCONTROL." pxe --genpxelinux 2>&1", $output);
+        return;
+    }
+    
+    function cleanPXELinux() {
+        global $gui;
+        //bin/max-control pxe --clean
+        exec("sudo ".MAXCONTROL." pxe --clean 2>&1", $output);
+        return;
+    }
 
     function action($actionname, $mac){
         global $gui;
