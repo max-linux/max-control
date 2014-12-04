@@ -1,3 +1,14 @@
+max-control (3.5.1~max2) max; urgency=low
+
+  * Check if max-control LDAP account is valid
+  * Change uid => cn in sort filters
+  * Changes to make tftpd-hpa work
+  * Set bootstrap as default and remove old templates
+  * Add genPXELinux cleanPXELinux to COMPUTER class
+  * Call configure-max-control when enabling module
+
+ -- Mario Izquierdo Rodríguez (Thinetic Systems SLNE) <mario.izquierdo@thinetic.es>  Thu, 04 Dec 2014 17:36:24 +0100
+
 max-control (3.5.1~max1) max; urgency=low
 
   * Finish bootstrap
