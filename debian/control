@@ -2,13 +2,13 @@ Source: max-control
 Section: web
 Priority: optional
 Maintainer: Mario Izquierdo (mariodebian) <mariodebian@gmail.com>
-Build-Depends:  debhelper (>= 7.0.0), cdbs, php5-cli, libc6-i386 [amd64]
+Build-Depends:  debhelper (>= 7.0.0), cdbs, php-cli, libc6-i386 [amd64]
 Standards-Version: 3.8.4
 
 Package: max-control
 Architecture: all
 #Recommends: libc6-i386
-Depends:  libapache2-mod-php5, php5, php5-ldap, libssh2-php, php5-mcrypt, php5-mhash, php5-cli,
+Depends:  libapache2-mod-php7.0, php7.0, php7.0-ldap, php-ssh2, php7.0-mcrypt, php7.0-cli,
           apache2, smarty3, libjs-jquery, python-pyinotify, python-ldap, python-netifaces, tree,
           python-configobj, genisoimage, winexe,
           python, ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
