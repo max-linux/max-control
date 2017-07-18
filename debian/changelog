@@ -1,3 +1,9 @@
+max-control (5.0~max2) max; urgency=medium
+
+  * Remove winexe stuff, use external package
+
+ -- Mario Izquierdo <hola@marioizquierdo.es>  Wed, 19 Jul 2017 00:59:06 +0200
+
 max-control (5.0~max1) max; urgency=medium
 
   * Build for MAX Server 2017
