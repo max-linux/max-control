@@ -2,7 +2,10 @@ Source: max-control
 Section: web
 Priority: optional
 Maintainer: Mario Izquierdo (mariodebian) <mariodebian@gmail.com>
-Build-Depends:  debhelper (>= 7.0.0), cdbs, php-cli, libc6-i386 [amd64]
+Build-Depends:  debhelper (>= 7.0.0),
+                cdbs,
+                php7.0-cli,
+#               libc6-i386 [amd64]
 Standards-Version: 3.8.4
 
 Package: max-control

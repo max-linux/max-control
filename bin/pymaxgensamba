@@ -339,12 +339,13 @@ shutil.copy2(SMB_CONF, SMB_CONF_BACKUP)
     default_shell = /bin/bash
 
 """
-sssd = MyConfigObj(SSSD_CONF)
-# pprint(sssd)
-sssd["domain/%s" % DOMAIN.lower()]["fallback_homedir"] = "/home/%s/%%S" % WORKGROUP
-sssd["domain/%s" % DOMAIN.lower()]["default_shell"] = "/bin/false"
-# pprint(sssd)
-sssd.write()
+if os.path.exists(SSSD_CONF):
+    sssd = MyConfigObj(SSSD_CONF)
+    # pprint(sssd)
+    sssd["domain/%s" % DOMAIN.lower()]["fallback_homedir"] = "/home/%s/%%S" % WORKGROUP
+    sssd["domain/%s" % DOMAIN.lower()]["default_shell"] = "/bin/false"
+    # pprint(sssd)
+    sssd.write()
 #
 #
 # Reload samba

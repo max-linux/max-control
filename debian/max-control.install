@@ -1,4 +1,3 @@
-#bin/winexe            usr/bin/
 bin/pywinexe          usr/bin/
 bin/max-control       usr/bin/
 bin/pywakeonlan       usr/bin/
