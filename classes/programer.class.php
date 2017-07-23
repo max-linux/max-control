@@ -3,7 +3,7 @@ if(DEBUG)
     error_reporting(E_ALL);
 
 class Programer {
-    function Programer($aula=NULL) {
+    function __construct($aula=NULL) {
         global $gui;
         $this->aula=$aula;
         $gui->debug("Programer($aula)");
@@ -153,7 +153,7 @@ class Programer {
 }
 
 class CronProgramer {
-    function CronProgramer() {
+    function __construct() {
         /* read PROGRAMER_INI */
         $this->config=$this->readIni();
     }

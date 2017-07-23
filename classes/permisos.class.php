@@ -15,7 +15,7 @@ class Permisos {
     
     var $errortxt;
 
-    function Permisos(){
+    function __construct(){
         $this->errortxt="";
     }
 

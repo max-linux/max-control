@@ -12,7 +12,7 @@ class Navigator
     var $url;
 
 
-    function Navigator(){
+    function __construct(){
         global $gui, $url;
         $this->mod=new ModuleLoader();
         $this->mod->load_module();

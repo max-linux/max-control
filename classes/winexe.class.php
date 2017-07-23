@@ -33,7 +33,7 @@ class WINEXE {
     var $msg='';
     
     
-    function WINEXE($ip='') {
+    function __construct($ip='') {
         global $gui;
         $this->ip=$ip;
         $this->initialized=false;

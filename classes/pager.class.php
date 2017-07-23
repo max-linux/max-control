@@ -3,7 +3,7 @@ if(DEBUG)
     error_reporting(E_ALL);
 
 class PAGER {
-    function PAGER($items, $baseurl, $skip, $args='', $sort=NULL) {
+    function __construct($items, $baseurl, $skip, $args='', $sort=NULL) {
         global $gui;
         $this->items=$items;
         $this->number=sizeof($items);

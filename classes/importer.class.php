@@ -26,7 +26,7 @@ define('IMPORT_ROLE', 5); /* "emStudent" "emTeacher" */
 define('MAX_UID_LENGTH', 20);
 
 class Importer {
-    function Importer($fname=NULL) {
+    function __construct($fname=NULL) {
         global $gui;
         $this->fname=$fname;
         $this->defaultPassword='cmadrid';

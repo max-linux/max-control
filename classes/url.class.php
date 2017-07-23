@@ -28,7 +28,7 @@ class URLHandler {
       return( sanitizeOne( $value , 'charnum' ) );
     }
 
-    function URLHandler($basedir, $lang){
+    function __construct($basedir, $lang){
         global $gui;
 
         if($basedir != '' && $basedir != '/') {

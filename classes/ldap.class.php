@@ -58,7 +58,7 @@ class BASE {
     var $ldapdata=array();
     var $errortxt='';
     
-    function BASE(array $parameter = array()) {
+    function __construct(array $parameter = array()) {
         $this->set($parameter);
         $this->init();
     }
@@ -1182,7 +1182,7 @@ class LDAP {
 
         var $connected=false;
 
-    function LDAP($binddn = "", $bindpw = "", $hostname = LDAP_HOST) {
+    function __construct($binddn = "", $bindpw = "", $hostname = LDAP_HOST) {
         
         if ($binddn != "")
             $this->binddn = $binddn;
