@@ -1,3 +1,15 @@
+max-control (5.0~max3) max; urgency=medium
+
+  * Update zentyal-maxcontrol
+  * Remove [profiles] section from shares.conf, rel #12
+  * Add margin-bottom to central container (float footer)
+  * Fix: remove profile .V2, close #13
+  * Add libpam-cap to depends, close #14
+  * Fix creation of groups and add/remove members, close #11
+  * bin/pyoverquota: Use multiple REMOTES for calculating quota, close #10
+
+ -- Mario Izquierdo <hola@marioizquierdo.es>  Sun, 23 Jul 2017 16:44:13 +0200
+
 max-control (5.0~max2) max; urgency=medium
 
   * Remove winexe stuff, use external package
