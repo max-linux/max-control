@@ -225,6 +225,24 @@ elsif($ARGV[0] eq 'init') {
     }
 }
 
+# elsif($ARGV[0] eq 'addgroupmember') {
+#     throw EBox::Exceptions::MissingArgument('GROUP') unless ($ENV{'GROUP'});
+#     throw EBox::Exceptions::MissingArgument('NEWUSER') unless ($ENV{'NEWUSER'});
+
+#     my $group = new EBox::Samba::Group(dn => "CN=".$ENV{'GROUP'}.",CN=Users," . $samba->ldap->dn());
+#     print $group->name . "\n";
+
+#     my $user = new EBox::Samba::User(samAccountName => $ENV{'NEWUSER'});
+#     if ($user->exists()) {
+#         $group->addMember($user);
+#         print "ok\n";
+#     }
+#     else {
+#         print "user no exists\n";
+#     }
+
+# }
+
 elsif($ARGV[0] eq 'test') {
     # my $samba = EBox::Global->modInstance('samba');
 
@@ -259,6 +277,17 @@ elsif($ARGV[0] eq 'test') {
     # my $user = new EBox::Samba::User(samAccountName => 'jorge');
     # if ($user->exists()) {
     #     $admins->addMember($user);
+    # }
+    # else {
+    #     print "user no exists\n";
+    # }
+
+    # my $group = new EBox::Samba::Group(dn => "CN=Prueba,CN=Users," . $samba->ldap->dn());
+    # print $group->name . "\n";
+
+    # my $user = new EBox::Samba::User(samAccountName => 'mario2');
+    # if ($user->exists()) {
+    #     $group->addMember($user);
     # }
     # else {
     #     print "user no exists\n";
