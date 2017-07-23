@@ -541,12 +541,19 @@ class GROUP extends BASE {
     function newMember($username) {
         global $gui, $ldap;
 
-        $members=$this->member;
-        $members[]="CN=$username,".LDAP_OU_USERS;
+        // $members=$this->member;
+        // $members[]="CN=$username,".LDAP_OU_USERS;
 
-        $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
-        if(!$r) return false;
-        $this->member=$members;
+        // $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
+        // if(!$r) return false;
+        // $this->member=$members;
+        // return true;
+
+        $cmd="sudo ".MAXCONTROL." addmember '".$this->cn."' '$username' 2>&1";
+        $gui->debuga($cmd);
+        exec($cmd, $output);
+        $gui->debuga($output);
+        
         return true;
     }
 
@@ -554,23 +561,30 @@ class GROUP extends BASE {
     function delMember($username) {
         global $gui, $ldap;
 
-        $members=$this->member;
-        $udel="CN=$username,".LDAP_OU_USERS;
+        // $members=$this->member;
+        // $udel="CN=$username,".LDAP_OU_USERS;
 
 
-        $newmembers=array();
-        foreach ($members as $m) {
-            if ( $m == $udel || $m == $username ) {
-                continue;
-            }
-            $newmembers[]=$m;
-        }
-        $members=$newmembers;
+        // $newmembers=array();
+        // foreach ($members as $m) {
+        //     if ( $m == $udel || $m == $username ) {
+        //         continue;
+        //     }
+        //     $newmembers[]=$m;
+        // }
+        // $members=$newmembers;
         
 
-        $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
-        if(!$r) return false;
-        $this->member=$members;
+        // $r = ldap_modify($ldap->cid, $this->dn, array('member' => $members) );
+        // if(!$r) return false;
+        // $this->member=$members;
+        // return true;
+
+        $cmd="sudo ".MAXCONTROL." delmember '".$this->cn."' '$username' 2>&1";
+        $gui->debuga($cmd);
+        exec($cmd, $output);
+        $gui->debuga($output);
+        
         return true;
     }
 
@@ -1216,6 +1230,7 @@ class LDAP {
             return false;
         }
 
+        ldap_set_option($this->cid, LDAP_OPT_REFERRALS, 0);
         ldap_set_option($this->cid, LDAP_OPT_PROTOCOL_VERSION, 3);
         // $gui->debug("=============> ldap_bind($this->cid, $this->binddn, $this->bindpw)<=================");
         if ( ! @($this->bid=ldap_bind($this->cid, $this->binddn, $this->bindpw)) ) {
@@ -1275,6 +1290,7 @@ class LDAP {
         $ignore = array('max-control', 'Administrator',
                         'proxy-zentyal3', 'dns-zentyal3',
                         'proxy-max-server', 'dns-max-server',
+                        'proxy-max-control', 'dns-max-control',
                         'krbtgt', 'Guest', 'zentyal-squid-max-server');
         // $ignore = array();
         
