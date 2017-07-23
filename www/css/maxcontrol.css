@@ -386,6 +386,11 @@ body {
     position: relative;
 }
 
+.container {
+    margin-bottom: 50px;
+}
+
+
 code {
   font-size: 80%;
 }
