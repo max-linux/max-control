@@ -99,7 +99,7 @@ case $1 in
         export PASSWORD="${PASSWD}"
         export NAME="${NAME}"
         export SURNAME="${SURNAME}"
-        export DESCRIPTION="${DESCRIPTION}"
+        export DESCRIPTION="${DESCRIPTION:-sin-descripcion}"
         export ROLE="${ROLE}"
         export USHELL="${USHELL}"
         export QUOTA="${QUOTA}"
@@ -314,10 +314,10 @@ case $1 in
         export NAME="${2}"
         export CREATESHARED="${3}"
         export READONLY="${4}"
-        export DESCRIPTION="${5}"
+        export DESCRIPTION="${5:-sin-descripcion}"
         
-        # getent group "$2" >/dev/null && echo_exit "exists"
-        # zentyal-maxcontrol addgroup
+        getent group "$2" >/dev/null && echo_exit "exists"
+        zentyal-maxcontrol addgroup
 
 
         if [ "${CREATESHARED}" = "1" ]; then
