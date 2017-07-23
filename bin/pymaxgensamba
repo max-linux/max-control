@@ -46,8 +46,8 @@ TO_EDIT = {
     #'print$':{'browseable':'no'},
 }
 
-TO_ADD = {'profiles': {'ea support': 'yes',
-                       'store dos attributes': 'yes'},
+TO_ADD = {# 'profiles': {'ea support': 'yes',
+          #             'store dos attributes': 'yes'},
 
           'global': {'server string': 'MAX server',
                      'full_audit:success': 'none',
@@ -259,6 +259,10 @@ for key in TO_ADD:
     if key not in NOT_VALID_KEYS:
         print " * Create shared", key
 
+# remove section profiles
+if 'profiles' in smb:
+    print " * Remove [profiles] section"
+    del smb['profiles']
 # write before LDAP connection
 smb.write()
 
@@ -351,4 +355,5 @@ if os.path.exists(SSSD_CONF):
 # Reload samba
 if "reloadsamba" in sys.argv:
     # reloadSamba()
+    print " * Reloading samba server..."
     os.system("smbcontrol all reload-config > /dev/null 2>&1")
