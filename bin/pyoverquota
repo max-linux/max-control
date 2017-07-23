@@ -14,10 +14,14 @@ os.environ['LC_ALL'] = "C"
 os.environ['EDITOR'] = "/bin/cat"
 
 HOME = "/home"
+REMOTES = []
 REMOTE = commands.getoutput("df /home/samba 2>/dev/null | awk '/dev/ {print $1}'")
+REMOTES.append(REMOTE)
 REMOTE = commands.getoutput("/sbin/blkid " + REMOTE + " -o value| head -1 | awk '{print \"/dev/disk/by-uuid/\"$1}'")
+REMOTES.append(REMOTE)
 if REMOTE == "":
     REMOTE = "/dev/nbd0"
+    REMOTES.append(REMOTE)
 
 CONF = "/etc/max-control/conf.inc.php"
 LIMIT = float(80)  # percent
@@ -41,6 +45,8 @@ if not os.path.isfile(HOME + "/aquota.user") and not os.path.isfile(HOME + "/quo
     print >> sys.stderr, " * No quotas found"
     sys.exit(0)
 
+
+# sys.stderr.write("<? /* DEBUG HOME='%s' REMOTES='%s' */ ?>\n" % (HOME, REMOTES))
 
 #######################################################
 while os.path.isfile(LOCK_FILE):
@@ -84,7 +90,7 @@ except Exception, err:
 
 def getQuota(user, used=False):
     """
-    LC_ALL=C edquota -u profesorpruebas -f /home
+    LC_ALL=C EDITOR=cat edquota -u profesorpruebas -f /home
     Disk quotas for user profesorpruebas (uid 2050):
       Filesystem          blocks       soft       hard     inodes     soft     hard
       /dev/nbd0               12    2048000    2048000          3        0        0
@@ -95,13 +101,19 @@ def getQuota(user, used=False):
         column = 1
     size = 0
     cmd = "/usr/sbin/edquota -u %s -f %s " % (user, HOME)
+    # sys.stderr.write("<? /* getQuota cmd='%s' */ ?>\n" % (cmd))
     p = Popen(cmd, shell=True, bufsize=0, stdout=PIPE, stderr=STDOUT, close_fds=True)
     stdout = p.stdout
     for line in stdout.readlines():
         if line != '\n':
             line = line.replace('\n', '')
+            if 'Filesystem' in line or 'Disk quotas for user' in line:
+                continue
             #print "==>%s"%line
-            if REMOTE in line:
+            part = line.strip().split()[0]
+            # sys.stderr.write("<? /* getQuota user=%s part='%s' line='%s' */ ?>\n" % (user, part, line))
+            # if REMOTE in line:
+            if part in REMOTES:
                 size = line.split()[column]
                 if used:
                     if int(line.split()[2]) == 0:
@@ -144,6 +156,10 @@ def generateOverQuotas():
         if output.startswith('ldb_wrap'):
             continue
         if output.startswith('params.c'):
+            continue
+        if output.startswith('WARNING'):
+            continue
+        if output.startswith('NOTE'):
             continue
         #
         uid = output.strip()
