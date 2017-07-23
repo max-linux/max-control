@@ -8,7 +8,7 @@ class Ajax {
     
     var $errortxt;
 
-    function Ajax(){
+    function __construct(){
         $this->errortxt="";
         $this->output="";
     }

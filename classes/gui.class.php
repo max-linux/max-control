@@ -14,7 +14,7 @@ class Gui
     var $main_template;
     var $disable_menu=false;
     
-    function Gui() {
+    function __construct() {
         $this->content="";
         $this->init_smarty();
         $this->info="";

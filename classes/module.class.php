@@ -5,10 +5,6 @@ if(DEBUG)
 
 class ModuleLoader
 {
-	function ModuleLoader() {
-	    return;
-	}
-
 
     function load_module(){
         global $path;

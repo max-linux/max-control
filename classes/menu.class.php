@@ -12,10 +12,6 @@ class Menu {
     var $localMenus=array();
     var $plantas=null;
 
-    function Menu(){
-        return;
-    }
-
     function addMenu($menu) {
         $this->localMenus[]=$menu;
     }
