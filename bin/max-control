@@ -71,7 +71,7 @@ case $1 in
         # '$cn' '$givenname' '$sn' '$password' '$role' '$loginshell' '$description' 
         #   2          3        4      5          6           7            8
 
-        if getent passwd "$NEWUSER" >/dev/null 2>&1 ; then
+        if getent passwd "${NEWUSER}" >/dev/null 2>&1 ; then
             echo_exit "exists"
         fi
 
@@ -127,7 +127,7 @@ case $1 in
         create_lock
 
         set -e
-        export MUSERNAME="$2"
+        export MUSERNAME="${2}"
         zentyal-maxcontrol deluser
         echo 'OK'
         exit 0
@@ -158,16 +158,16 @@ case $1 in
 ################################################################################
     addaula)
         NEW=$2
-        DESC=$3
+        DESC="${3:-aula}"
 
         create_lock
 
 
-        samba-tool group add "$NEW" \
+        samba-tool group add "${NEW}" \
                    --groupou=CN=Computers \
                    --group-scope=Domain \
                    --group-type=Security \
-                   --description="$DESC" 2>&1 && echo 'OK'
+                   --description="${DESC}" 2>&1 && echo 'OK'
         exit 0
         ;;
 ################################################################################
@@ -177,7 +177,7 @@ case $1 in
         create_lock
 
 
-        samba-tool group delete "$DEL" 2>&1 && echo 'OK'
+        samba-tool group delete "${DEL}" 2>&1 && echo 'OK'
         exit 0
         ;;
 ################################################################################
@@ -188,7 +188,7 @@ case $1 in
 
         create_lock
 
-        samba-tool group removemembers "$GROUP" "$MEMBER" >/dev/null 2>&1 && echo 'OK'
+        samba-tool group removemembers "${GROUP}" "${MEMBER}" >/dev/null 2>&1 && echo 'OK'
         exit 0
         ;;
 ################################################################################
@@ -199,7 +199,7 @@ case $1 in
 
         create_lock
 
-        samba-tool group addmembers "$GROUP" "$MEMBER" >/dev/null 2>&1 && echo 'OK'
+        samba-tool group addmembers "${GROUP}" "${MEMBER}" >/dev/null 2>&1 && echo 'OK'
         exit 0
         ;;
 ################################################################################
@@ -221,7 +221,7 @@ case $1 in
         #chown "${NEWUSER}":"Domain Users" "${PROFILES_DIR}/${NEWUSER}.V2"
         #chmod 701 "${PROFILES_DIR}/${NEWUSER}.V2"
 
-        if id "$NEWUSER" 2>/dev/null | grep -q -e Teachers -e "Domain Admins"; then
+        if id "${NEWUSER}" 2>/dev/null | grep -q -e "Teachers" -e "Domain Admins"; then
             QUOTA=$((QUOTA*2))
         fi
 
@@ -258,8 +258,9 @@ case $1 in
     deleteprofile)
         DELUSER=$2
         [ "${DELUSER}" = "" ] && echo_exit "nonexists"
-        rm -rf "$HOMES_DIR/${DELUSER}"
-        rm -rf "$PROFILES_DIR/${DELUSER}"
+        rm -rf "${HOMES_DIR}/${DELUSER}"
+        rm -rf "${PROFILES_DIR}/${DELUSER}"
+        rm -rf "{PROFILES_DIR}/${DELUSER}.V2"
         echo "ok"
         exit 0
         ;;
@@ -270,8 +271,8 @@ case $1 in
         set -e
         #rm -rf "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
         #mkdir -p "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
-        rm -rf "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" 2>/dev/null
-        mkdir -p "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" 2>/dev/null
+        rm -rf "${HOMES_DIR}/${DELUSER}" "${PROFILES_DIR}/${DELUSER}" 2>/dev/null
+        mkdir -p "${HOMES_DIR}/${DELUSER}" "${PROFILES_DIR}/${DELUSER}" 2>/dev/null
 
         # arreglar permisos
         chown "${DELUSER}":"Domain Users" "${HOMES_DIR}/${DELUSER}"
@@ -326,7 +327,7 @@ case $1 in
             chmod 775 "${GROUPS_DIR}/${NAME}"
             # chmod +t "${GROUPS_DIR}/${NAME}"
             # chmod g+w "${GROUPS_DIR}/${NAME}"
-            [ "$READONLY" = "1" ] && chmod o-r "${GROUPS_DIR}/${NAME}"
+            [ "${READONLY}" = "1" ] && chmod o-r "${GROUPS_DIR}/${NAME}"
 
 
             # [test2]
@@ -415,11 +416,11 @@ d:g:"${NAME}":r-x                     "${GROUPS_DIR}/${NAME}" 2>&1
 
 
         
-        if ! samba-tool group add "$ADDGROUP" \
+        if ! samba-tool group add "${ADDGROUP}" \
                         --groupou=CN=Users \
                         --group-scope=Global \
                         --group-type=Security \
-                        --description="$DESC" 2>&1; then
+                        --description="${DESC}" 2>&1; then
             echo 'error'
             exit
         fi
@@ -428,7 +429,7 @@ d:g:"${NAME}":r-x                     "${GROUPS_DIR}/${NAME}" 2>&1
         chown root:"${ADDGROUP}" "${GROUPS_DIR}/${ADDGROUP}"
         chmod +t "${GROUPS_DIR}/${ADDGROUP}"
         chmod g+w "${GROUPS_DIR}/${ADDGROUP}"
-        [ "$READONLY" = "1" ] && chmod o-r "${GROUPS_DIR}/${ADDGROUP}"
+        [ "${READONLY}" = "1" ] && chmod o-r "${GROUPS_DIR}/${ADDGROUP}"
         echo "ok"
         exit 0
         ;;
@@ -470,7 +471,7 @@ d:g:"${NAME}":r-x                     "${GROUPS_DIR}/${NAME}" 2>&1
         if [ "$DEF" = "" ]; then
             echo 2000
         else
-            echo $DEF
+            echo ${DEF}
         fi
         exit 0
         ;;
@@ -551,11 +552,11 @@ d:g:"${NAME}":r-x                     "${GROUPS_DIR}/${NAME}" 2>&1
     renamegroup)
         # $2 is oldname
         # $3 is newname
-        if [ -d "$GROUPS_DIR/$3" ]; then
+        if [ -d "${GROUPS_DIR}/$3" ]; then
             echo "new exists"
             exit 0
-        elif [ -d "$GROUPS_DIR/$2" ]; then
-            mv "$GROUPS_DIR/$2" "$GROUPS_DIR/$3"
+        elif [ -d "${GROUPS_DIR}/$2" ]; then
+            mv "${GROUPS_DIR}/$2" "$GROUPS_DIR/$3"
             rm -f /etc/samba/max-control.conf
             pymaxgensamba >/dev/null 2>&1
             echo "ok"
