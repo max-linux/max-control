@@ -89,8 +89,10 @@
                     {foreach from=$usuarios key=k item=u}
                         <tr>
                             <td>
-                                {if $u->description != ''}
-                                    <acronym title='{$u->description}'>{$u->cn} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if}</span></acronym>
+                                {if $u->samaccountname != $u->cn}
+                                    <span>{$u->samaccountname} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if}</span>
+                                {else if $u->description != ''}
+                                    <acronym title='{$u->description}'>{$u->cn} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if}</acronym>
                                 {else}
                                     <span>{$u->cn} {if !$u->is_romaing()}<img src="{$baseurl}/img/msg.png" title="Perfil sin roaming" />{/if} </span>
                                 {/if}
