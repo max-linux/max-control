@@ -71,6 +71,7 @@ function ver($module, $action, $subaction) {
     
     
     $pager=new PAGER($usuarios, $urlform, 0, $args='', NULL);
+    $pager->pagerLimit=50;
     $pager->processArgs( array('Filter', 'skip', 'role', 'sort') );
     $usuarios=$pager->getItems();
     $pager->sortfilter="(cn|displayname|sn|usedSize)";
