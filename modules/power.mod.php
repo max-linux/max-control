@@ -193,6 +193,10 @@ function docomputer($module, $action, $subaction) {
     
     global $ldap;
     $computers=$ldap->get_computers( $equipo . '$' );
+    if ( sizeof($computers) < 1 ) {
+        $gui->session_error("Equipo no encontrado '$equipo'");
+        $url->ir($module, "equipos");
+    }
     
     if ( ! $computers[0]->teacher_in_computer() ) {
         $gui->session_error("No tiene permiso para modificar el equipo '$equipo'");
@@ -201,7 +205,7 @@ function docomputer($module, $action, $subaction) {
     //$gui->debuga($computers);
     
     foreach( $computers as $computer) {
-        $gui->debug("Acción $subaction en equipo '".$computer->hostname()."' tiempo: " . time_end() );
+        $gui->debug("Acción $subaction en equipo '".$computer->hostname()."' [".$computer->macAddress."] tiempo: " . time_end() );
         //$res[]=$computer->action($action);
         $computer->action($subaction, $computer->macAddress);
     }

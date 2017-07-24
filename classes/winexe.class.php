@@ -179,7 +179,7 @@ class WINEXE {
             192.168.1.132
         */
         global $gui;
-        $cmd="net lookup $hostname";
+        $cmd="net lookup $hostname" . '.' . LDAP_DOMAIN;
         $gui->debug("WINEXE:getIpAddress($hostname) cmd='$cmd'");
         exec($cmd, $output);
         if ( isset($output[0]) ) {
@@ -266,7 +266,7 @@ class WINEXE {
         if ($this->ip == '' || $this->ip =='0.0.0.0')
             return false;
         
-        //$gui->debug("is_alive()".$this->ip);
+        $gui->debug("is_alive()".$this->ip);
         $str = exec("ping -c 1 -w 1 ".$this->ip, $input, $result);
         if ($result == 0) {
             $gui->debug("is_live(".$this->ip.") host is alive, time: ". time_end() );

@@ -225,26 +225,64 @@ elsif($ARGV[0] eq 'init') {
     }
 }
 
-# elsif($ARGV[0] eq 'addgroupmember') {
-#     throw EBox::Exceptions::MissingArgument('GROUP') unless ($ENV{'GROUP'});
-#     throw EBox::Exceptions::MissingArgument('NEWUSER') unless ($ENV{'NEWUSER'});
+elsif($ARGV[0] eq 'addgroupmember') {
+    throw EBox::Exceptions::MissingArgument('GROUP') unless ($ENV{'GROUP'});
+    throw EBox::Exceptions::MissingArgument('NEWUSER') unless ($ENV{'NEWUSER'});
 
-#     my $group = new EBox::Samba::Group(dn => "CN=".$ENV{'GROUP'}.",CN=Users," . $samba->ldap->dn());
-#     print $group->name . "\n";
+    my $group = new EBox::Samba::Group(dn => "CN=".$ENV{'GROUP'}.",CN=Users," . $samba->ldap->dn());
+    print $group->name . "\n";
 
-#     my $user = new EBox::Samba::User(samAccountName => $ENV{'NEWUSER'});
-#     if ($user->exists()) {
-#         $group->addMember($user);
-#         print "ok\n";
-#     }
-#     else {
-#         print "user no exists\n";
-#     }
+    my $user = new EBox::Samba::User(samAccountName => $ENV{'NEWUSER'});
+    if ($user->exists()) {
+        $group->addMember($user);
+        print "ok\n";
+    }
+    else {
+        print "user no exists\n";
+    }
+}
 
-# }
+elsif($ARGV[0] eq 'addsysgroupmember') {
+    throw EBox::Exceptions::MissingArgument('GROUP') unless ($ENV{'GROUP'});
+    throw EBox::Exceptions::MissingArgument('NEWUSER') unless ($ENV{'NEWUSER'});
+
+    my $group = new EBox::Samba::Group(dn => "CN=".$ENV{'GROUP'}.",CN=Builtin," . $samba->ldap->dn());
+    print $group->name . "\n";
+
+    my $user = new EBox::Samba::User(samAccountName => $ENV{'NEWUSER'});
+    if ($user->exists()) {
+        $group->addMember($user);
+        print "ok\n";
+    }
+    else {
+        print "user no exists\n";
+    }
+}
 
 elsif($ARGV[0] eq 'test') {
+
+    # sid => $samba->ldap->domainSID() . "-512"
+    # CN=Administrators,CN=Builtin,DC=madrid,DC=lan
+    # CN=Group Policy Creator Owners,CN=Users,DC=madrid,DC=lan
+    # CN=Enterprise Admins,CN=Users,DC=madrid,DC=lan
+    # CN=Schema Admins,CN=Users,DC=madrid,DC=lan
+    # CN=Domain Admins,CN=Users,DC=madrid,DC=lan
+
     # my $samba = EBox::Global->modInstance('samba');
+    # my $parent = $samba->objectFromDN('CN=Builtin,' . $samba->ldap->dn());
+    # my $admins = new EBox::Samba::Group(dn => "CN=Administrators," . $parent->dn());
+
+    my $admins = new EBox::Samba::Group(dn => 'CN=Administrators,CN=Builtin,' . $samba->ldap->dn());
+    print $admins->name . "\n";
+
+    # my $admins = new EBox::Samba::Group(dn => 'CN=Administrators,CN=Builtin,' . $samba->ldap->dn());
+
+    my $user = new EBox::Samba::User(samAccountName => 'max-control');
+
+    $admins->removeMember($user);
+    $admins->save();
+
+
 
     # # print $samba . "\n";
     # # print $samba->drive();
@@ -300,8 +338,8 @@ elsif($ARGV[0] eq 'test') {
     
     # CN=Teachers,CN=Builtin,DC=madrid,DC=lan
     # my $teachers = new EBox::Samba::Group(dn => "CN=Teachers,CN=Builtin,DC=madrid,DC=lan");
-    # my $entry = $teachers->_entry() . "\n";
-    # print any(@{[$entry->get_value('objectClass')]}); . "\n";
+    # my $entry = $teachers->_entry();
+    # print any(@{[$entry->get_value('objectClass')]}) . "\n";
     
     # print $samba->objectFromDN('CN=MAXGroups,' . $samba->ldap->dn());
 
