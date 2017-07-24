@@ -46,8 +46,26 @@ TO_EDIT = {
     #'print$':{'browseable':'no'},
 }
 
-TO_ADD = {# 'profiles': {'ea support': 'yes',
-          #             'store dos attributes': 'yes'},
+# [profiles]
+#     path = /home/samba/profiles/
+#     read only = no
+#     force create mode = 0600
+#     force directory mode = 0700
+#     store dos attributes = Yes
+#     profile acls = yes
+#     csc policy = disable
+
+
+
+TO_ADD = {'profiles': {# 'ea support': 'yes',
+                       'path': '/home/samba/profiles/',
+                       'read only': 'no',
+                       'force create mode': '0600',
+                       'force directory mode': '0700',
+                       'store dos attributes': 'Yes',
+                       'profile acls': 'yes',
+                       'csc policy': 'disable',
+                       },
 
           'global': {'server string': 'MAX server',
                      'full_audit:success': 'none',
@@ -260,9 +278,9 @@ for key in TO_ADD:
         print " * Create shared", key
 
 # remove section profiles
-if 'profiles' in smb:
-    print " * Remove [profiles] section"
-    del smb['profiles']
+# if 'profiles' in smb:
+#     print " * Remove [profiles] section"
+#     del smb['profiles']
 # write before LDAP connection
 smb.write()
 

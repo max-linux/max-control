@@ -105,6 +105,10 @@ case $1 in
         export QUOTA="${QUOTA}"
 
         zentyal-maxcontrol adduser
+
+        # create home and profiles
+        max-control resetprofile "${NEWUSER}"
+
         echo 'OK'
         exit 0
         ;;
@@ -151,7 +155,7 @@ case $1 in
         LDAP_ADMIN="$(awk -F"'" '/LDAP_ADMIN/ {print $2}' /etc/max-control/conf.inc.php)"
         LDAP_PASSW="$(awk -F"'" '/LDAP_PASS/ {print $2}' /etc/max-control/conf.inc.php)"
 
-        echo samba-tool dns add 127.0.0.1 ${DN} ${NAME} A ${IP} -U${LDAP_ADMIN}:${LDAP_PASSW}
+        echo samba-tool dns add 127.0.0.1 "${DN}" "${NAME}" A "${IP}" -U${LDAP_ADMIN}:${LDAP_PASSW}
 
         exit 0
         ;;
@@ -258,9 +262,10 @@ case $1 in
     deleteprofile)
         DELUSER=$2
         [ "${DELUSER}" = "" ] && echo_exit "nonexists"
-        rm -rf "${HOMES_DIR}/${DELUSER}"
-        rm -rf "${PROFILES_DIR}/${DELUSER}"
-        rm -rf "{PROFILES_DIR}/${DELUSER}.V2"
+        rm -rf "${HOMES_DIR}/${DELUSER}" \
+               "${PROFILES_DIR}/${DELUSER}" \
+               "${PROFILES_DIR}/${DELUSER}.V2" \
+               "${PROFILES_DIR}/${DELUSER}.V6"
         echo "ok"
         exit 0
         ;;
@@ -269,16 +274,44 @@ case $1 in
         DELUSER=$2
         [ "${DELUSER}" = "" ] && echo_exit "nonexists"
         set -e
-        #rm -rf "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
-        #mkdir -p "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
-        rm -rf "${HOMES_DIR}/${DELUSER}" "${PROFILES_DIR}/${DELUSER}" 2>/dev/null
-        mkdir -p "${HOMES_DIR}/${DELUSER}" "${PROFILES_DIR}/${DELUSER}" 2>/dev/null
+        # rm -rf "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
+        # mkdir -p "$HOMES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}" "$PROFILES_DIR/${DELUSER}.V2" 2>/dev/null
+        #
+        GIDNUM=$(id -g ${DELUSER})
+        #
+        for p in "${HOMES_DIR}/${DELUSER}" \
+                 "${PROFILES_DIR}/${DELUSER}" \
+                 "${PROFILES_DIR}/${DELUSER}.V2" \
+                 "${PROFILES_DIR}/${DELUSER}.V6"; do
+            #
+            #
+            rm -rf "${p}" 2>/dev/null
+            mkdir -p "${p}" 2>/dev/null
+            chown "${DELUSER}":"Domain Users" "${p}"
+            #
+            #
+            setfacl -b "${p}"    2>&1
+            setfacl -R -m u:root:rwx,g::---,g:${GIDNUM}:---,u:${DELUSER}:rwx "${p}" 2>&1
+            setfacl -R -m d:u:root:rwx,d:g::---,d:g:${GIDNUM}:---,d:u:${DELUSER}:rwx "${p}" 2>&1
+            #
+            chmod 700 "${p}"
+            #
+        done
+        # rm -rf "${HOMES_DIR}/${DELUSER}" \
+        #        "${PROFILES_DIR}/${DELUSER}" \
+        #        "{PROFILES_DIR}/${DELUSER}.V2" \
+        #        "{PROFILES_DIR}/${DELUSER}.V6" 2>/dev/null
+        # #
+        # mkdir -p "${HOMES_DIR}/${DELUSER}" \
+        #          "${PROFILES_DIR}/${DELUSER}" \
+        #          "{PROFILES_DIR}/${DELUSER}.V2" \
+        #          "{PROFILES_DIR}/${DELUSER}.V6" 2>/dev/null
 
         # arreglar permisos
-        chown "${DELUSER}":"Domain Users" "${HOMES_DIR}/${DELUSER}"
-        chmod 700 "${HOMES_DIR}/${DELUSER}"
-        chown "${DELUSER}":"Domain Users" "${PROFILES_DIR}/${DELUSER}"
-        chmod 700 "${PROFILES_DIR}/${DELUSER}"
+        # chown "${DELUSER}":"Domain Users" "${HOMES_DIR}/${DELUSER}"
+        # chmod 700 "${HOMES_DIR}/${DELUSER}"
+        # chown "${DELUSER}":"Domain Users" "${PROFILES_DIR}/${DELUSER}"
+        # chmod 700 "${PROFILES_DIR}/${DELUSER}"
         #
         # push (@perms, 'u:root:rwx');
         # push (@perms, 'g::---');
@@ -287,11 +320,11 @@ case $1 in
         # push (@cmds, "setfacl -b \'$path\'");
         # push (@cmds, 'setfacl -R -m ' . join(',', @perms) . " \'$path\'");
         # push (@cmds, 'setfacl -R -m d:' . join(',d:', @perms) ." \'$path\'");
-        GIDNUM=$(id -g ${DELUSER})
-        #
-        setfacl -b "${PROFILES_DIR}/${DELUSER}"    2>&1
-        setfacl -R -m u:root:rwx,g::---,g:${GIDNUM}:---,u:${DELUSER}:rwx "${PROFILES_DIR}/${DELUSER}" 2>&1
-        setfacl -R -m d:u:root:rwx,d:g::---,d:g:${GIDNUM}:---,d:u:${DELUSER}:rwx "${PROFILES_DIR}/${DELUSER}" 2>&1
+        # GIDNUM=$(id -g ${DELUSER})
+        # #
+        # setfacl -b "${PROFILES_DIR}/${DELUSER}"    2>&1
+        # setfacl -R -m u:root:rwx,g::---,g:${GIDNUM}:---,u:${DELUSER}:rwx "${PROFILES_DIR}/${DELUSER}" 2>&1
+        # setfacl -R -m d:u:root:rwx,d:g::---,d:g:${GIDNUM}:---,d:u:${DELUSER}:rwx "${PROFILES_DIR}/${DELUSER}" 2>&1
 
         #
         /usr/bin/pyoverquota >> /var/log/max-control-pxe.log 2>&1
