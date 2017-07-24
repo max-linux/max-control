@@ -35,7 +35,7 @@
        <div class="form-group">
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" value="" name='deleteprofile' value='1' checked>
+                    <input type="checkbox" name='deleteprofile' value='1' checked>
                     Borrar también su perfil y todos sus datos
                 </label>
             </div>
