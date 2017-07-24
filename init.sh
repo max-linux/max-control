@@ -10,11 +10,21 @@ PASS="$(tr -cd '[:alnum:]' < /dev/urandom | fold -w15 | head -n1)"
 
 # create max-control user or change password if exists
 if ! samba-tool user list 2>/dev/null | grep -q ^max-control$ ; then
+    echo " * Creando usuario administrador del panel..."
     samba-tool user add "$USER" "$PASS" > /dev/null 2>&1
-    samba-tool group addmembers "Domain Admins" "$USER"  > /dev/null 2>&1
-    samba-tool group addmembers "Administrators" "$USER" > /dev/null 2>&1
+    # samba-tool group addmembers "Domain Admins" "$USER"  > /dev/null 2>&1
+    # samba-tool group addmembers "Administrators" "$USER" > /dev/null 2>&1
+
+    GROUP="Domain Admins" NEWUSER="${USER}" zentyal-maxcontrol addgroupmember      > /dev/null 2>&1
+    GROUP="Administrators" NEWUSER="${USER}" zentyal-maxcontrol addsysgroupmember  > /dev/null 2>&1
 else
     samba-tool user setpassword "${USER}" --newpassword="${PASS}" > /dev/null 2>&1
+
+    if ! id max-control | grep -q -i admin; then
+        echo " * Actualizando usuario administrador del panel... "
+        GROUP="Domain Admins" NEWUSER="${USER}" zentyal-maxcontrol addgroupmember      > /dev/null 2>&1
+        GROUP="Administrators" NEWUSER="${USER}" zentyal-maxcontrol addsysgroupmember  > /dev/null 2>&1
+    fi
 fi
 
 

@@ -898,7 +898,7 @@ class COMPUTER extends BASE {
             $this->macAddress=$tmp[1];
         }
         $this->exe=new WINEXE($this->hostname());
-        //$gui->debuga(" init() ".$this->ipHostNumber);
+        // $gui->debuga(" init() ".$this->ipHostNumber);
     }
 
     function save($data=array()) {
@@ -930,7 +930,7 @@ class COMPUTER extends BASE {
             }
         }
 
-        $ldap->genPXELinux();
+        $this->genPXELinux();
 
         return $saved;
     }
