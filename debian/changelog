@@ -1,3 +1,13 @@
+max-control (5.0~max4) max; urgency=medium
+
+  * users: Show samaccountname if user is created from Zentyal, close #15
+  * INcrease pager size to 50, close #18
+  * Users: Revert [profiles] smb.conf and fix delete/create
+    profile V2 (<=Win 8) V6 (Win10), close #12, close #13
+  * Fix computer save, max-control rights and winexe/reboot issues, close #16
+
+ -- Mario Izquierdo <hola@marioizquierdo.es>  Mon, 24 Jul 2017 23:54:57 +0200
+
 max-control (5.0~max3) max; urgency=medium
 
   * Update zentyal-maxcontrol
