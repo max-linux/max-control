@@ -107,7 +107,7 @@ case $1 in
         zentyal-maxcontrol adduser
 
         # create home and profiles
-        max-control resetprofile "${NEWUSER}"
+        max-control resetprofile "${NEWUSER}" >/dev/null 2>&1
 
         echo 'OK'
         exit 0
@@ -596,6 +596,12 @@ d:g:"${NAME}":r-x                     "${GROUPS_DIR}/${NAME}" 2>&1
             exit 0
         fi
         echo "no changes"
+        exit 0
+        ;;
+################################################################################
+    cleanimporter)
+        rm -f /tmp/importer*
+        echo "ok"
         exit 0
         ;;
 ################################################################################

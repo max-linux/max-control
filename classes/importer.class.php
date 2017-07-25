@@ -16,13 +16,14 @@ if(DEBUG)
 *
 *
 */
-/* "Nombre","Apellidos","uid","centro","clase","tipo" */
+/* "Nombre","Apellidos","uid","centro","clase","tipo","contraseña" */
 define('IMPORT_NAME', 0);
 define('IMPORT_SURNAME', 1);
 define('IMPORT_UID', 2);
 define('IMPORT_CENTER', 3); /* not needed */
 define('IMPORT_GROUP', 4); /* empty group if == "-" */
 define('IMPORT_ROLE', 5); /* "emStudent" "emTeacher" */
+define('IMPORT_PASSWD', 6); /* contraseña opcional */
 define('MAX_UID_LENGTH', 20);
 
 class Importer {
@@ -61,8 +62,8 @@ class Importer {
             //$userdata=explode(",", $line);
             $userdata=preg_split('/;|,/', $line);
             
-            if(sizeof($userdata) != 6) {
-                //$gui->session_error("Línea no contiene 6 campos =&gt; '$line' ");
+            if(sizeof($userdata) < 6 || sizeof($userdata) > 7) {
+                //$gui->session_error("Línea no contiene 6 o 7 campos =&gt; '$line' ");
                 continue;
             }
             if($userdata[IMPORT_NAME] == '"Nombre"' || $userdata[IMPORT_SURNAME] == 'Apellidos') continue;
@@ -99,9 +100,15 @@ class Importer {
                 $olduid=sanitizeOne($userdata[IMPORT_UID], 'uid');
                 $extradata=", usuario sin recortar: $olduid";
             }
+
+            $defaultPassword=$this->defaultPassword;
+            if( sizeof($userdata) == 7 ) {
+                // last column is password
+                $defaultPassword=preg_replace('/"/','',$userdata[IMPORT_PASSWD]);
+            }
             /**********************************************/
             $tmp=array('cn'            => $userdata[IMPORT_UID],
-                       'password'      => $this->defaultPassword,
+                       'password'      => $defaultPassword,
                        'givenname'     => $userdata[IMPORT_NAME],
                        'sn'            => $userdata[IMPORT_SURNAME],
                        'description'   => $userdata[IMPORT_NAME] . ' '. $userdata[IMPORT_SURNAME].$extradata,
@@ -137,8 +144,10 @@ class Importer {
         
         /* fork process in background */
         $cmd="max-control-importer >> ".FORK_LOGFILE." 2>&1 &";
-        if(DEBUG)
+        if(DEBUG) {
+            exec("sudo ".MAXCONTROL." cleanimporter 2>&1", $output);
             $cmd="max-control-importer DEBUG >> /tmp/importer.log 2>&1 &";
+        }
         pclose(popen($cmd, "r"));
     }
 
