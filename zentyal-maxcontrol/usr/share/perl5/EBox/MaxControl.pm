@@ -13,10 +13,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-package EBox::MaxControl;
-
 use strict;
 use warnings;
+
+package EBox::MaxControl;
 
 use base qw(EBox::Module::Service
             EBox::FirewallObserver
@@ -48,9 +48,9 @@ sub menu
     my ($self, $root) = @_;
     $root->add(new EBox::Menu::Item('url' => 'MaxControl/Index',
                                     'text' => $self->printableName(),
-                                    'separator' => 'Infrastructure',
+                                    'tag' => 'main',
                                     'icon' => 'samba',
-                                    'order' => 460));
+                                    'order' => 4));
 }
 
 #sub _daemons
@@ -71,7 +71,7 @@ sub usesPort # (protocol, port, iface)
     return undef unless($self->isEnabled());
 
     return 1 if ($port eq 80);
-    return 1 if ($port eq 389);
+    # return 1 if ($port eq 389);
 
     return undef;
 }
