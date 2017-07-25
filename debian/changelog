@@ -1,3 +1,11 @@
+max-control (5.0~max5) max; urgency=medium
+
+  * Fix zentyal-maxcontrol install, close #20
+  * Remove ERROR: Conf max-control does not exist! (a2enconf)
+  * Fix importer and allow password (optional) in CSV, close #19
+
+ -- Mario Izquierdo <hola@marioizquierdo.es>  Tue, 25 Jul 2017 20:47:07 +0200
+
 max-control (5.0~max4) max; urgency=medium
 
   * users: Show samaccountname if user is created from Zentyal, close #15
