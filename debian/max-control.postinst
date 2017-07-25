@@ -18,7 +18,7 @@ if [ "$1" = "configure" ]; then
 
    # enable mod_rewrite
    [ ! -e /etc/apache2/mods-enabled/rewrite.load ] && [ -x /usr/sbin/a2enmod ] && a2enmod rewrite
-   [ -x /usr/sbin/a2enconf ] && a2enconf max-control
+   # [ -x /usr/sbin/a2enconf ] && a2enconf max-control
 
    if [ -x "/etc/init.d/apache2" ]; then
     if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
