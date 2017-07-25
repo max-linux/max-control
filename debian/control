@@ -26,7 +26,7 @@ Architecture: all
 Provides: tftpd-hpa
 Depends: zentyal,
          zentyal-network,
-         zentyal-office,
+#         zentyal-office,
          zentyal-dhcp,
 #         zentyal-captiveportal,
          zentyal-squid,

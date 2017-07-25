@@ -1,30 +1,33 @@
 main_color: "#3352c7"
-secondary_color: "#3352c7"
+main_color_darker: "#46962D"
+main_color_lighter: "#9fd575"
+secondary_color: "#bb2211"
+secondary_color_darker: "#c35F00"
+secondary_color_lighter: "#f7ad6d"
 third_color: "#3352c7"
+third_color_darker: "#008745"
+third_color_lighter: "#4bd0eb"
 
 # login.css
 logo_style: "float: left;"
-body_background_color: "#DFF0A4"
+body_background_color: "#eee"
 loginin_padding_style: "15px 30px 15px 30px"
 
 # public.css
-header_img_padding: "padding-top: 3px; padding-left: 3px;"
+header_img_padding: "padding-top: 3px; padding-left: 3px; padding-right: 10px;"
 
 hmenu_bg_color: "#4860d4"
 hmenu_hover_bg_color: "#4e6be6"
 
-remote_svcs_bg_color: "#BBE03A"
-remote_svcs_hover_bg_color: "#CCE86C"
-
 footer_custom_style: "text-align: center;"
 
 data_table_border_color: "#D6DBBE"
-data_table_inner_border_color: "#658037"
-data_table_color: "#D8DAC1"
-data_table_bg_color: "#EFF4DD"
-data_table_bg_even: "#ecf5da"
-data_table_bg_highlight: "#E58A22"
-data_table_bg_highlight_hover: "#F2A349"
+data_table_inner_border_color: "#eee"
+data_table_color: "#000"
+data_table_bg_color: "#fff"
+data_table_bg_even: "#fff"
+data_table_bg_highlight: "#FFC200"
+data_table_bg_highlight_hover: "#FFB800"
 
 msg_bg_color: "#06BC06"
 helpbutton_color: "#859E83"

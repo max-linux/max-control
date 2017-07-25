@@ -15,3 +15,5 @@ bootdepends:
     - dhcp
     - samba
 
+composites:
+    MaxTemplate: []

@@ -26,9 +26,10 @@ if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" ]; then
     # limit 500 => 2500 search results
     #zentyal_remove_divert /usr/share/zentyal/stubs/users/config.ldif.mas
 
-    if dpkg-divert --list zentyal-maxcontrol | grep -q config.ldif.mas; then
-        zentyal_remove_divert /usr/share/zentyal/stubs/users/config.ldif.mas
-    fi
+    # for 3.5
+    #if dpkg-divert --list zentyal-maxcontrol | grep -q config.ldif.mas; then
+    #    zentyal_remove_divert /usr/share/zentyal/stubs/users/config.ldif.mas
+    #fi
 fi
 
 

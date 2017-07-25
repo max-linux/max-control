@@ -7,7 +7,7 @@ if [ "$1" = "configure" ]; then
     #    cat /etc/zentyal/hooks/captiveportal.postservice > /etc/zentyal/hooks/firewall.postservice
     #fi
 
-    [ -e /proc/cmdline ] && ! grep -q debian-installer /proc/cmdline && /etc/init.d/zentyal firewall restart
+    [ -e /proc/cmdline ] && ! grep -q debian-installer /proc/cmdline && /usr/bin/zs firewall restart
 
 
     for f in /usr/share/zentyal-maxcontrol/hooks/*; do
@@ -18,7 +18,7 @@ if [ "$1" = "configure" ]; then
 
         # reiniciar servicio
         SRV=$(echo $h| awk -F"." '{print $1}')
-        /etc/init.d/zentyal $SRV restart || true
+        /usr/bin/zs $SRV restart || true
     done
 
     #/etc/init.d/zentyal webadmin restart || true
