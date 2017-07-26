@@ -12,6 +12,7 @@
     <link href="{$baseurl}/css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
     <link href="{$baseurl}/css/maxcontrol.css" rel="stylesheet">
     <link href="{$baseurl}/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="{$baseurl}/css/bootstrap-year-calendar.min.css" rel="stylesheet" type="text/css">
 {* needed for document.ready *}
     <script src="{$baseurl}/js/jquery-1.11.0.js"></script>
 {if isset($DEBUG)}
@@ -19,6 +20,14 @@
     <script type="text/javascript">
     var debug_enabled=true;
     </script>
+
+    <script src="{$baseurl}/js/bootstrap.min.js"></script>
+    <script src="{$baseurl}/js/plugins/metisMenu/metisMenu.min.js"></script>
+    <script src="{$baseurl}/js/bootstrap-year-calendar.min.js"></script>
+    <script src="{$baseurl}/js/bootstrap-year-calendar.es.js"></script>
+    <script src="{$baseurl}/js/maxcontrol.js"></script>
+
+
 {/if}
 </head>
 <body>
@@ -138,9 +147,7 @@
 </div>
 
     
-    <script src="{$baseurl}/js/bootstrap.min.js"></script>
-    <script src="{$baseurl}/js/plugins/metisMenu/metisMenu.min.js"></script>
-    <script src="{$baseurl}/js/maxcontrol.js"></script>
+
 
 </body>
 </html>

@@ -18,6 +18,56 @@ class Programer {
         return $this->weekdays;
     }
     
+    function saveCalendar($cal) {
+        $data=array();
+        for ($i=0; $i < sizeof($cal); $i++) { 
+            $data['cal' . ($i+1) ] = $cal[$i]['start']." ".$cal[$i]['end'];
+        }
+        $this->config['calendar']=$data;
+        return $this->write_ini_file($this->config, PROGRAMER_INI, true);
+    }
+
+    function getCalendars() {
+        $cals=array();
+        
+        if( ! array_key_exists('calendar', $this->config) ) {
+            return $cals;
+        }
+
+        $cfg_cal=$this->config['calendar'];
+
+        foreach ($cfg_cal as $i => $c) {
+            list($start, $end) = explode(' ', $c);
+            $cals[] = array('start' => $start,
+                            'end' => $end);
+        }
+
+        return $cals;
+    }
+
+    function addCalendar($start, $end) {
+        $data = $this->getCalendars();
+        $data[] = array('start' => $start,
+                        'end' => $end);
+        $this->saveCalendar($data);
+    }
+
+    function removeCalendar($start, $end) {
+        $newdata = array();
+        $found=false;
+        $data = $this->getCalendars();
+        foreach ($data as $i => $c) {
+            if( $c['start'] == $start && $c['end'] == $end ) {
+                $found=true;
+                continue;
+            }
+            $newdata[] = $c;
+        }
+        if($found) {
+            $this->saveCalendar($newdata);
+        }
+    }
+
     function getTimers($varprefix) {
         global $gui, $site;
         $confdata=NULL;
@@ -163,6 +213,42 @@ class CronProgramer {
         return($data);
     }
 
+    function getCalendars() {
+        $cals=array();
+        
+        if( ! array_key_exists('calendar', $this->config) ) {
+            return $cals;
+        }
+
+        $cfg_cal=$this->config['calendar'];
+
+        foreach ($cfg_cal as $i => $c) {
+            list($start, $end) = explode(' ', $c);
+            $cals[] = array('start' => $start,
+                            'end' => $end);
+        }
+
+        return $cals;
+    }
+
+    function canRun() {
+        global $gui;
+
+        $now=strftime("%Y-%m-%d", time());
+        
+        $notfound=true;
+        $data = $this->getCalendars();
+
+        foreach ($data as $i => $c) {
+            if( $now >= $c['start'] && $now <= $c['end'] ) {
+                $gui->info("Programador deshabilitado entre " . $c['start'] . " y " . $c['end']);
+                $notfound=false;
+                break;
+            }
+        }
+        return $notfound;
+    }
+
     function timeDiff($ini,$loop) {
         $firstTime=strftime("%Y-%m-%d $ini:00", time());
         $lastTime=strftime("%Y-%m-%d $loop:00", time());
@@ -174,8 +260,11 @@ class CronProgramer {
     }
 
     function doJobs() {
-        /* called every 10 minutes */
         global $gui;
+        if(! $this->canRun() ) {
+            $gui->info("Programador deshabilitado");
+        }
+        /* called every 10 minutes */
         $hour=intval(strftime("%H"));
         if ( $hour < 10 )
             $hour="0$hour";

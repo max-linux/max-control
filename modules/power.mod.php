@@ -347,7 +347,6 @@ switch($action) {
     case "aulamultiple_preguntar": aulamultiple_preguntar($module, $action, $subaction); break;
     case "aulamultiple_preguntardo": aulamultiple_preguntardo($module, $action, $subaction); break;
     
-    
     default: $gui->session_error("Accion desconocida '$action' en modulo $module");
     /*default: $url->ir($module, "equipo");*/
 }

@@ -16,6 +16,7 @@ binary-install/max-control:: test
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/ssh-test.php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/test*php
 	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/www/new.php
+	rm -f $(CURDIR)/debian/max-control/usr/share/max-control/classes/ldap-OLD.class.php
 
 	# replace __VERSION__ with VERSION
 	sed -i -e 's/__VERSION__/$(VERSION)/g' $(CURDIR)/debian/max-control/usr/share/max-control/conf.inc.php.init

@@ -1762,7 +1762,7 @@ class ISO extends BASE{
     var $size='';
     var $volumeid='';
     
-    function save() {
+    function save($attrs=array()) {
         return;
     }
     

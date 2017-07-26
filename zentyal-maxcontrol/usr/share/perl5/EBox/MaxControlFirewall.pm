@@ -50,7 +50,7 @@ sub input
     foreach my $port (TCPPORTS){
         foreach my $ifc (@ifaces) {
             my $r = "-m state --state NEW -i $ifc  ".
-                    "-p tcp --dport $port -j ACCEPT";
+                    "-p tcp --dport $port -j iaccept";
             push(@rules, $r);
         }
     }
