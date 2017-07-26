@@ -99,6 +99,7 @@ class Menu {
                                             'power/equipos' => array('title'=>'Equipos', 'icon'=>'desktop'),
                                                                                       )),
                 'boot' => array('title'=>'Programar arranque', 'icon'=>'gears', 'menu' => array(
+                                          'boot/config' => array('title'=>'Configuración', 'icon'=>'cogs'),
                                           'boot/aula'   => array('title'=>'Aulas', 'icon'=>'sitemap'),
                                           'boot/equipo' => array('title'=>'Equipos', 'icon'=>'desktop'),
                                                                                       )),

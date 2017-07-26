@@ -304,6 +304,43 @@ function programaaulado($module, $action, $subaction) {
 }
 
 
+function programaconfig($module, $action, $subaction) {
+    global $gui, $url;
+
+    $programer = new Programer();
+
+    $data=array(
+        "urlsave" => $url->create_url($module, 'configsave'),
+        "calendar" => $programer->getCalendars(),
+               );
+
+    // $gui->debuga($data);
+    $gui->add( $gui->load_from_template("boot_config.tpl", $data) );
+}
+
+
+function programaconfigsave($module, $action, $subaction) {
+    global $gui, $url;
+    $programer = new Programer();
+
+    $mode=leer_datos('mode');
+    
+    if($mode == 'add') {
+        $programer->addCalendar(leer_datos('start'), leer_datos('end'));
+    }
+    elseif ($mode == 'del') {
+        $programer->removeCalendar(leer_datos('start'), leer_datos('end'));
+    }
+
+    $programer->readIni();
+    $calendar = $programer->getCalendars();
+
+
+    header("Content-type: application/json");
+    $gui->change_main_template('json.tpl');
+    $gui->add( json_encode($calendar) );
+}
+
 //$gui->session_info("Accion '$action' en modulo '$module'");
 switch($action) {
     case "": $url->ir($module, "aula"); break;
@@ -321,6 +358,10 @@ switch($action) {
     
     case "programaaula": programaaula($module, $action, $subaction); break;
     case "programaaulado": programaaulado($module, $action, $subaction); break;
+
+
+    case "config":            programaconfig($module, $action, $subaction); break;
+    case "configsave":        programaconfigsave($module, $action, $subaction); break;
     
     default: $gui->session_error("Accion desconocida '$action' en modulo $module");
     /*default: $url->ir($module, "equipo");*/
