@@ -1,3 +1,10 @@
+max-control (5.0~max6) max; urgency=medium
+
+  * Add password description in import section, rel #19
+  * Add A disable calendar for programed actions, close #17
+
+ -- Mario Izquierdo <hola@marioizquierdo.es>  Wed, 26 Jul 2017 23:57:12 +0200
+
 max-control (5.0~max5) max; urgency=medium
 
   * Fix zentyal-maxcontrol install, close #20
