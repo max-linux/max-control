@@ -31,6 +31,7 @@ El órden de los campos es el siguiente:
     <li>Centro (no se tiene en cuenta)</li>
     <li>Clase (grupo)</li>
     <li>Tipo (alumno, profesor...)</li>
+    <li>Contraseña (opcional, si no se incluye esta columna se usará <i>cmadrid</i>i>)</li>
 </ul>
 
 
