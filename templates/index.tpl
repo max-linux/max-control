@@ -8,26 +8,25 @@
     <meta name="author" content="">
     <title>Panel de control</title>
     <link rel="shortcut icon" href="{$baseurl}/img/favicon.ico" type="image/x-icon" />
+
     <link href="{$baseurl}/css/bootstrap.min.css" rel="stylesheet">
     <link href="{$baseurl}/css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
     <link href="{$baseurl}/css/maxcontrol.css" rel="stylesheet">
     <link href="{$baseurl}/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="{$baseurl}/css/bootstrap-year-calendar.min.css" rel="stylesheet" type="text/css">
-{* needed for document.ready *}
-    <script src="{$baseurl}/js/jquery-1.11.0.js"></script>
-{if isset($DEBUG)}
-    <link href="{$baseurl}/css/debug.css" type="text/css" rel="stylesheet" /> 
-    <script type="text/javascript">
-    var debug_enabled=true;
-    </script>
 
+    <script src="{$baseurl}/js/jquery-1.11.0.js"></script>
     <script src="{$baseurl}/js/bootstrap.min.js"></script>
     <script src="{$baseurl}/js/plugins/metisMenu/metisMenu.min.js"></script>
     <script src="{$baseurl}/js/bootstrap-year-calendar.min.js"></script>
     <script src="{$baseurl}/js/bootstrap-year-calendar.es.js"></script>
     <script src="{$baseurl}/js/maxcontrol.js"></script>
 
-
+{if isset($DEBUG)}
+    <link href="{$baseurl}/css/debug.css" type="text/css" rel="stylesheet" /> 
+    <script type="text/javascript">
+    var debug_enabled=true;
+    </script>
 {/if}
 </head>
 <body>
