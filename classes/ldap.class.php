@@ -1173,7 +1173,27 @@ class COMPUTER extends BASE {
     }
 
 
+    function delComputer() {
+        global $gui;
+        /*
+        *  smbpasswd -x 'wxp64$'
+        */
+        $result=false;
 
+        // delete MAC
+        if ( $this->macAddress != '') {
+            $mac=$this->macAddress;
+            $gui->debug("sudo ".MAXCONTROL." pxe --delete='$mac' ");
+            exec("sudo ".MAXCONTROL." pxe --delete='$mac' ", $output);
+            $gui->debug("delComputer($mac)<pre>".print_r($output, true)."</pre>");
+        }
+        $result=true;
+        // forzar borrado de samba
+        $gui->debug("sudo ".MAXCONTROL." delcomputer '".$this->hostname()."$' ");
+        exec("sudo ".MAXCONTROL." delcomputer '".$this->hostname()."$' ", $output);
+        $gui->debuga($output);
+        return $result;
+    }
 
 
 }
