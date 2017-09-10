@@ -552,6 +552,15 @@ d:g:"${NAME}":r-x                     "${GROUPS_DIR}/${NAME}" 2>&1
         exit 0
         ;;
 ################################################################################
+    gethostnameip)
+        HNAME=$2
+
+        # Sep  7 17:14:14 max-control dhcpd[3144]: DHCPACK on 192.168.1.50 to 08:00:27:bf:7f:33 (DESKTOP-044BOTE) via eth1
+        IP=$(awk '/DHCPACK.*('$HNAME')/ {print $8}' /var/log/syslog| tail -1)
+        echo "$IP"
+        exit 0
+        ;;
+################################################################################
     reloadsamba)
         if testparm -s /etc/samba/smb.conf >/dev/null 2>&1; then
             PIDS=$(pidof smbd)
