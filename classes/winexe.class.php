@@ -179,6 +179,7 @@ class WINEXE {
             192.168.1.132
         */
         global $gui;
+        //
         $cmd="net lookup $hostname" . '.' . LDAP_DOMAIN;
         $gui->debug("WINEXE:getIpAddress($hostname) cmd='$cmd'");
         exec($cmd, $output);
@@ -186,6 +187,24 @@ class WINEXE {
             $gui->debug("WINEXE:getIpAddress($hostname)=".$output[0]);
             return $this->checkIP($output[0]);
         }
+        //
+        $cmd="net lookup $hostname";
+        $gui->debug("WINEXE:getIpAddress($hostname) cmd='$cmd'");
+        exec($cmd, $output);
+        if ( isset($output[0]) ) {
+            $gui->debug("WINEXE:getIpAddress($hostname)=".$output[0]);
+            return $this->checkIP($output[0]);
+        }
+
+        // sudo bash bin/max-control gethostnameip DESKTOP-044BOTE
+        $gui->debug("sudo ".MAXCONTROL." gethostnameip '$hostname' ");
+        exec("sudo ".MAXCONTROL." gethostnameip '$hostname' ", $output);
+        $gui->debug("getIpAddress($hostname)<pre>".print_r($output, true)."</pre>");
+        if ( isset($output[0]) ) {
+            $gui->debug("WINEXE:getIpAddress($hostname)=".$output[0]);
+            return $this->checkIP($output[0]);
+        }
+
         $gui->debug("WINEXE:getIpAddress($hostname) ERROR, can't resolve hostname");
         return "";
     }

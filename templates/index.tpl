@@ -131,11 +131,11 @@
         <div class="navbar-inner navbar-content-center text-center">
 
             <a rel='external' title='Comunidad de Madrid (ventana nueva)' href='http://www.madrid.org/' class='external-link'>
-                <img width='132' height='43' alt='Comunidad de Madrid, Consejería de Educación y Empleo' src='{$baseurl}/img/consejeria.png' />
+                <img width='132' height='43' alt='Comunidad de Madrid, Consejería de Educación, Juventud y Deporte' src='{$baseurl}/img/consejeria.png' />
             </a>
             <br class="visible-xs">
             <span>
-                <strong>EducaMadrid</strong> - 2011-{$smarty.now|date_format:'%Y'}  - Consejería de Educación y Empleo, Comunidad de Madrid, max-control versión: {$max_control_version}
+                <strong>EducaMadrid</strong> - 2011-{$smarty.now|date_format:'%Y'}  - Consejería de Educación, Juventud y Deporte, Comunidad de Madrid, max-control versión: {$max_control_version}
             </span>
             <br class="visible-xs">
             <a rel='external' title='EducaMadrid (ventana nueva)' href='http://www.educa.madrid.org' class='external-link'>
