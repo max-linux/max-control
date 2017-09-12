@@ -1,3 +1,9 @@
+max-control (5.0~max8) max; urgency=medium
+
+  * Fix Computer::DelComputer(), close #24
+
+ -- Mario Izquierdo <hola@marioizquierdo.es>  Tue, 12 Sep 2017 20:08:30 +0200
+
 max-control (5.0~max7) max; urgency=medium
 
   * fix javascript include files, close #22
