@@ -15,6 +15,15 @@ if [ "$1" = "configure" ]; then
        cp $fname /var/lib/tftpboot/pxelinux.cfg/
    done
 
+   # configure atftpd server
+   if [ -e /etc/default/atftpd ]; then
+     if grep -q "srv/tftp" /etc/default/atftpd; then
+         sed -i -e 's/USE_INETD=true/USE_INETD=false/g' \
+                -e 's@/srv/tftp@/var/lib/tftpboot@g' \
+             /etc/default/atftpd
+         /etc/init.d/atftpd restart || true
+     fi
+   fi
 
    # enable mod_rewrite
    [ ! -e /etc/apache2/mods-enabled/rewrite.load ] && [ -x /usr/sbin/a2enmod ] && a2enmod rewrite

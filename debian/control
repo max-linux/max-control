@@ -11,9 +11,10 @@ Standards-Version: 3.8.4
 Package: max-control
 Architecture: all
 #Recommends: libc6-i386
+Provides: tftpd-hpa
 Depends:  libapache2-mod-php7.0, php7.0, php7.0-ldap, php-ssh2, php7.0-mcrypt, php7.0-cli,
           apache2, smarty3, libjs-jquery, python-pyinotify, python-ldap, python-netifaces, tree,
-          python-configobj, genisoimage, winexe, libpam-cap,
+          python-configobj, genisoimage, winexe, libpam-cap, atftpd,
           python, ${misc:Depends}, ${shlibs:Depends}, ${python:Depends}
 Description: Small PHP web based app to admin LDAP data from Zentyal
  max-control is a small PHP LDAP frontend to configure, users, groups, 
